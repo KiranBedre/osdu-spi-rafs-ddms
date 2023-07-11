@@ -1,9 +1,11 @@
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/azure.yml"
+    ref: release/0.22
 
 .maven:
   variables:
+
 
 .python_test_report:
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
