@@ -10,8 +10,8 @@ RUN pip install --upgrade pip \
 COPY ./app /app/
 WORKDIR /app
 
-# Only needed for production performance
-RUN pip install --no-cache-dir uvloop==0.17.0
+# Only needed for production uvloop==0.17.0
+RUN pip install --no-cache-dir uvicorn[standard]==0.22.0
 RUN cp -v $(which uvicorn) .
 
 # Google Distroless uses python 3.9 we are choosing to go with cgr.dev (gcr.io/distroless/python3:nonroot uses python 3.9)
@@ -43,7 +43,7 @@ EXPOSE 8080
 
 USER $user_id
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "4", "--loop", "uvloop"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "8", "--loop", "uvloop"]
 
 # If we want to control server settings through python run.py file
 # COPY --chown=${user_id}:0 ./devops/run.py /app/run.py
