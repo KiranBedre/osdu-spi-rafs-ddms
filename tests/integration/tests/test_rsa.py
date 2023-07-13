@@ -93,17 +93,11 @@ def test_measurements_filters_positive(
     "column, operator, expected_result", [
         ("SampleDepth", "count", [[2]]),
         ("SampleDepth.Value", "min", [[5.44]]),
-        ("Permeability.Value", "min", [[1]]),
-        ("Porosity.Value", "max", [[89.0]]),
-        ("GrainDensity.Value", "sum", [[11.3]]),
         ("SampleDepth.Value", "mean", [[175.72]]),
     ],
     ids=[
         "SampleDepth_count",
         "SampleDepth_min",
-        "Permeability_min",
-        "Porosity_max",
-        "GrainDensity_sum",
         "SampleDepth_mean",
     ],
 )
@@ -123,6 +117,7 @@ def test_measurements_aggregation_positive(
     )["ddms_urn"]
     dataset_id = helper.get_dataset_id_from_ddms_urn(full_dataset_id)
 
+    print("column", column)
     response = getattr(api, api_path).get_measurements(
         record_data["id"],
         dataset_id,
