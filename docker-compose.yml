@@ -31,7 +31,7 @@ services:
       - ./client/:/client
     working_dir: /
     entrypoint: [ "bash", "-c",
-      "pytest -n auto ./tests/integration/tests --ddms-base-url \"${DDMS_BASE_URL}\" --url-prefix \"${URL_PREFIX}\" --partition \"${PARTITION}\" --bearer-token \"${ACCESS_TOKEN}\""]
+      "time pytest -n 3 --cov=app --cov-report=term ./tests/integration/tests --ddms-base-url \"${DDMS_BASE_URL}\" --url-prefix \"${URL_PREFIX}\" --partition \"${PARTITION}\" --bearer-token \"${ACCESS_TOKEN}\""]
     profiles: ["tests"]
     depends_on:
       - rafs

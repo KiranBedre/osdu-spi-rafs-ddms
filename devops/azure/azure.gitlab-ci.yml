@@ -11,13 +11,10 @@ include:
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     reports:
-      junit: report.xml
+      junit: integration_tests_report.xml
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
-  after_script:
-    - coverage report
-    - coverage xml
 
 azure_containerize:
   image: docker:24.0.1-cli
@@ -70,8 +67,11 @@ azure_swagger_test:
   variables:
     AZURE_SWAGGER_PATH: api/rafs-ddms/v1/docs#/
 
+# To be able to run these aggressive tests we need to scale up CosmosDB at least to 8000RU/s
+# More than 6 workers will cause failure in the Cosmos Backend.
+# Large will create aggresive tests / most likely fail
 azure_test_py:
-  tags: ["osdu-large"]
+  tags: ["osdu-medium"]
   stage: integration
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
   needs: ["azure_deploy"]
@@ -85,24 +85,32 @@ azure_test_py:
     - !reference [.get_azure_access_token, script ]
   script:
     - >-
-      coverage run -m pytest -n auto --junitxml=report.xml tests/integration/tests
+      if ! time pytest -n 3
+      --junitxml=integration_tests_report.xml 
+      --cov=app
+      --cov-report=term
+      ./tests/integration/tests
       --ddms-base-url https://${AZURE_DNS_NAME}
       --url-prefix ${URL_PREFIX}
       --bearer-token ${ACCESS_TOKEN}
-      --partition ${PARTITION}
+      --partition ${PARTITION}; then
+      echo "Retry - 1";
+      time pytest -n 3
+      --junitxml=integration_tests_report.xml 
+      --cov=app
+      --cov-report=term
+      ./tests/integration/tests
+      --ddms-base-url https://${AZURE_DNS_NAME}
+      --url-prefix ${URL_PREFIX}
+      --bearer-token ${ACCESS_TOKEN}
+      --partition ${PARTITION};
+      fi
   only:
     variables:
       - $AZURE == '1' && $AZURE_SKIP_DEPLOY != 'true' && $AZURE_TEST_TYPE == 'python'
   except:
     variables:
       - $AZURE_SKIP_TEST == 'true'
-  cache:
-    key:
-      files:
-        - requirements-test.in
-      prefix: pipcache
-    paths:
-      - .cache
 
 .get_azure_access_token:
   script:
