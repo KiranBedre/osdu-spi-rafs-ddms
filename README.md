@@ -117,6 +117,7 @@ OSDU_ENDPOINT=https://<osdu>.<fqdn>
 cat > .env <<EOF
 SERVICE_NAME=rafs-ddms
 OPENAPI_PREFIX=/api/rafs-ddms
+CLOUD_PROVIDER=azure
 SERVICE_HOST_STORAGE=${OSDU_ENDPOINT}/api/storage/v2
 SERVICE_HOST_SEARCH=${OSDU_ENDPOINT}/api/search/v2
 SERVICE_HOST_PARTITION=${OSDU_ENDPOINT}/api/partition/v1

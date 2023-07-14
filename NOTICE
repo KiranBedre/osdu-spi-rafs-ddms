@@ -35,7 +35,6 @@ The following software have components provided under the terms of this license:
 - sniffio (from https://github.com/python-trio/sniffio)
 - tenacity (from https://github.com/jd/tenacity)
 - tzdata (from https://github.com/python/tzdata)
-- urllib3 (from https://pypi.org/project/urllib3/2.0.3/)
 - yarl (from https://github.com/aio-libs/yarl/)
 
 ========================================================================
@@ -91,7 +90,6 @@ ISC
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- click (from https://palletsprojects.com/p/click/)
 - prometheus-fastapi-instrumentator (from https://github.com/trallnag/prometheus-fastapi-instrumentator)
 
 ========================================================================
@@ -120,7 +118,6 @@ The following software have components provided under the terms of this license:
 - pydantic (from https://github.com/samuelcolvin/pydantic, https://pypi.org/project/pydantic/2.0.2/)
 - pytz (from http://pythonhosted.org/pytz)
 - redis (from https://github.com/redis/redis-py)
-- requests (from http://python-requests.org, https://requests.readthedocs.io)
 - six (from http://pypi.python.org/pypi/six/, https://github.com/benjaminp/six)
 - sniffio (from https://github.com/python-trio/sniffio)
 - typing-inspect (from https://github.com/ilevkivskyi/typing_inspect)

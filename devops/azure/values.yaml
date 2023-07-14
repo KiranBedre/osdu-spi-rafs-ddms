@@ -50,7 +50,7 @@ configuration:
       REDIS_DATABASE: "13"
       REDIS_SSL: "True"
       REDIS_PORT: "6380"
-      REQUEST_TIMEOUT: "45"
+      REQUEST_TIMEOUT: "120"
 
     secrets:
     - name: REDIS_HOSTNAME
