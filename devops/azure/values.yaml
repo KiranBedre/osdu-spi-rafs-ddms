@@ -50,7 +50,7 @@ configuration:
       REDIS_DATABASE: "13"
       REDIS_SSL: "True"
       REDIS_PORT: "6380"
-      REQUEST_TIMEOUT: "120"
+      REQUEST_TIMEOUT: "180"
 
     secrets:
     - name: REDIS_HOSTNAME
@@ -58,8 +58,8 @@ configuration:
     - name: REDIS_PASSWORD
       key: redis-pass
     request:
-      cpu: 0.2
-      memory: 1Gi
+      cpu: 0.5
+      memory: 4Gi
     limit:
       cpu: 2
-      memory: 4Gi
+      memory: 6Gi

@@ -64,12 +64,14 @@ async def get_parent_records(
         raise RecordValidationException(detail=reason)
 
     parent_records = query_parent_records["records"]
-    logger.info(f"Parent records have been found: {parent_records}")
+    parent_records_size = len(parent_records)
+    logger.info(f"Parent records have been found: {parent_records_size}")
 
     for parent_record in parent_records:
         try:
             parent_model.validate(parent_record)
-            logger.info(f"Parent record {parent_record} is valid.")
+            parent_record_size = len(parent_record)
+            logger.info(f"{parent_record_size} Parent records are valid.")
         except ValidationError as val_error:
             details = []
             for error in val_error.errors():
