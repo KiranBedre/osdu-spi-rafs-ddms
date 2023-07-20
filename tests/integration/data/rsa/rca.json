@@ -26,22 +26,30 @@
                 "Value": 346,
                 "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:m:"
             },
-            {
-                "Value": 1,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:mD:"
-            },
-            {
-                "Value": 89.0,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:%25:"
-            },
-            {
-                "Value": 1.30,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:g%2Fcm3:"
-            },
-            {
-                "Value": 5.65,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:%25:"
-            },
+            [
+                {
+                    "Value": 1,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:mD:"
+                }
+            ],
+            [
+                {
+                    "Value": 89.0,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:%25:"
+                }
+            ],
+            [
+                {
+                    "Value": 1.30,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:g%2Fcm3:"
+                }
+            ],
+            [
+                {
+                    "Value": 5.65,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:%25:"
+                }
+            ],
             "LithologyDescription",
             "Remarks"
         ],
@@ -54,22 +62,30 @@
                 "Value": 5.44,
                 "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:m:"
             },
-            {
-                "Value": 1,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:mD:"
-            },
-            {
-                "Value": 56.5,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:%25:"
-            },
-            {
-                "Value": 10.0,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:g%2Fcm3:"
-            },
-            {
-                "Value": 7.5,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:%25:"
-            },
+            [
+                {
+                    "Value": 1,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:mD:"
+                }
+            ],
+            [
+                {
+                    "Value": 56.5,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:%25:"
+                }
+            ],
+            [
+                {
+                    "Value": 10.0,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:g%2Fcm3:"
+                }
+            ],
+            [
+                {
+                    "Value": 7.5,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:%25:"
+                }
+            ],
             "LithologyDescription",
             "Remarks"
         ]

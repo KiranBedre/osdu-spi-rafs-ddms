@@ -113,22 +113,30 @@ TEST_DATA = {
                 "Value": 1.0,
                 "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1:",
             },
-            {
-                "Value": 1.0,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1:",
-            },
-            {
-                "Value": 1.0,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1:",
-            },
-            {
-                "Value": 1.0,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1:",
-            },
-            {
-                "Value": 1.0,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1:",
-            },
+            [
+                {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1:",
+                },
+            ],
+            [
+                {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1:",
+                },
+            ],
+            [
+                {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1:",
+                },
+            ],
+            [
+                {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1:",
+                },
+            ],
             "LithologyDescription",
             "Remarks",
         ],

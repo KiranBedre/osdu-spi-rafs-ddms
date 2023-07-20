@@ -25,22 +25,30 @@
                 "Value": 346,
                 "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID4:"
             },
-            {
-                "Value": 56.0,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID5:"
-            },
-            {
-                "Value": 89.0,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID6:"
-            },
-            {
-                "Value": 1.30,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID7:"
-            },
-            {
-                "Value": 5.65,
-                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID8:"
-            },
+            [
+                {
+                    "Value": 56.0,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID5:"
+                }
+            ],
+            [
+                {
+                    "Value": 89.0,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID6:"
+                }
+            ],
+            [
+                {
+                    "Value": 1.30,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID7:"
+                }
+            ],
+            [
+                {
+                    "Value": 5.65,
+                    "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID8:"
+                }
+            ],
             "LithologyDescription",
             "Remarks"
         ]

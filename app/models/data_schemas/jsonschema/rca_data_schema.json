@@ -1,176 +1,188 @@
 {
-  "$id": "RoutineCoreAnalysis.json",
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "definitions": {
-    "Conditions": {
-      "type": "object",
-      "properties": {
-        "Pressure": {
-          "type": "object",
-          "properties": {
-            "Value": {
-              "type": "number"
-            },
-            "UnitOfMeasure": {
-              "type": "string",
-              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-            },
-            "Type": {
-              "type": "string",
-              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PressureMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+    "$id": "RoutineCoreAnalysis.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "definitions": {
+        "Conditions": {
+            "type": "object",
+            "properties": {
+                "Pressure": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        },
+                        "Type": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PressureMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    }
+                },
+                "Temperature": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    }
+                }
             }
-          }
+        }
+    },
+    "properties": {
+        "RockSampleID": {
+            "type": "string",
+            "pattern": "^[\\w\\-\\.]+:master-data\\-\\-RockSample:[\\w\\-\\.\\:\\%]+:[0-9]*$"
         },
-        "Temperature": {
-          "type": "object",
-          "properties": {
-            "Value": {
-              "type": "number"
+        "CoringID": {
+            "type": "string",
+            "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Coring:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        },
+        "WellboreID": {
+            "type": "string",
+            "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Wellbore:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        },
+        "SampleNumber": {
+            "type": "string"
+        },
+        "SampleType": {
+            "type": "string",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-RockSampleType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        },
+        "SampleDepth": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                }
             },
-            "UnitOfMeasure": {
-              "type": "string",
-              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+            "required": [
+                "Value",
+                "UnitOfMeasure"
+            ]
+        },
+        "Permeability": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "Value": {
+                        "type": "number"
+                    },
+                    "UnitOfMeasure": {
+                        "type": "string",
+                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                    },
+                    "Type": {
+                        "type": "string",
+                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                    },
+                    "Orientation": {
+                        "type": "string",
+                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrientationType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                    },
+                    "Conditions": {
+                        "$ref": "#/definitions/Conditions"
+                    }
+                }
             }
-          }
-        }
-      }
-    }
-  },
-  "properties": {
-    "RockSampleID": {
-      "type": "string",
-      "pattern": "^[\\w\\-\\.]+:master-data\\-\\-RockSample:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-    },
-    "CoringID": {
-      "type": "string",
-      "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Coring:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-    },
-    "WellboreID": {
-      "type": "string",
-      "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Wellbore:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-    },
-    "SampleNumber": {
-      "type": "string"
-    },
-    "SampleType": {
-      "type": "string",
-      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-RockSampleType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-    },
-    "SampleDepth": {
-      "type": "object",
-      "properties": {
-        "Value": {
-          "type": "number",
-          "minimum": 0
         },
-        "UnitOfMeasure": {
-          "type": "string",
-          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-        }
-      },
-      "required": [
-        "Value",
-        "UnitOfMeasure"
-      ]
-    },
-    "Permeability": {
-      "type": "object",
-      "properties": {
-        "Value": {
-          "type": "number"
+        "Porosity": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "Value": {
+                        "type": "number"
+                    },
+                    "UnitOfMeasure": {
+                        "type": "string",
+                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                    },
+                    "Type": {
+                        "type": "string",
+                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                    },
+                    "Orientation": {
+                        "type": "string",
+                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrientationType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                    },
+                    "Conditions": {
+                        "$ref": "#/definitions/Conditions"
+                    }
+                }
+            }
         },
-        "UnitOfMeasure": {
-          "type": "string",
-          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        "GrainDensity": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "Value": {
+                        "type": "number"
+                    },
+                    "UnitOfMeasure": {
+                        "type": "string",
+                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                    },
+                    "Type": {
+                        "type": "string",
+                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-GrainDensityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                    },
+                    "Conditions": {
+                        "$ref": "#/definitions/Conditions"
+                    }
+                }
+            }
         },
-        "Type": {
-          "type": "string",
-          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        "Saturation": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "Value": {
+                        "type": "number"
+                    },
+                    "UnitOfMeasure": {
+                        "type": "string",
+                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                    },
+                    "Type": {
+                        "type": "string"
+                    },
+                    "Method": {
+                        "type": "string",
+                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationMethodType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                    },
+                    "Conditions": {
+                        "$ref": "#/definitions/Conditions"
+                    }
+                }
+            }
         },
-        "Orientation": {
-          "type": "string",
-          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrientationType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-        },
-        "Conditions": {
-          "$ref": "#/definitions/Conditions"
-        }
-      }
-    },
-    "Porosity": {
-      "type": "object",
-      "properties": {
-        "Value": {
-          "type": "number"
-        },
-        "UnitOfMeasure": {
-          "type": "string",
-          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-        },
-        "Type": {
-          "type": "string",
-          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-        },
-        "Orientation": {
-          "type": "string",
-          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrientationType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-        },
-        "Conditions": {
-          "$ref": "#/definitions/Conditions"
-        }
-      }
-    },
-    "GrainDensity": {
-      "type": "object",
-      "properties": {
-        "Value": {
-          "type": "number"
-        },
-        "UnitOfMeasure": {
-          "type": "string",
-          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-        },
-        "Type": {
-          "type": "string",
-          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-GrainDensityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-        },
-        "Conditions": {
-          "$ref": "#/definitions/Conditions"
-        }
-      }
-    },
-    "Saturation": {
-      "type": "object",
-      "properties": {
-        "Value": {
-          "type": "number"
-        },
-        "UnitOfMeasure": {
-          "type": "string",
-          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-        },
-        "Type": {
+        "LithologyDescription": {
           "type": "string"
         },
-        "Method": {
-          "type": "string",
-          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationMethodType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-        },
-        "Conditions": {
-          "$ref": "#/definitions/Conditions"
+        "Remarks": {
+          "type": "string"
         }
-      }
     },
-    "LithologyDescription": {
-      "type": "string"
-    },
-    "Remarks": {
-      "type": "string"
-    }
-  },
-  "required": [
-    "RockSampleID",
-    "SampleNumber",
-    "SampleDepth"
-  ]
+    "required": [
+        "RockSampleID",
+        "SampleNumber",
+        "SampleDepth"
+    ]
 }
