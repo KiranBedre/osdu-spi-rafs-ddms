@@ -114,7 +114,7 @@ The following software have components provided under the terms of this license:
 - pendulum (from https://pendulum.eustace.io)
 - prometheus-fastapi-instrumentator (from https://github.com/trallnag/prometheus-fastapi-instrumentator)
 - pyarrow (from https://arrow.apache.org/)
-- pydantic (from https://github.com/samuelcolvin/pydantic, https://pypi.org/project/pydantic/2.1.1/)
+- pydantic (from https://github.com/samuelcolvin/pydantic, https://pypi.org/project/pydantic/2.3.0/)
 - pytz (from http://pythonhosted.org/pytz)
 - redis (from https://github.com/redis/redis-py)
 - six (from http://pypi.python.org/pypi/six/, https://github.com/benjaminp/six)
