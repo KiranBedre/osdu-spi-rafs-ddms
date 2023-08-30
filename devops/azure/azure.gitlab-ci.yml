@@ -1,7 +1,7 @@
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/azure.yml"
-    ref: release/0.23
+    ref: v0.23.1
 
 .maven:
   variables:
