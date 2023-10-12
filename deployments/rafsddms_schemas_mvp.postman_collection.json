@@ -1659,6 +1659,189 @@
 			"response": []
 		},
 		{
+			"name": "CapillaryPressureMethod.1.0.0",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"pm.test(\"Status description - Created\", function () {\r",
+							"    pm.response.to.have.status(\"Created\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "data-partition-id",
+						"type": "text",
+						"value": "{{data-partition-id}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"schemaInfo\": {\r\n        \"schemaIdentity\": {\r\n            \"authority\": \"{{rafsddms-schema-authority}}\",\r\n            \"source\": \"wks\",\r\n            \"entityType\": \"reference-data--CapillaryPressureMethod\",\r\n            \"schemaVersionMajor\": 1,\r\n            \"schemaVersionMinor\": 0,\r\n            \"schemaVersionPatch\": 0,\r\n            \"id\": \"{{rafsddms-schema-authority}}:wks:reference-data--CapillaryPressureMethod:1.0.0\"\r\n        },\r\n        \"createdBy\": \"RAFS DDMS Development Team\",\r\n        \"scope\": \"SHARED\",\r\n        \"status\": \"DEVELOPMENT\"\r\n    },\r\n    \"schema\": {\r\n        \"x-osdu-license\": \"Copyright 2023, ExxonMobil Technology and Engineering Company \\\\\\\\nLicensed under the Apache License, Version 2.0 (the \\\\\\\"License\\\\\\\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \\\\\\\"AS IS\\\\\\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\",\r\n        \"x-osdu-schema-source\": \"{{rafsddms-schema-authority}}:wks:reference-data--CapillaryPressureMethod:1.0.0\",\r\n        \"title\": \"CapillaryPressureMethod\",\r\n        \"description\": \"The list of capillary pressure method types referenced in capillary pressure analysis\",\r\n        \"type\": \"object\",\r\n        \"properties\": {\r\n            \"id\": {\r\n                \"description\": \"Previously called ResourceID or SRN which identifies this OSDU resource object without version.\",\r\n                \"title\": \"Entity ID\",\r\n                \"type\": \"string\",\r\n                \"pattern\": \"^[\\\\w\\\\-\\\\.]+:reference-data\\\\-\\\\-CapillaryPressureMethod:[\\\\w\\\\-\\\\.\\\\:\\\\%]+$\",\r\n                \"example\": \"namespace:reference-data--CapillaryPressureMethod:c69cf08a-ae35-5984-b855-f9b36ce1ea21\"\r\n            },\r\n            \"kind\": {\r\n                \"description\": \"The schema identification for the OSDU resource object following the pattern {Namespace}:{Source}:{Type}:{VersionMajor}.{VersionMinor}.{VersionPatch}. The versioning scheme follows the semantic versioning, https://semver.org/.\",\r\n                \"title\": \"Entity Kind\",\r\n                \"type\": \"string\",\r\n                \"pattern\": \"^[\\\\w\\\\-\\\\.]+:[\\\\w\\\\-\\\\.]+:[\\\\w\\\\-\\\\.]+:[0-9]+.[0-9]+.[0-9]+$\",\r\n                \"example\": \"{{rafsddms-schema-authority}}:wks:reference-data--CapillaryPressureMethod:1.0.0\"\r\n            },\r\n            \"version\": {\r\n                \"description\": \"The version number of this OSDU resource; set by the framework.\",\r\n                \"title\": \"Version Number\",\r\n                \"type\": \"integer\",\r\n                \"format\": \"int64\",\r\n                \"example\": 1562066009929332\r\n            },\r\n            \"acl\": {\r\n                \"description\": \"The access control tags associated with this entity.\",\r\n                \"title\": \"Access Control List\",\r\n                \"$ref\": \"{{schema-authority}}:wks:AbstractAccessControlList:1.0.0\"\r\n            },\r\n            \"legal\": {\r\n                \"description\": \"The entity's legal tags and compliance status. The actual contents associated with the legal tags is managed by the Compliance Service.\",\r\n                \"title\": \"Legal Tags\",\r\n                \"$ref\": \"{{schema-authority}}:wks:AbstractLegalTags:1.0.0\"\r\n            },\r\n            \"tags\": {\r\n                \"title\": \"Tag Dictionary\",\r\n                \"description\": \"A generic dictionary of string keys mapping to string value. Only strings are permitted as keys and values.\",\r\n                \"type\": \"object\",\r\n                \"additionalProperties\": {\r\n                    \"type\": \"string\"\r\n                },\r\n                \"example\": {\r\n                    \"NameOfKey\": \"String value\"\r\n                }\r\n            },\r\n            \"createTime\": {\r\n                \"description\": \"Timestamp of the time at which initial version of this OSDU resource object was created. Set by the System. The value is a combined date-time string in ISO-8601 given in UTC.\",\r\n                \"title\": \"Resource Object Creation DateTime\",\r\n                \"type\": \"string\",\r\n                \"format\": \"date-time\",\r\n                \"example\": \"2020-12-16T11:46:20.163Z\"\r\n            },\r\n            \"createUser\": {\r\n                \"title\": \"Resource Object Creation User Reference\",\r\n                \"description\": \"The user reference, which created the first version of this resource object. Set by the System.\",\r\n                \"type\": \"string\",\r\n                \"example\": \"some-user@some-company-cloud.com\"\r\n            },\r\n            \"modifyTime\": {\r\n                \"description\": \"Timestamp of the time at which this version of the OSDU resource object was created. Set by the System. The value is a combined date-time string in ISO-8601 given in UTC.\",\r\n                \"title\": \"Resource Object Version Creation DateTime\",\r\n                \"type\": \"string\",\r\n                \"format\": \"date-time\",\r\n                \"example\": \"2020-12-16T11:52:24.477Z\"\r\n            },\r\n            \"modifyUser\": {\r\n                \"title\": \"Resource Object Version Creation User Reference\",\r\n                \"description\": \"The user reference, which created this version of this resource object. Set by the System.\",\r\n                \"type\": \"string\",\r\n                \"example\": \"some-user@some-company-cloud.com\"\r\n            },\r\n            \"ancestry\": {\r\n                \"description\": \"The links to data, which constitute the inputs, from which this record instance is derived.\",\r\n                \"title\": \"Ancestry\",\r\n                \"$ref\": \"{{schema-authority}}:wks:AbstractLegalParentList:1.0.0\"\r\n            },\r\n            \"meta\": {\r\n                \"description\": \"The Frame of Reference meta data section linking the named properties to self-contained definitions.\",\r\n                \"title\": \"Frame of Reference Meta Data\",\r\n                \"type\": \"array\",\r\n                \"items\": {\r\n                    \"$ref\": \"{{schema-authority}}:wks:AbstractMetaItem:1.0.0\"\r\n                }\r\n            },\r\n            \"data\": {\r\n                \"allOf\": [\r\n                    {\r\n                        \"$ref\": \"{{schema-authority}}:wks:AbstractCommonResources:1.0.0\"\r\n                    },\r\n                    {\r\n                        \"$ref\": \"{{schema-authority}}:wks:AbstractReferenceType:1.0.0\"\r\n                    },\r\n                    {\r\n                        \"type\": \"object\",\r\n                        \"properties\": {},\r\n                        \"title\": \"IndividualProperties\"\r\n                    },\r\n                    {\r\n                        \"type\": \"object\",\r\n                        \"properties\": {\r\n                            \"ExtensionProperties\": {\r\n                                \"type\": \"object\"\r\n                            }\r\n                        },\r\n                        \"title\": \"ExtensionProperties\"\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n        \"required\": [\r\n            \"kind\",\r\n            \"acl\",\r\n            \"legal\"\r\n        ],\r\n        \"additionalProperties\": false\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{SCHEMA_HOST}}/api/schema-service/v1/schema",
+					"protocol": "https",
+					"host": [
+						"{{SCHEMA_HOST}}"
+					],
+					"path": [
+						"api",
+						"schema-service",
+						"v1",
+						"schema"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DisplacedFluidType.1.0.0",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"pm.test(\"Status description - Created\", function () {\r",
+							"    pm.response.to.have.status(\"Created\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "data-partition-id",
+						"type": "text",
+						"value": "{{data-partition-id}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"schemaInfo\": {\r\n        \"schemaIdentity\": {\r\n            \"authority\": \"{{rafsddms-schema-authority}}\",\r\n            \"source\": \"wks\",\r\n            \"entityType\": \"reference-data--DisplacedFluidType\",\r\n            \"schemaVersionMajor\": 1,\r\n            \"schemaVersionMinor\": 0,\r\n            \"schemaVersionPatch\": 0,\r\n            \"id\": \"{{rafsddms-schema-authority}}:wks:reference-data--DisplacedFluidType:1.0.0\"\r\n        },\r\n        \"createdBy\": \"RAFS DDMS Development Team\",\r\n        \"scope\": \"SHARED\",\r\n        \"status\": \"DEVELOPMENT\"\r\n    },\r\n    \"schema\": {\r\n        \"x-osdu-license\": \"Copyright 2023, ExxonMobil Technology and Engineering Company \\\\\\\\nLicensed under the Apache License, Version 2.0 (the \\\\\\\"License\\\\\\\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \\\\\\\"AS IS\\\\\\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\",\r\n        \"x-osdu-schema-source\": \"{{rafsddms-schema-authority}}:wks:reference-data--DisplacedFluidType:1.0.0\",\r\n        \"title\": \"DisplacedFluidType\",\r\n        \"description\": \"The list of displaced fluid types referenced in capillary pressure analysis\",\r\n        \"type\": \"object\",\r\n        \"properties\": {\r\n            \"id\": {\r\n                \"description\": \"Previously called ResourceID or SRN which identifies this OSDU resource object without version.\",\r\n                \"title\": \"Entity ID\",\r\n                \"type\": \"string\",\r\n                \"pattern\": \"^[\\\\w\\\\-\\\\.]+:reference-data\\\\-\\\\-DisplacedFluidType:[\\\\w\\\\-\\\\.\\\\:\\\\%]+$\",\r\n                \"example\": \"namespace:reference-data--DisplacedFluidType:c69cf08a-ae35-5984-b855-f9b36ce1ea21\"\r\n            },\r\n            \"kind\": {\r\n                \"description\": \"The schema identification for the OSDU resource object following the pattern {Namespace}:{Source}:{Type}:{VersionMajor}.{VersionMinor}.{VersionPatch}. The versioning scheme follows the semantic versioning, https://semver.org/.\",\r\n                \"title\": \"Entity Kind\",\r\n                \"type\": \"string\",\r\n                \"pattern\": \"^[\\\\w\\\\-\\\\.]+:[\\\\w\\\\-\\\\.]+:[\\\\w\\\\-\\\\.]+:[0-9]+.[0-9]+.[0-9]+$\",\r\n                \"example\": \"{{rafsddms-schema-authority}}:wks:reference-data--DisplacedFluidType:1.0.0\"\r\n            },\r\n            \"version\": {\r\n                \"description\": \"The version number of this OSDU resource; set by the framework.\",\r\n                \"title\": \"Version Number\",\r\n                \"type\": \"integer\",\r\n                \"format\": \"int64\",\r\n                \"example\": 1562066009929332\r\n            },\r\n            \"acl\": {\r\n                \"description\": \"The access control tags associated with this entity.\",\r\n                \"title\": \"Access Control List\",\r\n                \"$ref\": \"{{schema-authority}}:wks:AbstractAccessControlList:1.0.0\"\r\n            },\r\n            \"legal\": {\r\n                \"description\": \"The entity's legal tags and compliance status. The actual contents associated with the legal tags is managed by the Compliance Service.\",\r\n                \"title\": \"Legal Tags\",\r\n                \"$ref\": \"{{schema-authority}}:wks:AbstractLegalTags:1.0.0\"\r\n            },\r\n            \"tags\": {\r\n                \"title\": \"Tag Dictionary\",\r\n                \"description\": \"A generic dictionary of string keys mapping to string value. Only strings are permitted as keys and values.\",\r\n                \"type\": \"object\",\r\n                \"additionalProperties\": {\r\n                    \"type\": \"string\"\r\n                },\r\n                \"example\": {\r\n                    \"NameOfKey\": \"String value\"\r\n                }\r\n            },\r\n            \"createTime\": {\r\n                \"description\": \"Timestamp of the time at which initial version of this OSDU resource object was created. Set by the System. The value is a combined date-time string in ISO-8601 given in UTC.\",\r\n                \"title\": \"Resource Object Creation DateTime\",\r\n                \"type\": \"string\",\r\n                \"format\": \"date-time\",\r\n                \"example\": \"2020-12-16T11:46:20.163Z\"\r\n            },\r\n            \"createUser\": {\r\n                \"title\": \"Resource Object Creation User Reference\",\r\n                \"description\": \"The user reference, which created the first version of this resource object. Set by the System.\",\r\n                \"type\": \"string\",\r\n                \"example\": \"some-user@some-company-cloud.com\"\r\n            },\r\n            \"modifyTime\": {\r\n                \"description\": \"Timestamp of the time at which this version of the OSDU resource object was created. Set by the System. The value is a combined date-time string in ISO-8601 given in UTC.\",\r\n                \"title\": \"Resource Object Version Creation DateTime\",\r\n                \"type\": \"string\",\r\n                \"format\": \"date-time\",\r\n                \"example\": \"2020-12-16T11:52:24.477Z\"\r\n            },\r\n            \"modifyUser\": {\r\n                \"title\": \"Resource Object Version Creation User Reference\",\r\n                \"description\": \"The user reference, which created this version of this resource object. Set by the System.\",\r\n                \"type\": \"string\",\r\n                \"example\": \"some-user@some-company-cloud.com\"\r\n            },\r\n            \"ancestry\": {\r\n                \"description\": \"The links to data, which constitute the inputs, from which this record instance is derived.\",\r\n                \"title\": \"Ancestry\",\r\n                \"$ref\": \"{{schema-authority}}:wks:AbstractLegalParentList:1.0.0\"\r\n            },\r\n            \"meta\": {\r\n                \"description\": \"The Frame of Reference meta data section linking the named properties to self-contained definitions.\",\r\n                \"title\": \"Frame of Reference Meta Data\",\r\n                \"type\": \"array\",\r\n                \"items\": {\r\n                    \"$ref\": \"{{schema-authority}}:wks:AbstractMetaItem:1.0.0\"\r\n                }\r\n            },\r\n            \"data\": {\r\n                \"allOf\": [\r\n                    {\r\n                        \"$ref\": \"{{schema-authority}}:wks:AbstractCommonResources:1.0.0\"\r\n                    },\r\n                    {\r\n                        \"$ref\": \"{{schema-authority}}:wks:AbstractReferenceType:1.0.0\"\r\n                    },\r\n                    {\r\n                        \"type\": \"object\",\r\n                        \"properties\": {},\r\n                        \"title\": \"IndividualProperties\"\r\n                    },\r\n                    {\r\n                        \"type\": \"object\",\r\n                        \"properties\": {\r\n                            \"ExtensionProperties\": {\r\n                                \"type\": \"object\"\r\n                            }\r\n                        },\r\n                        \"title\": \"ExtensionProperties\"\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n        \"required\": [\r\n            \"kind\",\r\n            \"acl\",\r\n            \"legal\"\r\n        ],\r\n        \"additionalProperties\": false\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{SCHEMA_HOST}}/api/schema-service/v1/schema",
+					"protocol": "https",
+					"host": [
+						"{{SCHEMA_HOST}}"
+					],
+					"path": [
+						"api",
+						"schema-service",
+						"v1",
+						"schema"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DisplacingFluidType.1.0.0",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"pm.test(\"Status description - Created\", function () {\r",
+							"    pm.response.to.have.status(\"Created\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "data-partition-id",
+						"type": "text",
+						"value": "{{data-partition-id}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"schemaInfo\": {\r\n        \"schemaIdentity\": {\r\n            \"authority\": \"{{rafsddms-schema-authority}}\",\r\n            \"source\": \"wks\",\r\n            \"entityType\": \"reference-data--DisplacingFluidType\",\r\n            \"schemaVersionMajor\": 1,\r\n            \"schemaVersionMinor\": 0,\r\n            \"schemaVersionPatch\": 0,\r\n            \"id\": \"{{rafsddms-schema-authority}}:wks:reference-data--DisplacingFluidType:1.0.0\"\r\n        },\r\n        \"createdBy\": \"RAFS DDMS Development Team\",\r\n        \"scope\": \"SHARED\",\r\n        \"status\": \"DEVELOPMENT\"\r\n    },\r\n    \"schema\": {\r\n        \"x-osdu-license\": \"Copyright 2023, ExxonMobil Technology and Engineering Company \\\\\\\\nLicensed under the Apache License, Version 2.0 (the \\\\\\\"License\\\\\\\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \\\\\\\"AS IS\\\\\\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\",\r\n        \"x-osdu-schema-source\": \"{{rafsddms-schema-authority}}:wks:reference-data--DisplacingFluidType:1.0.0\",\r\n        \"title\": \"DisplacingFluidType\",\r\n        \"description\": \"The list of displacing fluid types referenced in capillary pressure analysis\",\r\n        \"type\": \"object\",\r\n        \"properties\": {\r\n            \"id\": {\r\n                \"description\": \"Previously called ResourceID or SRN which identifies this OSDU resource object without version.\",\r\n                \"title\": \"Entity ID\",\r\n                \"type\": \"string\",\r\n                \"pattern\": \"^[\\\\w\\\\-\\\\.]+:reference-data\\\\-\\\\-DisplacingFluidType:[\\\\w\\\\-\\\\.\\\\:\\\\%]+$\",\r\n                \"example\": \"namespace:reference-data--DisplacingFluidType:c69cf08a-ae35-5984-b855-f9b36ce1ea21\"\r\n            },\r\n            \"kind\": {\r\n                \"description\": \"The schema identification for the OSDU resource object following the pattern {Namespace}:{Source}:{Type}:{VersionMajor}.{VersionMinor}.{VersionPatch}. The versioning scheme follows the semantic versioning, https://semver.org/.\",\r\n                \"title\": \"Entity Kind\",\r\n                \"type\": \"string\",\r\n                \"pattern\": \"^[\\\\w\\\\-\\\\.]+:[\\\\w\\\\-\\\\.]+:[\\\\w\\\\-\\\\.]+:[0-9]+.[0-9]+.[0-9]+$\",\r\n                \"example\": \"{{rafsddms-schema-authority}}:wks:reference-data--DisplacingFluidType:1.0.0\"\r\n            },\r\n            \"version\": {\r\n                \"description\": \"The version number of this OSDU resource; set by the framework.\",\r\n                \"title\": \"Version Number\",\r\n                \"type\": \"integer\",\r\n                \"format\": \"int64\",\r\n                \"example\": 1562066009929332\r\n            },\r\n            \"acl\": {\r\n                \"description\": \"The access control tags associated with this entity.\",\r\n                \"title\": \"Access Control List\",\r\n                \"$ref\": \"{{schema-authority}}:wks:AbstractAccessControlList:1.0.0\"\r\n            },\r\n            \"legal\": {\r\n                \"description\": \"The entity's legal tags and compliance status. The actual contents associated with the legal tags is managed by the Compliance Service.\",\r\n                \"title\": \"Legal Tags\",\r\n                \"$ref\": \"{{schema-authority}}:wks:AbstractLegalTags:1.0.0\"\r\n            },\r\n            \"tags\": {\r\n                \"title\": \"Tag Dictionary\",\r\n                \"description\": \"A generic dictionary of string keys mapping to string value. Only strings are permitted as keys and values.\",\r\n                \"type\": \"object\",\r\n                \"additionalProperties\": {\r\n                    \"type\": \"string\"\r\n                },\r\n                \"example\": {\r\n                    \"NameOfKey\": \"String value\"\r\n                }\r\n            },\r\n            \"createTime\": {\r\n                \"description\": \"Timestamp of the time at which initial version of this OSDU resource object was created. Set by the System. The value is a combined date-time string in ISO-8601 given in UTC.\",\r\n                \"title\": \"Resource Object Creation DateTime\",\r\n                \"type\": \"string\",\r\n                \"format\": \"date-time\",\r\n                \"example\": \"2020-12-16T11:46:20.163Z\"\r\n            },\r\n            \"createUser\": {\r\n                \"title\": \"Resource Object Creation User Reference\",\r\n                \"description\": \"The user reference, which created the first version of this resource object. Set by the System.\",\r\n                \"type\": \"string\",\r\n                \"example\": \"some-user@some-company-cloud.com\"\r\n            },\r\n            \"modifyTime\": {\r\n                \"description\": \"Timestamp of the time at which this version of the OSDU resource object was created. Set by the System. The value is a combined date-time string in ISO-8601 given in UTC.\",\r\n                \"title\": \"Resource Object Version Creation DateTime\",\r\n                \"type\": \"string\",\r\n                \"format\": \"date-time\",\r\n                \"example\": \"2020-12-16T11:52:24.477Z\"\r\n            },\r\n            \"modifyUser\": {\r\n                \"title\": \"Resource Object Version Creation User Reference\",\r\n                \"description\": \"The user reference, which created this version of this resource object. Set by the System.\",\r\n                \"type\": \"string\",\r\n                \"example\": \"some-user@some-company-cloud.com\"\r\n            },\r\n            \"ancestry\": {\r\n                \"description\": \"The links to data, which constitute the inputs, from which this record instance is derived.\",\r\n                \"title\": \"Ancestry\",\r\n                \"$ref\": \"{{schema-authority}}:wks:AbstractLegalParentList:1.0.0\"\r\n            },\r\n            \"meta\": {\r\n                \"description\": \"The Frame of Reference meta data section linking the named properties to self-contained definitions.\",\r\n                \"title\": \"Frame of Reference Meta Data\",\r\n                \"type\": \"array\",\r\n                \"items\": {\r\n                    \"$ref\": \"{{schema-authority}}:wks:AbstractMetaItem:1.0.0\"\r\n                }\r\n            },\r\n            \"data\": {\r\n                \"allOf\": [\r\n                    {\r\n                        \"$ref\": \"{{schema-authority}}:wks:AbstractCommonResources:1.0.0\"\r\n                    },\r\n                    {\r\n                        \"$ref\": \"{{schema-authority}}:wks:AbstractReferenceType:1.0.0\"\r\n                    },\r\n                    {\r\n                        \"type\": \"object\",\r\n                        \"properties\": {},\r\n                        \"title\": \"IndividualProperties\"\r\n                    },\r\n                    {\r\n                        \"type\": \"object\",\r\n                        \"properties\": {\r\n                            \"ExtensionProperties\": {\r\n                                \"type\": \"object\"\r\n                            }\r\n                        },\r\n                        \"title\": \"ExtensionProperties\"\r\n                    }\r\n                ]\r\n            }\r\n        },\r\n        \"required\": [\r\n            \"kind\",\r\n            \"acl\",\r\n            \"legal\"\r\n        ],\r\n        \"additionalProperties\": false\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{SCHEMA_HOST}}/api/schema-service/v1/schema",
+					"protocol": "https",
+					"host": [
+						"{{SCHEMA_HOST}}"
+					],
+					"path": [
+						"api",
+						"schema-service",
+						"v1",
+						"schema"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "AromaticGasChromatographyCompounds.1.0.0",
 			"event": [
 				{
