@@ -10,19 +10,19 @@ variables:
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
-    ref: release/0.24
+    ref: v0.24.0
     # for compile-and-unit-test
   - project: "osdu/platform/ci-cd-pipelines"
     file: "build/python.yml"
-    ref: release/0.24
+    ref: v0.24.0
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa-python.yml"
-    ref: release/0.24
+    ref: v0.24.0
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
-    ref: release/0.24
+    ref: v0.24.0
 
   # AZURE provider
   - local: "/devops/azure/azure.gitlab-ci.yml"
