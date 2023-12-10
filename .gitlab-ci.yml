@@ -16,16 +16,19 @@ variables:
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
-
+    ref: release/0.25
     # for compile-and-unit-test
   - project: "osdu/platform/ci-cd-pipelines"
     file: "build/python.yml"
+    ref: release/0.25
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa-python.yml"
+    ref: release/0.25
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
+    ref: release/0.25
 
   # AZURE provider
   - local: "/devops/azure/azure.gitlab-ci.yml"
@@ -51,7 +54,7 @@ compile-and-unit-test:
 build_rafs_tests:
   stage: build
   image: docker:24.0.1-cli
-  tags: ["osdu-medium"]
+  tags: [ "osdu-medium" ]
   extends:
     - .skipForTriggeringMergeRequests
   before_script:

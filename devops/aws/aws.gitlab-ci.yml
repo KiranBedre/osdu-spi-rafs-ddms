@@ -1,8 +1,10 @@
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/aws-global-variables.yml"
+    ref: release/0.25
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/aws-global.yml"
+    ref: release/0.25
 
 aws-containerize:
   extends:
@@ -18,17 +20,16 @@ aws-containerize:
     - docker push $AWS_IMAGE_TAG_BASE:$CI_COMMIT_SHA
     - docker push $AWS_IMAGE_TAG_BASE:latest
 
-
 aws_test_py:
   extends:
     - .aws
     - .aws_common_variables
     - .aws_variables
-  tags: ["osdu-medium"]
+  tags: [ "osdu-medium" ]
   stage: integration
   allow_failure: true
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
-  needs: ["aws-update-tf"]
+  needs: [ "aws-update-tf" ]
   variables:
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
     PARTITION: opendes

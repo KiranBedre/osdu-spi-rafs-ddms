@@ -1,9 +1,11 @@
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/azure.yml"
+    ref: release/0.25
 
 .maven:
   variables:
+
 
 .python_test_report:
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
@@ -84,10 +86,10 @@ azure_swagger_test:
 # More than 6 workers will cause failure in the Cosmos Backend.
 # Large will create aggresive tests / most likely fail
 azure_test_py:
-  tags: ["osdu-medium"]
+  tags: [ "osdu-medium" ]
   stage: integration
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
-  needs: ["azure_deploy"]
+  needs: [ "azure_deploy" ]
   allow_failure: true
   variables:
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
