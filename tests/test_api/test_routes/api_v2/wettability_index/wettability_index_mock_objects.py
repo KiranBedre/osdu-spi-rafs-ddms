@@ -1,4 +1,3 @@
-
 #  Copyright 2023 ExxonMobil Technology and Engineering Company
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +22,6 @@ from tests.test_api.test_routes.osdu.storage_mock_objects import (
 )
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
-
 
 TEST_DATASET_RECORD_ID = "opendes:dataset--File.Generic:wettabilityindexdata-123:1234"
 TEST_DDMS_URN = f"urn://rafs-v2/wettabilityindexdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}"
@@ -89,6 +87,15 @@ TEST_FILTERED_DATA = {
             "opendes:work-product-component--SamplesAnalysis:WettabilityIndex_WPC:",
             "opendes:master-data--Sample:WettabilityIndex_Sample:",
             {
+                "CapillaryPressureAnalysisID": "opendes:work-product-component--SamplesAnalysis:CapillaryPressure_WPC:",
+                "ForcedImbibedBrineVolume": {
+                    "Value": 12,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:",
+                },
+                "ForcedImbibedOilVolume": {
+                    "Value": 32,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:",
+                },
                 "Temperature": {
                     "Value": 1.0,
                     "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:",
@@ -141,12 +148,12 @@ TEST_FILTERED_DATA = {
                     {
                         "Value": 4.67,
                         "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:v%2Fv:",
-                        "WettabilityIndexType": "opendes:reference-data--WettabilityIndexType:Water:",
+                        "WettabilityIndexType": "opendes:reference-data--WettabilityIndexType:AmottWater:",
                     },
                     {
                         "Value": 3.2,
                         "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:v%2Fv:",
-                        "WettabilityIndexType": "opendes:reference-data--WettabilityIndexType:Oil:",
+                        "WettabilityIndexType": "opendes:reference-data--WettabilityIndexType:AmottOil:",
                     },
                 ],
                 "ConfiningPressure": {
@@ -156,12 +163,12 @@ TEST_FILTERED_DATA = {
                 "DesaturationMethod": "opendes:reference-data--DesaturationMethod:CentrifugeOilWater:",
                 "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Decane:",
                 "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Carnation:",
-                "FluidSystem": "opendes:reference-data--FluidSystemType:OilGas:",
+                "FluidSystem": "opendes:reference-data--FluidSystemType:GasOil:",
                 "InitialWaterSaturation": {
                     "Value": 32,
                     "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:",
                 },
-                "InitialCappillaryPressure": {
+                "InitialCapillaryPressure": {
                     "Value": 65,
                     "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:bar:",
                 },

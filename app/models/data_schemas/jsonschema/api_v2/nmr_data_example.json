@@ -1,69 +1,181 @@
 {
-    "SamplesAnalysisID": "osdu:work-product-component--SamplesAnalysis:NMR_Test_Example:",
-    "SampleID": "osdu:master-data--Sample:88Y:",
-    "FreshState": [
+    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:NMR_Test_Example:",
+    "SampleID": "opendes:master-data--Sample:88Y:",
+    "NMRTest": [
         {
-            "LiquidFilledPorosity": {
-                "Value": "NULL",
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
-            },
-            "T2LogMean": {
-                "Value": "NULL",
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ms:"
-            }
-        }
-    ],
-    "FullBrineSaturation": [
-        {
-            "Porosity": {
-                "Value": 28.12,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
-            },
-            "EffectivePorosity": {
-                "Value": 28.35,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
-            },
-            "T2LogMean": {
-                "Value": 158.1,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ms:"
-            }
-        }
-    ],
-   "PartialBrineSaturation": [
-        {
-            "BVI": {
-                "Value": 3.5,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
-            },
-            "FFI": {
-                "Value": 27,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
-            },
-            "Swi": {
-                "Value": 11,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
-            },
-            "T2Cutoff": {
-                "Value": 33,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
-            },
-            "IncrementalPorositySteps": [
+            "TestCondition": "opendes:reference-data--NMRTestCondition:FullySaturated:",
+            "NMRTestSteps": [
                 {
-                    "StepNumber": "1",
-                    "Saturation": {
-                        "Value": 100,
+                    "CumulativeWaterSaturation": {
+                        "Value": 10.0,
                         "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
                     },
-                    "T2": {
-                        "Value": 0.150,
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ms:"
+                    "CumulativeVolume": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:"
                     },
-                    "Porosity": {
-                        "Value": 0.507,
+                    "CumulativePorosity": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                        "PorosityType": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:"
+                    },
+                    "IncrementalWaterSaturation": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "IncrementalPorosity": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                        "PorosityType": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:"
+                    },
+                    "IncrementalVolume": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:"
+                    },
+                    "T2FullySaturated": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "T2PartiallySaturated": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "T1CumulativePorosity": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "T1CumulativeWaterSaturation": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "T1IncrementalPorosity": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "T1IncrementalWaterSaturation": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    }
+                },
+                {
+                    "CumulativeWaterSaturation": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "CumulativeVolume": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:"
+                    },
+                    "CumulativePorosity": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                        "PorosityType": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:"
+                    },
+                    "IncrementalWaterSaturation": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "IncrementalPorosity": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                        "PorosityType": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:"
+                    },
+                    "IncrementalVolume": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:"
+                    },
+                    "T2FullySaturated": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "T2PartiallySaturated": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "T1CumulativePorosity": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "T1CumulativeWaterSaturation": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "T1IncrementalPorosity": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                    },
+                    "T1IncrementalWaterSaturation": {
+                        "Value": 1.0,
                         "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
                     }
                 }
-            ]
+            ],
+            "NMRSummaryData": {
+                "BoundFluidBVI": {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:"
+                },
+                "NMRT2BoundFluidRelativetoPoreVolume": {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                },
+                "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:AirFreeWellheadCrude:",
+                "EchoSpacing": {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm:"
+                },
+                "FreeFluidFFI": {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                },
+                "NMRT2FreeFluid": {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                },
+                "InjectedFluid": "opendes:reference-data--DisplacingFluidType:DeadCrudeOil:",
+                "Porosity": [
+                    {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                        "PorosityType": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:"
+                    }
+                ],
+                "Permeability": [
+                    {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:",
+                        "PermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:Gas:"
+                    }
+                ],
+                "Swirr": {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                },
+                "NMRT2Swirr": {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                },
+                "T2CutOff": {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                },
+                "T2Mean": {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                },
+                "Temperature": {
+                    "Value": 1.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
+                },
+                "PoreVolume": {
+                    "Value": 0.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:"
+                },
+                "NetConfiningStress": {
+                    "Value": 0.0,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+                }
+            }
         }
     ]
 }

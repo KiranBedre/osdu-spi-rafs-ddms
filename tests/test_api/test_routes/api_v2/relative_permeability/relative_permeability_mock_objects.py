@@ -49,11 +49,11 @@ RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
     },
 }
 TEST_PARAMS_AGGREGATION = {
-    "columns_aggregation": "Porosity.Value,mean",
+    "columns_aggregation": "SampleID,count",
 }
 TEST_PARAMS_FILTERS = {
-    "columns_filter": "SamplesAnalysisID,SampleDepth,TestTemperature",
-    "rows_filter": "SampleDepth.Value,gt,5350",
+    "columns_filter": "SamplesAnalysisID",
+    "rows_filter": "SamplesAnalysisID,eq,opendes:work-product-component--SamplesAnalysis:dd76cf6c-226f-5636-ad1b-1ca0f8249cc8:",
 }
 
 with open(f"{dir_path}/relative_permeability_orient_split.json") as fp:
@@ -61,14 +61,14 @@ with open(f"{dir_path}/relative_permeability_orient_split.json") as fp:
 
 TEST_AGGREGATED_DATA = {
     "columns": [
-        "Porosity",
+        "SampleID",
     ],
     "index": [
-        "mean",
+        "count",
     ],
     "data": [
         [
-            0.2015,
+            1,
         ],
     ],
 }
@@ -76,23 +76,13 @@ TEST_AGGREGATED_DATA = {
 TEST_FILTERED_DATA = {
     "columns": [
         "SamplesAnalysisID",
-        "SampleDepth",
-        "TestTemperature",
     ],
     "index": [
-        1,
+        0,
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:RelativePermeabilityDevTest:",
-            {
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m:",
-                "Value": 5374.42,
-            },
-            {
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:",
-                "Value": 68,
-            },
+            "opendes:work-product-component--SamplesAnalysis:dd76cf6c-226f-5636-ad1b-1ca0f8249cc8:",
         ],
     ],
 }
@@ -113,6 +103,5 @@ INCORRECT_SCHEMA_TEST_DATA = {
 }
 
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
-INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting Permeability in index row 0
-INCORRECT_DATAFRAME_TEST_DATA["data"][1].pop()  # deleting Permeability in index row 1
-EXPECTED_ERROR_REASON = "Data error: 11 columns passed, passed data had 10 columns"
+INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting PermeabilityTestSteps in index row 0
+EXPECTED_ERROR_REASON = "Data error: 21 columns passed, passed data had 20 columns"

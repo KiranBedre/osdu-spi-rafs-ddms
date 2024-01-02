@@ -21,7 +21,7 @@
           "StepPressure": {
             "Value": 10.0,
             "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
-            "Type": "opendes:reference-data--PressureMeasurementType:SomeType:"
+            "Type": "opendes:reference-data--PressureMeasurementType:Ambient:"
           },
           "LiquidFraction": {
             "Value": 45.0,

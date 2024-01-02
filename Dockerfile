@@ -46,4 +46,4 @@ EXPOSE 8080
 
 USER $user_id
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "8", "--loop", "uvloop"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "4", "--loop", "uvloop"]

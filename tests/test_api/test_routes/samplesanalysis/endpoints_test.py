@@ -63,7 +63,7 @@ async def test_types_route():
         "watergasrelativepermeability",
         "capillarypressure",
         "electricalproperties",
-        "nmrtests",
+        "nmr",
         "multiplesalinitytests",
         "gcmsalkanes",
         "gcmsaromatics",
@@ -84,6 +84,7 @@ async def test_types_route():
         "tensilestrength",
         "xrd",
         "pdp",
+        "stocktankoilanalysis",
     ],
 )
 async def test_content_schemas_route(analysistype):
@@ -125,7 +126,7 @@ async def test_content_schemas_route(analysistype):
         "watergasrelativepermeability",
         "capillarypressure",
         "electricalproperties",
-        "nmrtests",
+        "nmr",
         "multiplesalinitytests",
         "gcmsalkanes",
         "gcmsaromatics",
@@ -146,6 +147,7 @@ async def test_content_schemas_route(analysistype):
         "tensilestrength",
         "xrd"
         "pdp",
+        "stocktankoilanalysis",
     ],
 )
 async def test_content_schemas_wrong_version(analysistype):

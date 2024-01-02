@@ -1,10 +1,21 @@
 {
-    "SamplesAnalysisID": "osdu:work-product-component--SamplesAnalysisID:dd76cf6c-226f-5636-ad1b-1ca0f8249cc8:",
+    "SamplesAnalysisID": "osdu:work-product-component--SamplesAnalysis:dd76cf6c-226f-5636-ad1b-1ca0f8249cc8:",
     "SampleID": "opendes:master-data--Sample:26Hb:",
-    "Unit": "Example Unit 4",
-    "PeakForce": {
-        "Value": 28.01,
-        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:lbf:"
+    "TVD": {
+      "Value": 1000.0,
+      "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m:"
+    },
+    "TensileStrengthOrientationToBedding": {
+      "Value": 10.0,
+      "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:dega:"
+    },
+    "BulkDensityAsReceived": {
+      "Value": 2.0,
+      "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:"
+    },
+    "PeakLoad": {
+      "Value": 1000.0,
+      "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:kgf:"
     },
     "TensileStrength": [
         {
@@ -15,7 +26,25 @@
         {
             "Value": 26.70,
             "Type": "opendes:reference-data--TensileStrengthMethod:YongYu:",
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi"
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
         }
+    ],
+    "ReservoirUnit": "ReservoirUnit",
+    "TestSteps": [
+      {
+        "DataAquisitionTime": {
+          "Value": 1.0,
+          "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:"
+        },
+        "AxialForce": {
+          "Value": 10.0,
+          "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:kgf:"
+        },
+        "AxialDisplacement": {
+          "Value": 0.0,
+          "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm:"
+        }
+      }
     ]
-}
+  }
+  

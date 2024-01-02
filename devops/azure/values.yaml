@@ -26,8 +26,10 @@ configuration:
     probe:
       readiness:
         path: /api/rafs-ddms/healthz # make the API version as a variable
+        delay: 60
       liveness:
         path: /api/rafs-ddms/healthz
+        delay: 60
     auth:
       disable:
         - "/api/rafs-ddms/info"
@@ -50,12 +52,15 @@ configuration:
       REDIS_SSL: "True"
       REDIS_PORT: "6380"
       REQUEST_TIMEOUT: "180"
+      ENABLE_API_V1: "True"
 
     secrets:
     - name: REDIS_HOSTNAME
       key: redis-host
     - name: REDIS_PASSWORD
       key: redis-pass
+    # About 800m of consumption with 4 uvloop workers and integration test run
+    # Initialization will take longer if this is not correctly setup
     request:
       cpu: 0.5
       memory: 4Gi

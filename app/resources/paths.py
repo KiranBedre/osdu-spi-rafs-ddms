@@ -61,7 +61,7 @@ class CommonRelativePathsV2(NamedTuple):
     WATER_GAS_REL_PERM: str = "/data/watergasrelativepermeability"
     ROCK_COMPRESSIBILITY: str = "/data/rockcompressibility"
     ELECTRICAL_PROPERTIES: str = "/data/electricalproperties"
-    NMR: str = "/data/nmrtests"
+    NMR: str = "/data/nmr"
     MULTIPLE_SALINITY: str = "/data/multiplesalinitytests"
     GCMS_ALKANES: str = "/data/gcmsalkanes"
     GCMS_AROMATICS: str = "/data/gcmsaromatics"
@@ -84,6 +84,7 @@ class CommonRelativePathsV2(NamedTuple):
     VITRINITE_REFLECTANCE: str = "/data/vitrinitereflectance"
     XRD: str = "/data/xrd"
     PDP: str = "/data/pdp"
+    STO: str = "/data/stocktankoilanalysis"
 
 
 COMMON_RELATIVE_PATHS = {

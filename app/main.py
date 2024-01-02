@@ -90,7 +90,8 @@ def get_application() -> FastAPI:
     )
 
     application.include_router(api_router, prefix=f"{settings.openapi_prefix}")
-    application.include_router(api_router_v1, prefix=f"{settings.openapi_prefix}/v1")
+    if settings.enable_api_v1:
+        application.include_router(api_router_v1, prefix=f"{settings.openapi_prefix}/v1")
     application.include_router(api_router_v2, prefix=f"{settings.openapi_prefix}/v2")
 
     for exception, error_handler in EXCEPTIONS_AND_HANDLERS:

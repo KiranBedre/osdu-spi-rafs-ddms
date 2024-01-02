@@ -41,12 +41,6 @@
         "AdjustedSaturationExponent": {
             "type": "number"
         },
-        "PorosityExponent": {
-            "type": "number"
-        },
-        "AdjustedPorosityExponent": {
-            "type": "number"
-        },
         "BrineSaturation": {
             "type": "object",
             "properties": {

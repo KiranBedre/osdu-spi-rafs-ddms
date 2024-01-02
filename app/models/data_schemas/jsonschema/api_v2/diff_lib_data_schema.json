@@ -383,7 +383,8 @@
                                   "type": "object",
                                   "properties": {
                                       "ComponentFormula": {
-                                          "type": "string"
+                                          "type": "string",
+                                          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                       },
                                       "ComponentName": {
                                           "type": "string"
@@ -418,7 +419,8 @@
                   "type": "object",
                   "properties": {
                       "ComponentFormula": {
-                          "type": "string"
+                          "type": "string",
+                          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                       },
                       "ComponentName": {
                           "type": "string"
@@ -519,7 +521,8 @@
                           "type": "object",
                           "properties": {
                               "ComponentFormula": {
-                                  "type": "string"
+                                  "type": "string",
+                                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                               },
                               "FlashedLiquidRelativeMolarWeight": {
                                   "type": "object",

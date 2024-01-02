@@ -47,11 +47,12 @@ from app.models.data_schemas.api_v2.uniaxial_test_data_model import Model as Uni
 from app.models.data_schemas.api_v2.gcmsms_data_model import Model as GCMSMS_Model
 from app.models.data_schemas.api_v2.cec_content_model import Model as CECContentModel
 from app.models.data_schemas.api_v2.triaxial_test_data_model import Model as TriaxialTestModel
-from app.models.data_schemas.api_v2.cap_pressure_data_model import Model as CapPressureModel
 from app.models.data_schemas.api_v2.wettability_index_model import Model as WettabilityIndexModel
 from app.models.data_schemas.api_v2.tec_data_model import Model as TECModel
 from app.models.data_schemas.api_v2.eds_mapping_data_model import Model as EDSMappingModel
 from app.models.data_schemas.api_v2.xrf_data_model import Model as XRFModel
+from app.models.data_schemas.api_v2.cap_pressure_data_model import Model as CapPressureModel
+from app.models.data_schemas.api_v2.sto_data_model import Model as StoModel
 from app.models.data_schemas.api_v2.tensile_strength_data_model import Model as TensileStrengthModel
 from app.models.data_schemas.api_v2.vitrinite_reflectance_data_model import Model as VitriniteReflectanceModel
 from app.models.data_schemas.api_v2.xrd_data_model import Model as XRDModel
@@ -183,6 +184,9 @@ XRD_MODELS = {
 PDP_MODELS = {
     ContentSchemaVersion.V_1_0_0: PdpModel
 }
+STO_MODELS = {
+    ContentSchemaVersion.V_1_0_0: StoModel
+}
 
 common_relative_paths_api_v2 = CommonRelativePathsV2()
 PATH_TO_DATA_MODEL_VERSIONS_API_V2 = {
@@ -228,4 +232,5 @@ PATH_TO_DATA_MODEL_VERSIONS_API_V2 = {
     common_relative_paths_api_v2.VITRINITE_REFLECTANCE: VITRINITE_REFLECTANCE_MODELS,
     common_relative_paths_api_v2.XRD: XRD_MODELS,
     common_relative_paths_api_v2.PDP: PDP_MODELS,
+    common_relative_paths_api_v2.STO: STO_MODELS,
 }

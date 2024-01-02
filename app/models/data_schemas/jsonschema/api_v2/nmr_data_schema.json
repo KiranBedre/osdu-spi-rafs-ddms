@@ -5,150 +5,32 @@
         "SamplesAnalysisID": {
             "type": "string",
             "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-          },
+        },
         "SampleID": {
             "type": "string",
             "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$"
         },
-        "FreshState": {
+        "NMRTest": {
             "type": "array",
-                "items": {
+            "items": {
                 "type": "object",
                 "properties": {
-                    "LiquidFilledPorosity": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "string"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
+                    "TestCondition": {
+                        "title": "Test Condition",
+                        "description": "The sample condition at which the NMR test was conducted",
+                        "type": "string",
+                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-NMRTestCondition:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                     },
-                    "T2LogMean": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "string"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "FullBrineSaturation": {
-            "type": "array",
-                "items": {
-                "type": "object",
-                "properties": {
-                    "Porosity": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    },
-                    "EffectivePorosity": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    },
-                    "T2LogMean": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "PartialBrineSaturation": {
-            "type": "array",
-                "items": {
-                "type": "object",
-                "properties": {
-                    "BVI": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    },
-                    "FFI": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    },
-                    "Swi": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    },
-                    "T2Cutoff": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    },
-                    "IncrementalPorositySteps": {
+                    "NMRTestSteps": {
+                        "title": "NMR Test Steps",
+                        "description": "The dynamic core nmr test steps",
                         "type": "array",
-                            "items": {
+                        "items": {
                             "type": "object",
                             "properties": {
-                                "StepNumber": {
-                                    "type": "string"
-                                },
-                                "Saturation": {
+                                "CumulativeWaterSaturation": {
                                     "type": "object",
+                                    "description": "Cumulative water saturation",
                                     "properties": {
                                         "Value": {
                                             "type": "number"
@@ -157,10 +39,12 @@
                                             "type": "string",
                                             "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                         }
-                                    }
+                                    },
+                                    "additionalProperties": false
                                 },
-                                "T2": {
+                                "CumulativeVolume": {
                                     "type": "object",
+                                    "description": "Cumulative volume of fluid calculated based on amplitude measurement",
                                     "properties": {
                                         "Value": {
                                             "type": "number"
@@ -169,10 +53,30 @@
                                             "type": "string",
                                             "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                         }
-                                    }
+                                    },
+                                    "additionalProperties": false
                                 },
-                                "Porosity": {
+                                "CumulativePorosity": {
                                     "type": "object",
+                                    "description": "Cumulative porosity of the core plug",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        },
+                                        "PorosityType": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "IncrementalWaterSaturation": {
+                                    "type": "object",
+                                    "description": "Incremental water saturation",
                                     "properties": {
                                         "Value": {
                                             "type": "number"
@@ -181,16 +85,360 @@
                                             "type": "string",
                                             "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                         }
-                                    }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "IncrementalPorosity": {
+                                    "type": "object",
+                                    "description": "Incremental porosity of the core plug",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        },
+                                        "PorosityType": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "IncrementalVolume": {
+                                    "type": "object",
+                                    "description": "Incremental volume of fluid calculated based on amplitude measurement",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "T2FullySaturated": {
+                                    "type": "object",
+                                    "description": "T2 (transverse or spin-spin relaxation) when the sample is fully saturated",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "T2PartiallySaturated": {
+                                    "type": "object",
+                                    "description": "T2 (transverse or spin-spin relaxation) when the sample is partially saturated",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "T1CumulativePorosity": {
+                                    "type": "object",
+                                    "description": "Cumulative porosity of the core plug based on T1",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "T1CumulativeWaterSaturation": {
+                                    "type": "object",
+                                    "description": "Cumulative water saturation of the core plug based on T1",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "T1IncrementalPorosity": {
+                                    "type": "object",
+                                    "description": "Incremental porosity of the core plug based on T1",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "T1IncrementalWaterSaturation": {
+                                    "type": "object",
+                                    "description": "Incremental water saturation of the core plug based on T1",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
                                 }
-                            }
+                            },
+                            "additionalProperties": false
                         }
+                    },
+                    "NMRSummaryData": {
+                        "title": "NMR Summary Data",
+                        "type": "object",
+                        "properties": {
+                            "BoundFluidBVI": {
+                                "type": "object",
+                                "description": "Bound fluid following sample desaturation, relative to pore volume",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "NMRT2BoundFluidRelativetoPoreVolume": {
+                                "type": "object",
+                                "description": "NMR t2 bound fluid relative to pore volume",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "DisplacedFluid": {
+                                "type": "string",
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacedFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                            },
+                            "EchoSpacing": {
+                                "type": "object",
+                                "description": "echo spacing Te",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "FreeFluidFFI": {
+                                "type": "object",
+                                "description": "free fluid following sample desaturation, relative to pore volume",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "NMRT2FreeFluid": {
+                                "type": "object",
+                                "description": "nmr t2 free fluid expressed relative to pore volume",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "InjectedFluid": {
+                                "type": "string",
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacingFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                            },
+                            "Porosity": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        },
+                                        "PorosityType": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "Permeability": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        },
+                                        "PermeabilityType": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "Swirr": {
+                                "type": "object",
+                                "description": "irreducible water saturation relative to pore volume",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "NMRT2Swirr": {
+                                "type": "object",
+                                "description": "nmr t2 irreducible water saturation relative to pore volume",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "T2CutOff": {
+                                "type": "object",
+                                "description": "t2 cut off time",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "T2Mean": {
+                                "type": "object",
+                                "description": "Average of T2 relaxation time",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "Temperature": {
+                                "type": "object",
+                                "description": "Test temperature",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "PoreVolume": {
+                                "type": "object",
+                                "description": "Pore Volume",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "NetConfiningStress": {
+                                "type": "object",
+                                "description": "Net Confining Stress",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            }
+                        },
+                        "additionalProperties": false
                     }
-                }
+                },
+                "additionalProperties": false
             }
         }
     },
+    "additionalProperties": false,
     "required": [
-        "SamplesAnalysisID"
+        "SamplesAnalysisID",
+        "SampleID"
     ]
 }

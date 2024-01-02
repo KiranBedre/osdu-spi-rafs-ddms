@@ -6,99 +6,691 @@
             "type": "string",
             "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$"
         },
-        "data": {
-            "type": "array",
-            "items": {
-                "types": "object",
-                "properties": {
-                    "SampleID": {
-                        "type": "string",
-                        "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                    },
-                    "SampleOrientation": {
-                        "title": "Sample Orientation",
-                        "type": "string"
-                    },
-                    "LabSampleIdentifier": {
-                        "title": "Laboratory Sample Identifier",
-                        "type": "string"
-                    },
-                    "Remarks": {
-                        "title": "Remarks",
-                        "type": "string"
-                    },
-                    "DepletionCondition": {
-                        "title": "Depletion Condition",
-                        "type": "string"
-                    },
-                    "Lithology": {
-                        "title": "Lithology",
-                        "type": "string"
-                    },
-                    "Length": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    },
-                    "Diameter": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    },
-                    "Density": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    },
-                    "BulkCompressibility": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    },
-                    "PoreVolumeCompressibility": {
-                        "type": "object",
-                        "properties": {
-                            "Value": {
-                                "type": "number"
-                            },
-                            "UnitOfMeasure": {
-                                "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                            }
-                        }
-                    }
+        "SampleID": {
+            "type": "string",
+            "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        },
+        "LabSampleIdentifier": {
+            "type": "string"
+        },
+        "Remarks": {
+            "type": "string"
+        },
+        "Lithology": {
+            "type": "string"
+        },
+        "Porosity": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number"
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                },
+                "PorosityType": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                 }
-            }
+            },
+            "additionalProperties": false
+        },
+        "BulkDensityAsReceived": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number"
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                }
+            },
+            "additionalProperties": false
+        },
+        "GrainCompressibility": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number"
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                }
+            },
+            "additionalProperties": false
+        },
+        "FluidSaturant": {
+            "type": "string",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSaturantType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        },
+        "SaturantViscosity": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number"
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                }
+            },
+            "additionalProperties": false
+        },
+        "IRSCPorePressure": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number"
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                }
+            },
+            "additionalProperties": false
+        },
+        "IRSCMeanEffectiveStress": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number"
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                }
+            },
+            "additionalProperties": false
+        },
+        "IRSCDifferentialStress": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number"
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                }
+            },
+            "additionalProperties": false
+        },
+        "IRSCLabEffectiveMeanStress": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number"
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                }
+            },
+            "additionalProperties": false
+        },
+        "IRSCLabDifferentialStress": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number"
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                }
+            },
+            "additionalProperties": false
+        },
+        "MassAsReceived": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number"
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                }
+            },
+            "additionalProperties": false
+        },
+        "SaturatedMass": {
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "type": "number"
+                },
+                "UnitOfMeasure": {
+                    "type": "string",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Interpretation": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "PorePressure": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "1DBulkCompressibility": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "1DPoreCompressibility": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "Permeability": {
+                            "type": "object",
+                            "properties": {
+                                "PermeabilityType": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                },
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "Porosity": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                },
+                                "PorosityType": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "YoungsModulus": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "BiotsCoefficient": {
+                            "type": "number"
+                        },
+                        "PoissonsRatio": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "UniaxialCycleType": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UniaxialCycleType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "Endpoints": {
+            "type": "object",
+            "properties": {
+                "MaxSimulatedDepletion": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "PorosityAtMaxDepletion": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "BulkCompressibilityAtMaxDepletion": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "DepletionAtPoreCollapse": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "IRSCEEstimatedPorosity": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "BackToIRSCBiotsCoefficient": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "PermeabilityAtMaxDepletion": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "IRSCPermeability": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "IRSCPoreCompressibility": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "IRSCBulkCompressibility": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "IRSCBiotsCoefficient": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "IRSCYoungModulus": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "IRSCPoissonsRatio": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "BackToIRSCEstimatedPorosity": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "BackToIRSCPermeability": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "BackToIRSCPoreCompressibility": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "BackToIRSCBulkCompressibility": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "BackToIRSCYoungModulus": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "BackToIRSCPoissonsRatio": {
+                    "type": "object",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        },
+        "TestSteps": {
+            "type": "array",
+            "items": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "UniaxialCycleType": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                },
+                                "Type": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UniaxialCycleType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "UniaxialTestControl": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                },
+                                "UniaxialTestControlType": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UniaxialTestControlType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "Time": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "ConfiningPressure": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "PorePressure": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "AxialStress": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "AxialStrain": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "RadialStrain": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "FlowRate": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        },
+                        "DeltaP": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            ]
         }
     },
+    "additionalProperties": false,
     "required": [
         "SamplesAnalysisID",
         "data"

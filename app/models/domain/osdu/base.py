@@ -14,37 +14,52 @@
 
 from app.core.config import get_app_settings
 
-from .MDCoring100 import Coring
-from .MDCoring110 import Coring as Coring110
-from .MDRockSample100 import RockSample
-from .MDSample100 import Sample as Sample100
-from .WPCCompositionalAnalysis100 import CompositionalAnalysis
-from .WPCCCE100 import ConstantCompositionExpansionTest
-from .WPCConstantVolumeDepletionTest100 import ConstantVolumeDepletionTest
-from .WPCDifLib100 import DifferentialLiberationTest
-from .WPCMSS100 import MultiStageSeparatorTest
-from .WPCPVT100 import PVT
-from .WPCRockSampleAnalysis110 import RockSampleAnalysis
-from .WPCSamplesAnalysis100 import SamplesAnalysis
-from .WPCSamplesAnalysis100_V1 import SamplesAnalysis as SamplesAnalysisV1
-from .WPCSlimTubeTest100 import SlimTubeTest
-from .WPCTransportTest100 import TransportTest
-from .WPCSwellingTest100 import SwellingTest
-from .WPCWaterAnalysis100 import WaterAnalysisTest
-from .WPCSTO100 import StockTankOilAnalysisTest
-from .WPCInterfacialTension100 import InterfacialTensionTest
-from .WPCVLE100 import VaporLiquidEquilibriumTest
-from .WPCMCM100 import MultipleContactMiscibilityTest
-from .WPCSamplesAnalysesReport100 import SamplesAnalysesReport
-from .WPCSamplesAnalysesReport100_V1 import SamplesAnalysesReport as SamplesAnalysesReportV1
+from app.models.domain.osdu.MDCoring100 import Coring
+from app.models.domain.osdu.MDGenericFacility100 import GenericFacility
+from app.models.domain.osdu.MDGenericSite100 import GenericSite
+from app.models.domain.osdu.MDRockSample100 import RockSample
+from app.models.domain.osdu.MDSample200 import Sample as Sample200
+from app.models.domain.osdu.MDSampleAcquisitionJob100 import SampleAcquisitionJob
+from app.models.domain.osdu.MDSampleChainOfCustodyEvent100 import SampleChainOfCustodyEvent
+from app.models.domain.osdu.MDSampleContainer100 import SampleContainer
+from app.models.domain.osdu.WPCCompositionalAnalysis100 import CompositionalAnalysis
+from app.models.domain.osdu.WPCCCE100 import ConstantCompositionExpansionTest
+from app.models.domain.osdu.WPCConstantVolumeDepletionTest100 import ConstantVolumeDepletionTest
+from app.models.domain.osdu.WPCDifLib100 import DifferentialLiberationTest
+from app.models.domain.osdu.WPCMSS100 import MultiStageSeparatorTest
+from app.models.domain.osdu.WPCPVT100 import PVT
+from app.models.domain.osdu.WPCRockSampleAnalysis110 import RockSampleAnalysis
+from app.models.domain.osdu.WPCSamplesAnalysis100 import SamplesAnalysis
+from app.models.domain.osdu.WPCSamplesAnalysis100_V1 import SamplesAnalysis as SamplesAnalysisV1
+from app.models.domain.osdu.WPCSlimTubeTest100 import SlimTubeTest
+from app.models.domain.osdu.WPCTransportTest100 import TransportTest
+from app.models.domain.osdu.WPCSwellingTest100 import SwellingTest
+from app.models.domain.osdu.WPCWaterAnalysis100 import WaterAnalysisTest
+from app.models.domain.osdu.WPCSTO100 import StockTankOilAnalysisTest
+from app.models.domain.osdu.WPCInterfacialTension100 import InterfacialTensionTest
+from app.models.domain.osdu.WPCVLE100 import VaporLiquidEquilibriumTest
+from app.models.domain.osdu.WPCMCM100 import MultipleContactMiscibilityTest
+from app.models.domain.osdu.WPCSamplesAnalysesReport100 import SamplesAnalysesReport
+from app.models.domain.osdu.WPCSamplesAnalysesReport100_V1 import SamplesAnalysesReport as SamplesAnalysesReportV1
 
 settings = get_app_settings()
 
 CORING_100_KIND = f"{settings.schema_authority}:wks:master-data--Coring:1.0.0"
-CORING_110_KIND = f"{settings.schema_authority}:wks:master-data--Coring:1.1.0"
-SAMPLE_100_KIND = f"{settings.schema_authority}:wks:master-data--Sample:1.0.0"
+GENERIC_FACILITY_100_KIND = f"{settings.schema_authority}:wks:master-data--GenericFacility:1.0.0"
+GENERIC_SITE_100_KIND = f"{settings.schema_authority}:wks:master-data--GenericSite:1.0.0"
+SAMPLE_200_KIND = f"{settings.schema_authority}:wks:master-data--Sample:2.0.0"
+SAMPLE_ACQUISITION_JOB_100_KIND = f"{settings.schema_authority}:wks:master-data--SampleAcquisitionJob:1.0.0"
+SAMPLE_CHAIN_OF_CUSTODY_EVENT_100_KIND = f"{settings.schema_authority}:wks:master-data--SampleChainOfCustodyEvent:1.0.0"
+SAMPLE_CONTAINER_100_KIND = f"{settings.schema_authority}:wks:master-data--SampleContainer:1.0.0"
 ROCKSAMPLE_100_KIND = f"{settings.schema_authority}:wks:master-data--RockSample:1.0.0"
-MASTER_DATA_KINDS_V2 = (CORING_100_KIND, CORING_110_KIND, SAMPLE_100_KIND)
+MASTER_DATA_KINDS_V2 = (
+    GENERIC_FACILITY_100_KIND,
+    GENERIC_SITE_100_KIND,
+    SAMPLE_200_KIND,
+    SAMPLE_ACQUISITION_JOB_100_KIND,
+    SAMPLE_CHAIN_OF_CUSTODY_EVENT_100_KIND,
+    SAMPLE_CONTAINER_100_KIND,
+)
 
 ROCKSAMPLEANALYSIS_KIND = f"{settings.schema_authority}:wks:work-product-component--RockSampleAnalysis:1.1.0"
 PVT_KIND = f"{settings.custom_schema_authority}:wks:work-product-component--PVT:1.0.0"
@@ -72,9 +87,13 @@ SAMPLES_ANALYSES_REPORT_KIND = f"{settings.schema_authority}:wks:work-product-co
 
 IMPLEMENTED_MODELS = {
     CORING_100_KIND: Coring,
-    CORING_110_KIND: Coring110,
+    GENERIC_FACILITY_100_KIND: GenericFacility,
+    GENERIC_SITE_100_KIND: GenericSite,
     ROCKSAMPLE_100_KIND: RockSample,
-    SAMPLE_100_KIND: Sample100,
+    SAMPLE_200_KIND: Sample200,
+    SAMPLE_ACQUISITION_JOB_100_KIND: SampleAcquisitionJob,
+    SAMPLE_CHAIN_OF_CUSTODY_EVENT_100_KIND: SampleChainOfCustodyEvent,
+    SAMPLE_CONTAINER_100_KIND: SampleContainer,
     PVT_KIND: PVT,
     ROCKSAMPLEANALYSIS_KIND: RockSampleAnalysis,
     CCE_KIND: ConstantCompositionExpansionTest,

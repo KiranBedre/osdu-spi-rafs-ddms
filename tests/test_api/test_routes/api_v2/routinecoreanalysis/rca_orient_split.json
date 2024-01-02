@@ -2,17 +2,7 @@
     "columns": [
         "SamplesAnalysisID",
         "SampleID",
-        "SampleNumber",
-        "SampleDepth",
-        "CoringID",
-        "WellboreID",
-        "SampleType",
-        "Permeability",
-        "Porosity",
-        "GrainDensity",
-        "Saturation",
-        "LithologyDescription",
-        "Remarks"
+        "TestSteps"
     ],
     "index": [
         0
@@ -20,126 +10,114 @@
     "data": [
         [
             "opendes:work-product-component--SamplesAnalysis:RCA_SamplesAnalysis:",
-            "opendes:master-data--Sample:Sample-1A:",
-            "A1",
-            {
-                "Value": 2000,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m:"
-            },
-            "opendes:master-data--Coring:Core-1A:",
-            "opendes:master-data--Wellbore:WellboreSample1A:",
-            "opendes:reference-data--RockSampleType:ConventionalCore:",
+            "opendes:master-data--Sample:Sample_200:",
             [
                 {
-                    "Value": 1620,
-                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:",
-                    "Type": "opendes:reference-data--PermeabilityMeasurementType:Gas:",
-                    "Orientation": "opendes:reference-data--SampleOrientationType:Horizontal:",
-                    "Conditions": {
-                        "Pressure": {
-                            "Value": 1280,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
-                            "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
-                        },
-                        "Temperature": {
-                            "Value": 100,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
+                    "NetConfiningStress": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+                    },
+                    "Permeability": {
+                        "Value": 1620,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:",
+                        "Type": "opendes:reference-data--PermeabilityMeasurementType:Gas:",
+                        "Orientation": "opendes:reference-data--SampleOrientationType:Horizontal:",
+                        "Conditions": {
+                            "Pressure": {
+                                "Value": 1280,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                                "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
+                            },
+                            "Temperature": {
+                                "Value": 100,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
+                            }
                         }
-                    }
-                },
-                {
-                    "Value": 1600,
-                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:",
-                    "Type": "opendes:reference-data--PermeabilityMeasurementType:Gas:",
-                    "Orientation": "opendes:reference-data--SampleOrientationType:Vertical:",
-                    "Conditions": {
-                        "Pressure": {
-                            "Value": 1280,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
-                            "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
-                        },
-                        "Temperature": {
-                            "Value": 100,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
+                    },
+                    "Porosity": {
+                        "Value": 18.8,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                        "Type": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:",
+                        "Orientation": "opendes:reference-data--SampleOrientationType:Horizontal:",
+                        "Conditions": {
+                            "Pressure": {
+                                "Value": 1280,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                                "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
+                            },
+                            "Temperature": {
+                                "Value": 100,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
+                            }
                         }
-                    }
+                    },
+                    "GrainDensity": {
+                        "Value": 2.66,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:",
+                        "Type": "opendes:reference-data--GrainDensityMeasurementType:BoylesLaw:",
+                        "Conditions": {
+                            "Pressure": {
+                                "Value": 1280,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                                "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
+                            },
+                            "Temperature": {
+                                "Value": 100,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
+                            }
+                        }
+                    },
+                    "GrainVolume": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:",
+                        "Conditions": {
+                            "Pressure": {
+                                "Value": 50.0,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                                "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
+                            },
+                            "Temperature": {
+                                "Value": 50.0,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
+                            }
+                        }
+                    },
+                    "PoreVolume": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:",
+                        "Conditions": {
+                            "Pressure": {
+                                "Value": 10.0,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                                "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
+                            },
+                            "Temperature": {
+                                "Value": 10.0,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
+                            }
+                        }
+                    },
+                    "Saturation": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                        "Type": "Oil Saturation",
+                        "Method": "opendes:reference-data--SaturationMethodType:KarlFischer:",
+                        "Conditions": {
+                            "Pressure": {
+                                "Value": 1280,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                                "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
+                            },
+                            "Temperature": {
+                                "Value": 100,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
+                            }
+                        }
+                    },
+                    "LithologyDescription": "Sst.lt-Brn.M-gr.Ang.W-cmt.Fr-srt.mtrx.frac.w\\/Mic,Pyr,Calc,C,",
+                    "Remarks": "RCA data transfer from EPDS"
                 }
-            ],
-            [
-                {
-                    "Value": 0.188,
-                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:frac:",
-                    "Type": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:",
-                    "Orientation": "opendes:reference-data--SampleOrientationType:Horizontal:",
-                    "Conditions": {
-                        "Pressure": {
-                            "Value": 1280,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
-                            "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
-                        },
-                        "Temperature": {
-                            "Value": 100,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
-                        }
-                    }
-                },
-                {
-                    "Value": 0.188,
-                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:frac:",
-                    "Type": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:",
-                    "Orientation": "opendes:reference-data--SampleOrientationType:Vertical:",
-                    "Conditions": {
-                        "Pressure": {
-                            "Value": 1280,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
-                            "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
-                        },
-                        "Temperature": {
-                            "Value": 100,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
-                        }
-                    }
-                }
-            ],
-            [
-                {
-                    "Value": 2.66,
-                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:",
-                    "Type": "opendes:reference-data--GrainDensityMeasurementType:BoylesLaw:",
-                    "Conditions": {
-                        "Pressure": {
-                            "Value": 1280,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
-                            "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
-                        },
-                        "Temperature": {
-                            "Value": 100,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
-                        }
-                    }
-                }
-            ],
-            [
-                {
-                    "Value": 0,
-                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:frac:",
-                    "Type": "Oil Saturation",
-                    "Method": "opendes:reference-data--SaturationMethodType:KarlFischer:",
-                    "Conditions": {
-                        "Pressure": {
-                            "Value": 1280,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
-                            "Type": "opendes:reference-data--PressureMeasurementType:Overburden:"
-                        },
-                        "Temperature": {
-                            "Value": 100,
-                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
-                        }
-                    }
-                }
-            ],
-            "Sst.lt-Brn.M-gr.Ang.W-cmt.Fr-srt.mtrx.frac.w\\/Mic,Pyr,Calc,C,",
-            "RCA data transfer from EPDS"
+            ]
         ]
     ]
 }

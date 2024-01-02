@@ -63,6 +63,7 @@ from tests.test_api.test_routes.api_v2.multiplecontactmiscibility import (
 from tests.test_api.test_routes.api_v2.multistageseparator import (
     mss_mock_objects,
 )
+from tests.test_api.test_routes.api_v2.nmr import nmr_mock_objects
 from tests.test_api.test_routes.api_v2.pdp import pdp_mock_objects
 from tests.test_api.test_routes.api_v2.relative_permeability import (
     relative_permeability_mock_objects,
@@ -74,6 +75,7 @@ from tests.test_api.test_routes.api_v2.routinecoreanalysis import (
     rca_mock_objects,
 )
 from tests.test_api.test_routes.api_v2.slimtube import slimtube_mock_objects
+from tests.test_api.test_routes.api_v2.sto import sto_mock_objects
 from tests.test_api.test_routes.api_v2.swelling import swelling_mock_objects
 from tests.test_api.test_routes.api_v2.tec import tec_data_mock_objects
 from tests.test_api.test_routes.api_v2.tensile_strength import (
@@ -138,7 +140,6 @@ from tests.test_api.test_routes.isotope_analysis import (
 from tests.test_api.test_routes.multiple_salinity import (
     multiple_salinity_mock_objects,
 )
-from tests.test_api.test_routes.nmr import nmr_mock_objects
 from tests.test_api.test_routes.osdu.storage_mock_objects import (
     BulkDatasetIdV2,
     TestContentPathsApiV2,
@@ -246,6 +247,7 @@ def post_overrides(record_data=None, test_dataset_record_id=data_mock_objects.TE
         (TestContentPathsApiV2.VITRINITE_REFLECTANCE, BulkDatasetIdV2.VITRINITE_REFLECTANCE),
         (TestContentPathsApiV2.XRD, BulkDatasetIdV2.XRD),
         (TestContentPathsApiV2.PDP, BulkDatasetIdV2.PDP),
+        (TestContentPathsApiV2.STO, BulkDatasetIdV2.STO),
     ],
 )
 @pytest.mark.asyncio
@@ -306,6 +308,7 @@ async def test_get_content_data_no_data(data_endpoint_path, dataset_id):
         (TestContentPathsApiV2.VITRINITE_REFLECTANCE, BulkDatasetIdV2.VITRINITE_REFLECTANCE),
         (TestContentPathsApiV2.XRD, BulkDatasetIdV2.XRD),
         (TestContentPathsApiV2.PDP, BulkDatasetIdV2.PDP),
+        (TestContentPathsApiV2.STO, BulkDatasetIdV2.STO),
     ],
 )
 @pytest.mark.asyncio
@@ -366,6 +369,7 @@ async def test_get_data_no_content_header(data_endpoint_path, dataset_id):
         (TestContentPathsApiV2.VITRINITE_REFLECTANCE, BulkDatasetIdV2.VITRINITE_REFLECTANCE),
         (TestContentPathsApiV2.XRD, BulkDatasetIdV2.XRD),
         (TestContentPathsApiV2.PDP, BulkDatasetIdV2.PDP),
+        (TestContentPathsApiV2.STO, BulkDatasetIdV2.STO),
     ],
 )
 @pytest.mark.asyncio
@@ -807,6 +811,16 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
             ],
             "download_file",
             [build_get_test_data("x-parquet", pdp_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.STO,
+            sto_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", sto_mock_objects.TEST_DATA)],
         ),
     ],
 )
@@ -1967,6 +1981,33 @@ async def test_get_content_parquet_data(
             [build_get_test_data("x-parquet", pdp_mock_objects.TEST_DATA)],
             pdp_mock_objects.TEST_AGGREGATED_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.STO}/{sto_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", sto_mock_objects.TEST_DATA)],
+            sto_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.STO}/{sto_mock_objects.TEST_DATASET_RECORD_ID}",
+            sto_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", sto_mock_objects.TEST_DATA)],
+            sto_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.STO}/{sto_mock_objects.TEST_DATASET_RECORD_ID}",
+            sto_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", sto_mock_objects.TEST_DATA)],
+            sto_mock_objects.TEST_AGGREGATED_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -2322,6 +2363,14 @@ async def test_get_data_json_data(
             "download_file",
             [build_get_test_data("x-parquet", pdp_mock_objects.TEST_DATA)],
             pdp_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.STO}/{sto_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", sto_mock_objects.TEST_DATA)],
+            sto_mock_objects.TEST_DATA,
         ),
     ],
 )
@@ -2688,6 +2737,14 @@ async def test_get_data_json_data_no_content_schema_version(
             [build_get_test_data("x-parquet", pdp_mock_objects.TEST_DATA)],
             pdp_mock_objects.TEST_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.STO}/{sto_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", sto_mock_objects.TEST_DATA)],
+            sto_mock_objects.TEST_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -3045,6 +3102,14 @@ async def test_get_data_json_data_improper_schema_version(
             [build_get_test_data("x-parquet", pdp_mock_objects.TEST_DATA)],
             pdp_mock_objects.TEST_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.STO}/{sto_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [sto_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", sto_mock_objects.TEST_DATA)],
+            sto_mock_objects.TEST_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -3369,6 +3434,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             pdp_mock_objects.TEST_DATASET_RECORD_ID,
             pdp_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.STO,
+            sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            sto_mock_objects.TEST_DATA,
+            sto_mock_objects.TEST_DATASET_RECORD_ID,
+            sto_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -3684,6 +3756,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             pdp_mock_objects.TEST_DATASET_RECORD_ID,
             pdp_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.STO,
+            sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            sto_mock_objects.TEST_DATA,
+            sto_mock_objects.TEST_DATASET_RECORD_ID,
+            sto_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -3917,6 +3996,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
             TestContentPathsApiV2.PDP,
             pdp_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             pdp_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.STO,
+            sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            sto_mock_objects.TEST_DATASET_RECORD_ID,
         ),
     ],
 )
@@ -4229,6 +4313,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             pdp_mock_objects.TEST_DATA,
             pdp_mock_objects.TEST_DATASET_RECORD_ID,
             pdp_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.STO,
+            sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            sto_mock_objects.TEST_DATA,
+            sto_mock_objects.TEST_DATASET_RECORD_ID,
+            sto_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
     ],
 )
@@ -4547,6 +4638,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             pdp_mock_objects.TEST_DATASET_RECORD_ID,
             pdp_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.STO,
+            sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            sto_mock_objects.TEST_DATA,
+            sto_mock_objects.TEST_DATASET_RECORD_ID,
+            sto_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -4607,6 +4705,7 @@ async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data,
         (TestContentPathsApiV2.VITRINITE_REFLECTANCE, vitrinite_reflectance_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.XRD, xrd_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.PDP, pdp_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
+        (TestContentPathsApiV2.STO, sto_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
     ],
 )
 @pytest.mark.asyncio
@@ -4840,6 +4939,11 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             pdp_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             pdp_mock_objects.EXPECTED_ERROR_REASON,
         ),
+        (
+            TestContentPathsApiV2.STO,
+            sto_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
+            sto_mock_objects.EXPECTED_ERROR_REASON,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -4901,6 +5005,7 @@ async def test_post_invalid_df_error(data_endpoint_path, incorrect_dataframe_dat
         f"{TestContentPathsApiV2.VITRINITE_REFLECTANCE}/{vitrinite_reflectance_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.XRD}/{xrd_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.PDP}/{pdp_mock_objects.TEST_DATASET_RECORD_ID}",
+        f"{TestContentPathsApiV2.STO}/{sto_mock_objects.TEST_DATASET_RECORD_ID}",
     ],
 )
 @pytest.mark.asyncio
@@ -4958,6 +5063,7 @@ async def test_get_403(data_endpoint_path):
         TestContentPathsApiV2.VITRINITE_REFLECTANCE,
         TestContentPathsApiV2.XRD,
         TestContentPathsApiV2.PDP,
+        TestContentPathsApiV2.STO,
     ],
 )
 @pytest.mark.asyncio
@@ -5128,6 +5234,7 @@ async def test_post_integrity_error(data_endpoint_path, integrity_error_datafram
         TestContentPathsApiV2.VITRINITE_REFLECTANCE,
         TestContentPathsApiV2.XRD,
         TestContentPathsApiV2.PDP,
+        TestContentPathsApiV2.STO,
     ],
 )
 async def test_invalid_data_with_nan(path):
@@ -5191,6 +5298,7 @@ async def test_invalid_data_with_nan(path):
         (TestContentPathsApiV2.VITRINITE_REFLECTANCE, ORIENT_SPLIT_400_PAYLOADS),
         (TestContentPathsApiV2.XRD, ORIENT_SPLIT_400_PAYLOADS),
         (TestContentPathsApiV2.PDP, ORIENT_SPLIT_400_PAYLOADS),
+        (TestContentPathsApiV2.STO, ORIENT_SPLIT_400_PAYLOADS),
     ],
 )
 async def test_invalid_data_json_payload(path, payloads):

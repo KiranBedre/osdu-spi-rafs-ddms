@@ -23,7 +23,7 @@ from tests.test_api.test_routes.osdu.storage_mock_objects import (
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
-TEST_DATASET_RECORD_ID = "opendes:dataset--File.Generic:triaxial_tests-123:1234"
+TEST_DATASET_RECORD_ID = "opendes:dataset--File.Generic:triaxialdata-123:1234"
 TEST_DDMS_URN = f"urn://rafs-v2/triaxialdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}"
 TEST_SCHEMA_VERSION = "1.0.0"
 TEST_DDMS_URN_WITH_VERSION = f"urn://rafs-v2/triaxialdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
@@ -52,8 +52,8 @@ TEST_PARAMS_AGGREGATION = {
     "columns_aggregation": "SamplesAnalysisID,count",
 }
 TEST_PARAMS_FILTERS = {
-    "columns_filter": "SamplesAnalysisID",
-    "rows_filter": "SamplesAnalysisID,eq,opendes:work-product-component--SamplesAnalysis:TriaxialTest123:",
+    "columns_filter": "SamplesAnalysisID,SampleID,BulkDensityAsReceived,TestPorePressure,MassAsReceived,TestSteps",
+    "rows_filter": "SampleID,eq,opendes:master-data--Sample:TriaxialTest_Sample:",
 }
 
 with open(f"{dir_path}/triaxial_test_orient_split.json") as fp:
@@ -76,13 +76,71 @@ TEST_AGGREGATED_DATA = {
 TEST_FILTERED_DATA = {
     "columns": [
         "SamplesAnalysisID",
+        "SampleID",
+        "BulkDensityAsReceived",
+        "TestPorePressure",
+        "MassAsReceived",
+        "TestSteps",
     ],
     "index": [
         0,
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:TriaxialTest123:",
+            "opendes:work-product-component--SamplesAnalysis:TriaxialTest_WPC:",
+            "opendes:master-data--Sample:TriaxialTest_Sample:",
+            {
+                "Value": 0.47,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:",
+            },
+            {
+                "Value": 23,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+            },
+            {
+                "Value": 3.21,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mg:",
+            },
+            [
+                {
+                    "Time": {
+                        "Value": 65,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:",
+                    },
+                    "PorePressure": {
+                        "Value": 32,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                    },
+                    "ConfiningPressure": {
+                        "Value": 44,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                    },
+                    "AxialStrain": {
+                        "Value": 65,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                    },
+                    "RadialStrain": {
+                        "Value": 87,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                    },
+                    "AxialStress": {
+                        "Value": 122,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                    },
+                    "DifferentialStress": {
+                        "Value": 21,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                    },
+                    "AxialPWaveVelocity": {
+                        "Value": 5,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m%2Fs:",
+                    },
+                    "AxialSWaveVelocity": {
+                        "Value": 3,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m%2Fs:",
+                    },
+                },
+            ],
         ],
     ],
 }
@@ -103,5 +161,5 @@ INCORRECT_SCHEMA_TEST_DATA = {
 }
 
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
-INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting data in index row 0
-EXPECTED_ERROR_REASON = "Data error: 2 columns passed, passed data had 1 columns"
+INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting Interpretation in index row 0
+EXPECTED_ERROR_REASON = "Data error: 18 columns passed, passed data had 17 columns"

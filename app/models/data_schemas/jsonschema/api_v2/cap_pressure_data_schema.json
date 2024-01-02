@@ -15,11 +15,27 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "FluidSystemType": {
-                      "type": "string",
-                      "pattern": "^[\\w\\-\\.]+:reference-data--FluidSystemType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
-                    },
                     "Permeability": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "Type": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "Porosity": {
                         "type": "object",
                         "properties": {
                             "Value": {
@@ -27,23 +43,25 @@
                             },
                             "Type": {
                                 "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                             },
                             "UnitOfMeasure": {
                                 "type": "string",
                                 "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                             }
-                        }
+                        },
+                        "additionalProperties": false
                     },
-                    "CapillaryPressureMethod": {
+                    "SaturationProcessMethod": {
                         "type": "object",
                         "properties": {
                             "Value": {
                                 "type": "string",
-                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CapillaryPressureMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                                "description": "Capillary Pressure test method, e.g. Imbibition, Primary Imbibition, Drainage, Tertiary Drainage, Mercury Injection"
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationProcessMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                                "description": "SaturationProcessMethod, intended to be paired with SampleAnalysisType for Capillary Pressure Subfamilies.  e.g. PrimaryDrainage, PrimaryImbibition, SecondaryDrainage, SecondaryImbibition, TertiaryDrainage."
                             }
-                        }
+                        },
+                        "additionalProperties": false
                     },
                     "InitialWaterSaturation": {
                         "type": "object",
@@ -55,7 +73,21 @@
                                 "type": "string",
                                 "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                             }
-                        }
+                        },
+                        "additionalProperties": false
+                    },
+                    "InitialOilSaturation": {
+                        "type": "object",
+                        "properties": {
+                            "Value": {
+                                "type": "number"
+                            },
+                            "UnitOfMeasure": {
+                                "type": "string",
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                            }
+                        },
+                        "additionalProperties": false
                     },
                     "InitialGasSaturation": {
                         "type": "object",
@@ -67,7 +99,61 @@
                                 "type": "string",
                                 "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                             }
+                        },
+                        "additionalProperties": false
+                    },
+                    "Pressure": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "Type": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PressureMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
                         }
+                    },
+                    "EntryPressure": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "Value": {
+                                    "type": "number"
+                                },
+                                "Type": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSystemType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                },
+                                "UnitOfMeasure": {
+                                    "type": "string",
+                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "NetConfiningStress": {
+                        "type": "object",
+                        "properties": {
+                            "Value": {
+                                "type": "number"
+                            },
+                            "UnitOfMeasure": {
+                                "type": "string",
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                            }
+                        },
+                        "additionalProperties": false
                     },
                     "Temperature": {
                         "type": "object",
@@ -79,9 +165,10 @@
                                 "type": "string",
                                 "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                             }
-                        }
+                        },
+                        "additionalProperties": false
                     },
-                    "CapillaryPressureMax": {
+                    "WaterViscosity": {
                         "type": "object",
                         "properties": {
                             "Value": {
@@ -91,9 +178,10 @@
                                 "type": "string",
                                 "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                             }
-                        }
+                        },
+                        "additionalProperties": false
                     },
-                    "CapillaryPressureMin": {
+                    "WaterDensity": {
                         "type": "object",
                         "properties": {
                             "Value": {
@@ -103,7 +191,159 @@
                                 "type": "string",
                                 "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                             }
-                        }
+                        },
+                        "additionalProperties": false
+                    },
+                    "OilViscosity": {
+                        "type": "object",
+                        "properties": {
+                            "Value": {
+                                "type": "number"
+                            },
+                            "UnitOfMeasure": {
+                                "type": "string",
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "OilDensity": {
+                        "type": "object",
+                        "properties": {
+                            "Value": {
+                                "type": "number"
+                            },
+                            "UnitOfMeasure": {
+                                "type": "string",
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "GasViscosity": {
+                        "type": "object",
+                        "properties": {
+                            "Value": {
+                                "type": "number"
+                            },
+                            "UnitOfMeasure": {
+                                "type": "string",
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "GasDensity": {
+                        "type": "object",
+                        "properties": {
+                            "Value": {
+                                "type": "number"
+                            },
+                            "UnitOfMeasure": {
+                                "type": "string",
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "InterfacialTension": {
+                        "type": "object",
+                        "properties": {
+                            "Value": {
+                                "type": "number"
+                            },
+                            "UnitOfMeasure": {
+                                "type": "string",
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "BrineSalinity": {
+                        "type": "object",
+                        "properties": {
+                            "Value": {
+                                "type": "number"
+                            },
+                            "UnitOfMeasure": {
+                                "type": "string",
+                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    "Endpoints": {
+                        "type": "object",
+                        "properties": {
+                            "CapillaryPressureMax": {
+                                "type": "object",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "WettingPhaseSaturationAtCapillaryPressureMax": {
+                                "type": "object",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "NonwettingPhaseSaturationAtCapillaryPressureMax": {
+                                "type": "object",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "LowestWettingPhaseSaturationAVG": {
+                                "type": "object",
+                                "description": "Lowest wetting phase saturation achieved averaged over entire core plug or composite, only applicable for centrifuge & coreflood",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "LowestNonwettingPhaseSaturationAVG": {
+                                "type": "object",
+                                "description": "Lowest Non-wetting phase saturation achieved averaged over entire core plug or composite, only applicable for centrifuge & coreflood",
+                                "properties": {
+                                    "Value": {
+                                        "type": "number"
+                                    },
+                                    "UnitOfMeasure": {
+                                        "type": "string",
+                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                    }
+                                },
+                                "additionalProperties": false
+                            }
+                        },
+                        "additionalProperties": false
                     },
                     "CapillaryPressureSteps": {
                         "type": "array",
@@ -123,7 +363,8 @@
                                             "type": "string",
                                             "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                         }
-                                    }
+                                    },
+                                    "additionalProperties": false
                                 },
                                 "PhaseSaturation": {
                                     "type": "array",
@@ -152,7 +393,8 @@
                                                 "description": "Phase transition type for this capillary pressure test, e.g. Wetting or Nonwetting",
                                                 "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WettabilityPhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                             }
-                                        }
+                                        },
+                                        "additionalProperties": false
                                     }
                                 },
                                 "PhaseInjectedVolume": {
@@ -177,12 +419,13 @@
                                                 "description": "Fluid produced or displaced from a sample during capillary pressure testing, e.g. Brine, Hexane, or LiveCrudeOil",
                                                 "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacedFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                             },
-                                            "WettabilityPhaseType": {
+                                            "CapillaryPressurePhaseType": {
                                                 "type": "string",
                                                 "description": "Phase transition type for this capillary pressure test, e.g. Wetting or Nonwetting",
-                                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WettabilityPhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CapillaryPressurePhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                             }
-                                        }
+                                        },
+                                        "additionalProperties": false
                                     }
                                 },
                                 "Remark": {
@@ -201,7 +444,8 @@
                                                     "type": "string",
                                                     "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                 }
-                                            }
+                                            },
+                                            "additionalProperties": false
                                         },
                                         "PoreThroatMedianRadius": {
                                             "type": "object",
@@ -213,7 +457,27 @@
                                                     "type": "string",
                                                     "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                 }
-                                            }
+                                            },
+                                            "additionalProperties": false
+                                        },
+                                        "EndFaceEstimationMethod": {
+                                            "type": "string",
+                                            "description": "Method of estimating capillary pressure in a centrifuge experiment, e.g. HasslerBrunner or Forbes",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-EndFaceEstimationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        },
+                                        "EndFacePhaseSaturation": {
+                                            "type": "object",
+                                            "description": "Calculated saturation of the end face of the sample in a centrifuge experiment.",
+                                            "properties": {
+                                                "Value": {
+                                                    "type": "number"
+                                                },
+                                                "UnitOfMeasure": {
+                                                    "type": "string",
+                                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                                }
+                                            },
+                                            "additionalProperties": false
                                         },
                                         "JFunction": {
                                             "type": "object",
@@ -221,7 +485,8 @@
                                                 "Value": {
                                                     "type": "number"
                                                 }
-                                            }
+                                            },
+                                            "additionalProperties": false
                                         },
                                         "GasWaterCapillaryPressure": {
                                             "type": "object",
@@ -233,7 +498,8 @@
                                                     "type": "string",
                                                     "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                 }
-                                            }
+                                            },
+                                            "additionalProperties": false
                                         },
                                         "GasOilCapillaryPressure": {
                                             "type": "object",
@@ -245,7 +511,8 @@
                                                     "type": "string",
                                                     "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                 }
-                                            }
+                                            },
+                                            "additionalProperties": false
                                         },
                                         "OilWaterCapillaryPressure": {
                                             "type": "object",
@@ -257,9 +524,23 @@
                                                     "type": "string",
                                                     "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                 }
-                                            }
+                                            },
+                                            "additionalProperties": false
                                         },
-                                        "GasWaterFWL": {
+                                        "AirMercuryCapillaryPressure": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Value": {
+                                                    "type": "number"
+                                                },
+                                                "UnitOfMeasure": {
+                                                    "type": "string",
+                                                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                                }
+                                            },
+                                            "additionalProperties": false
+                                        },
+                                        "GasWaterAboveFWL": {
                                             "type": "object",
                                             "description": "estimated height above free water level for gas",
                                             "properties": {
@@ -270,9 +551,10 @@
                                                     "type": "string",
                                                     "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                 }
-                                            }
+                                            },
+                                            "additionalProperties": false
                                         },
-                                        "OilWaterFWL": {
+                                        "OilWaterAboveFWL": {
                                             "type": "object",
                                             "description": "estimated height above free water level for oil",
                                             "properties": {
@@ -283,9 +565,11 @@
                                                     "type": "string",
                                                     "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                 }
-                                            }
+                                            },
+                                            "additionalProperties": false
                                         }
-                                    }
+                                    },
+                                    "additionalProperties": false
                                 },
                                 "PoreThroatSizeDistribution": {
                                     "type": "array",
@@ -302,7 +586,8 @@
                                                         "type": "string",
                                                         "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                     }
-                                                }
+                                                },
+                                                "additionalProperties": false
                                             },
                                             "CumulativePhaseSaturation": {
                                                 "type": "object",
@@ -324,12 +609,13 @@
                                                         "description": "Fluid produced or displaced from a sample during capillary pressure testing, e.g. Brine, Hexane, or LiveCrudeOil",
                                                         "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacedFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                     },
-                                                    "WettabilityPhaseType": {
+                                                    "CapillaryPressurePhaseType": {
                                                         "type": "string",
                                                         "description": "Phase transition type for this capillary pressure test, e.g. Wetting or Nonwetting",
-                                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WettabilityPhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CapillaryPressurePhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                     }
-                                                }
+                                                },
+                                                "additionalProperties": false
                                             },
                                             "PhaseSaturationFrequency": {
                                                 "type": "object",
@@ -347,23 +633,28 @@
                                                         "description": "Fluid produced or displaced from a sample during capillary pressure testing, e.g. Brine, Hexane, or LiveCrudeOil",
                                                         "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacedFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                     },
-                                                    "WettabilityPhaseType": {
+                                                    "CapillaryPressurePhaseType": {
                                                         "type": "string",
                                                         "description": "Phase transition type for this capillary pressure test, e.g. Wetting or Nonwetting",
-                                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WettabilityPhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CapillaryPressurePhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                     }
-                                                }
+                                                },
+                                                "additionalProperties": false
                                             }
-                                        }
+                                        },
+                                        "additionalProperties": false
                                     }
                                 }
-                            }
+                            },
+                            "additionalProperties": false
                         }
                     }
-                }
+                },
+                "additionalProperties": false
             }
         }
     },
+    "additionalProperties": false,
     "required": [
         "SampleID",
         "SamplesAnalysisID"

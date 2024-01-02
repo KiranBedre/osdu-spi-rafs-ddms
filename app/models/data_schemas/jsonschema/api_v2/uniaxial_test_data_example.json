@@ -1,60 +1,212 @@
 {
     "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:UniaxialTest123:",
-    "data": [
+    "SampleID": "opendes:master-data--Sample:Uniaxial75FR:",
+    "LabSampleIdentifier": "75FR",
+    "Remarks": "Successfully Checked",
+    "Lithology": "Interbedded",
+    "Porosity": {
+        "Value": 1.93,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+        "PorosityType": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:"
+    },
+    "BulkDensityAsReceived": {
+        "Value": 1.00,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:kg%2FL:"
+    },
+    "GrainCompressibility": {
+        "Value": 2.03,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:C13:"
+    },
+    "FluidSaturant": "opendes:reference-data--FluidSaturantType:LabOil:",
+    "SaturantViscosity": {
+        "Value": 0.835,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:Pa.s:"
+    },
+    "IRSCPorePressure": {
+        "Value": 0.280,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "IRSCMeanEffectiveStress": {
+        "Value": 0.280,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:kN%2Fm2:"
+    },
+    "IRSCDifferentialStress": {
+        "Value": 0.280,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:kN%2Fm2:"
+    },
+    "IRSCLabEffectiveMeanStress": {
+        "Value": 0.280,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:kN%2Fm2:"
+    },
+    "IRSCLabDifferentialStress": {
+        "Value": 0.280,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:kN%2Fm2:"
+    },
+    "MassAsReceived": {
+        "Value": 0.280,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g:"
+    },
+    "SaturatedMass": {
+        "Value": 0.280,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g:"
+    },
+    "Interpretation": [
         {
-            "SampleID": "opendes:master-data--Sample:Uniaxial75FR:",
-            "SampleOrientation": "Vertical",
-            "LabSampleIdentifier": "75FR",
-            "Remarks": "Successfully Checked",
-            "DepletionCondition": "True",
-            "Lithology": "Interbedded",
-            "Length": {
-                "Value": 1.93,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+            "PorePressure": {
+                "Value": 0.280,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
             },
-            "Diameter": {
-                "Value": 1.00,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%15:"
+            "1DBulkCompressibility": {
+                "Value": 0.280,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
             },
-            "Density": {
-                "Value": 2.03,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:C13:"
+            "1DPoreCompressibility": {
+                "Value": 0.280,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
             },
-            "BulkCompressibility": {
-                "Value": 0.000000835,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1psi:"
+            "Permeability": {
+                "Value": 0.280,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:",
+                "PermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:Gas:"
             },
-            "PoreVolumeCompressibility": {
-                "Value": 0.00000280,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1si:"
-            }
+            "Porosity": {
+                "Value": 0.280,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                "PorosityType": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:"
+            },
+            "YoungsModulus": {
+                "Value": 0.280,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:Pa:"
+            },
+            "BiotsCoefficient": 0.280,
+            "PoissonsRatio": {
+                "Value": 0.280,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:Euc:"
+            },
+            "UniaxialCycleType": "opendes:reference-data--UniaxialCycleType:MiniLoading:"
+        }
+    ],
+    "Endpoints": {
+        "MaxSimulatedDepletion": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
         },
+        "PorosityAtMaxDepletion": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "BulkCompressibilityAtMaxDepletion": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "DepletionAtPoreCollapse": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "IRSCEEstimatedPorosity": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "BackToIRSCBiotsCoefficient": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "PermeabilityAtMaxDepletion": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "IRSCPermeability": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "IRSCPoreCompressibility": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "IRSCBulkCompressibility": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "IRSCBiotsCoefficient": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "IRSCYoungModulus": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "IRSCPoissonsRatio": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "BackToIRSCEstimatedPorosity": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "BackToIRSCPermeability": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "BackToIRSCPoreCompressibility": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "BackToIRSCBulkCompressibility": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "BackToIRSCYoungModulus": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        },
+        "BackToIRSCPoissonsRatio": {
+            "Value": 0.280,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:"
+        }
+    },
+    "TestSteps": [
         {
-            "SampleID": "opendes:master-data--Sample:Uniaxial76FR:",
-            "SampleOrientation": "Vertical",
-            "LabSampleIdentifier": "76FR",
-            "Remarks": "Successfully Checked",
-            "DepletionCondition": "Effective",
-            "Lithology": "Interbedded",
-            "Length": {
-                "Value": 2.20,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:C13:"
+            "UniaxialCycleType": {
+                "Value": 0.280,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:",
+                "Type": "opendes:reference-data--UniaxialCycleType:MiniLoading:"
             },
-            "Diameter": {
-                "Value": 1.00,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:C11:"
+            "UniaxialTestControl": {
+                "Value": 0.280,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:",
+                "UniaxialTestControlType": "opendes:reference-data--UniaxialTestControlType:ConstantPorePressure:"
             },
-            "Density": {
-                "Value": 2.05,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:C11:"
+            "Time": {
+                "Value": 28,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:"
             },
-            "BulkCompressibility": {
-                "Value": 0.000000893,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:11:"
+            "ConfiningPressure": {
+                "Value": 28,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:Pa:"
             },
-            "PoreVolumeCompressibility": {
-                "Value": 0.00000310,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:14:"
+            "PorePressure": {
+                "Value": 28,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:Pa:"
+            },
+            "AxialStress": {
+                "Value": 28,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:kN%2Fm2:"
+            },
+            "AxialStrain": {
+                "Value": 28,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:Euc:"
+            },
+            "RadialStrain": {
+                "Value": 28,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:Euc:"
+            },
+            "FlowRate": {
+                "Value": 28,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:Euc:"
+            },
+            "DeltaP": {
+                "Value": 28,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:Euc:"
             }
         }
     ]

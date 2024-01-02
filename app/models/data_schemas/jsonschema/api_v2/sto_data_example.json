@@ -1,0 +1,155 @@
+{
+    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
+    "SampleID": "opendes:master-data--Sample:Sample-1A:",
+    "Method": "Test method 1",
+    "FluidConditions": "opendes:reference-data--FluidPhasesPresent:StockTankOil:",
+    "PhasesPresent": "opendes:reference-data--FluidPhasesPresent:Wellstream:",
+    "StockTankPressure": {
+        "Value": 123,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "StockTankTemperature": {
+        "Value": 123,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+    },
+    "MolecularWeight": {
+        "Value": 123,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g:"
+    },
+    "APIAtTemperature": [
+        {
+            "Value": 123,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:",
+            "Temperature": {
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+            }
+        }
+    ],
+    "WatsonKFactor": 1,
+    "PourPoint": {
+        "Value": 123,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+    },
+    "ASTMFlashPoint": {
+        "Value": 123,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:"
+    },
+    "NBase": {
+        "Value": 123,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:"
+    },
+    "WaxContent": {
+        "Value": 20,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+    },
+    "ParrafinContent": {
+        "Value": 20,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+    },
+    "CloudPoint": {
+        "Value": 273.15,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+    },
+    "MeltPoint": {
+        "Value": 373,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+    },
+    "WaterContent": {
+        "Value": 10,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+    },
+    "TotalAcidNumber": {
+        "Value": 10,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:"
+    },
+    "MercapSulphur": {
+        "Value": 10,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+    },
+    "PenetrationGrade": {
+        "Value": 10,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+    },
+    "SofteningPoint": {
+        "Value": 273.15,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+    },
+    "SmokingPoint": {
+        "Value": 273.15,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+    },
+    "FreezingPoint": {
+        "Value": 273.15,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+    },
+    "AnilinePoint": {
+        "Value": 273.15,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+    },
+    "SaltContent": {
+        "Value": 10,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+    },
+    "WaterSedimentContent": {
+        "Value": 10,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+    },
+    "ViscosityAtTemperature": [
+        {
+            "Value": 23,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:",
+            "Temperature": {
+                "Value": 273.15,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ns%2Fm:"
+            }
+        }
+    ],
+    "CHNOSAnalysis": {
+        "SulphurContent": {
+            "Value": 10,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+            "Method": "Test method 1"
+        },
+        "NitrogenContent": {
+            "Value": 10,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+            "Method": "Test method 1"
+        },
+        "OxygenContent": {
+            "Value": 10,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+            "Method": "Test method 1"
+        },
+        "HydrogenContent": {
+            "Value": 10,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+            "Method": "Test method 1"
+        },
+        "CarbonContent": {
+            "Value": 10,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+            "Method": "Test method 1"
+        },
+        "NSRatio": {
+            "Value": 10,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+        },
+        "HCRatio": {
+            "Value": 10,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+        },
+        "OCRatio": {
+            "Value": 10,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+        }
+    },
+    "MetalsElementAnalysis": [
+        {
+            "Element": "opendes:reference-data--Elements:Hg:",
+            "Value": 123,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mg%2FL:",
+            "Method": "Test method 1"
+        }
+    ]
+}

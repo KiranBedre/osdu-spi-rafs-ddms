@@ -125,7 +125,7 @@
                     },
                     "VaporComposition": [
                         {
-                            "ComponentFormula": "C2",
+                            "ComponentFormula": "opendes:reference-data--SampleCompositionComponent:C20:",
                             "ComponentName": "Methane",
                             "RelativeMolarWeight": {
                                 "Value": 5,
@@ -133,7 +133,7 @@
                             }
                         },
                         {
-                            "ComponentFormula": "C7",
+                            "ComponentFormula": "opendes:reference-data--SampleCompositionComponent:C7:",
                             "ComponentName": "Hexane",
                             "RelativeMolarWeight": {
                                 "Value": 10,
@@ -145,7 +145,7 @@
             ],
             [
                 {
-                    "ComponentFormula": "C2",
+                    "ComponentFormula": "opendes:reference-data--SampleCompositionComponent:C20:",
                     "ComponentName": "Methane",
                     "FlashedLiquidRelativeMolarWeight": {
                         "Value": 5,
@@ -165,7 +165,7 @@
                     }
                 },
                 {
-                    "ComponentFormula": "C7",
+                    "ComponentFormula": "opendes:reference-data--SampleCompositionComponent:C7:",
                     "ComponentName": "Hexane",
                     "FlashedLiquidRelativeMolarWeight": {
                         "Value": 5,
@@ -201,7 +201,7 @@
                 "Remark": "Remark",
                 "LiquidCalculatedProperties": [
                     {
-                        "ComponentFormula": "C7+",
+                        "ComponentFormula": "opendes:reference-data--SampleCompositionComponent:C7PLUS:",
                         "FlashedLiquidRelativeMolarWeight": {
                             "Value": 5,
                             "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25%5Bmolar%5D:"
@@ -220,7 +220,7 @@
                         }
                     },
                     {
-                        "ComponentFormula": "C36+",
+                        "ComponentFormula": "opendes:reference-data--SampleCompositionComponent:C36PLUS:",
                         "FlashedLiquidRelativeMolarWeight": {
                             "Value": 5,
                             "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25%5Bmolar%5D:"

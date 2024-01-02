@@ -1,99 +1,179 @@
 
-[
-    {
-        "SamplesAnalysisID": "osdu:work-product-component--SamplesAnalysis:dd76cf6c-226f-5636-ad1b-1ca0f8249cc8:",
-        "SampleID": "osdu:master-data--Sample:dd76cf6c-226f-5636-ad1b-1ca0f8249cc10:",
-        "SampleDepth": {
-            "Value": 5309.60,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m:"
-        },
-        "TestTemperature": {
-            "Value": 68,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
-        },
-        "NetConfiningStress": {
-            "Value": 2500,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
-        },
-        "Length": {
-            "Value": 6.07,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm:"
-        },
-        "Area": {
-            "Value": 11.60,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm2:"
-        },
-        "Porosity": {
-            "Value": 0.108,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:"
-        },
-        "InitialWaterSaturation": {
-            "Value": 65.0,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:"
-        },
-        "EffectivePermeabilityToOil": {
-            "Value": 650.25,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:"
-        },
-            "Permeability": [
+{
+    "SamplesAnalysisID": "osdu:work-product-component--SamplesAnalysis:dd76cf6c-226f-5636-ad1b-1ca0f8249cc8:",
+    "SampleID": "osdu:master-data--Sample:dd76cf6c-226f-5636-ad1b-1ca0f8249cc10:",
+    "DesaturationMethod": "opendes:reference-data--DesaturationMethod:CentrifugeGasWater:",
+    "TestTemperature": {
+        "Value": 68,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
+    },
+    "Porosity": {
+        "Value": 0.108,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+        "PorosityType": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:"
+    },
+    "InitialConditions": {
+        "EffectivePermeability": [
             {
-                "PermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:Air:",
-                "Value": 250.0,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:"
-            },
+                "PermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:Gas:",
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:",
+                "FluidType": "opendes:reference-data--DisplacingFluidType:Gas:",
+                "WettabilityPhase": "opendes:reference-data--WettabilityPhaseType:Wetting:"
+            }
+        ],
+        "RelativePermeability": [
             {
-                "PermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:Specific:",
-                "Value": 124.0,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:"
+                "RelativePermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:UnsteadyState:",
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                "FluidType": "opendes:reference-data--DisplacingFluidType:Gas:",
+                "WettabilityPhase": "opendes:reference-data--WettabilityPhaseType:Wetting:"
+            }
+        ],
+        "Saturation": [
+            {
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                "FluidType": "opendes:reference-data--DisplacingFluidType:Gas:",
+                "WettabilityPhase": "opendes:reference-data--WettabilityPhaseType:Wetting:",
+                "SaturationType": "opendes:reference-data--SaturationType:Average:"
+            }
+        ],
+        "LastFlowRate": {
+            "Value": 123,
+            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:"
+        }
+    },
+    "TerminalConditions": {
+        "EffectivePermeability": [
+            {
+                "PermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:Water:",
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:",
+                "FluidType": "opendes:reference-data--DisplacingFluidType:Water:",
+                "WettabilityPhase": "opendes:reference-data--WettabilityPhaseType:Wetting:"
+            }
+        ],
+        "RelativePermeability": [
+            {
+                "RelativePermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:UnsteadyState:",
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                "FluidType": "opendes:reference-data--DisplacingFluidType:Water:",
+                "WettabilityPhase": "opendes:reference-data--WettabilityPhaseType:Wetting:"
+            }
+        ],
+        "Saturation": [
+            {
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                "FluidType": "opendes:reference-data--DisplacingFluidType:Water:",
+                "WettabilityPhase": "opendes:reference-data--WettabilityPhaseType:Wetting:",
+                "SaturationType": "opendes:reference-data--SaturationType:Average:"
             }
         ]
     },
-    {
-        "SamplesAnalysisID": "osdu:work-product-component--SamplesAnalysis:dd76cf6c-226f-5636-ad1b-1ca0f8249cc8:",
-        "SampleID": "osdu:master-data--Sample:dd76cf6c-226f-5636-ad1b-1ca0f8249cc14:",
-        "SampleDepth": {
-            "Value": 5374.42,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m:"
-        },
-        "TestTemperature": {
-            "Value": 68,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
-        },
-        "NetConfiningStress": {
-            "Value": 2500,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
-        },
-        "Length": {
-            "Value": 6.14,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm:"
-        },
-        "Area": {
-            "Value": 11.54,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm2:"
-        },
-        "Porosity": {
-            "Value": 0.295,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:"
-        },
-        "InitialWaterSaturation": {
-            "Value": 1,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:"
-        },
-            "EffectivePermeabilityToOil": {
-            "Value": 456.25,
-            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:"
-        },
-            "Permeability": [
-            {
-                "PermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:Air:",
-                "Value": 387,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:"
+    "RelativePermeabilityCrossover": {
+        "Value": 123,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:"
+    },
+    "EndFaceSaturationCrossover": {
+        "Value": 123,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:"
+    },
+    "ReferencePermeability": {
+        "Value": 123,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:",
+        "Type": "opendes:reference-data--PermeabilityMeasurementType:UnsteadyState:"
+    },
+    "SaturationProcessMethod": "opendes:reference-data--SaturationProcessMethod:DrainageTwoPhase:",
+    "InterfacialTension": {
+        "Value": 123,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:"
+    },
+    "BrineSalinity": {
+        "Value": 123,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:"
+    },
+    "OilViscosity": {
+        "Value": 2500,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "GasViscosity": {
+        "Value": 2500,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "WaterViscosity": {
+        "Value": 2500,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "OilDensity": {
+        "Value": 2500,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "GasDensity": {
+        "Value": 2500,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "WaterDensity": {
+        "Value": 2500,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "FluidSystemType": "opendes:reference-data--FluidSystemType:SolubleCuttingOil:",
+    "PermeabilityTestSteps": [
+        {
+            "NetConfiningStress": {
+                "Value": 2500,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
             },
-            {
-                "PermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:Specific:",
-                "Value": 534,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:"
-            }
-        ]
-    }
-]
+            "DeltaP": {
+                "Value": 2500,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+            },
+            "InjectionRate": [
+                {
+                    "Value": 123,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:",
+                    "FluidType": "opendes:reference-data--DisplacingFluidType:Nitrogen:",
+                    "WettabilityPhase": "opendes:reference-data--WettabilityPhaseType:NonwettingTotalHydrocarbon:"
+                }
+            ],
+            "CumulativeProduction": [
+                {
+                    "Value": 123,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:",
+                    "FluidType": "opendes:reference-data--DisplacedFluidType:Nitrogen:",
+                    "WettabilityPhase": "opendes:reference-data--WettabilityPhaseType:NonwettingTotalHydrocarbon:"
+                }
+            ],
+            "EffectivePermeability": [
+                {
+                    "PermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:Gas:",
+                    "Value": 123,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mD:",
+                    "FluidType": "opendes:reference-data--DisplacingFluidType:Gas:",
+                    "WettabilityPhase": "opendes:reference-data--WettabilityPhaseType:Wetting:"
+                }
+            ],
+            "RelativePermeability": [
+                {
+                    "RelativePermeabilityType": "opendes:reference-data--PermeabilityMeasurementType:Water:",
+                    "Value": 123,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                    "FluidType": "opendes:reference-data--DisplacingFluidType:Water:",
+                    "WettabilityPhase": "opendes:reference-data--WettabilityPhaseType:Wetting:"
+                }
+            ],
+            "Saturation": [
+                {
+                    "Value": 123,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                    "FluidType": "opendes:reference-data--DisplacingFluidType:Liquid:",
+                    "WettabilityPhase": "opendes:reference-data--WettabilityPhaseType:Wetting:",
+                    "SaturationType": "opendes:reference-data--SaturationType:Average:"
+                }
+            ]
+        }
+    ]
+}

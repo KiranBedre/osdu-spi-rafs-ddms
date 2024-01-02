@@ -174,7 +174,7 @@ class DataTypes:
 
 
 class SamplesAnalysisTypes:  # Custom values
-    NMR = "nmrtests"
+    NMR = "nmr"
     MULTIPLE_SALINITY = "multiplesalinitytests"
     AROMATICS = "gcmsaromatics"
     ALKANES = "gcmsalkanes"
@@ -204,7 +204,7 @@ class DatasetPrefix:
     RP = "relative-permeability"
 
     # v2
-    NMR = "nmrtests"
+    NMR = "nmr"
     MULTIPLE_SALINITY = "multiplesalinitytests"
     AROMATICS = "gcmsaromatics"
     ALKANES = "gcmsalkanes"

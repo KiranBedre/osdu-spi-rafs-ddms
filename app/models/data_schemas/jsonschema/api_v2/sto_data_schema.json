@@ -1,0 +1,552 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "SamplesAnalysisID": {
+      "type": "string",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+    },
+    "SampleID": {
+      "type": "string",
+      "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+    },
+    "Method": {
+      "type": "string",
+      "description": "The sample analysis method used for this analysis"
+    },
+    "FluidConditions": {
+      "type": "string",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidPhasesPresent:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+    },
+    "PhasesPresent": {
+      "type": "string",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidPhasesPresent:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+    },
+    "StockTankPressure": {
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "StockTankTemperature": {
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "MolecularWeight": {
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "APIAtTemperature": {
+      "title": "API at Temperature",
+      "description": "Fluid API gravity at indicated temperature",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Value": {
+            "type": "number"
+          },
+          "UnitOfMeasure": {
+            "type": "string",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+          },
+          "Temperature": {
+            "type": "object",
+            "properties": {
+              "Value": {
+                "type": "number"
+              },
+              "UnitOfMeasure": {
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "WatsonKFactor": {
+      "type": "number"
+    },
+    "PourPoint": {
+      "title": "Pour Point",
+      "description": "The temperature below which the liquid loses its flow characteristics",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ASTMFlashPoint": {
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "NBase": {
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "WaxContent": {
+      "title": "Wax Content",
+      "description": "The amount or percentage of wax present in a sample",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ParrafinContent": {
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CloudPoint": {
+      "title": "Cloud Point",
+      "description": "The temperature below which a transparent solution undergoes either a liquid-liquid phase separation to form an emulsion or a liquid-solid phase transition to form either a stable solution or a suspension that settles a precipitate",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "MeltPoint": {
+      "title": "Melting Point",
+      "description": "The temperature at which a substance changes from its solid state to its liquid state",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "WaterContent": {
+      "title": "Water Content",
+      "description": "The amount or percentage of water present in a sample",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "TotalAcidNumber": {
+      "title": "TAN Total Acid Number",
+      "description": "The quantity of acidic compounds present in a sample",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "MercapSulphur": {
+      "title": "Mercaptan Sulphur",
+      "description": "Mercaptan sulphur concentration",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "PenetrationGrade": {
+      "title": "Penetration Grade",
+      "description": "The penetration grade",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SofteningPoint": {
+      "title": "Softening Point",
+      "description": "The temperature at which a resin begins to flow",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SmokingPoint": {
+      "title": "Smoking Point",
+      "description": "The temperature at which an oil begins to produce a continuous visible smoke",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FreezingPoint": {
+      "title": "Freezing Point",
+      "description": "The temperature at which a substance changes from its liquid state to its solid state",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AnilinePoint": {
+      "title": "Aniline Point",
+      "description": "The minimum temperature at which equal volumes of aniline and lubricant oil are miscible, i.e. form a single phase upon mixing",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SaltContent": {
+      "title": "Salt Content",
+      "description": "The amount or percentage of sodium chloride present in a sample",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "WaterSedimentContent": {
+      "title": "Water Sediment Content",
+      "description": "The amount or percentage of basic water and sediment present in a sample",
+      "type": "object",
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "UnitOfMeasure": {
+          "type": "string",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ViscosityAtTemperature": {
+      "title": "Viscosity at Temperature",
+      "description": "Fluid viscosity at indicated temperature",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Value": {
+            "type": "number"
+          },
+          "UnitOfMeasure": {
+            "type": "string",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+          },
+          "Temperature": {
+            "type": "object",
+            "properties": {
+              "Value": {
+                "type": "number"
+              },
+              "UnitOfMeasure": {
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "CHNOSAnalysis": {
+      "title": "CHNOS Analysis",
+      "description": "Carbon Hydrogen Nitrogen Oxygen Sulphur analysis",
+      "type": "object",
+      "properties": {
+        "SulphurContent": {
+          "title": "Sulphur Content",
+          "type": "object",
+          "description": "Sulphur content in a sample",
+          "properties": {
+            "Value": {
+              "type": "number"
+            },
+            "UnitOfMeasure": {
+              "type": "string",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+            },
+            "Method": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "NitrogenContent": {
+          "title": "Nitrogen Content",
+          "type": "object",
+          "description": "Nitrogen content in a sample",
+          "properties": {
+            "Value": {
+              "type": "number"
+            },
+            "UnitOfMeasure": {
+              "type": "string",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+            },
+            "Method": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "OxygenContent": {
+          "title": "Oxygen Content",
+          "type": "object",
+          "description": "Oxygen content in a sample",
+          "properties": {
+            "Value": {
+              "type": "number"
+            },
+            "UnitOfMeasure": {
+              "type": "string",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+            },
+            "Method": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "HydrogenContent": {
+          "title": "Hydrogen Content",
+          "type": "object",
+          "description": "Hydrogen content in a sample",
+          "properties": {
+            "Value": {
+              "type": "number"
+            },
+            "UnitOfMeasure": {
+              "type": "string",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+            },
+            "Method": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "CarbonContent": {
+          "title": "Carbon Content",
+          "type": "object",
+          "description": "Carbon content in a sample",
+          "properties": {
+            "Value": {
+              "type": "number"
+            },
+            "UnitOfMeasure": {
+              "type": "string",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+            },
+            "Method": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "NSRatio": {
+          "title": "NS Ratio",
+          "type": "object",
+          "description": "Elemental Nitrogen to Sulphur ratio",
+          "properties": {
+            "Value": {
+              "type": "number"
+            },
+            "UnitOfMeasure": {
+              "type": "string",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "HCRatio": {
+          "title": "HC Ratio",
+          "type": "object",
+          "description": "Elemental Hydrogen to Carbon ratio as a fraction of Kerogen isolate",
+          "properties": {
+            "Value": {
+              "type": "number"
+            },
+            "UnitOfMeasure": {
+              "type": "string",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "OCRatio": {
+          "title": "OC Ratio",
+          "type": "object",
+          "description": "Elemental Oxygen to Carbon ratio as a fraction of Kerogen isolate",
+          "properties": {
+            "Value": {
+              "type": "number"
+            },
+            "UnitOfMeasure": {
+              "type": "string",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "MetalsElementAnalysis": {
+      "title": "Metals Element Analysis",
+      "description": "The metal elemental composition of a sample",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "Element": {
+            "type": "string",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-Elements:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+          },
+          "Value": {
+            "type": "number"
+          },
+          "UnitOfMeasure": {
+            "type": "string",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+          },
+          "Method": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "SamplesAnalysisID",
+    "SampleID"
+  ]
+}

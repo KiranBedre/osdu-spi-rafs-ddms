@@ -139,6 +139,19 @@
                                     },
                                     "additionalProperties": false
                                 },
+                                "TemperatureMean": {
+                                        "type": "object",
+                                        "properties": {
+                                        "Value": {
+                                            "type": "number"
+                                        },
+                                        "UnitOfMeasure": {
+                                            "type": "string",
+                                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
                                 "TemperatureMinimum": {
                                     "type": "object",
                                     "properties": {

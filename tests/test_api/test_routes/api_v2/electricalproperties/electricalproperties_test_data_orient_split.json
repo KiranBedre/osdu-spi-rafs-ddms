@@ -9,8 +9,6 @@
         "AdjustedCementationExponent",
         "SaturationExponent",
         "AdjustedSaturationExponent",
-        "PorosityExponent",
-        "AdjustedPorosityExponent",
         "BrineSaturation",
         "FormationFactorAtNetOverburdenPressure",
         "AdjustedFormationFactorAtNetOverburnedPressure",
@@ -42,8 +40,6 @@
             1.78,
             2.03,
             5.22,
-            2.32,
-            1.67,
             {
                 "Value": 986,
                 "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mm:"
@@ -62,7 +58,7 @@
             "opendes:reference-data--FluidSystemType:SolubleCuttingOil:",
             "opendes:reference-data--DisplacingFluidType:Mercury:",
             "opendes:reference-data--DisplacedFluidType:Hexane:",
-            "opendes:reference-data--SaturationProcessMethod:ThirdDrainage:",
+            "opendes:reference-data--SaturationProcessMethod:DrainageTwoPhase:",
             "opendes:reference-data--DesaturationMethod:PorousPlateGasWaterOil:",
             {
                 "Value": 125,

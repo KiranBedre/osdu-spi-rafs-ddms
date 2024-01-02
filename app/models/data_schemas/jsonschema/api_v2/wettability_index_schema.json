@@ -13,6 +13,39 @@
         "WettabilityIndexData": {
             "type": "object",
             "properties": {
+                "CapillaryPressureAnalysisID": {
+                    "type": "string",
+                    "description": "OSDU ID for the Capillary Pressure Analysis referenced in this Wettability Analysis.",
+                    "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                },
+                "ForcedImbibedBrineVolume": {
+                    "type": "object",
+                    "description": "volume of forced imbibed brine, displacing water, expressed as fraction of pore volume. no confining pressure applied",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data--UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "ForcedImbibedOilVolume": {
+                    "type": "object",
+                    "description": "volume of forced imbibed oil, displacing water, expressed as fraction of pore volume. no confining pressure applied",
+                    "properties": {
+                        "Value": {
+                            "type": "number"
+                        },
+                        "UnitOfMeasure": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data--UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                        }
+                    },
+                    "additionalProperties": false
+                },
                 "Temperature": {
                     "type": "object",
                     "properties": {
@@ -246,7 +279,7 @@
                     },
                     "additionalProperties": false
                 },
-                "InitialCappillaryPressure": {
+                "InitialCapillaryPressure": {
                     "type": "object",
                     "properties": {
                         "Value": {

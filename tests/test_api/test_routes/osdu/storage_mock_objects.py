@@ -17,10 +17,35 @@ from typing import NamedTuple
 
 from app.models.domain.osdu.MDCoring100 import Coring
 from app.models.domain.osdu.MDCoring100 import Data as CoringData
+from app.models.domain.osdu.MDGenericFacility100 import (
+    Data as GenericFacitilyData,
+)
+from app.models.domain.osdu.MDGenericFacility100 import GenericFacility
+from app.models.domain.osdu.MDGenericSite100 import Data as GenericSiteData
+from app.models.domain.osdu.MDGenericSite100 import GenericSite
 from app.models.domain.osdu.MDRockSample100 import Data as RockSampleData
 from app.models.domain.osdu.MDRockSample100 import RockSample
-from app.models.domain.osdu.MDSample100 import Data as SampleData
-from app.models.domain.osdu.MDSample100 import Sample
+from app.models.domain.osdu.MDSample200 import Data as SampleData
+from app.models.domain.osdu.MDSample200 import Sample
+from app.models.domain.osdu.MDSampleAcquisitionJob100 import (
+    Data as SampleAcquisitionJobData,
+)
+from app.models.domain.osdu.MDSampleAcquisitionJob100 import (
+    SampleAcquisitionJob,
+)
+from app.models.domain.osdu.MDSampleChainOfCustodyEvent100 import (
+    Data as SCOCEData,
+)
+from app.models.domain.osdu.MDSampleChainOfCustodyEvent100 import (
+    SampleChainOfCustodyEvent,
+)
+from app.models.domain.osdu.MDSampleContainer100 import (
+    Data as SampleContainerData,
+)
+from app.models.domain.osdu.MDSampleContainer100 import SampleContainer
+from app.models.domain.osdu.osdu_wks_AbstractPTCondition_1.field_0 import (
+    Field0 as OperatingConditionRating,
+)
 from app.models.domain.osdu.WPCCCE100 import ConstantCompositionExpansionTest
 from app.models.domain.osdu.WPCCCE100 import Data as CceData
 from app.models.domain.osdu.WPCCompositionalAnalysis100 import (
@@ -89,6 +114,12 @@ from app.models.schemas.osdu_storage import Acl, Legal, OsduStorageRecord
 from app.resources.paths import CommonRelativePathsV2
 from tests.test_api.api_version import API_VERSION, API_VERSION_V2
 
+
+class KindVersion:
+    V_1_0_0: str = "1.0.0"
+    V_1_1_0: str = "1.1.0"
+    V_2_0_0: str = "2.0.0"
+
 TEST_SERVER = "http://testserver"
 TEST_HEADERS = {
     "content-type": "application/json",
@@ -103,70 +134,60 @@ SCHEMA_AUTHORITY = os.getenv("SCHEMA_AUTHORITY", "osdu")
 CUSTOM_SCHEMA_AUTHORITY = os.getenv("CUSTOM_SCHEMA_AUTHORITY", "rafsddms")
 PARTITION = "partition"
 CORING_TYPE = "master-data--Coring"
-CORING_VERSION = "1.0.0"
 CORING_ID = "coring_test"
+GENERIC_FACILITY_TYPE = "master-data--GenericFacility"
+GENERIC_FACILITY_ID = "generic_facility_test"
+GENERIC_SITE_TYPE = "master-data--GenericSite"
+GENERIC_SITE_ID = "generic_site_test"
 ROCKSAMPLE_TYPE = "master-data--RockSample"
-ROCKSAMPLE_VERSION = "1.0.0"
 ROCKSAMPLE_ID = "rocksample_test"
 SAMPLE_TYPE = "master-data--Sample"
-SAMPLE_VERSION = "1.0.0"
 SAMPLE_ID = "sample_test"
+SAMPLE_ACQUISITION_JOB_TYPE = "master-data--SampleAcquisitionJob"
+SAMPLE_ACQUISITION_JOB_ID = "sample_acquisition_job_test"
+SAMPLE_CHAIN_OF_CUSTODY_EVENT_TYPE = "master-data--SampleChainOfCustodyEvent"
+SAMPLE_CHAIN_OF_CUSTODY_EVENT_ID = "sample_chain_of_custody_event_test"
+SAMPLE_CONTAINER_TYPE = "master-data--SampleContainer"
+SAMPLE_CONTAINER_ID = "sample_container_test"
 ROCKSAMPLEANALYSIS_TYPE = "work-product-component--RockSampleAnalysis"
-ROCKSAMPLEANALYSIS_VERSION = "1.1.0"
 ROCKSAMPLEANALYSIS_ID = "rocksampleanalysis_test"
 CCE_TYPE = "work-product-component--ConstantCompositionExpansionTest"
-CCE_VERSION = "1.0.0"
 CCE_ID = "cce-test"
 PVT_TYPE = "work-product-component--PVT"
 PVT_ID = "pvt_test"
-PVT_VERSION = "1.0.0"
 WELL_TYPE = "master-data--Well"
 WELL_ID = "well_test"
 WELLBORE_TYPE = "master-data--Wellbore"
 WELLBORE_ID = "wellbore_test"
 DL_TYPE = "work-product-component--DifferentialLiberationTest"
-DL_VERSION = "1.0.0"
 DL_ID = "dlt_test"
 TRANSPORT_TYPE = "work-product-component--TransportTest"
-TRANSPORT_VERSION = "1.0.0"
 TRANSPORT_ID = "transport_test"
 COMPOSITIONALANALYSIS_TYPE = "work-product-component--CompositionalAnalysisTest"
 COMPOSITIONALANALYSIS_ID = "compositionalanalysis_test"
-COMPOSITIONALANALYSIS_VERSION = "1.0.0"
 FLUIDSAMPLE_TYPE = "master-data--FluidSample"
 FLUIDSAMPLE_ID = "fluidsample_test"
 MSS_TYPE = "work-product-component--MultiStageSeparatorTest"
 MSS_ID = "multistageseparator_test"
-MSS_VERSION = "1.0.0"
 SWELLING_TYPE = "work-product-component--SwellingTest"
 SWELLING_ID = "swelling_test"
-SWELLING_VERSION = "1.0.0"
 CVD_TYPE = "work-product-component--ConstantVolumeDepletionTest"
-CVD_VERSION = "1.0.0"
 CVD_ID = "cvd_test"
 WATER_ANALYSIS_TYPE = "work-product-component--WaterAnalysisTest"
-WATER_ANALYSIS_VERSION = "1.0.0"
 WATER_ANALYSIS_ID = "wateranalysis_test"
 STO_TYPE = "work-product-component--StockTankOilAnalysisTest"
-STO_VERSION = "1.0.0"
 STO_ID = "sto_test"
 INTERFACIAL_TENSION_TYPE = "work-product-component--InterfacialTensionTest"
-INTERFACIAL_TENSION_VERSION = "1.0.0"
 INTERFACIAL_TENSION_ID = "intefacialtension_test"
 VLE_TYPE = "work-product-component--VaporLiquidEquilibriumTest"
-VLE_VERSION = "1.0.0"
 VLE_ID = "vle_test"
 MCM_TYPE = "work-product-component--MultipleContactMiscibilityTest"
-MCM_VERSION = "1.0.0"
 MCM_ID = "mcm_test"
 SLIMTUBETEST_TYPE = "work-product-component--SlimTubeTest"
-SLIMTUBETEST_VERSION = "1.0.0"
 SLIMTUBETEST_ID = "slimtubetest_test"
 SAMPLESANALYSESREPORT_TYPE = "work-product-component--SamplesAnalysesReport"
-SAMPLESANALYSESREPORT_VERSION = "1.0.0"
 SAMPLESANALYSESREPORT_ID = "samplesanalysesreport_test_id"
 SAMPLESANALYSIS_TYPE = "work-product-component--SamplesAnalysis"
-SAMPLESANALYSIS_VERSION = "1.0.0"
 SAMPLESANALYSIS_ID = "samplesanalysis_test"
 RELATIVE_PERMEABILITY_ID = "relative_permeability_test"
 CAP_PRESSURE_ID = "cappressure_test"
@@ -181,48 +202,58 @@ FILE_GENERIC_TYPE = "dataset--File.Generic"
 TEST_DATASET_UID = "1"
 
 TEST_CORING_ID = f"{PARTITION}:{CORING_TYPE}:{CORING_ID}"
-TEST_CORING_KIND = f"{SCHEMA_AUTHORITY}:wks:{CORING_TYPE}:{CORING_VERSION}"
+TEST_CORING_KIND = f"{SCHEMA_AUTHORITY}:wks:{CORING_TYPE}:{KindVersion.V_1_0_0}"
+TEST_GENERIC_FACILITY_ID = f"{PARTITION}:{GENERIC_FACILITY_TYPE}:{GENERIC_FACILITY_ID}"
+TEST_GENERIC_FACILITY_KIND = f"{SCHEMA_AUTHORITY}:wks:{GENERIC_FACILITY_TYPE}:{KindVersion.V_1_0_0}"
+TEST_GENERIC_SITE_ID = f"{PARTITION}:{GENERIC_SITE_TYPE}:{GENERIC_SITE_ID}"
+TEST_GENERIC_SITE_KIND = f"{SCHEMA_AUTHORITY}:wks:{GENERIC_SITE_TYPE}:{KindVersion.V_1_0_0}"
 TEST_ROCKSAMPLE_ID = f"{PARTITION}:{ROCKSAMPLE_TYPE}:{ROCKSAMPLE_ID}"
-TEST_ROCKSAMPLE_KIND = f"{SCHEMA_AUTHORITY}:wks:{ROCKSAMPLE_TYPE}:{ROCKSAMPLE_VERSION}"
+TEST_ROCKSAMPLE_KIND = f"{SCHEMA_AUTHORITY}:wks:{ROCKSAMPLE_TYPE}:{KindVersion.V_1_0_0}"
 TEST_SAMPLE_ID = f"{PARTITION}:{SAMPLE_TYPE}:{SAMPLE_ID}"
-TEST_SAMPLE_KIND = f"{SCHEMA_AUTHORITY}:wks:{SAMPLE_TYPE}:{SAMPLE_VERSION}"
+TEST_SAMPLE_KIND = f"{SCHEMA_AUTHORITY}:wks:{SAMPLE_TYPE}:{KindVersion.V_2_0_0}"
+TEST_SAMPLE_ACQUISITION_JOB_ID = f"{PARTITION}:{SAMPLE_ACQUISITION_JOB_TYPE}:{SAMPLE_ACQUISITION_JOB_ID}"
+TEST_SAMPLE_ACQUISITION_JOB_KIND = f"{SCHEMA_AUTHORITY}:wks:{SAMPLE_ACQUISITION_JOB_TYPE}:{KindVersion.V_1_0_0}"
+TEST_SAMPLE_CHAIN_OF_CUSTODY_EVENT_ID = f"{PARTITION}:{SAMPLE_CHAIN_OF_CUSTODY_EVENT_TYPE}:{SAMPLE_CHAIN_OF_CUSTODY_EVENT_ID}"
+TEST_SAMPLE_CHAIN_OF_CUSTODY_EVENT_KIND = f"{SCHEMA_AUTHORITY}:wks:{SAMPLE_CHAIN_OF_CUSTODY_EVENT_TYPE}:{KindVersion.V_1_0_0}"
+TEST_SAMPLE_CONTAINER_ID = f"{PARTITION}:{SAMPLE_CONTAINER_TYPE}:{SAMPLE_CONTAINER_ID}"
+TEST_SAMPLE_CONTAINER_KIND = f"{SCHEMA_AUTHORITY}:wks:{SAMPLE_CONTAINER_TYPE}:{KindVersion.V_1_0_0}"
 TEST_ROCKSAMPLEANALYSIS_ID = f"{PARTITION}:{ROCKSAMPLEANALYSIS_TYPE}:{ROCKSAMPLEANALYSIS_ID}"
-TEST_ROCKSAMPLEANALYSIS_KIND = f"{SCHEMA_AUTHORITY}:wks:{ROCKSAMPLEANALYSIS_TYPE}:{ROCKSAMPLEANALYSIS_VERSION}"
+TEST_ROCKSAMPLEANALYSIS_KIND = f"{SCHEMA_AUTHORITY}:wks:{ROCKSAMPLEANALYSIS_TYPE}:{KindVersion.V_1_1_0}"
 TEST_CCE_ID = f"{PARTITION}:{CCE_TYPE}:{CCE_ID}"
-TEST_CCE_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{CCE_TYPE}:{CCE_VERSION}"
+TEST_CCE_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{CCE_TYPE}:{KindVersion.V_1_0_0}"
 TEST_PVT_ID = f"{PARTITION}:{PVT_TYPE}:{PVT_ID}"
-TEST_PVT_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{PVT_TYPE}:{PVT_VERSION}"
+TEST_PVT_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{PVT_TYPE}:{KindVersion.V_1_0_0}"
 TEST_WELLBORE_ID = f"{PARTITION}:{WELLBORE_TYPE}:{WELLBORE_ID}"
 TEST_DL_ID = f"{PARTITION}:{DL_TYPE}:{DL_ID}"
-TEST_DL_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{DL_TYPE}:{DL_VERSION}"
+TEST_DL_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{DL_TYPE}:{KindVersion.V_1_0_0}"
 TEST_TRANSPORT_ID = f"{PARTITION}:{TRANSPORT_TYPE}:{TRANSPORT_ID}"
-TEST_TRANSPORT_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{TRANSPORT_TYPE}:{TRANSPORT_VERSION}"
+TEST_TRANSPORT_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{TRANSPORT_TYPE}:{KindVersion.V_1_0_0}"
 TEST_COMPOSITIONALANALYSIS_ID = f"{PARTITION}:{COMPOSITIONALANALYSIS_TYPE}:{COMPOSITIONALANALYSIS_ID}"
-TEST_COMPOSITIONALANALYSIS_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{COMPOSITIONALANALYSIS_TYPE}:{COMPOSITIONALANALYSIS_VERSION}"
+TEST_COMPOSITIONALANALYSIS_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{COMPOSITIONALANALYSIS_TYPE}:{KindVersion.V_1_0_0}"
 TEST_MSS_ID = f"{PARTITION}:{MSS_TYPE}:{MSS_ID}"
-TEST_MSS_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{MSS_TYPE}:{MSS_VERSION}"
+TEST_MSS_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{MSS_TYPE}:{KindVersion.V_1_0_0}"
 TEST_SWELLING_ID = f"{PARTITION}:{SWELLING_TYPE}:{SWELLING_ID}"
-TEST_SWELLING_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{SWELLING_TYPE}:{SWELLING_VERSION}"
+TEST_SWELLING_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{SWELLING_TYPE}:{KindVersion.V_1_0_0}"
 TEST_CVD_ID = f"{PARTITION}:{CVD_TYPE}:{CVD_ID}"
-TEST_CVD_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{CVD_TYPE}:{CVD_VERSION}"
+TEST_CVD_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{CVD_TYPE}:{KindVersion.V_1_0_0}"
 TEST_WATERANALYSIS_ID = f"{PARTITION}:{WATER_ANALYSIS_TYPE}:{WATER_ANALYSIS_ID}"
-TEST_WATERANALYSIS_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{WATER_ANALYSIS_TYPE}:{WATER_ANALYSIS_VERSION}"
+TEST_WATERANALYSIS_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{WATER_ANALYSIS_TYPE}:{KindVersion.V_1_0_0}"
 TEST_STO_ID = f"{PARTITION}:{STO_TYPE}:{STO_ID}"
-TEST_STO_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{STO_TYPE}:{STO_VERSION}"
+TEST_STO_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{STO_TYPE}:{KindVersion.V_1_0_0}"
 TEST_INTERFACIAL_TENSION_ID = f"{PARTITION}:{INTERFACIAL_TENSION_TYPE}:{INTERFACIAL_TENSION_ID}"
-TEST_INTERFACIAL_TENSION_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{INTERFACIAL_TENSION_TYPE}:{INTERFACIAL_TENSION_VERSION}"
+TEST_INTERFACIAL_TENSION_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{INTERFACIAL_TENSION_TYPE}:{KindVersion.V_1_0_0}"
 TEST_VLE_ID = f"{PARTITION}:{VLE_TYPE}:{VLE_ID}"
-TEST_VLE_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{VLE_TYPE}:{VLE_VERSION}"
+TEST_VLE_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{VLE_TYPE}:{KindVersion.V_1_0_0}"
 TEST_MCM_ID = f"{PARTITION}:{MCM_TYPE}:{MCM_ID}"
-TEST_MCM_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{MCM_TYPE}:{MCM_VERSION}"
+TEST_MCM_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{MCM_TYPE}:{KindVersion.V_1_0_0}"
 TEST_SLIMTUBETEST_ID = f"{PARTITION}:{SLIMTUBETEST_TYPE}:{SLIMTUBETEST_ID}"
-TEST_SLIMTUBETEST_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{SLIMTUBETEST_TYPE}:{SLIMTUBETEST_VERSION}"
+TEST_SLIMTUBETEST_KIND = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{SLIMTUBETEST_TYPE}:{KindVersion.V_1_0_0}"
 TEST_SAMPLESANALYSESREPORT_ID = f"{PARTITION}:{SAMPLESANALYSESREPORT_TYPE}:{SAMPLESANALYSESREPORT_ID}"
-TEST_SAMPLESANALYSESREPORT_KIND_V1 = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{SAMPLESANALYSESREPORT_TYPE}:{SAMPLESANALYSESREPORT_VERSION}"
-TEST_SAMPLESANALYSESREPORT_KIND_V2 = f"{SCHEMA_AUTHORITY}:wks:{SAMPLESANALYSESREPORT_TYPE}:{SAMPLESANALYSESREPORT_VERSION}"
+TEST_SAMPLESANALYSESREPORT_KIND_V1 = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{SAMPLESANALYSESREPORT_TYPE}:{KindVersion.V_1_0_0}"
+TEST_SAMPLESANALYSESREPORT_KIND_V2 = f"{SCHEMA_AUTHORITY}:wks:{SAMPLESANALYSESREPORT_TYPE}:{KindVersion.V_1_0_0}"
 TEST_SAMPLESANALYSIS_ID = f"{PARTITION}:{SAMPLESANALYSIS_TYPE}:{SAMPLESANALYSIS_ID}"
-TEST_SAMPLESANALYSIS_KIND_V1 = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{SAMPLESANALYSIS_TYPE}:{SAMPLESANALYSIS_VERSION}"
-TEST_SAMPLESANALYSIS_KIND_V2 = f"{SCHEMA_AUTHORITY}:wks:{SAMPLESANALYSIS_TYPE}:{SAMPLESANALYSIS_VERSION}"
+TEST_SAMPLESANALYSIS_KIND_V1 = f"{CUSTOM_SCHEMA_AUTHORITY}:wks:{SAMPLESANALYSIS_TYPE}:{KindVersion.V_1_0_0}"
+TEST_SAMPLESANALYSIS_KIND_V2 = f"{SCHEMA_AUTHORITY}:wks:{SAMPLESANALYSIS_TYPE}:{KindVersion.V_1_0_0}"
 TEST_CAP_PRESSURE_ID = f"{PARTITION}:{SAMPLESANALYSIS_TYPE}:{CAP_PRESSURE_ID}"
 TEST_FLUIDSAMPLE_ID = f"{PARTITION}:{FLUIDSAMPLE_TYPE}:{FLUIDSAMPLE_ID}"
 TEST_RELATIVE_PERMEABILITY_ID = f"{PARTITION}:{SAMPLESANALYSIS_TYPE}:{RELATIVE_PERMEABILITY_ID}"
@@ -253,6 +284,25 @@ CORING_RECORD = Coring(
     data=CoringData(CoreNumber="CoreNumber", WellboreID=f"{TEST_WELLBORE_ID}:"),
 )
 
+GENERIC_FACILITY_RECORD = GenericFacility(
+    id=TEST_GENERIC_FACILITY_ID,
+    kind=TEST_GENERIC_FACILITY_KIND,
+    acl=TEST_ACL,
+    legal=TEST_LEGAL,
+    data=GenericFacitilyData(),
+)
+
+GENERIC_SITE_RECORD = GenericSite(
+    id=TEST_GENERIC_SITE_ID,
+    kind=TEST_GENERIC_SITE_KIND,
+    acl=TEST_ACL,
+    legal=TEST_LEGAL,
+    data=GenericSiteData(
+        Name="Name",
+        SiteTypeID="opendes:reference-data--SiteType:Coal:",
+    ),
+)
+
 ROCKSAMPLE_RECORD = RockSample(
     id=TEST_ROCKSAMPLE_ID,
     kind=TEST_ROCKSAMPLE_KIND,
@@ -271,7 +321,46 @@ SAMPLE_RECORD = Sample(
     legal=TEST_LEGAL,
     data=SampleData(
         ResourceHomeRegionID="opendes:reference-data--OSDURegion:Region:",
+    ),
+)
 
+SAMPLE_ACQUISITION_JOB_RECORD = SampleAcquisitionJob(
+    id=TEST_SAMPLE_ACQUISITION_JOB_ID,
+    kind=TEST_SAMPLE_ACQUISITION_JOB_KIND,
+    acl=TEST_ACL,
+    legal=TEST_LEGAL,
+    data=SampleAcquisitionJobData(
+        JobTypeID="JobTypeID",
+        ReferenceJobNumber="ReferenceJobNumber",
+    ),
+)
+
+SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD = SampleChainOfCustodyEvent(
+    id=TEST_SAMPLE_CHAIN_OF_CUSTODY_EVENT_ID,
+    kind=TEST_SAMPLE_CHAIN_OF_CUSTODY_EVENT_KIND,
+    acl=TEST_ACL,
+    legal=TEST_LEGAL,
+    data=SCOCEData(
+        CustodyEventLocationID="opendes:master-data--Organisation:Organisation:",
+        CustodyEventTypeID="opendes:reference-data--CustodyEventType:SubSampleLive:",
+    ),
+)
+
+SAMPLE_CONTAINER_RECORD = SampleContainer(
+    id=TEST_SAMPLE_CONTAINER_ID,
+    kind=TEST_SAMPLE_CONTAINER_KIND,
+    acl=TEST_ACL,
+    legal=TEST_LEGAL,
+    data=SampleContainerData(
+        OperatingConditionRating=OperatingConditionRating(
+            Temperature=1.0,
+            Pressure=1.0,
+        ),
+        SampleContainerServiceTypeIDs=["opendes:reference-data--SampleContainerServiceType:NonHydrocarbon:"],
+        ManufacturerID="opendes:master-data--Organisation:Organisation:",
+        SampleContainerTypeID="opendes:reference-data--SampleContainerType:Pressurized.NotPressureCompensated:",
+        ContainerIdentifier="BTL-12345",
+        Capacity=100,
     ),
 )
 
@@ -728,6 +817,7 @@ class TestContentPathsApiV2:
     VITRINITE_REFLECTANCE = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.VITRINITE_REFLECTANCE}"
     XRD = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.XRD}"
     PDP = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.PDP}"
+    STO = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.STO}"
 
 
 class BulkDatasetIdV1(NamedTuple):
@@ -776,7 +866,7 @@ class BulkDatasetIdV2(NamedTuple):
     ROCK_COMPRESSIBILITY = f"{PARTITION}:{FILE_GENERIC_TYPE}:rockcompressibility-{TEST_DATASET_UID}"
     WATER_GAS_REL_PERM = f"{PARTITION}:{FILE_GENERIC_TYPE}:watergasrelativepermeability-{TEST_DATASET_UID}"
     ELECTRICAL_PROPERTIES = f"{PARTITION}:{FILE_GENERIC_TYPE}:electricalproperties-{TEST_DATASET_UID}"
-    NMR = f"{PARTITION}:{FILE_GENERIC_TYPE}:nmrtests-{TEST_DATASET_UID}"
+    NMR = f"{PARTITION}:{FILE_GENERIC_TYPE}:nmr-{TEST_DATASET_UID}"
     MULTIPLE_SALINITY = f"{PARTITION}:{FILE_GENERIC_TYPE}:multiplesalinitytests-{TEST_DATASET_UID}"
     GCMS_ALKANES = f"{PARTITION}:{FILE_GENERIC_TYPE}:gcmsalkanes-{TEST_DATASET_UID}"
     GCMS_AROMATICS = f"{PARTITION}:{FILE_GENERIC_TYPE}:gcmsaromatics-{TEST_DATASET_UID}"
@@ -799,3 +889,4 @@ class BulkDatasetIdV2(NamedTuple):
     VITRINITE_REFLECTANCE = f"{PARTITION}:{FILE_GENERIC_TYPE}:vitrinitereflectance-{TEST_DATASET_UID}"
     XRD = f"{PARTITION}:{FILE_GENERIC_TYPE}:xrd-{TEST_DATASET_UID}"
     PDP = f"{PARTITION}:{FILE_GENERIC_TYPE}:pdp-{TEST_DATASET_UID}"
+    STO = f"{PARTITION}:{FILE_GENERIC_TYPE}:stocktankoilanalysisreports-{TEST_DATASET_UID}"

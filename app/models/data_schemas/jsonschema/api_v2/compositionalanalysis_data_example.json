@@ -12,7 +12,7 @@
     },
     "CompositionalAnalysis": [
         {
-            "ComponentFormula": "C1",
+            "ComponentFormula": "opendes:reference-data--SampleCompositionComponent:C30:",
             "ComponentName": "Methane",
             "FlashedLiquidRelativeMole": {
                 "Value": 16.04,
@@ -109,7 +109,7 @@
         },
         "PlusComponentsCalculatedProperties": [
             {
-                "ComponentFormula": "C10H22",
+                "ComponentFormula": "opendes:reference-data--SampleCompositionComponent:C10H22:",
                 "ComponentName": "Decane",
                 "FlashedLiquidRelativeMole": {
                     "Value": 142.48,

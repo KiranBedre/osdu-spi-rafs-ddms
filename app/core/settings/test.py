@@ -24,3 +24,4 @@ class TestAppSettings(AppSettings):
     service_host_search: str = "http://test-url"
     service_host_storage: str = "http://test-url"
     service_host_dataset: str = "http://test-url"
+    enable_api_v1: bool = True

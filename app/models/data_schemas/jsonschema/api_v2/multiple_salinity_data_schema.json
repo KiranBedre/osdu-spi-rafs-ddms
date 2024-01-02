@@ -64,9 +64,6 @@
                     "AdjustedSaturationExponent": {
                         "type": "number"
                     },
-                    "AdjustedPorosityExponent": {
-                        "type": "number"
-                    },
                     "WaterSaturationOverResistivity": {
                         "type": "array",
                         "items": {

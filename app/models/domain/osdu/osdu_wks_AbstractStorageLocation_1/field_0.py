@@ -26,25 +26,25 @@ from pydantic import BaseModel, Field, constr
 
 class Field0(BaseModel):
     StorageFacilityID: Optional[
-        constr(regex=r'^[\w\-\.]+:master-data\-\-StorageFacility:[\w\-\.\:\%]+:[0-9]*$')
-    ] = Field(None, description='Identifies the warehouse in which the item is stored.')
+        constr(regex=r"^[\w\-\.]+:master-data\-\-StorageFacility:[\w\-\.\:\%]+:[0-9]*$")
+    ] = Field(None, description="Identifies the warehouse in which the item is stored.")
     StorageLocationDescription: Optional[str] = Field(
         None,
-        description='The name of the location where the item is stored. It can be stored in more than one location over time.',
+        description="The name of the location where the item is stored. It can be stored in more than one location over time.",
     )
     SampleIdentifier: Optional[str] = Field(
         None,
-        description='The item (sample, tape)  identifier, for example a barcode, which identifies the item in the StorageFacility.',
+        description="The item (sample, tape)  identifier, for example a barcode, which identifies the item in the StorageFacility.",
     )
     TerminationDateTime: Optional[date] = Field(
         None,
         description="The date and time at which the item is  no longer stored in the given location.  If the item is still in this storage, the 'TerminationDateTime' is left absent.",
     )
     EffectiveDateTime: Optional[date] = Field(
-        None, description='The date the item arrived at the storage location.'
+        None, description="The date the item arrived at the storage location."
     )
     StorageOrganisationID: Optional[
-        constr(regex=r'^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$')
+        constr(regex=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")
     ] = Field(
-        None, description='Identifies the organisation with which the item is stored.'
+        None, description="Identifies the organisation with which the item is stored."
     )

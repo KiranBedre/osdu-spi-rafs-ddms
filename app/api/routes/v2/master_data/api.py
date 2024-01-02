@@ -16,10 +16,12 @@ from fastapi import APIRouter
 
 from app.api.dependencies.validation import validate_master_data_records_payload
 from app.api.routes.osdu.storage_records import BaseStorageRecordView
+from app.api.routes.utils.records import parse_kind
+from app.models.domain.osdu.base import MASTER_DATA_KINDS_V2
 
-SUPPORTED_TYPES = ("Coring", "Sample")
-RECORD_TYPE = f"master-data--({'|'.join(SUPPORTED_TYPES)})"  # noqa: WPS237
-MD_ID_REGEX_STR = f"^[\w\-\.]+:{RECORD_TYPE}:[\w\-\.\:\%]+$"  # noqa: W605
+RECORD_TYPE_STR = f"({'|'.join(MASTER_DATA_KINDS_V2)})"  # noqa: WPS237
+SUPPORTED_TYPES = f"({'|'.join([parse_kind(kind)['entity_type'] for kind in MASTER_DATA_KINDS_V2])})"  # noqa: WPS237
+MD_ID_REGEX_STR = f"^[\w\-\.]+:{SUPPORTED_TYPES}:[\w\-\.\:\%]+$"  # noqa: W605
 
 md_router = APIRouter()
 
@@ -27,5 +29,5 @@ BaseStorageRecordView(
     router=md_router,
     id_regex_str=MD_ID_REGEX_STR,
     validate_records_payload=validate_master_data_records_payload,
-    record_type=RECORD_TYPE,
+    record_type=RECORD_TYPE_STR,
 )

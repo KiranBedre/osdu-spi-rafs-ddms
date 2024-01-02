@@ -18,7 +18,6 @@
             },
             "AdjustedFormationResistivityFactor": 15,
             "AdjustedSaturationExponent": 15,
-            "AdjustedPorosityExponent": 15,
             "WaterSaturationOverResistivity": [
                 {
                     "ResistivityIndex": 15,
@@ -45,7 +44,6 @@
             },
             "AdjustedFormationResistivityFactor": 12,
             "AdjustedSaturationExponent": 12,
-            "AdjustedPorosityExponent": 12,
             "WaterSaturationOverResistivity": [
                 {
                     "ResistivityIndex": 15,

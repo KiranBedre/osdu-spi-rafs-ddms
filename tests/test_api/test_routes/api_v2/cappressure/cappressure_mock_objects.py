@@ -89,441 +89,195 @@ TEST_FILTERED_DATA = {
             "opendes:master-data--Sample:CapillaryPressure_Sample:",
             [
                 {
-                    "FluidSystemType": "opendes:reference-data--FluidSystemType:GasBrine:",
-                    "Permeability": {
-                        "Value": 52.2,
-                        "Type": "opendes:reference-data--PermeabilityMeasurementType:Kair:",
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:md:",
-                    },
-                    "CapillaryPressureMethod": {
-                        "Value": "opendes:reference-data--CapillaryPressureMethod:MercuryInjection:",
-                    },
-                    "InitialWaterSaturation": {
-                        "Value": 0.266,
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:pct:",
-                    },
-                    "InitialGasSaturation": {
-                        "Value": 1,
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:pct:",
-                    },
-                    "Temperature": {
-                        "Value": 0.456,
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:rte:",
-                    },
-                    "CapillaryPressureMax": {
-                        "Value": 0.912,
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:rre:",
-                    },
-                    "CapillaryPressureMin": {
-                        "Value": 0.612,
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:lre:",
-                    },
-                    "CapillaryPressureSteps": [
+                    "Permeability": [
                         {
-                            "StepNumber": "1",
-                            "CapillaryPressure": {
-                                "Value": 2,
-                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psia:",
-                            },
-                            "PhaseSaturation": [
-                                {
-                                    "Value": 0.978,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:pct:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Mercury:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Mercury:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                },
-                                {
-                                    "Value": 0.238,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ict:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Air:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Air:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                },
-                            ],
-                            "PhaseInjectedVolume": [
-                                {
-                                    "Value": 0.568,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:tyt:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:AirFreeWellheadCrude:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:AirFreeWellheadCrude:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Nonwetting:",
-                                },
-                                {
-                                    "Value": 0.276,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ght:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Bayol35:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Bayol35:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                },
-                            ],
-                            "Remark": "Test was successfully executed",
-                            "CalculatedProperties": {
-                                "PoreThroatRadius": {
-                                    "Value": 1,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:lrr:",
-                                },
-                                "PoreThroatMedianRadius": {
-                                    "Value": 0.564,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yrr:",
-                                },
-                                "JFunction": {
-                                    "Value": 2,
-                                },
-                                "GasWaterCapillaryPressure": {
-                                    "Value": 0.264,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yri:",
-                                },
-                                "GasOilCapillaryPressure": {
-                                    "Value": 0.164,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yri:",
-                                },
-                                "OilWaterCapillaryPressure": {
-                                    "Value": 0.161,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yrif:",
-                                },
-                                "GasWaterFWL": {
-                                    "Value": 0.361,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ysi:",
-                                },
-                                "OilWaterFWL": {
-                                    "Value": 0.398,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ysi:",
-                                },
-                            },
-                            "PoreThroatSizeDistribution": [
-                                {
-                                    "PoreThroatSize": {
-                                        "Value": 0.938,
-                                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:pct:",
-                                    },
-                                    "CumulativePhaseSaturation": {
-                                        "Value": 0.123,
-                                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ert:",
-                                        "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Bayol55:",
-                                        "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Bayol55:",
-                                        "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                    },
-                                    "PhaseSaturationFrequency": {
-                                        "Value": 0.454,
-                                        "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Brine:",
-                                        "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Brine:",
-                                        "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                    },
-                                },
-                            ],
-                        },
-                        {
-                            "StepNumber": "2",
-                            "CapillaryPressure": {
-                                "Value": 4,
-                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:pfgd:",
-                            },
-                            "PhaseSaturation": [
-                                {
-                                    "Value": 0.138,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:dft:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:CarbonDioxide:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:CarbonDioxide:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                },
-                                {
-                                    "Value": 0.238,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:act:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Carnation:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Carnation:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                },
-                            ],
-                            "PhaseInjectedVolume": [
-                                {
-                                    "Value": 0.561,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:tyt:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:DeadCrudeOil:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:DeadCrudeOil:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Nonwetting:",
-                                },
-                                {
-                                    "Value": 0.346,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:tre:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:DeadBrine:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:DeadBrine:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                },
-                            ],
-                            "Remark": "Test was successfully executed",
-                            "CalculatedProperties": {
-                                "PoreThroatRadius": {
-                                    "Value": 3,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:lrf:",
-                                },
-                                "PoreThroatMedianRadius": {
-                                    "Value": 0.514,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yrr:",
-                                },
-                                "JFunction": {
-                                    "Value": 1,
-                                },
-                                "GasWaterCapillaryPressure": {
-                                    "Value": 0.264,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yri:",
-                                },
-                                "GasOilCapillaryPressure": {
-                                    "Value": 0.164,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yri:",
-                                },
-                                "OilWaterCapillaryPressure": {
-                                    "Value": 0.171,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yrvf:",
-                                },
-                                "GasWaterFWL": {
-                                    "Value": 0.888,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ysi:",
-                                },
-                                "OilWaterFWL": {
-                                    "Value": 0.387,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ysi:",
-                                },
-                            },
-                            "PoreThroatSizeDistribution": [
-                                {
-                                    "PoreThroatSize": {
-                                        "Value": 0.121,
-                                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:pct:",
-                                    },
-                                    "CumulativePhaseSaturation": {
-                                        "Value": 0.899,
-                                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ert:",
-                                        "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Bayol535:",
-                                        "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Bayol535:",
-                                        "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                    },
-                                    "PhaseSaturationFrequency": {
-                                        "Value": 0.467,
-                                        "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Decane:",
-                                        "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Decane:",
-                                        "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                    },
-                                },
-                            ],
+                            "Value": 52.2,
+                            "Type": "opendes:reference-data--PermeabilityMeasurementType:Klinkenberg:",
+                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:H%2Fm:",
                         },
                     ],
-                },
-                {
-                    "FluidSystemType": "opendes:reference-data--FluidSystemType:OilWater:",
-                    "Permeability": {
-                        "Value": 88.2,
-                        "Type": "opendes:reference-data--PermeabilityMeasurementType:Vari:",
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:rtt:",
+                    "Porosity": {
+                        "Value": 40,
+                        "Type": "opendes:reference-data--PorosityMeasurementType:BrineSaturation:",
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25%5Bvol%5D:",
                     },
-                    "CapillaryPressureMethod": {
-                        "Value": "opendes:reference-data--CapillaryPressureMethod:TertiaryDrainageTwoPhase:",
+                    "SaturationProcessMethod": {
+                        "Value": "opendes:reference-data--SaturationProcessMethod:DrainageTwoPhase:",
                     },
                     "InitialWaterSaturation": {
-                        "Value": 0.556,
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:jkj:",
+                        "Value": 25,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                    },
+                    "InitialOilSaturation": {
+                        "Value": 34,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
                     },
                     "InitialGasSaturation": {
-                        "Value": 1,
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ffd:",
+                        "Value": 54,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                    },
+                    "Pressure": [
+                        {
+                            "Value": 13,
+                            "Type": "opendes:reference-data--PressureMeasurementType:Overburden:",
+                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                        },
+                    ],
+                    "EntryPressure": [
+                        {
+                            "Value": 21,
+                            "Type": "opendes:reference-data--FluidSystemType:AirMercury:",
+                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                        },
+                    ],
+                    "NetConfiningStress": {
+                        "Value": 321,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
                     },
                     "Temperature": {
-                        "Value": 0.988,
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:rte:",
+                        "Value": 75,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:",
                     },
-                    "CapillaryPressureMax": {
-                        "Value": 0.433,
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:bvb:",
+                    "WaterViscosity": {
+                        "Value": 5,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m2%2Fs:",
                     },
-                    "CapillaryPressureMin": {
-                        "Value": 0.612,
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:lre:",
+                    "WaterDensity": {
+                        "Value": 6.4,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:",
+                    },
+                    "OilViscosity": {
+                        "Value": 3.7,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m2%2Fs:",
+                    },
+                    "OilDensity": {
+                        "Value": 4.7,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:",
+                    },
+                    "GasViscosity": {
+                        "Value": 12,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m2%2Fs:",
+                    },
+                    "GasDensity": {
+                        "Value": 7.4,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:",
+                    },
+                    "InterfacialTension": {
+                        "Value": 3.5,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mN%2Fm:",
+                    },
+                    "BrineSalinity": {
+                        "Value": 65,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g%2FL:",
+                    },
+                    "Endpoints": {
+                        "CapillaryPressureMax": {
+                            "Value": 328,
+                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                        },
+                        "WettingPhaseSaturationAtCapillaryPressureMax": {
+                            "Value": 236,
+                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                        },
+                        "NonwettingPhaseSaturationAtCapillaryPressureMax": {
+                            "Value": 321,
+                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
+                        },
+                        "LowestWettingPhaseSaturationAVG": {
+                            "Value": 43,
+                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                        },
+                        "LowestNonwettingPhaseSaturationAVG": {
+                            "Value": 26,
+                            "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                        },
                     },
                     "CapillaryPressureSteps": [
                         {
                             "StepNumber": "1",
                             "CapillaryPressure": {
-                                "Value": 2,
-                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psia:",
+                                "Value": 76,
+                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
                             },
                             "PhaseSaturation": [
                                 {
-                                    "Value": 0.978,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:pct:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:DIWater:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:DIWater:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                },
-                                {
-                                    "Value": 0.767,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:uyu:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:EquilibriumGas:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:EquilibriumGas:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
+                                    "Value": 55,
+                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:LiveBrine:",
+                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Soltrol:",
+                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:WettingAqueous:",
                                 },
                             ],
                             "PhaseInjectedVolume": [
                                 {
-                                    "Value": 0.568,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cccs:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:GasUnspecified:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:GasUnspecified:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Nonwetting:",
-                                },
-                                {
-                                    "Value": 0.544,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ddd:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Helium:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Helium:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
+                                    "Value": 34,
+                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:",
+                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Tetradecane:",
+                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Decane:",
+                                    "CapillaryPressurePhaseType": "opendes:reference-data--CapillaryPressurePhaseType:Wetting:",
                                 },
                             ],
-                            "Remark": "Test was successfully executed",
+                            "Remark": "Success",
                             "CalculatedProperties": {
                                 "PoreThroatRadius": {
-                                    "Value": 1,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:lrr:",
+                                    "Value": 34,
+                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mm:",
                                 },
                                 "PoreThroatMedianRadius": {
-                                    "Value": 0.564,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yrr:",
+                                    "Value": 12,
+                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mm:",
+                                },
+                                "EndFaceEstimationMethod": "opendes:reference-data--EndFaceEstimationMethod:Forbes:",
+                                "EndFacePhaseSaturation": {
+                                    "Value": 12,
+                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
                                 },
                                 "JFunction": {
-                                    "Value": 2,
-                                },
-                                "GasWaterCapillaryPressure": {
-                                    "Value": 0.264,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yri:",
-                                },
-                                "GasOilCapillaryPressure": {
-                                    "Value": 0.164,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yri:",
-                                },
-                                "OilWaterCapillaryPressure": {
-                                    "Value": 0.161,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yrif:",
-                                },
-                                "GasWaterFWL": {
-                                    "Value": 0.361,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ysi:",
-                                },
-                                "OilWaterFWL": {
-                                    "Value": 0.398,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ysi:",
-                                },
-                            },
-                            "PoreThroatSizeDistribution": [
-                                {
-                                    "PoreThroatSize": {
-                                        "Value": 0.938,
-                                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:pct:",
-                                    },
-                                    "CumulativePhaseSaturation": {
-                                        "Value": 0.123,
-                                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ert:",
-                                        "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Bayol55:",
-                                        "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Bayol55:",
-                                        "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                    },
-                                    "PhaseSaturationFrequency": {
-                                        "Value": 0.454,
-                                        "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Brine:",
-                                        "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Brine:",
-                                        "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                    },
-                                },
-                            ],
-                        },
-                        {
-                            "StepNumber": "2",
-                            "CapillaryPressure": {
-                                "Value": 4,
-                                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:pfgd:",
-                            },
-                            "PhaseSaturation": [
-                                {
-                                    "Value": 0.138,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:dft:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:LabOil:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:LabOil:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                },
-                                {
-                                    "Value": 0.238,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:act:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Kerosene:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Kerosene:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                },
-                            ],
-                            "PhaseInjectedVolume": [
-                                {
-                                    "Value": 0.561,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:tyt:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:IsoparBlend:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:IsoparBlend:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Nonwetting:",
-                                },
-                                {
-                                    "Value": 0.346,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:tre:",
-                                    "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Isopar:",
-                                    "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Isopar:",
-                                    "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
-                                },
-                            ],
-                            "Remark": "Test was successfully executed",
-                            "CalculatedProperties": {
-                                "PoreThroatRadius": {
                                     "Value": 3,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:vcv:",
-                                },
-                                "PoreThroatMedianRadius": {
-                                    "Value": 0.514,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yrr:",
-                                },
-                                "JFunction": {
-                                    "Value": 1,
                                 },
                                 "GasWaterCapillaryPressure": {
-                                    "Value": 1,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yri:",
+                                    "Value": 31,
+                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
                                 },
                                 "GasOilCapillaryPressure": {
-                                    "Value": 0.164,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:dfd:",
+                                    "Value": 44,
+                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
                                 },
                                 "OilWaterCapillaryPressure": {
-                                    "Value": 0.665,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:yrvf:",
+                                    "Value": 22,
+                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
                                 },
-                                "GasWaterFWL": {
-                                    "Value": 0.888,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:iuu:",
+                                "AirMercuryCapillaryPressure": {
+                                    "Value": 12,
+                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:",
                                 },
-                                "OilWaterFWL": {
-                                    "Value": 0.887,
-                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ysi:",
+                                "GasWaterAboveFWL": {
+                                    "Value": 33,
+                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm:",
+                                },
+                                "OilWaterAboveFWL": {
+                                    "Value": 31,
+                                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm:",
                                 },
                             },
                             "PoreThroatSizeDistribution": [
                                 {
                                     "PoreThroatSize": {
-                                        "Value": 0.121,
-                                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:pct:",
+                                        "Value": 36,
+                                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:um:",
                                     },
                                     "CumulativePhaseSaturation": {
-                                        "Value": 0.899,
-                                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ert:",
-                                        "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Hexane:",
-                                        "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Hexane:",
-                                        "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
+                                        "Value": 34,
+                                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                                        "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Mercury:",
+                                        "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:LiveCrudeOil:",
+                                        "CapillaryPressurePhaseType": "opendes:reference-data--CapillaryPressurePhaseType:Nonwetting:",
                                     },
                                     "PhaseSaturationFrequency": {
-                                        "Value": 0.467,
-                                        "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Hexadecane:",
-                                        "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Hexadecane:",
-                                        "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:",
+                                        "Value": 32,
+                                        "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Helium:",
+                                        "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:IsoparBlend:",
+                                        "CapillaryPressurePhaseType": "opendes:reference-data--CapillaryPressurePhaseType:Wetting:",
                                     },
                                 },
                             ],

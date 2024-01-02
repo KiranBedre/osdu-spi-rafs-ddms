@@ -627,6 +627,26 @@ async def test_post_record_invalid_payload_type(path):
             f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_RECORD, "ResourceHomeRegionID",
         ),
+        (
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD, "ResourceHomeRegionID",
+        ),
+        (
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD, "ResourceHomeRegionID",
+        ),
+        (
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CONTAINER_RECORD, "ResourceHomeRegionID",
+        ),
+        (
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_FACILITY_RECORD, "ResourceHomeRegionID",
+        ),
+        (
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_SITE_RECORD, "ResourceHomeRegionID",
+        ),
     ],
 )
 async def test_post_record_invalid_field_type(path, osdu_record, field):
@@ -666,6 +686,26 @@ async def test_post_record_invalid_field_type(path, osdu_record, field):
         (
             "upsert_records", f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_RECORD,
+        ),
+        (
+            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
+        ),
+        (
+            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
+        ),
+        (
+            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CONTAINER_RECORD,
+        ),
+        (
+            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_FACILITY_RECORD,
+        ),
+        (
+            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_SITE_RECORD,
         ),
     ],
 )
@@ -1184,6 +1224,26 @@ async def test_post_samplesanalysis_success(
             "upsert_records", f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_RECORD,
         ),
+        (
+            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
+        ),
+        (
+            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
+        ),
+        (
+            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CONTAINER_RECORD,
+        ),
+        (
+            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_FACILITY_RECORD,
+        ),
+        (
+            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_SITE_RECORD,
+        ),
     ],
 )
 async def test_post_record_no_id(
@@ -1483,6 +1543,26 @@ async def test_post_record_with_linking_no_id(
             "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_RECORD,
             storage_mock_objects.TEST_SAMPLE_ID,
         ),
+        (
+            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
+            storage_mock_objects.TEST_SAMPLE_ACQUISITION_JOB_ID,
+        ),
+        (
+            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
+            storage_mock_objects.TEST_SAMPLE_CHAIN_OF_CUSTODY_EVENT_ID,
+        ),
+        (
+            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_CONTAINER_RECORD,
+            storage_mock_objects.TEST_SAMPLE_CONTAINER_ID,
+        ),
+        (
+            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.GENERIC_FACILITY_RECORD,
+            storage_mock_objects.TEST_GENERIC_FACILITY_ID,
+        ),
+        (
+            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.GENERIC_SITE_RECORD,
+            storage_mock_objects.TEST_GENERIC_SITE_ID,
+        ),
     ],
 )
 async def test_get_record_success(
@@ -1555,6 +1635,26 @@ async def test_get_record_success(
         (
             "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_RECORD,
             storage_mock_objects.TEST_SAMPLE_ID,
+        ),
+        (
+            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
+            storage_mock_objects.TEST_SAMPLE_ACQUISITION_JOB_ID,
+        ),
+        (
+            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
+            storage_mock_objects.TEST_SAMPLE_CHAIN_OF_CUSTODY_EVENT_ID,
+        ),
+        (
+            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_CONTAINER_RECORD,
+            storage_mock_objects.TEST_SAMPLE_CONTAINER_ID,
+        ),
+        (
+            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.GENERIC_FACILITY_RECORD,
+            storage_mock_objects.TEST_GENERIC_FACILITY_ID,
+        ),
+        (
+            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.GENERIC_SITE_RECORD,
+            storage_mock_objects.TEST_GENERIC_SITE_ID,
         ),
     ],
 )
@@ -2256,6 +2356,26 @@ async def test_delete_record_auth_errors(
             "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_RECORD,
         ),
+        (
+            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
+        ),
+        (
+            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
+        ),
+        (
+            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CONTAINER_RECORD,
+        ),
+        (
+            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_FACILITY_RECORD,
+        ),
+        (
+            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_SITE_RECORD,
+        ),
     ],
 )
 async def test_post_record_auth_errors_from_storage(
@@ -2310,6 +2430,26 @@ async def test_post_record_auth_errors_from_storage(
         (
             f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_RECORD,
+        ),
+        (
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
+        ),
+        (
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
+        ),
+        (
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CONTAINER_RECORD,
+        ),
+        (
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_FACILITY_RECORD,
+        ),
+        (
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_SITE_RECORD,
         ),
     ],
 )

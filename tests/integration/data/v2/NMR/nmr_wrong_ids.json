@@ -2,9 +2,7 @@
     "columns": [
         "SamplesAnalysisID",
         "SampleID",
-        "FreshState",
-        "FullBrineSaturation",
-        "PartialBrineSaturation"
+        "NMRTest"
     ],
     "index": [
         0
@@ -15,67 +13,127 @@
             "{data_partition_id}:master-data--Sample:88Y:",
             [
                 {
-                    "LiquidFilledPorosity": {
-                        "Value": "NULL",
-                        "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID2:"
-                    },
-                    "T2LogMean": {
-                        "Value": "NULL",
-                        "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID3:"
-                    }
-                }
-            ],
-            [
-                {
-                    "Porosity": {
-                        "Value": 28.12,
-                        "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID4:"
-                    },
-                    "EffectivePorosity": {
-                        "Value": 28.35,
-                        "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID5:"
-                    },
-                    "T2LogMean": {
-                        "Value": 158.1,
-                        "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID6:"
-                    }
-                }
-            ],
-            [
-                {
-                    "BVI": {
-                        "Value": 3.5,
-                        "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID7:"
-                    },
-                    "FFI": {
-                        "Value": 27,
-                        "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID8:"
-                    },
-                    "Swi": {
-                        "Value": 11,
-                        "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID9:"
-                    },
-                    "T2Cutoff": {
-                        "Value": 33,
-                        "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID10:"
-                    },
-                    "IncrementalPorositySteps": [
+                    "TestCondition": "{data_partition_id}:reference-data--NMRTestCondition:WrongID2:",
+                    "NMRTestSteps": [
                         {
-                            "StepNumber": "1",
-                            "Saturation": {
-                                "Value": 100,
+                            "CumulativeWaterSaturation": {
+                                "Value": 10.0,
+                                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID3:"
+                            },
+                            "CumulativeVolume": {
+                                "Value": 10.0,
+                                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID4:"
+                            },
+                            "CumulativePorosity": {
+                                "Value": 1.0,
+                                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID5:",
+                                "PorosityType": "{data_partition_id}:reference-data--PorosityMeasurementType:WrongID6:"
+                            },
+                            "IncrementalWaterSaturation": {
+                                "Value": 10.0,
+                                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID7:"
+                            },
+                            "IncrementalPorosity": {
+                                "Value": 10.0,
+                                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID8:",
+                                "PorosityType": "{data_partition_id}:reference-data--PorosityMeasurementType:WrongID9:"
+                            },
+                            "IncrementalVolume": {
+                                "Value": 10.0,
+                                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID10:"
+                            },
+                            "T2FullySaturated": {
+                                "Value": 10.0,
                                 "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID11:"
                             },
-                            "T2": {
-                                "Value": 0.15,
+                            "T2PartiallySaturated": {
+                                "Value": 10.0,
                                 "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID12:"
                             },
-                            "Porosity": {
-                                "Value": 0.507,
+                            "T1CumulativePorosity": {
+                                "Value": 10.0,
                                 "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID13:"
+                            },
+                            "T1CumulativeWaterSaturation": {
+                                "Value": 10.0,
+                                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID14:"
+                            },
+                            "T1IncrementalPorosity": {
+                                "Value": 10.0,
+                                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID15:"
+                            },
+                            "T1IncrementalWaterSaturation": {
+                                "Value": 10.0,
+                                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID16:"
                             }
                         }
-                    ]
+                    ],
+                    "NMRSummaryData": {
+                        "BoundFluidBVI": {
+                            "Value": 1.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID17:"
+                        },
+                        "NMRT2BoundFluidRelativetoPoreVolume": {
+                            "Value": 1.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID18:"
+                        },
+                        "DisplacedFluid": "{data_partition_id}:reference-data--DisplacedFluidType:WrongID19:",
+                        "EchoSpacing": {
+                            "Value": 1.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID20:"
+                        },
+                        "FreeFluidFFI": {
+                            "Value": 1.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID21:"
+                        },
+                        "NMRT2FreeFluid": {
+                            "Value": 1.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID22:"
+                        },
+                        "InjectedFluid": "{data_partition_id}:reference-data--DisplacingFluidType:WrongID23:",
+                        "Porosity": [
+                            {
+                                "Value": 1.0,
+                                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID24:",
+                                "PorosityType": "{data_partition_id}:reference-data--PorosityMeasurementType:WrongID25:"
+                            }
+                        ],
+                        "Permeability": [
+                            {
+                                "Value": 1.0,
+                                "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID26:",
+                                "PermeabilityType": "{data_partition_id}:reference-data--PermeabilityMeasurementType:WrongID27:"
+                            }
+                        ],
+                        "Swirr": {
+                            "Value": 1.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID28:"
+                        },
+                        "NMRT2Swirr": {
+                            "Value": 1.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID29:"
+                        },
+                        "T2CutOff": {
+                            "Value": 1.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID30:"
+                        },
+                        "T2Mean": {
+                            "Value": 1.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID31:"
+                        },
+                        "Temperature": {
+                            "Value": 1.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID32:"
+                        },
+                        "PoreVolume": {
+                            "Value": 0.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID33:"
+                        },
+                        "NetConfiningStress": {
+                            "Value": 0.0,
+                            "UnitOfMeasure": "{data_partition_id}:reference-data--UnitOfMeasure:WrongID34:"
+                        }
+                    }
                 }
             ]
         ]

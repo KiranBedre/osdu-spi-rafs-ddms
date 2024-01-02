@@ -2,10 +2,13 @@
     "columns": [
         "SamplesAnalysisID",
         "SampleID",
-        "Unit",
-        "PeakForce",
         "TVD",
-        "TensileStrength"
+        "TensileStrengthOrientationToBedding",
+        "BulkDensityAsReceived",
+        "PeakLoad",
+        "TensileStrength",
+        "ReservoirUnit",
+        "TestSteps"
     ],
     "index": [
         0
@@ -14,25 +17,49 @@
         [
             "opendes:work-product-component--SamplesAnalysis:TensileStrength_SamplesAnalysis:",
             "opendes:master-data--Sample:TensileStrength_Sample:",
-            "Some unit 1",
             {
-                "Value": 28.01,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:lbf:"
+                "Value": 1000.0,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m:"
             },
             {
-                "Value": 5413.57,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m:"
+                "Value": 10.0,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:dega:"
+            },
+            {
+                "Value": 2.0,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:"
+            },
+            {
+                "Value": 1000.0,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:kgf:"
             },
             [
                 {
-                    "Value": 22.74,
+                    "Value": 22.08,
                     "Type": "opendes:reference-data--TensileStrengthMethod:ASTM:",
                     "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
                 },
                 {
-                    "Value": 27.19,
+                    "Value": 26.7,
                     "Type": "opendes:reference-data--TensileStrengthMethod:YongYu:",
                     "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+                }
+            ],
+            "ReservoirUnit",
+            [
+                {
+                    "DataAquisitionTime": {
+                        "Value": 1.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:"
+                    },
+                    "AxialForce": {
+                        "Value": 10.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:kgf:"
+                    },
+                    "AxialDisplacement": {
+                        "Value": 0.0,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm:"
+                    }
                 }
             ]
         ]

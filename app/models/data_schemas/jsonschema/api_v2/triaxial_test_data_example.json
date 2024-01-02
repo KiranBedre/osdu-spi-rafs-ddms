@@ -1,139 +1,137 @@
 {
-    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:TriaxialTest123:",
-    "data": [
+    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:TriaxialTest_WPC:",
+    "SampleID": "opendes:master-data--Sample:TriaxialTest_Sample:",
+    "BulkDensityAsReceived": {
+        "Value": 0.47,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:"
+    },
+    "TestPorePressure": {
+        "Value": 23,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "TestConfiningPressure": {
+        "Value": 17,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "FluidSaturant": "opendes:reference-data--FluidSaturantType:LabOil:",
+    "IRSCPorePressure": {
+        "Value": 312,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "IRSCMeanEffectiveStress": {
+        "Value": 0.32,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "IRSCDifferentialStress": {
+        "Value": 11,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+    },
+    "MassAsReceived": {
+        "Value": 3.21,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mg:"
+    },
+    "SaturatedMass": {
+        "Value": 4.67,
+        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mg:"
+    },
+    "CutFluid": "opendes:reference-data--CutFluidType:Synthetic:",
+    "LoadingCondition": "Test Condition",
+    "ConsolidationType": "opendes:reference-data--ConsolidationType:Isotropic:",
+    "DrainageCondition": "opendes:reference-data--DrainageCondition:ConsolidatedUndrained:",
+    "LoadingMethod": "opendes:reference-data--LoadingMethod:SingleFracStage:",
+    "TestSteps": [
         {
-            "SampleID": "opendes:master-data--Sample:con438ie:",
-            "Length": {
-                "Value": 88.84,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mm:"
-            },
-            "Diameter": {
-                "Value": 37.808,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mm:"
-            },
-            "Density": {
-                "Value": 2.01,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g2F%cm3:"
-            },
             "Time": {
-                "Value": 123,
+                "Value": 65,
                 "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:"
             },
+            "PorePressure": {
+                "Value": 32,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+            },
+            "ConfiningPressure": {
+                "Value": 44,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+            },
             "AxialStrain": {
-                "Value": 0.3661,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mm%2Fmm:"
+                "Value": 65,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
             },
             "RadialStrain": {
-                "Value": 1.052,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mm%2Fmm:"
+                "Value": 87,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
             },
             "AxialStress": {
-                "Value": 0.5556,
+                "Value": 122,
                 "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
             },
-            "RadialStress": {
-                "Value": 0.4758,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
-            },
-            "PorePressure": {
-                "Value": -0.0055,
+            "DifferentialStress": {
+                "Value": 21,
                 "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
             },
             "AxialPWaveVelocity": {
-                "Value": -1,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m2%Fs:"
+                "Value": 5,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m%2Fs:"
             },
             "AxialSWaveVelocity": {
-                "Value": -1,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m2%Fs:"
-            },
-            "Porosity": {
-                "Value": 0.264,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
-            },
-            "EffectiveAxialStress": {
-                "Value": 32.07,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
-            },
-            "EffectiveRadialStress": {
-                "Value": 2,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
-            },
-            "PoissonsRatio": 0.46,
-            "Remarks": "Successfully Checked",
-            "LoadingCondition": "Compression",
-            "ConsolidationType": "opendes:reference-data--ConsolidationType:Isotropic:",
-            "DrainageCondition": "opendes:reference-data--DrainageCondition:Drained:",
-            "LoadingMethod": "opendes:reference-data--LoadingMethod:Continuous:",
-            "Lithology": "opendes:reference-data--LithologyType:AFR:",
-            "CutFluid": "opendes:reference-data--CutFluidType:SolubleCuttingOil:"
-        },
+                "Value": 3,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m%2Fs:"
+            }
+        }
+    ],
+    "Interpretation": [
         {
-            "SampleID": "opendes:master-data--SamplesAnalysis:con438ie:",
-            "Length": {
-                "Value": 88.84,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mm:"
+            "StageNumber": {
+                "Value": 1
             },
-            "Diameter": {
-                "Value": 37.808,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mm:"
+            "PlugOrientationToBeddingPlaneNormal": {
+                "Value": 45,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:dega:"
             },
-            "Density": {
-                "Value": 2.01,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g2F%cm3:"
+            "PeakCompressiveStrength": {
+                "Value": 32,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:N:"
             },
-            "Time": {
-                "Value": 293,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:"
+            "EffectiveCompressiveStrength": {
+                "Value": 12,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:N:"
             },
-            "AxialStrain": {
-                "Value": 0.3641,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mm%2Fmm:"
+            "YoungsModulus": {
+                "Value": 5.1,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:Pa:",
+                "LoadingStage": "opendes:reference-data--LoadingStage:Unloading:"
             },
-            "RadialStrain": {
-                "Value": 1.052,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:mm%2Fmm:"
+            "PoissonsRatio": {
+                "Value": 6,
+                "LoadingStage": "opendes:reference-data--LoadingStage:Loading:"
             },
-            "AxialStress": {
-                "Value": 0.5593,
+            "UnconfinedCompressiveStrength": {
+                "Value": 23,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:N:"
+            },
+            "InferredUnconfinedCompressiveStrength": {
+                "Value": 65,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:N:"
+            },
+            "Cohesion": {
+                "Value": 9,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:kPa:"
+            },
+            "InternalFrictionCoefficient": {
+                "Value": 6,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:lbf%2Flbf:"
+            },
+            "InternalFrictionAngle": {
+                "Value": 32,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:dega:"
+            },
+            "Alpha": {
+                "Value": 122,
                 "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
             },
-            "RadialStress": {
-                "Value": 0.4778,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
-            },
-            "PorePressure": {
-                "Value": -0.0055,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
-            },
-            "AxialPWaveVelocity": {
-                "Value": -1,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m2%Fs:"
-            },
-            "AxialSWaveVelocity": {
-                "Value": -1,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m2%Fs:"
-            },
-            "Porosity": {
-                "Value": 0.264,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
-            },
-            "EffectiveAxialStress": {
-                "Value": 32.07,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
-            },
-            "EffectiveRadialStress": {
-                "Value": 2,
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
-            },
-            "PoissonsRatio": 0.46,
-            "Remarks": "Successfully Checked",
-            "LoadingCondition": "Compression",
-            "ConsolidationType": "opendes:reference-data--ConsolidationType:Isotropic:",
-            "DrainageCondition": "opendes:reference-data--DrainageCondition:ConsolidatedUndrained:",
-            "LoadingMethod": "opendes:reference-data--LoadingMethod:Continuous:",
-            "Lithology": "opendes:reference-data--LithologyType:AOB:",
-            "CutFluid": "opendes:reference-data--CutFluidType:NeatCuttingOil:"
+            "Beta": {
+                "Value": 18
+            }
         }
     ]
 }

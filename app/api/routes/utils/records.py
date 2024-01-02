@@ -181,3 +181,24 @@ def find_schema_versions_for_dataset_id(ddms_datasets: List[str], dataset_id: st
         if dataset_id == ddms_dataset_id:
             schema_versions.append(urn_parts[SCHEMA_VERSION_INDEX])
     return set(schema_versions)
+
+
+def parse_kind(kind: str) -> dict:
+    """Returns a dictionary of the kind parts.
+
+    :param kind: an OSDU record kind
+    :type kind: str
+    :return: a dictionary with the named parts of the kind
+    :rtype: dict
+    """
+    kind_parts = kind.split(":")
+    authority_index = 0
+    source_index = 1
+    entity_type_index = 2
+    version_index = 3
+    return {
+        "authority": kind_parts[authority_index],
+        "source": kind_parts[source_index],
+        "entity_type": kind_parts[entity_type_index],
+        "version": kind_parts[version_index],
+    }

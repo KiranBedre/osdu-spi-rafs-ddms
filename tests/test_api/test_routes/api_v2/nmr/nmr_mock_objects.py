@@ -24,10 +24,10 @@ from tests.test_api.test_routes.osdu.storage_mock_objects import (
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
 
-TEST_DATASET_RECORD_ID = "opendes:dataset--File.Generic:nmrtests-123:1234"
-TEST_DDMS_URN = f"urn://rafs-v2/nmrtestsdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}"
+TEST_DATASET_RECORD_ID = "opendes:dataset--File.Generic:nmr-123:1234"
+TEST_DDMS_URN = f"urn://rafs-v2/nmrdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}"
 TEST_SCHEMA_VERSION = "1.0.0"
-TEST_DDMS_URN_WITH_VERSION = f"urn://rafs-v2/nmrtestsdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
+TEST_DDMS_URN_WITH_VERSION = f"urn://rafs-v2/nmrdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
 RECORD_DATA = {
     **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
         "data": {
@@ -50,11 +50,11 @@ RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
     },
 }
 TEST_PARAMS_AGGREGATION = {
-    "columns_aggregation": "FreshState,count",
+    "columns_aggregation": "SamplesAnalysisID,count",
 }
 TEST_PARAMS_FILTERS = {
-    "columns_filter": "SamplesAnalysisID,SampleID,FreshState",
-    "rows_filter": "SampleID,eq,opendes:master-data--Sample:88Y:",
+    "columns_filter": "SamplesAnalysisID,SampleID",
+    "rows_filter": "SampleID,eq,opendes:master-data--Sample:Sample_200:",
 }
 
 with open(f"{dir_path}/nmr_orient_split.json") as fp:
@@ -62,7 +62,7 @@ with open(f"{dir_path}/nmr_orient_split.json") as fp:
 
 TEST_AGGREGATED_DATA = {
     "columns": [
-        "FreshState",
+        "SamplesAnalysisID",
     ],
     "index": [
         "count",
@@ -78,27 +78,14 @@ TEST_FILTERED_DATA = {
     "columns": [
         "SamplesAnalysisID",
         "SampleID",
-        "FreshState",
     ],
     "index": [
         0,
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:NMR_Test_WPC:",
-            "opendes:master-data--Sample:88Y:",
-            [
-                {
-                    "LiquidFilledPorosity": {
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
-                        "Value": "NULL",
-                    },
-                    "T2LogMean": {
-                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ms:",
-                        "Value": "NULL",
-                    },
-                },
-            ],
+            "opendes:work-product-component--SamplesAnalysis:NMR_SamplesAnalysis:",
+            "opendes:master-data--Sample:Sample_200:",
         ],
     ],
 }
@@ -119,5 +106,5 @@ INCORRECT_SCHEMA_TEST_DATA = {
 }
 
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
-INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting PartialBrineSaturation in index row 0
-EXPECTED_ERROR_REASON = "Data error: 5 columns passed, passed data had 4 columns"
+INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting NMRTest in index row 0
+EXPECTED_ERROR_REASON = "Data error: 3 columns passed, passed data had 2 columns"

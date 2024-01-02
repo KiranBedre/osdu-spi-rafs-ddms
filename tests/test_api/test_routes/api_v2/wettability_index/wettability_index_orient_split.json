@@ -12,6 +12,15 @@
             "opendes:work-product-component--SamplesAnalysis:WettabilityIndex_WPC:",
             "opendes:master-data--Sample:WettabilityIndex_Sample:",
             {
+                "CapillaryPressureAnalysisID": "opendes:work-product-component--SamplesAnalysis:CapillaryPressure_WPC:",
+                "ForcedImbibedBrineVolume": {
+                    "Value": 12,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:"
+                },
+                "ForcedImbibedOilVolume": {
+                    "Value": 32,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:"
+                },
                 "Temperature": {
                     "Value": 1.0,
                     "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degF:"
@@ -64,12 +73,12 @@
                     {
                         "Value": 4.67,
                         "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:v%2Fv:",
-                        "WettabilityIndexType": "opendes:reference-data--WettabilityIndexType:Water:"
+                        "WettabilityIndexType": "opendes:reference-data--WettabilityIndexType:AmottWater:"
                     },
                     {
                         "Value": 3.2,
                         "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:v%2Fv:",
-                        "WettabilityIndexType": "opendes:reference-data--WettabilityIndexType:Oil:"
+                        "WettabilityIndexType": "opendes:reference-data--WettabilityIndexType:AmottOil:"
                     }
                 ],
                 "ConfiningPressure": {
@@ -79,12 +88,12 @@
                 "DesaturationMethod": "opendes:reference-data--DesaturationMethod:CentrifugeOilWater:",
                 "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Decane:",
                 "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Carnation:",
-                "FluidSystem": "opendes:reference-data--FluidSystemType:OilGas:",
+                "FluidSystem": "opendes:reference-data--FluidSystemType:GasOil:",
                 "InitialWaterSaturation": {
                     "Value": 32,
                     "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ppk:"
                 },
-                "InitialCappillaryPressure": {
+                "InitialCapillaryPressure": {
                     "Value": 65,
                     "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:bar:"
                 },

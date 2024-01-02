@@ -59,6 +59,10 @@
                     "Value": 7,
                     "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2FdeltaC:"
                 },
+                "TemperatureMean": {
+                    "Value": 15,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degC:"
+                },
                 "TemperatureMinimum": {
                     "Value": -5,
                     "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degC:"
@@ -81,6 +85,10 @@
                 "TECCorrected": {
                     "Value": 6,
                     "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1%2FdeltaC:"
+                },
+                "TemperatureMean": {
+                    "Value": 12,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:degC:"
                 },
                 "TemperatureMinimum": {
                     "Value": -10,

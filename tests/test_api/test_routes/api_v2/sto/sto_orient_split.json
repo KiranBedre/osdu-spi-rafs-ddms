@@ -1,0 +1,194 @@
+{
+    "columns": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Method",
+        "FluidConditions",
+        "PhasesPresent",
+        "StockTankPressure",
+        "StockTankTemperature",
+        "MolecularWeight",
+        "APIAtTemperature",
+        "WatsonKFactor",
+        "PourPoint",
+        "ASTMFlashPoint",
+        "NBase",
+        "WaxContent",
+        "ParrafinContent",
+        "CloudPoint",
+        "MeltPoint",
+        "WaterContent",
+        "TotalAcidNumber",
+        "MercapSulphur",
+        "PenetrationGrade",
+        "SofteningPoint",
+        "SmokingPoint",
+        "FreezingPoint",
+        "AnilinePoint",
+        "SaltContent",
+        "WaterSedimentContent",
+        "ViscosityAtTemperature",
+        "CHNOSAnalysis",
+        "MetalsElementAnalysis"
+    ],
+    "index": [
+        0
+    ],
+    "data": [
+        [
+            "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
+            "opendes:master-data--Sample:Sample-1A:",
+            "Test method 1",
+            "opendes:reference-data--FluidPhasesPresent:StockTankOil:",
+            "opendes:reference-data--FluidPhasesPresent:Wellstream:",
+            {
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:psi:"
+            },
+            {
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+            },
+            {
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:g:"
+            },
+            [
+                {
+                    "Value": 123,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:",
+                    "Temperature": {
+                        "Value": 123,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+                    }
+                }
+            ],
+            1,
+            {
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+            },
+            {
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:"
+            },
+            {
+                "Value": 123,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:"
+            },
+            {
+                "Value": 20,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+            },
+            {
+                "Value": 20,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+            },
+            {
+                "Value": 273.15,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+            },
+            {
+                "Value": 373,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+            },
+            {
+                "Value": 10,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+            },
+            {
+                "Value": 10,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:"
+            },
+            {
+                "Value": 10,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+            },
+            {
+                "Value": 10,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+            },
+            {
+                "Value": 273.15,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+            },
+            {
+                "Value": 273.15,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+            },
+            {
+                "Value": 273.15,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+            },
+            {
+                "Value": 273.15,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:K:"
+            },
+            {
+                "Value": 10,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+            },
+            {
+                "Value": 10,
+                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+            },
+            [
+                {
+                    "Value": 23,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:s:",
+                    "Temperature": {
+                        "Value": 273.15,
+                        "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:ns%2Fm:"
+                    }
+                }
+            ],
+            {
+                "SulphurContent": {
+                    "Value": 10,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                    "Method": "Test method 1"
+                },
+                "NitrogenContent": {
+                    "Value": 10,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                    "Method": "Test method 1"
+                },
+                "OxygenContent": {
+                    "Value": 10,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                    "Method": "Test method 1"
+                },
+                "HydrogenContent": {
+                    "Value": 10,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                    "Method": "Test method 1"
+                },
+                "CarbonContent": {
+                    "Value": 10,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                    "Method": "Test method 1"
+                },
+                "NSRatio": {
+                    "Value": 10,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                },
+                "HCRatio": {
+                    "Value": 10,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                },
+                "OCRatio": {
+                    "Value": 10,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:"
+                }
+            },
+            [
+                {
+                    "Element": "opendes:reference-data--Elements:Hg:",
+                    "Value": 123,
+                    "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
+                    "Method": "Test method 1"
+                }
+            ]
+        ]
+    ]
+}

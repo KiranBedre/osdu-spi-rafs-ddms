@@ -50,11 +50,11 @@ RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
 }
 
 TEST_PARAMS_AGGREGATION = {
-    "columns_aggregation": "SampleDepth.Value,max",
+    "columns_aggregation": "SampleID,count",
 }
 TEST_PARAMS_FILTERS = {
-    "columns_filter": "SampleDepth,Remarks",
-    "rows_filter": "SampleDepth.Value,lt,2450",
+    "columns_filter": "SamplesAnalysisID,SampleID",
+    "rows_filter": "SampleID,eq,opendes:master-data--Sample:Sample_200:",
 }
 
 with open(f"{dir_path}/rca_orient_split.json") as fp:
@@ -63,33 +63,30 @@ with open(f"{dir_path}/rca_orient_split.json") as fp:
 
 TEST_AGGREGATED_DATA = {
     "columns": [
-        "SampleDepth",
+        "SampleID",
     ],
     "index": [
-        "max",
+        "count",
     ],
     "data": [
         [
-            2000,
+            1,
         ],
     ],
 }
 
 TEST_FILTERED_DATA = {
     "columns": [
-        "SampleDepth",
-        "Remarks",
+        "SamplesAnalysisID",
+        "SampleID",
     ],
     "index": [
         0,
     ],
     "data": [
         [
-            {
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:m:",
-                "Value": 2000,
-            },
-            "RCA data transfer from EPDS",
+            "opendes:work-product-component--SamplesAnalysis:RCA_SamplesAnalysis:",
+            "opendes:master-data--Sample:Sample_200:",
         ],
     ],
 }
@@ -97,31 +94,20 @@ TEST_FILTERED_DATA = {
 INCORRECT_SCHEMA_TEST_DATA = {
     "columns": [
         "WrongField",  # Wrong field
-        # "RockSampleID",  # Missing mandatory field
-        "CoringID",
-        "WellboreID",
-        "SampleNumber",
-        "SampleType",
-        "SampleDepth",
-        "Remarks",
+        # "SampleID",  # Missing mandatory field
+        "TestSteps",
+        "OtherId",
     ],
     "index": [0],
     "data": [
         [
-            "opendes:master-data--RockSample:1:",
+            "opendes:master-data--Sample:1:",
             "opendes:master-data--:1:",  # Incorrect Coring value
-            "opendes:master-data--Wellbore:1:",
-            "SampleNumber",
-            "opendes:reference-data--RockSampleType:1:",
-            {
-                "Value": "number required",  # String in place of float value
-                "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:1:",
-            },
-            "Remarks",
+            [],
         ],
     ],
 }
 
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
 INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()
-EXPECTED_ERROR_REASON = "Data error: 13 columns passed, passed data had 12 columns"
+EXPECTED_ERROR_REASON = "Data error: 3 columns passed, passed data had 2 columns"
