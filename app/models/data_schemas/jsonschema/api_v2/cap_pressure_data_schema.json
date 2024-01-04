@@ -419,10 +419,10 @@
                                                 "description": "Fluid produced or displaced from a sample during capillary pressure testing, e.g. Brine, Hexane, or LiveCrudeOil",
                                                 "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacedFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                             },
-                                            "CapillaryPressurePhaseType": {
+                                            "WettabilityPhaseType": {
                                                 "type": "string",
                                                 "description": "Phase transition type for this capillary pressure test, e.g. Wetting or Nonwetting",
-                                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CapillaryPressurePhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WettabilityPhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                             }
                                         },
                                         "additionalProperties": false
@@ -609,10 +609,10 @@
                                                         "description": "Fluid produced or displaced from a sample during capillary pressure testing, e.g. Brine, Hexane, or LiveCrudeOil",
                                                         "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacedFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                     },
-                                                    "CapillaryPressurePhaseType": {
+                                                    "WettabilityPhaseType": {
                                                         "type": "string",
                                                         "description": "Phase transition type for this capillary pressure test, e.g. Wetting or Nonwetting",
-                                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CapillaryPressurePhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WettabilityPhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                     }
                                                 },
                                                 "additionalProperties": false
@@ -633,10 +633,10 @@
                                                         "description": "Fluid produced or displaced from a sample during capillary pressure testing, e.g. Brine, Hexane, or LiveCrudeOil",
                                                         "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacedFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                     },
-                                                    "CapillaryPressurePhaseType": {
+                                                    "WettabilityPhaseType": {
                                                         "type": "string",
                                                         "description": "Phase transition type for this capillary pressure test, e.g. Wetting or Nonwetting",
-                                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CapillaryPressurePhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+                                                        "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WettabilityPhaseType:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                                                     }
                                                 },
                                                 "additionalProperties": false

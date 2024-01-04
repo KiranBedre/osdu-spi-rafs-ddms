@@ -420,9 +420,9 @@ class PhaseInjectedVolumeItem(RafsBaseModel):
         None,
         description="Fluid produced or displaced from a sample during capillary pressure testing, e.g. Brine, Hexane, or LiveCrudeOil",
     )
-    CapillaryPressurePhaseType: Optional[
+    WettabilityPhaseType: Optional[
         constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CapillaryPressurePhaseType:[\w\-\.\:\%]+:[0-9]*$"
+            regex=r"^[\w\-\.]+:reference-data\-\-WettabilityPhaseType:[\w\-\.\:\%]+:[0-9]*$"
         )
     ] = Field(
         None,
@@ -614,9 +614,9 @@ class CumulativePhaseSaturation(RafsBaseModel):
         None,
         description="Fluid produced or displaced from a sample during capillary pressure testing, e.g. Brine, Hexane, or LiveCrudeOil",
     )
-    CapillaryPressurePhaseType: Optional[
+    WettabilityPhaseType: Optional[
         constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CapillaryPressurePhaseType:[\w\-\.\:\%]+:[0-9]*$"
+            regex=r"^[\w\-\.]+:reference-data\-\-WettabilityPhaseType:[\w\-\.\:\%]+:[0-9]*$"
         )
     ] = Field(
         None,
@@ -645,9 +645,9 @@ class PhaseSaturationFrequency(RafsBaseModel):
         None,
         description="Fluid produced or displaced from a sample during capillary pressure testing, e.g. Brine, Hexane, or LiveCrudeOil",
     )
-    CapillaryPressurePhaseType: Optional[
+    WettabilityPhaseType: Optional[
         constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CapillaryPressurePhaseType:[\w\-\.\:\%]+:[0-9]*$"
+            regex=r"^[\w\-\.]+:reference-data\-\-WettabilityPhaseType:[\w\-\.\:\%]+:[0-9]*$"
         )
     ] = Field(
         None,
