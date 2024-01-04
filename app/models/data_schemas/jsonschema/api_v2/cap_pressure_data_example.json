@@ -128,7 +128,7 @@
                             "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cm3:",
                             "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Tetradecane:",
                             "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:Decane:",
-                            "CapillaryPressurePhaseType": "opendes:reference-data--CapillaryPressurePhaseType:Wetting:"
+                            "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:"
                         }
                     ],
                     "Remark": "Success",
@@ -185,13 +185,13 @@
                                 "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:%25:",
                                 "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Mercury:",
                                 "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:LiveCrudeOil:",
-                                "CapillaryPressurePhaseType": "opendes:reference-data--CapillaryPressurePhaseType:Nonwetting:"
+                                "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Nonwetting:"
                             },
                             "PhaseSaturationFrequency": {
                                 "Value": 32,
                                 "DisplacingFluid": "opendes:reference-data--DisplacingFluidType:Helium:",
                                 "DisplacedFluid": "opendes:reference-data--DisplacedFluidType:IsoparBlend:",
-                                "CapillaryPressurePhaseType": "opendes:reference-data--CapillaryPressurePhaseType:Wetting:"
+                                "WettabilityPhaseType": "opendes:reference-data--WettabilityPhaseType:Wetting:"
                             }
                         }
                     ]
