@@ -16,19 +16,19 @@ variables:
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
-    ref: release/0.26
+    ref: v0.26.1
     # for compile-and-unit-test
   - project: "osdu/platform/ci-cd-pipelines"
     file: "build/python.yml"
-    ref: release/0.26
+    ref: v0.26.1
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa-python.yml"
-    ref: release/0.26
+    ref: v0.26.1
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
-    ref: release/0.26
+    ref: v0.26.1
 
   # AZURE provider
   - local: "/devops/azure/azure.gitlab-ci.yml"
@@ -39,7 +39,7 @@ include:
   # GC provider
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/gc-global.yml"
-    ref: release/0.26
+    ref: v0.26.1
 
   - local: "devops/gc/pipeline/override-stages.yml"
 
