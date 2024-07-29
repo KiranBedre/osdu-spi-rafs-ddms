@@ -31,7 +31,6 @@ from app.models.data_schemas.api_v2.extraction_data_model import Model as Extrac
 from app.models.data_schemas.api_v2.fractionation_data_model import Model as FractionationModel
 from app.models.data_schemas.api_v2.relative_permeability_data_model import Model as RelativePermeabilityModel
 from app.models.data_schemas.api_v2.rock_compressibility_data_model import Model as RockCompressibilityModel
-from app.models.data_schemas.api_v2.water_gas_relative_permeability_data_model import Model as WaterGasRelPermModel
 from app.models.data_schemas.api_v2.electrical_properties_data_model import Model as ElectricalPropertiesModel
 from app.models.data_schemas.api_v2.nmr_data_model import Model as NMRModel
 from app.models.data_schemas.api_v2.multiple_salinity_data_model import Model as MultipleSalinityModel
@@ -110,9 +109,6 @@ RELATIVE_PERMEABILITY_MODELS = {
 }
 ROCK_COMPRESSIBILITY_MODELS = {
     ContentSchemaVersion.V_1_0_0: RockCompressibilityModel,
-}
-WATER_GAS_REL_PERM_MODELS = {
-    ContentSchemaVersion.V_1_0_0: WaterGasRelPermModel,
 }
 ELECTRICAL_PROPERTIES_MODELS = {
     ContentSchemaVersion.V_1_0_0: ElectricalPropertiesModel,
@@ -215,7 +211,6 @@ PATH_TO_DATA_MODEL_VERSIONS_API_V2 = {
     common_relative_paths_api_v2.FRACTIONATION: FRACTIONATION_MODELS,
     common_relative_paths_api_v2.RELATIVE_PERMEABILITY: RELATIVE_PERMEABILITY_MODELS,
     common_relative_paths_api_v2.ROCK_COMPRESSIBILITY: ROCK_COMPRESSIBILITY_MODELS,
-    common_relative_paths_api_v2.WATER_GAS_REL_PERM: WATER_GAS_REL_PERM_MODELS,
     common_relative_paths_api_v2.ELECTRICAL_PROPERTIES: ELECTRICAL_PROPERTIES_MODELS,
     common_relative_paths_api_v2.NMR: NMR_MODELS,
     common_relative_paths_api_v2.MULTIPLE_SALINITY: MULTIPLE_SALINITY_MODELS,

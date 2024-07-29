@@ -78,7 +78,6 @@ ALL_SAMPLES_ANALYSIS_TYPES = [
     "fractionation",
     "relativepermeability",
     "rockcompressibility",
-    "watergasrelativepermeability",
     "capillarypressure",
     "electricalproperties",
     "nmr",
