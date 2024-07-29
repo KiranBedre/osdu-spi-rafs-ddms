@@ -1,8 +1,10 @@
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/aws-global-variables.yml"
+    ref: release/0.27
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/aws-global.yml"
+    ref: release/0.27
 
 aws-containerize:
   extends:
