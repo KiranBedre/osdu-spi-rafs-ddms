@@ -86,8 +86,8 @@
                 "Value": 25,
                 "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:scf%2Fbbl:"
             },
-            "FluidCondition": "reservoir condition",
-            "PhasesPresent": "oil"
+            "FluidConditions": "opendes:reference-data--SampleTestCondition:InitialReservoir:",
+            "PhasesPresent": "opendes:reference-data--FluidPhasesPresent:Wellstream:"
         }
     ],
     "VaporCompositionalAnalysis": [

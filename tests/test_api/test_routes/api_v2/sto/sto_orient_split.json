@@ -39,7 +39,7 @@
             "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
             "opendes:master-data--Sample:Sample-1A:",
             "Test method 1",
-            "opendes:reference-data--FluidPhasesPresent:StockTankOil:",
+            "opendes:reference-data--SampleTestCondition:InitialReservoir:",
             "opendes:reference-data--FluidPhasesPresent:Wellstream:",
             {
                 "Value": 123,

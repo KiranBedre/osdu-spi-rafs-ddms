@@ -2,7 +2,7 @@
     "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
     "SampleID": "opendes:master-data--Sample:Sample-1A:",
     "Method": "Test method 1",
-    "FluidConditions": "opendes:reference-data--FluidPhasesPresent:StockTankOil:",
+    "FluidConditions": "opendes:reference-data--SampleTestCondition:InitialReservoir:",
     "PhasesPresent": "opendes:reference-data--FluidPhasesPresent:Wellstream:",
     "StockTankPressure": {
         "Value": 123,
