@@ -14,58 +14,113 @@ azure:
       obj: redis-password
 
 configuration:
-  - service: rafs-ddms
-    container:
-      image: rafs-ddms
-      containerPort: 8080
-    path: /api/rafs-ddms
-    podAnnotations:
-      prometheus.io/path: /metrics
-      prometheus.io/port: "8080"
-      prometheus.io/scrape: "true"
-    probe:
-      readiness:
-        path: /api/rafs-ddms/readiness # make the API version as a variable
-        delay: 60
-      liveness:
-        path: /api/rafs-ddms/healthz
-        delay: 60
-    auth:
-      disable:
-        - "/api/rafs-ddms/info"
-        - "/api/rafs-ddms/docs*"
-        - "/api/rafs-ddms/openapi.json"
-    # This config specifically for environments with core services installed in osdu ns
-    # Such as GLAB or SLB managed instances
-    # For official azure values, refer to helm-charts-azure values
-    config:
-      CLOUD_PROVIDER: "azure"
-      SERVICE_NAME: "rafs-ddms"
-      OPENAPI_PREFIX: "/api/rafs-ddms"
-      SERVICE_HOST_STORAGE: "http://storage.osdu/api/storage/v2"
-      SERVICE_HOST_PARTITION: "http://partition.osdu/api/partition/v1"
-      SERVICE_HOST_DATASET: "http://dataset.osdu/api/dataset/v1"
-      SERVICE_HOST_SCHEMA: "http://schema.osdu/api/schema-service/v1"
-      SERVICE_HOST_SEARCH: "http://search.osdu/api/search/v2"
-      SERVICE_READINESS_URLS: "http://storage.osdu/api/storage/v2/liveness_check,http://schema.osdu/api/schema-service/v1/liveness_check"
-      CACHE_ENABLE: "True"
-      CACHE_BACKEND: "app.core.helpers.cache.backends.redis_cache.RedisCacheBackend"
-      REDIS_DATABASE: "13"
-      REDIS_SSL: "True"
-      REDIS_PORT: "6380"
-      REQUEST_TIMEOUT: "180"
-      ENABLE_API_V1: "True"
+- service: rafs-ddms
+  container:
+    image: rafs-ddms
+    containerPort: 8080
+  path: /api/rafs-ddms
+  podAnnotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "8080"
+    prometheus.io/scrape: "true"
+  probe:
+    readiness:
+      path: /api/rafs-ddms/readiness # make the API version as a variable
+      delay: 60
+    liveness:
+      path: /api/rafs-ddms/healthz
+      delay: 60
+  auth:
+    disable:
+    - "/api/rafs-ddms/info"
+    - "/api/rafs-ddms/docs*"
+    - "/api/rafs-ddms/openapi.json"
+  # This config specifically for environments with core services installed in osdu ns
+  # Such as GLAB or SLB managed instances
+  # For official azure values, refer to helm-charts-azure values
+  config:
+    CLOUD_PROVIDER: "azure"
+    SERVICE_NAME: "rafs-ddms"
+    OPENAPI_PREFIX: "/api/rafs-ddms"
+    SERVICE_HOST_STORAGE: "http://storage.osdu/api/storage/v2"
+    SERVICE_HOST_PARTITION: "http://partition.osdu/api/partition/v1"
+    SERVICE_HOST_DATASET: "http://dataset.osdu/api/dataset/v1"
+    SERVICE_HOST_SCHEMA: "http://schema.osdu/api/schema-service/v1"
+    SERVICE_HOST_SEARCH: "http://search.osdu/api/search/v2"
+    SERVICE_HOST_ENTITLEMENTS: "http://entitlements.osdu/api/entitlements/v2"
+    SERVICE_READINESS_URLS: "http://storage.osdu/api/storage/v2/liveness_check,http://schema.osdu/api/schema-service/v1/liveness_check"
+    CACHE_ENABLE: "True"
+    CACHE_BACKEND: "app.core.helpers.cache.backends.redis_cache.RedisCacheBackend"
+    REDIS_DATABASE: "13"
+    REDIS_SSL: "False"
+    REDIS_PORT: "6379"
+    REQUEST_TIMEOUT: "180"
+    ENABLE_API_V1: "True"
+    REDIS_HOSTNAME: redis-rafs-service
+    REDIS_PASSWORD: redispass
+    REDIS_INDEX_ENABLE: "True"
 
-    secrets:
-    - name: REDIS_HOSTNAME
-      key: redis-host
-    - name: REDIS_PASSWORD
-      key: redis-pass
-    # About 800m of consumption with 4 uvloop workers and integration test run
-    # Initialization will take longer if this is not correctly setup
-    request:
-      cpu: 0.5
-      memory: 2Gi
-    limit:
-      cpu: 2
-      memory: 4Gi
+  secrets:
+  - name: REDIS_EXTERNAL_PASSWORD
+    key: redis-pass
+  # About 800m of consumption with 4 uvloop workers and integration test run
+  # Initialization will take longer if this is not correctly setup
+  request:
+    cpu: 0.5
+    memory: 2Gi
+  limit:
+    cpu: 2
+    memory: 4Gi
+
+#####################################
+## Redis stack needed for analytics
+# az acr import --force --name osdumvpcrglabqh63cr --source docker.io/redis/redis-stack-server:7.4.0-rc2 --image rafs/redis-stack-server:7.4.0-rc2
+- service: redis-rafs
+  container:
+    image: rafs/redis-stack-server
+    containerPort: 6379
+    tag: 7.4.0-rc2
+  probe:
+    execTypeLiveness:
+      command:
+      - redis-cli
+      - ping
+      delay: 10
+  config:
+    REDIS_ARGS: "--requirepass redispass"
+  secrets:
+  - name: REDISCLI_AUTH
+    key: redis-pass
+  request:
+    cpu: 64m
+    memory: 500Mi
+  limit:
+    cpu: 300m
+    memory: 1Gi
+  servicePort: 6379
+  serviceName: redis
+
+#####################################
+## Cronjob to re-index rafs
+# cd devops/azure/cronjob
+# docker build -t <acr>/rafs/cronjob .
+- service: rafs-cronjob
+  container:
+    image: rafs/cronjob
+    tag: latest
+  cronjobEnabled: true
+  schedule: "* */1 * * *"
+  backOffLimit: "3"
+  activeDeadlineSeconds: "3600"
+  successfulJobsHistoryLimit: "1"
+  startingDeadlineSeconds: "500"
+  failedJobsHistoryLimit: "2"
+  config:
+    AZURE_KEY_VAULT_URI: "https://{{ .Values.azure.keyvault.name }}.vault.azure.net/"
+    RAFS_URI: "http://rafs-ddms-service"
+  request:
+    cpu: 64m
+    memory: 64Mi
+  limit:
+    cpu: 100m
+    memory: 100Mi

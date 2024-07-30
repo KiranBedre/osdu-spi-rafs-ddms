@@ -15,5 +15,5 @@
 from app.dataframe.parquet_loader import ParquetLoader
 
 
-async def get_parquet_loader():
+async def get_parquet_loader() -> ParquetLoader:
     return ParquetLoader()

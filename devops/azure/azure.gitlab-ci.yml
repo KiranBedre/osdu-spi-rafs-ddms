@@ -48,11 +48,27 @@ azure_containerize:
   after_script:
     - docker buildx rm
 
+# Allowing to fail as the base image issue it a false positive in trivy:
+## https://github.com/aquasecurity/trivy/issues/4067
+container_scanning:
+  allow_failure: true
+
 azure_containerize_helm:
   variables:
     AZURE_HELM_SUBDIR: osdu-ddms/standard-ddms
 
 azure_deploy:
+  needs:
+  - job: azure_code_coverage
+    optional: true
+  - job: core_code_coverage
+    optional: true
+  - job: azure_containerize_helm
+    optional: true
+  - job: container_scanning
+    optional: true
+  - job: azure_containerize
+    optional: false
   script:
     # Install Service
     - helm show chart $HELM_CHART_OCI --version $HELM_CHART_OCI_VERSION
