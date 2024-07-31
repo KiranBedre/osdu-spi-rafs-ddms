@@ -58,7 +58,6 @@ class CommonRelativePathsV2(NamedTuple):
     RELATIVE_PERMEABILITY: str = "/data/relativepermeability"
     FRACTIONATION: str = "/data/fractionation"
     EXTRACTION: str = "/data/extraction"
-    WATER_GAS_REL_PERM: str = "/data/watergasrelativepermeability"
     ROCK_COMPRESSIBILITY: str = "/data/rockcompressibility"
     ELECTRICAL_PROPERTIES: str = "/data/electricalproperties"
     NMR: str = "/data/nmr"
@@ -130,10 +129,6 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
         "Fractionation.SARA",
     ],
     "extraction": ["Extraction"],
-    "watergasrelativepermeability": [
-        "RelativePermeability.SteadyState",
-        "RelativePermeability.SingleSpeedCentrifuge",
-    ],
     "rockcompressibility": ["Geomechanics.Compressibility"],
     "electricalproperties": [
         "ElectricalProperties",

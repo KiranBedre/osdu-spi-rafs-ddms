@@ -107,9 +107,6 @@ from tests.test_api.test_routes.api_v2.vitrinitereflectance import (
 from tests.test_api.test_routes.api_v2.water_analysis import (
     water_analysis_data_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.water_gas_rel_perm import (
-    water_gas_rel_perm_mock_objects,
-)
 from tests.test_api.test_routes.api_v2.wettability_index import (
     wettability_index_mock_objects,
 )
@@ -238,7 +235,6 @@ def post_overrides(record_data=None, test_dataset_record_id=data_mock_objects.TE
         (TestContentPathsApiV2.FRACTIONATION, BulkDatasetIdV2.FRACTIONATION),
         (TestContentPathsApiV2.RELATIVE_PERMEABILITY, BulkDatasetIdV2.RELATIVE_PERMEABILITY),
         (TestContentPathsApiV2.ROCK_COMPRESSIBILITY, BulkDatasetIdV2.ROCK_COMPRESSIBILITY),
-        (TestContentPathsApiV2.WATER_GAS_REL_PERM, BulkDatasetIdV2.WATER_GAS_REL_PERM),
         (TestContentPathsApiV2.NMR, BulkDatasetIdV2.NMR),
         (TestContentPathsApiV2.MULTIPLE_SALINITY, BulkDatasetIdV2.MULTIPLE_SALINITY),
         (TestContentPathsApiV2.GCMS_ALKANES, BulkDatasetIdV2.GCMS_ALKANES),
@@ -306,7 +302,6 @@ async def test_get_content_data_no_data(data_endpoint_path, dataset_id):
         (TestContentPathsApiV2.FRACTIONATION, BulkDatasetIdV2.FRACTIONATION),
         (TestContentPathsApiV2.RELATIVE_PERMEABILITY, BulkDatasetIdV2.RELATIVE_PERMEABILITY),
         (TestContentPathsApiV2.ROCK_COMPRESSIBILITY, BulkDatasetIdV2.ROCK_COMPRESSIBILITY),
-        (TestContentPathsApiV2.WATER_GAS_REL_PERM, BulkDatasetIdV2.WATER_GAS_REL_PERM),
         (TestContentPathsApiV2.NMR, BulkDatasetIdV2.NMR),
         (TestContentPathsApiV2.MULTIPLE_SALINITY, BulkDatasetIdV2.MULTIPLE_SALINITY),
         (TestContentPathsApiV2.GCMS_ALKANES, BulkDatasetIdV2.GCMS_ALKANES),
@@ -373,7 +368,6 @@ async def test_get_data_no_content_header(data_endpoint_path, dataset_id):
         (TestContentPathsApiV2.FRACTIONATION, BulkDatasetIdV2.FRACTIONATION),
         (TestContentPathsApiV2.RELATIVE_PERMEABILITY, BulkDatasetIdV2.RELATIVE_PERMEABILITY),
         (TestContentPathsApiV2.ROCK_COMPRESSIBILITY, BulkDatasetIdV2.ROCK_COMPRESSIBILITY),
-        (TestContentPathsApiV2.WATER_GAS_REL_PERM, BulkDatasetIdV2.WATER_GAS_REL_PERM),
         (TestContentPathsApiV2.NMR, BulkDatasetIdV2.NMR),
         (TestContentPathsApiV2.MULTIPLE_SALINITY, BulkDatasetIdV2.MULTIPLE_SALINITY),
         (TestContentPathsApiV2.GCMS_ALKANES, BulkDatasetIdV2.GCMS_ALKANES),
@@ -596,16 +590,6 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
             ],
             "download_file",
             [build_get_test_data("x-parquet", rock_compressibility_mock_objects.TEST_DATA)],
-        ),
-        (
-            TestContentPathsApiV2.WATER_GAS_REL_PERM,
-            water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID,
-            "get_record",
-            [
-                water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
-            ],
-            "download_file",
-            [build_get_test_data("x-parquet", water_gas_rel_perm_mock_objects.TEST_DATA)],
         ),
         (
             TestContentPathsApiV2.NMR,
@@ -1096,15 +1080,6 @@ async def test_get_content_parquet_data(
             rock_compressibility_mock_objects.TEST_DATA,
         ),
         (
-            f"{TestContentPathsApiV2.WATER_GAS_REL_PERM}/{water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID}",
-            None,
-            "get_record",
-            [water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
-            "download_file",
-            [build_get_test_data("x-parquet", water_gas_rel_perm_mock_objects.TEST_DATA)],
-            water_gas_rel_perm_mock_objects.TEST_DATA,
-        ),
-        (
             f"{TestContentPathsApiV2.NMR}/{nmr_mock_objects.TEST_DATASET_RECORD_ID}",
             None,
             "get_record",
@@ -1447,15 +1422,6 @@ async def test_get_content_parquet_data(
             rock_compressibility_mock_objects.TEST_AGGREGATED_DATA,
         ),
         (
-            f"{TestContentPathsApiV2.WATER_GAS_REL_PERM}/{water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID}",
-            water_gas_rel_perm_mock_objects.TEST_PARAMS_AGGREGATION,
-            "get_record",
-            [water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
-            "download_file",
-            [build_get_test_data("x-parquet", water_gas_rel_perm_mock_objects.TEST_DATA)],
-            water_gas_rel_perm_mock_objects.TEST_AGGREGATED_DATA,
-        ),
-        (
             f"{TestContentPathsApiV2.NMR}/{nmr_mock_objects.TEST_DATASET_RECORD_ID}",
             nmr_mock_objects.TEST_PARAMS_AGGREGATION,
             "get_record",
@@ -1796,15 +1762,6 @@ async def test_get_content_parquet_data(
             "download_file",
             [build_get_test_data("x-parquet", rock_compressibility_mock_objects.TEST_DATA)],
             rock_compressibility_mock_objects.TEST_FILTERED_DATA,
-        ),
-        (
-            f"{TestContentPathsApiV2.WATER_GAS_REL_PERM}/{water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID}",
-            water_gas_rel_perm_mock_objects.TEST_PARAMS_FILTERS,
-            "get_record",
-            [water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
-            "download_file",
-            [build_get_test_data("x-parquet", water_gas_rel_perm_mock_objects.TEST_DATA)],
-            water_gas_rel_perm_mock_objects.TEST_FILTERED_DATA,
         ),
         (
             f"{TestContentPathsApiV2.NMR}/{nmr_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -2432,14 +2389,6 @@ async def test_get_data_json_data(
             rock_compressibility_mock_objects.TEST_DATA,
         ),
         (
-            f"{TestContentPathsApiV2.WATER_GAS_REL_PERM}/{water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID}",
-            "get_record",
-            [water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
-            "download_file",
-            [build_get_test_data("x-parquet", water_gas_rel_perm_mock_objects.TEST_DATA)],
-            water_gas_rel_perm_mock_objects.TEST_DATA,
-        ),
-        (
             f"{TestContentPathsApiV2.NMR}/{nmr_mock_objects.TEST_DATASET_RECORD_ID}",
             "get_record",
             [nmr_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
@@ -2843,14 +2792,6 @@ async def test_get_data_json_data_no_content_schema_version(
             "download_file",
             [build_get_test_data("x-parquet", rock_compressibility_mock_objects.TEST_DATA)],
             rock_compressibility_mock_objects.TEST_DATA,
-        ),
-        (
-            f"{TestContentPathsApiV2.WATER_GAS_REL_PERM}/{water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID}",
-            "get_record",
-            [water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
-            "download_file",
-            [build_get_test_data("x-parquet", water_gas_rel_perm_mock_objects.TEST_DATA)],
-            water_gas_rel_perm_mock_objects.TEST_DATA,
         ),
         (
             f"{TestContentPathsApiV2.NMR}/{nmr_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -3266,14 +3207,6 @@ async def test_get_data_json_data_improper_schema_version(
             rock_compressibility_mock_objects.TEST_DATA,
         ),
         (
-            f"{TestContentPathsApiV2.WATER_GAS_REL_PERM}/{water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID}",
-            "get_record",
-            [water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
-            "download_file",
-            [build_get_test_data("x-parquet", water_gas_rel_perm_mock_objects.TEST_DATA)],
-            water_gas_rel_perm_mock_objects.TEST_DATA,
-        ),
-        (
             f"{TestContentPathsApiV2.NMR}/{nmr_mock_objects.TEST_DATASET_RECORD_ID}",
             "get_record",
             [nmr_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
@@ -3663,13 +3596,6 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             rock_compressibility_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
-            TestContentPathsApiV2.WATER_GAS_REL_PERM,
-            water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
-            water_gas_rel_perm_mock_objects.TEST_DATA,
-            water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID,
-            water_gas_rel_perm_mock_objects.TEST_DDMS_URN_WITH_VERSION,
-        ),
-        (
             TestContentPathsApiV2.NMR,
             nmr_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             nmr_mock_objects.TEST_DATA,
@@ -4027,13 +3953,6 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             rock_compressibility_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
-            TestContentPathsApiV2.WATER_GAS_REL_PERM,
-            water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
-            water_gas_rel_perm_mock_objects.TEST_DATA,
-            water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID,
-            water_gas_rel_perm_mock_objects.TEST_DDMS_URN_WITH_VERSION,
-        ),
-        (
             TestContentPathsApiV2.NMR,
             nmr_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             nmr_mock_objects.TEST_DATA,
@@ -4360,11 +4279,6 @@ async def test_post_data_json_no_ddmsdatasets_field(
             rock_compressibility_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
-            TestContentPathsApiV2.WATER_GAS_REL_PERM,
-            water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
-            water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID,
-        ),
-        (
             TestContentPathsApiV2.NMR,
             nmr_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             nmr_mock_objects.TEST_DATASET_RECORD_ID,
@@ -4655,13 +4569,6 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             rock_compressibility_mock_objects.TEST_DATA,
             rock_compressibility_mock_objects.TEST_DATASET_RECORD_ID,
             rock_compressibility_mock_objects.TEST_DDMS_URN_WITH_VERSION,
-        ),
-        (
-            TestContentPathsApiV2.WATER_GAS_REL_PERM,
-            water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
-            water_gas_rel_perm_mock_objects.TEST_DATA,
-            water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID,
-            water_gas_rel_perm_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
             TestContentPathsApiV2.NMR,
@@ -5023,13 +4930,6 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             rock_compressibility_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
-            TestContentPathsApiV2.WATER_GAS_REL_PERM,
-            water_gas_rel_perm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
-            water_gas_rel_perm_mock_objects.TEST_DATA,
-            water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID,
-            water_gas_rel_perm_mock_objects.TEST_DDMS_URN_WITH_VERSION,
-        ),
-        (
             TestContentPathsApiV2.NMR,
             nmr_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             nmr_mock_objects.TEST_DATA,
@@ -5281,7 +5181,6 @@ async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data,
         (TestContentPathsApiV2.FRACTIONATION, fractionation_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.RELATIVE_PERMEABILITY, relative_permeability_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.ROCK_COMPRESSIBILITY, rock_compressibility_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
-        (TestContentPathsApiV2.WATER_GAS_REL_PERM, water_gas_rel_perm_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.NMR, nmr_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.MULTIPLE_SALINITY, multiple_salinity_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.GCMS_ALKANES, gcms_alkanes_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
@@ -5416,11 +5315,6 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
             rock_compressibility_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             rock_compressibility_mock_objects.EXPECTED_ERROR_REASON,
-        ),
-        (
-            TestContentPathsApiV2.WATER_GAS_REL_PERM,
-            water_gas_rel_perm_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
-            water_gas_rel_perm_mock_objects.EXPECTED_ERROR_REASON,
         ),
         (
             TestContentPathsApiV2.NMR,
@@ -5613,7 +5507,6 @@ async def test_post_invalid_df_error(data_endpoint_path, incorrect_dataframe_dat
         f"{TestContentPathsApiV2.FRACTIONATION}/{fractionation_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.ROCK_COMPRESSIBILITY}/{rock_compressibility_mock_objects.TEST_DATASET_RECORD_ID}",
-        f"{TestContentPathsApiV2.WATER_GAS_REL_PERM}/{water_gas_rel_perm_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.NMR}/{nmr_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.MULTIPLE_SALINITY}/{multiple_salinity_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.GCMS_ALKANES}/{gcms_alkanes_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -5677,7 +5570,6 @@ async def test_get_403(data_endpoint_path):
         TestContentPathsApiV2.FRACTIONATION,
         TestContentPathsApiV2.RELATIVE_PERMEABILITY,
         TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
-        TestContentPathsApiV2.WATER_GAS_REL_PERM,
         TestContentPathsApiV2.NMR,
         TestContentPathsApiV2.MULTIPLE_SALINITY,
         TestContentPathsApiV2.GCMS_ALKANES,
@@ -5809,11 +5701,6 @@ async def test_post_403(data_endpoint_path):
                 find_osdu_ids_from_string(json.dumps(rock_compressibility_mock_objects.TEST_DATA)),
             ),
         ),
-        (
-            TestContentPathsApiV2.WATER_GAS_REL_PERM, water_gas_rel_perm_mock_objects.TEST_DATA, list(
-                find_osdu_ids_from_string(json.dumps(water_gas_rel_perm_mock_objects.TEST_DATA)),
-            ),
-        ),
     ],
 )
 @pytest.mark.asyncio
@@ -5854,7 +5741,6 @@ async def test_post_integrity_error(data_endpoint_path, integrity_error_datafram
         TestContentPathsApiV2.FRACTIONATION,
         TestContentPathsApiV2.RELATIVE_PERMEABILITY,
         TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
-        TestContentPathsApiV2.WATER_GAS_REL_PERM,
         TestContentPathsApiV2.NMR,
         TestContentPathsApiV2.MULTIPLE_SALINITY,
         TestContentPathsApiV2.GCMS_ALKANES,
@@ -5924,7 +5810,6 @@ async def test_invalid_data_with_nan(path):
         (TestContentPathsApiV2.FRACTIONATION, ORIENT_SPLIT_400_PAYLOADS),
         (TestContentPathsApiV2.RELATIVE_PERMEABILITY, ORIENT_SPLIT_400_PAYLOADS),
         (TestContentPathsApiV2.ROCK_COMPRESSIBILITY, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.WATER_GAS_REL_PERM, ORIENT_SPLIT_400_PAYLOADS),
         (TestContentPathsApiV2.NMR, ORIENT_SPLIT_400_PAYLOADS),
         (TestContentPathsApiV2.MULTIPLE_SALINITY, ORIENT_SPLIT_400_PAYLOADS),
         (TestContentPathsApiV2.GCMS_ALKANES, ORIENT_SPLIT_400_PAYLOADS),
