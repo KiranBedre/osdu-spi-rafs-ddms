@@ -187,7 +187,8 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
     "tensilestrength": ["Geomechanics.TensileStrengthAnalysis"],
     "vitrinitereflectance": ["Petrography.VitriniteReflectance"],
     "xrd": ["Mineralogy.XRD"],
-    "pdp": ["BasicRockProperties.PDP"],
+    "pdp": ["BasicRockProperties.PressureDependentPermeability"],
     "stocktankoilanalysis": ["PVT.StockTankOilCharacterization"],
     "crushedrockanalysis": ["BasicRockProperties.CrushedRockAnalysis"],
+    "mininggeotechlogging": ["Mining.Geotechlogging"],
 }
