@@ -115,8 +115,8 @@
                         "Value": 34.0,
                         "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:dAPI:"
                     },
-                    "FluidCondition": "reservoir",
-                    "PhasesPresent": "gas and oil"
+                    "FluidConditions": "opendes:reference-data--SampleTestCondition:InitialReservoir:",
+                    "PhasesPresent": "opendes:reference-data--FluidPhasesPresent:Wellstream:"
                 }
             ],
             [

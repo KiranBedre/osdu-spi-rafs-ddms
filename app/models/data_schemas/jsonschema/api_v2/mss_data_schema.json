@@ -285,11 +285,13 @@
                             },
                             "additionalProperties": false
                         },
-                        "FluidCondition": {
-                            "type": "string"
+                        "FluidConditions": {
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleTestCondition:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                         },
                         "PhasesPresent": {
-                            "type": "string"
+                            "type": "string",
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidPhasesPresent:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                         }
                     },
                     "additionalProperties": false

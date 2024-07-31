@@ -69,8 +69,8 @@
             "UnitOfMeasure": "opendes:reference-data--UnitOfMeasure:cP:"
           },
           "YFunction": 3.343,
-          "FluidConditionType": "Stock Tank Conditions",
-          "PhasesPresentType": "Oil"
+          "FluidConditions": "opendes:reference-data--SampleTestCondition:InitialReservoir:",
+          "PhasesPresent": "opendes:reference-data--FluidPhasesPresent:Wellstream:"
         }
     ]
   }

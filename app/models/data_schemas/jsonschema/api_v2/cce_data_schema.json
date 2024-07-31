@@ -277,25 +277,13 @@
                           "type": "number",
                           "description": "The Y function at this test step. See  Standing, M.B.: Volumetric And Phase Behavior Of Oil Field Hydrocarbon Systems, Eighth Edition, SPE Richardson, Texas (1977)."
                       },
-                      "FluidConditionType": {
-                          "title": "Fluid Condition Type",
+                      "FluidConditions": {
                           "type": "string",
-                          "description": "The fluid condition at this test step.",
-                          "enum": [
-                              "Current Reservoir Conditions",
-                              "Initial Reservoir Conditions",
-                              "Initial Saturation Conditions",
-                              "Stock Tank Conditions"
-                          ]
+                          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleTestCondition:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                       },
-                      "PhasesPresentType": {
+                      "PhasesPresent": {
                           "type": "string",
-                          "enum": [
-                              "Oil",
-                              "Solid",
-                              "Gas",
-                              "Oil and Gas"
-                          ]
+                          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidPhasesPresent:[\\w\\-\\.\\:\\%]+:[0-9]*$"
                       }
                   },
                   "additionalProperties": false
