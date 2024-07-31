@@ -20,11 +20,16 @@ from loguru import logger
 from pydantic import BaseModel
 from starlette import status
 
+from app.api.dependencies.request import require_data_partition_id
 from app.api.dependencies.validation import get_data_model
+from app.core.config import AppSettings, get_app_settings
+from app.dev.api.dependencies.services import get_async_partition_service
+from app.dev.core.helpers.redis_index import build_samplesanalysis_schema
 from app.dev.resources.multiple_nested_filters import (
     DFMultipleNestedFilterValidator,
     FilterExamples,
 )
+from app.dev.services import partition
 from app.resources.errors import FilterValidationError
 
 
@@ -95,3 +100,39 @@ async def validate_multiple_nested_filters(
 
     logger.debug("Query parameters are valid.")
     return df_filter
+
+
+async def get_search_wks_parameters(
+    metadata: Optional[str] = Query(
+        default=None,
+        description="A valid json object with property name and value.",
+    ),
+    settings: AppSettings = Depends(get_app_settings),
+) -> dict:
+    if metadata and settings.redis_index_enable:
+        try:
+            wks_metadata = json.loads(metadata)
+        except json.decoder.JSONDecodeError as exc:
+            err_msg = str(exc)
+            logger.error(err_msg)
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err_msg)
+
+        names = {prop.as_name for prop in build_samplesanalysis_schema()}
+        names.symmetric_difference_update({"SamplesAnalysisID", "SampleAnalysisTypeIDs"})
+        metadata_keys = set(wks_metadata.keys())
+        if not metadata_keys.intersection(names):
+            err_msg = f"Properties {metadata_keys} not found in samplesanalysis redis schema: {names}"
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err_msg)
+
+        return wks_metadata
+
+
+async def get_validated_partition(
+    partition: str = Depends(require_data_partition_id),
+    partition_service: partition.PartitionService = Depends(get_async_partition_service),
+) -> str:
+    if not await partition_service.partition_exist(partition):
+        err_msg = f"Partition '{partition}' does not exist"
+        logger.error(err_msg)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err_msg)
+    return partition

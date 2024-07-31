@@ -15,6 +15,7 @@
 from typing import Union
 
 from pydantic import BaseSettings
+from pydantic.types import conint
 
 
 class RedisCacheConfig(BaseSettings):
@@ -28,6 +29,8 @@ class RedisCacheConfig(BaseSettings):
     redis_database: Union[str, int] = 0
 
     redis_ssl: bool = True
+
+    redis_index_database: conint(gt=-1, lt=1) = 0  # only at 'db = 0' can be created the index
 
     class Config:
         env_file = ".env"

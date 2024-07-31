@@ -15,6 +15,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.request import require_data_partition_id
+from app.dev.api.routes.v_dev.index import api as index_api
 from app.dev.api.routes.v_dev.samplesanalysis import api as sampleanalysis_api
 
 COMMON_DEPENDENCIES = [
@@ -28,5 +29,12 @@ router.include_router(
     sampleanalysis_api.sa_router,
     prefix=SAMPLES_ANALYSIS_PREFIX,
     tags=["dev-samplesanalysis"],
+    dependencies=COMMON_DEPENDENCIES,
+)
+
+router.include_router(
+    index_api.ix_router,
+    prefix="",
+    tags=["index"],
     dependencies=COMMON_DEPENDENCIES,
 )

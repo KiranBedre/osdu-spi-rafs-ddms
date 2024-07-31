@@ -14,6 +14,7 @@ data:
   SERVICE_HOST_PARTITION: {{ printf "%s%s" .Values.data.partitionHost "/api/partition/v1" | quote }}
   SERVICE_HOST_DATASET: {{ printf "%s%s" .Values.data.datasetHost "/api/dataset/v1" | quote }}
   SERVICE_HOST_SCHEMA: {{ printf "%s%s" .Values.data.schemaHost "/api/schema-service/v1" | quote }}
+  SERVICE_HOST_ENTITLEMENTS: {{ printf "%s%s" .Values.data.entitlementsHost "/api/entitlements/v2" | quote }}
   SERVICE_READINESS_URLS: "{{ printf "%s%s" .Values.data.storageHost "/api/storage/v2/liveness_check" }},{{ printf "%s%s" .Values.data.schemaHost "/api/schema-service/v1/liveness_check" }}"
   ENABLE_API_V1: {{ .Values.data.enableApiV1 | quote }}
   CACHE_ENABLE: {{ .Values.data.cacheEnable | quote }}
@@ -26,3 +27,4 @@ data:
   REDIS_DATABASE: {{ .Values.data.redisRafsDdmsDatabase | quote }}
   REDIS_SSL: {{ .Values.data.redisRafsDdmsSsl | quote }}
   REDIS_PORT: {{ .Values.data.redisRafsDdmsPort | quote }}
+  REDIS_INDEX_ENABLE: {{ .Values.data.redisIndexEnable | quote }}

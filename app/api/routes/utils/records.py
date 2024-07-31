@@ -37,18 +37,6 @@ FULLID_ID_INDEX = 0
 FULLID_VERSION_INDEX = 1
 
 
-def get_id_part(full_record_id: str) -> str:
-    """Get id part from record id.
-
-    :param full_record_id: full record id
-    :type full_record_id: str
-    :return: id part
-    :rtype: str
-    """
-    id_parts = full_record_id.split(":")
-    return id_parts[ID_PART_INDEX]
-
-
 def get_id_version(full_record_id: str) -> Tuple[str, Optional[int]]:
     """Separately get id and version part from record id.
 
@@ -77,6 +65,30 @@ def get_id_version(full_record_id: str) -> Tuple[str, Optional[int]]:
         raise UnprocessableContentException(detail=f"Record id version '{version}' should be numeric")
 
     return record_id, version
+
+
+def get_id(full_record_id: str) -> str:
+    """Get id from record id.
+
+    :param full_record_id: full record id
+    :type full_record_id: str
+    :return: id without version
+    :rtype: str
+    """
+    record_id, _ = get_id_version(full_record_id)
+    return record_id
+
+
+def get_id_part(full_record_id: str) -> str:
+    """Get id part from record id.
+
+    :param full_record_id: full record id
+    :type full_record_id: str
+    :return: id part
+    :rtype: str
+    """
+    id_parts = get_id(full_record_id).split(":")
+    return id_parts[ID_PART_INDEX]
 
 
 def find_dataset_id(ddms_datasets: List[str], prefix: str) -> Optional[str]:
@@ -232,7 +244,7 @@ def get_info_from_urn(urn: str) -> dict:
 
     dataset_id = urn_parts[dataset_index]
     # dataset api does not allow retrieve dataset with version
-    dataset_id = ":".join(dataset_id.split(":")[:-1])
+    dataset_id = get_id(dataset_id)
     return {
         "rafs_version": urn_parts[rafs_version_index],
         "test_type": urn_parts[test_type_index],

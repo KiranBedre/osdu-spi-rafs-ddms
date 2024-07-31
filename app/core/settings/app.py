@@ -47,11 +47,13 @@ class AppSettings(BaseAppSettings):
 
     service_host_storage: str = None
 
-    service_host_partition: str = None
+    service_host_entitlements: str = None
 
     service_host_dataset: str = None
 
     service_host_schema: str = None
+
+    service_host_partition: str = None
 
     user_token: str = None
 
@@ -62,6 +64,8 @@ class AppSettings(BaseAppSettings):
     storage_query_limit: int = 100
 
     service_readiness_urls: str = None
+
+    redis_index_enable: bool = False
 
     @property
     def fastapi_kwargs(self) -> Dict[str, Any]:
