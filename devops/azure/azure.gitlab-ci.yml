@@ -48,6 +48,44 @@ azure_containerize:
   after_script:
     - docker buildx rm
 
+azure_containerize:cronjob:
+  stage: containerize
+  needs: ["compile-and-unit-test"]
+  tags: ["osdu-medium"]
+  environment: $DEPLOY_ENVIRONMENT_AZURE
+  extends:
+    - .azure_variables
+  image: docker:24.0.1-cli
+  variables:
+    SHA_IMAGE: ${CI_PROJECT_NAME}-cronjob:${CI_COMMIT_SHA}
+    LATEST_IMAGE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}:latest
+    RELEASE_IMAGE: release-${CI_COMMIT_TAG}:${CI_PROJECT_NAME}-${CI_COMMIT_TAG}
+  only:
+    variables:
+      - $AZURE == '1'
+  before_script:
+    - apk add git && docker buildx create --use
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login ${AZURE_REGISTRY}.azurecr.io --username $AZURE_PRINCIPAL_ID --password $AZURE_PRINCIPAL_SECRET
+    - >
+      AZ_VER=0.0.0-${CI_COMMIT_SHORT_SHA};
+      if [[ -z $CI_COMMIT_TAG ]] && [[ $CI_COMMIT_BRANCH =~ ^release\/[0-9]{1,2}.[0-9]{1,2}$ ]]; 
+      then
+          RELEASE_VER=$(echo $CI_COMMIT_BRANCH | sed "s?^release/??");
+          AZ_VER=$RELEASE_VER
+      elif [[ $CI_COMMIT_TAG =~ ^v[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; 
+      then
+          AZ_VER=$(echo $CI_COMMIT_TAG | sed "s/^v//;s/-.*$//");
+      fi;
+  script:
+    - >
+      docker buildx build --push -f ./devops/azure/cronjob/Dockerfile
+      --build-arg "release_version=$AZ_VER"
+      -t ${CI_REGISTRY_IMAGE}/${SHA_IMAGE}
+      -t ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE ./devops/azure/cronjob/
+  after_script:
+    - docker buildx rm
+
 # Allowing to fail as the base image issue it a false positive in trivy:
 ## https://github.com/aquasecurity/trivy/issues/4067
 container_scanning:
@@ -85,6 +123,8 @@ azure_deploy:
       --set azure.acr=${AZURE_REGISTRY}.azurecr.io
       --set configuration[0].container.image=${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
       --set configuration[0].container.tag=${CI_COMMIT_SHA}
+      --set configuration[2].container.image=${CI_PROJECT_NAME}-cronjob
+      --set configuration[2].container.tag=${CI_COMMIT_SHA}
       --set ingress.dns=$AZURE_DNS_NAME
     - |
       echo "AZURE_REGISTRY_TOKEN=$(az acr login -n $AZURE_REGISTRY --expose-token --query 'accessToken' -otsv)" >> ${CI_PROJECT_DIR}/acr_tokens.env

@@ -52,6 +52,24 @@ func _get_auth_parameters(vault_uri string) (*azidentity.ClientSecretCredential,
 	return_creds := azidentity.ClientSecretCredential{}
 	token_request_options := policy.TokenRequestOptions{}
 	// Create a credential using the NewDefaultAzureCredential type.
+	err := retry.Do(
+		func() error {
+			_, err := azidentity.NewDefaultAzureCredential(nil)
+			if err != nil {
+				return err
+			}
+			return nil
+		},
+		retry.Attempts(5),
+		retry.Delay(4*time.Second),
+		retry.OnRetry(func(n uint, err error) {
+			slog.Warn(fmt.Sprintf("retry #%d: %s\n", n, err))
+		}),
+	)
+	if err != nil {
+		return &return_creds, &token_request_options, err
+	}
+
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
 		return &return_creds, &token_request_options, err
