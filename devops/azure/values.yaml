@@ -109,12 +109,14 @@ configuration:
     image: rafs/cronjob
     tag: latest
   cronjobEnabled: true
-  schedule: "* */1 * * *"
-  backOffLimit: "3"
-  activeDeadlineSeconds: "3600"
+  schedule: "* */12 * * *"
+  backOffLimit: "2"
+  activeDeadlineSeconds: "300"
   successfulJobsHistoryLimit: "1"
   startingDeadlineSeconds: "500"
   failedJobsHistoryLimit: "2"
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
   config:
     AZURE_KEY_VAULT_URI: "https://{{ .Values.azure.keyvault.name }}.vault.azure.net/"
     RAFS_URI: "http://rafs-ddms-service"
