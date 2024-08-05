@@ -12,6 +12,7 @@ data:
   partitionHost: "http://partition"
   datasetHost: "http://dataset"
   schemaHost: "http://schema"
+  entitlementsHost: "http://entitlements"
   # Redis connection
   cacheEnable: "True"
   cacheBackend: "app.core.helpers.cache.backends.redis_cache.RedisCacheBackend"
@@ -21,11 +22,12 @@ data:
   redisRafsDdmsDatabase: "13"
   redisRafsDdmsSsl: "False"
   redisRafsDdmsPort: "6379"
+  redisIndexEnable: "True"
   # Deployments
   requestsCpu: "5m"
   requestsMemory: "350Mi"
-  limitsCpu: "1"
-  limitsMemory: "1G"
+  limitsCpu: "2"
+  limitsMemory: "3G"
   redisRequestsCpu: "10m"
   redisRequestsMemory: "50Mi"
   redisImage: "docker.io/library/redis:7.2-alpine"

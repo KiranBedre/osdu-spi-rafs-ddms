@@ -47,7 +47,7 @@ spec:
           readinessProbe:
               failureThreshold: 3
               httpGet:
-                path: /api/rafs-ddms/readiness  
+                path: /api/rafs-ddms/readiness
                 port: 8080
               initialDelaySeconds: 120 
               periodSeconds: 10

@@ -42,6 +42,7 @@ Use any code editor to set variables in the **values.yaml** file. Some of the va
 **data.storageHost** | Storage service host address | string | `http://storage` | yes
 **data.searchHost** | Search service host address | string | `http://search` | yes
 **data.partitionHost** | Partition service host address | string | `http://partition` | yes
+**data.entitlementsHost** | Entitlements service host address | string | `http://entitlements` | yes
 **data.datasetHost** | Dataset service host address | string | `http://dataset` | yes
 **data.enableApiV1** | Deployment flag to enable api V1 | string | `True` | yes
 **data.cacheEnable** | Enable or disable cache for the application | string | `True` | yes
@@ -50,6 +51,7 @@ Use any code editor to set variables in the **values.yaml** file. Some of the va
 **data.redisRafsDdmsDatabase** | Redis database number | string | `13` | yes
 **data.redisRafsDdmsSsl** | Enable SSL for external Redis instance. For Redis inside k8s - should be `False` | string | `False` | yes
 **data.redisRafsDdmsPort** | Redis instance port | string | `6379` | yes
+**data.redisIndexEnable** | Enable redis index | bool | `True` | yes
 
 ### Deployment Variables
 
@@ -57,8 +59,8 @@ Use any code editor to set variables in the **values.yaml** file. Some of the va
 |------|-------------|------|---------|---------|
 **data.requestsCpu** | amount of requested CPU | string | `5m` | yes
 **data.requestsMemory** | amount of requested memory| string | `350Mi` | yes
-**data.limitsCpu** | CPU limit | string | `1` | only if `global.limitsEnabled` is true
-**data.limitsMemory** | memory limit | string | `1G` | only if `global.limitsEnabled` is true
+**data.limitsCpu** | CPU limit | string | `2` | only if `global.limitsEnabled` is true
+**data.limitsMemory** | memory limit | string | `3G` | only if `global.limitsEnabled` is true
 **data.redisRequestsCpu** | amount of requested CPU for Redis instance | string | `10m` | yes
 **data.redisRequestsMemory** | amount of requested memory for Redis instance | string | `50Mi` | yes
 **data.redisImage** | Redis instance image | string | `redis:7.2-alpine` | yes
