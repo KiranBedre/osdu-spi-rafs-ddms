@@ -22,11 +22,13 @@ class GoogleBlobLoader(IBlobLoader):
 
     async def upload_blob(self, signed_url: str, blob: bytes):
         async with aiohttp.ClientSession(trust_env=True) as session:
-            async with session.post(signed_url, data=blob, ssl=False) as resp:
+            async with session.put(signed_url, data=blob, ssl=False) as resp:
+                resp.raise_for_status()
                 await resp.read()
 
     async def download_blob(self, signed_url: str) -> bytes:
         async with aiohttp.ClientSession(trust_env=True) as session:
             async with session.get(signed_url, ssl=False) as resp:
+                resp.raise_for_status()
                 blob = await resp.read()
         return blob
