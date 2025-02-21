@@ -176,18 +176,18 @@ class RedisIndexView:
         self,
         search_service: search.SearchService,
     ):
-        query_offset = 0
+        cursor = None
         while True:
             search_response = await search_service.find_records(
                 kind=SAMPLESANALYSIS_KIND,
-                offset=query_offset,
                 limit=search.QUERY_LIMIT,
+                cursor=cursor,
             )
             records = search_response.get("results", [])
+            cursor = search_response.get("cursor", None)
             if not records:
                 break
             yield records
-            query_offset += search.QUERY_LIMIT
 
     def _prepare_api_routes(self) -> None:
         """Prepare and add api routes."""
