@@ -17,16 +17,20 @@ variables:
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
+    ref: release/0.28
 
   # for compile-and-unit-test
   - project: "osdu/platform/ci-cd-pipelines"
     file: "build/python.yml"
+    ref: release/0.28
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa-python.yml"
+    ref: release/0.28
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
+    ref: release/0.28
 
   # AZURE provider
   - local: "/devops/azure/azure.gitlab-ci.yml"
@@ -37,6 +41,7 @@ include:
   # GC provider
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/gc-global.yml"
+    ref: release/0.28
 
   - local: "devops/gc/pipeline/override-stages.yml"
 
@@ -49,8 +54,7 @@ compile-and-unit-test:
     PYTEST_COV: app
     PYTEST_DIR: ./tests
     PYTEST_OPTIONS: >
-      -p no:cacheprovider
-      --ignore=${CI_PROJECT_DIR}/tests/integration
+      -p no:cacheprovider --ignore=${CI_PROJECT_DIR}/tests/integration
     PIP_REQUIREMENTS_TOOLING_ONLY: >-
       requirements-tests.in
 
@@ -58,7 +62,7 @@ compile-and-unit-test:
 build_rafs_tests:
   stage: build
   image: docker:24.0.1-cli
-  tags: ["osdu-medium"]
+  tags: [ "osdu-medium" ]
   extends:
     - .skipForTriggeringMergeRequests
   before_script:
@@ -66,10 +70,7 @@ build_rafs_tests:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     - >
-      docker buildx build --push -t ${CI_REGISTRY_IMAGE}:build-latest -t ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
-      --cache-to type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache
-      --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache
-      -f Dockerfile.tests .
+      docker buildx build --push -t ${CI_REGISTRY_IMAGE}:build-latest -t ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA} --cache-to type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache -f Dockerfile.tests .
   after_script:
     - docker buildx rm
 

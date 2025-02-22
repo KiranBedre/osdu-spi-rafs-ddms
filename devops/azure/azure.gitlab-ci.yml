@@ -1,9 +1,11 @@
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/azure.yml"
+    ref: release/0.28
 
 .maven:
   variables:
+
 
 .python_test_report:
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
@@ -23,34 +25,22 @@ azure_containerize:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker login ${AZURE_REGISTRY}.azurecr.io --username $AZURE_PRINCIPAL_ID --password $AZURE_PRINCIPAL_SECRET
     - >
-      AZ_VER=0.0.0-${CI_COMMIT_SHORT_SHA};
-      if [[ -z $CI_COMMIT_TAG ]] && [[ $CI_COMMIT_BRANCH =~ ^release\/[0-9]{1,2}.[0-9]{1,2}$ ]]; 
-      then
+      AZ_VER=0.0.0-${CI_COMMIT_SHORT_SHA}; if [[ -z $CI_COMMIT_TAG ]] && [[ $CI_COMMIT_BRANCH =~ ^release\/[0-9]{1,2}.[0-9]{1,2}$ ]];  then
           RELEASE_VER=$(echo $CI_COMMIT_BRANCH | sed "s?^release/??");
           AZ_VER=$RELEASE_VER
-      elif [[ $CI_COMMIT_TAG =~ ^v[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; 
-      then
+      elif [[ $CI_COMMIT_TAG =~ ^v[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$ ]];  then
           AZ_VER=$(echo $CI_COMMIT_TAG | sed "s/^v//;s/-.*$//");
       fi;
   script:
     - >
-      docker buildx build --push -f Dockerfile
-      --build-arg "build_date=$(TZ=UTC date)"
-      --build-arg "commit_id=$CI_COMMIT_SHORT_SHA"
-      --build-arg "commit_branch=$CI_COMMIT_REF_SLUG"
-      --build-arg "commit_message=$CI_COMMIT_MESSAGE"
-      --build-arg "release_version=$AZ_VER"
-      --cache-to type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache
-      --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache
-      -t ${CI_REGISTRY_IMAGE}/${SHA_IMAGE}
-      -t ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE .
+      docker buildx build --push -f Dockerfile --build-arg "build_date=$(TZ=UTC date)" --build-arg "commit_id=$CI_COMMIT_SHORT_SHA" --build-arg "commit_branch=$CI_COMMIT_REF_SLUG" --build-arg "commit_message=$CI_COMMIT_MESSAGE" --build-arg "release_version=$AZ_VER" --cache-to type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache -t ${CI_REGISTRY_IMAGE}/${SHA_IMAGE} -t ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE .
   after_script:
     - docker buildx rm
 
 azure_containerize_cronjob:
   stage: containerize
-  needs: ["compile-and-unit-test"]
-  tags: ["osdu-medium"]
+  needs: [ "compile-and-unit-test" ]
+  tags: [ "osdu-medium" ]
   environment: $DEPLOY_ENVIRONMENT_AZURE
   extends:
     - .azure_variables
@@ -67,21 +57,15 @@ azure_containerize_cronjob:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker login ${AZURE_REGISTRY}.azurecr.io --username $AZURE_PRINCIPAL_ID --password $AZURE_PRINCIPAL_SECRET
     - >
-      AZ_VER=0.0.0-${CI_COMMIT_SHORT_SHA};
-      if [[ -z $CI_COMMIT_TAG ]] && [[ $CI_COMMIT_BRANCH =~ ^release\/[0-9]{1,2}.[0-9]{1,2}$ ]]; 
-      then
+      AZ_VER=0.0.0-${CI_COMMIT_SHORT_SHA}; if [[ -z $CI_COMMIT_TAG ]] && [[ $CI_COMMIT_BRANCH =~ ^release\/[0-9]{1,2}.[0-9]{1,2}$ ]];  then
           RELEASE_VER=$(echo $CI_COMMIT_BRANCH | sed "s?^release/??");
           AZ_VER=$RELEASE_VER
-      elif [[ $CI_COMMIT_TAG =~ ^v[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; 
-      then
+      elif [[ $CI_COMMIT_TAG =~ ^v[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$ ]];  then
           AZ_VER=$(echo $CI_COMMIT_TAG | sed "s/^v//;s/-.*$//");
       fi;
   script:
     - >
-      docker buildx build --push -f ./devops/azure/cronjob/Dockerfile
-      --build-arg "release_version=$AZ_VER"
-      -t ${CI_REGISTRY_IMAGE}/${SHA_IMAGE}
-      -t ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE ./devops/azure/cronjob/
+      docker buildx build --push -f ./devops/azure/cronjob/Dockerfile --build-arg "release_version=$AZ_VER" -t ${CI_REGISTRY_IMAGE}/${SHA_IMAGE} -t ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE ./devops/azure/cronjob/
   after_script:
     - docker buildx rm
 
@@ -96,35 +80,22 @@ azure_containerize_helm:
 
 azure_deploy:
   needs:
-  - job: azure_code_coverage
-    optional: true
-  - job: core_code_coverage
-    optional: true
-  - job: azure_containerize_helm
-    optional: true
-  - job: container_scanning
-    optional: true
-  - job: azure_containerize
-    optional: false
+    - job: azure_code_coverage
+      optional: true
+    - job: core_code_coverage
+      optional: true
+    - job: azure_containerize_helm
+      optional: true
+    - job: container_scanning
+      optional: true
+    - job: azure_containerize
+      optional: false
   script:
     # Install Service
     - helm show chart $HELM_CHART_OCI --version $HELM_CHART_OCI_VERSION
     - ENV_VAULT=$(kubectl get cm -n osdu osdu-svc-config -o jsonpath={.data.ENV_KEYVAULT} | sed -e 's/https:\/\///;s/.vault.azure.*//')
     - >-
-      helm upgrade -i osdu-gitlab-$CI_PROJECT_NAME $HELM_CHART_OCI --version $HELM_CHART_OCI_VERSION -n osdu --wait --timeout 5m
-      -f devops/azure/values.yaml
-      --set azure.tenant=$AZURE_TENANT_ID
-      --set azure.subscription=$AZURE_SUBSCRIPTION_ID
-      --set azure.resourcegroup=$(az keyvault secret show --id https://${ENV_VAULT}.vault.azure.net/secrets/base-name-cr --query value -otsv)-rg
-      --set azure.identity=$(az keyvault secret show --id https://${ENV_VAULT}.vault.azure.net/secrets/base-name-cr --query value -otsv)-osdu-identity
-      --set azure.identity_id=$(az keyvault secret show --id https://${ENV_VAULT}.vault.azure.net/secrets/osdu-identity-id --query value -otsv)
-      --set azure.keyvault.name=$ENV_VAULT
-      --set azure.acr=${AZURE_REGISTRY}.azurecr.io
-      --set configuration[0].container.image=${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
-      --set configuration[0].container.tag=${CI_COMMIT_SHA}
-      --set configuration[2].container.image=${CI_PROJECT_NAME}-cronjob
-      --set configuration[2].container.tag=${CI_COMMIT_SHA}
-      --set ingress.dns=$AZURE_DNS_NAME
+      helm upgrade -i osdu-gitlab-$CI_PROJECT_NAME $HELM_CHART_OCI --version $HELM_CHART_OCI_VERSION -n osdu --wait --timeout 5m -f devops/azure/values.yaml --set azure.tenant=$AZURE_TENANT_ID --set azure.subscription=$AZURE_SUBSCRIPTION_ID --set azure.resourcegroup=$(az keyvault secret show --id https://${ENV_VAULT}.vault.azure.net/secrets/base-name-cr --query value -otsv)-rg --set azure.identity=$(az keyvault secret show --id https://${ENV_VAULT}.vault.azure.net/secrets/base-name-cr --query value -otsv)-osdu-identity --set azure.identity_id=$(az keyvault secret show --id https://${ENV_VAULT}.vault.azure.net/secrets/osdu-identity-id --query value -otsv) --set azure.keyvault.name=$ENV_VAULT --set azure.acr=${AZURE_REGISTRY}.azurecr.io --set configuration[0].container.image=${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG} --set configuration[0].container.tag=${CI_COMMIT_SHA} --set configuration[2].container.image=${CI_PROJECT_NAME}-cronjob --set configuration[2].container.tag=${CI_COMMIT_SHA} --set ingress.dns=$AZURE_DNS_NAME
     - |
       echo "AZURE_REGISTRY_TOKEN=$(az acr login -n $AZURE_REGISTRY --expose-token --query 'accessToken' -otsv)" >> ${CI_PROJECT_DIR}/acr_tokens.env
       echo "DST_REGISTRY_TOKEN=$(az acr login -n msosdu --expose-token --query 'accessToken' -otsv)" >> ${CI_PROJECT_DIR}/acr_tokens.env
@@ -140,10 +111,10 @@ azure_swagger_test:
 # More than 6 workers will cause failure in the Cosmos Backend.
 # Large will create aggresive tests / most likely fail
 azure_test_py:
-  tags: ["osdu-medium"]
+  tags: [ "osdu-medium" ]
   stage: integration
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
-  needs: ["azure_deploy"]
+  needs: [ "azure_deploy" ]
   allow_failure: true
   variables:
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
@@ -154,20 +125,10 @@ azure_test_py:
     - .python_test_report
   before_script:
     - apt update -qqq -y && apt install -qqq -y curl jq &> /dev/null
-    - !reference [.get_azure_access_token, script]
+    - !reference [ .get_azure_access_token, script ]
   script:
     - >-
-      time pytest -n 3
-      --junitxml=integration_tests_report.xml
-      --cov=app
-      --cov-report=xml:coverage.xml
-      --cov-report=term
-      ./tests/integration/tests
-      --ddms-base-url https://${AZURE_DNS_NAME}
-      --url-prefix ${URL_PREFIX}
-      --bearer-token ${ACCESS_TOKEN}
-      --partition ${PARTITION}
-      --cloud-provider azure
+      time pytest -n 3 --junitxml=integration_tests_report.xml --cov=app --cov-report=xml:coverage.xml --cov-report=term ./tests/integration/tests --ddms-base-url https://${AZURE_DNS_NAME} --url-prefix ${URL_PREFIX} --bearer-token ${ACCESS_TOKEN} --partition ${PARTITION} --cloud-provider azure
   only:
     variables:
       - $AZURE == '1' && $AZURE_SKIP_DEPLOY != 'true' && $AZURE_TEST_TYPE == 'python'
@@ -178,12 +139,6 @@ azure_test_py:
 .get_azure_access_token:
   script:
     - >-
-      ACCESS_TOKEN=$( 
-      curl --fail-with-body -L -XPOST "https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/v2.0/token"
-      --data-urlencode "grant_type=client_credentials"
-      --data-urlencode "client_id=${AZURE_APP_ID}"
-      --data-urlencode "client_secret=${AZURE_APP_SECRET}"
-      --data-urlencode "scope=${AZURE_APP_ID}/.default openid profile offline_access" | jq -r .access_token
-      )
+      ACCESS_TOKEN=$(  curl --fail-with-body -L -XPOST "https://login.microsoftonline.com/${AZURE_TENANT_ID}/oauth2/v2.0/token" --data-urlencode "grant_type=client_credentials" --data-urlencode "client_id=${AZURE_APP_ID}" --data-urlencode "client_secret=${AZURE_APP_SECRET}" --data-urlencode "scope=${AZURE_APP_ID}/.default openid profile offline_access" | jq -r .access_token )
     - if [[ "$ACCESS_TOKEN" == "null" ]]; then exit 1; fi
     - echo ${ACCESS_TOKEN} | head -c 10
