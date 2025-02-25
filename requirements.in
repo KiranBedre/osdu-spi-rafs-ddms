@@ -3,11 +3,13 @@ aiohttp==3.9.4
 async-lru==2.0.4
 async-timeout==4.0.3
 boto3==1.33.1
+certifi==2025.1.31
 fastapi-cache2[redis]==0.2.1
 fastapi==0.115.2
 httpx==0.26.0
 jsonref==1.1.0
 jsonschema==4.21.1
+idna==3.10.0
 loguru==0.7.2
 pandas==2.2.0
 pandera==0.18.0
