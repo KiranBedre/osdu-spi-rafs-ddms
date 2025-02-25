@@ -23,4 +23,3 @@ TIMEOUT = httpx.Timeout(settings.request_timeout)
 
 # number of http request retries
 DEFAULT_RETRIES = 3
-TRANSPORT = httpx.AsyncHTTPTransport(retries=DEFAULT_RETRIES)

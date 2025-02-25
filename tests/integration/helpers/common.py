@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import copy
+import os
 import secrets
 import string
 
@@ -50,7 +51,12 @@ class CommonHelper(object):
     @staticmethod
     def get_content_id_from_ddms_urn(ddms_urn: str) -> str:
         """Gets the content_id part from full urn."""
-        return ddms_urn.split("/")[-1]
+        # remove when fully migrated to blob storage
+        rafs_use_blob_storage = os.getenv("RAFS_USE_BLOB_STORAGE")
+        if rafs_use_blob_storage and rafs_use_blob_storage == "True":
+            return ddms_urn.split("/")[-1]
+        else:
+            return ddms_urn.split("/")[-2]
 
     @staticmethod
     def parse_full_record_id(record_urn: str) -> dict:
