@@ -22,7 +22,7 @@ from app.resources.common_headers import (
     CONTENT_TYPE,
     DATA_PARTITION_ID,
 )
-from app.services.osdu_clients.conf import TIMEOUT, TRANSPORT
+from app.services.osdu_clients.conf import DEFAULT_RETRIES, TIMEOUT
 
 
 class DatasetServicePaths(NamedTuple):
@@ -70,7 +70,7 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=TRANSPORT,
+            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
             q_params = {"kindSubType": kind_subtype}
             response = await client.post(
@@ -90,7 +90,7 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=TRANSPORT,
+            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
             q_params = {"kindSubType": kind_subtype}
             response = await client.get(
@@ -111,7 +111,7 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=TRANSPORT,
+            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
             request_body = {
                 "datasetRegistryIds": dataset_ids,
@@ -137,7 +137,7 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=TRANSPORT,
+            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
             q_params = {"id": dataset_id}
 
@@ -159,7 +159,7 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=TRANSPORT,
+            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
             request_body = {
                 "datasetRegistries": dataset_registries,
@@ -178,7 +178,7 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=TRANSPORT,
+            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
             q_params = {"id": dataset_id}
 
@@ -198,7 +198,7 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=TRANSPORT,
+            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
             request_body = {
                 "datasetRegistryIds": dataset_ids,
@@ -210,3 +210,14 @@ class DatasetServiceApiClient(object):
             logger.debug(f"{self.name}: get dataset registries response: {response}")
             response.raise_for_status()
             return response.json()
+
+    def _transport(self, retries: int = DEFAULT_RETRIES, **kwargs) -> httpx.AsyncHTTPTransport:
+        """Create a new transport object.
+
+        :param retries: the number of retries, defaults to
+            DEFAULT_RETRIES
+        :type retries: int, optional
+        :return: A new transport object
+        :rtype: httpx.AsyncHTTPTransport
+        """
+        return httpx.AsyncHTTPTransport(retries=retries, **kwargs)

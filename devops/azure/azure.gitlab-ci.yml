@@ -121,6 +121,7 @@ azure_test_py:
     PARTITION: opendes
     SERVICE_HOST_STORAGE: https://${AZURE_DNS_NAME}/api/storage/v2
     SERVICE_HOST_LEGAL: https://${AZURE_DNS_NAME}/api/legal/v1
+    RAFS_USE_BLOB_STORAGE: "True"
   extends:
     - .python_test_report
   before_script:

@@ -23,7 +23,7 @@ from app.resources.common_headers import (
     CONTENT_TYPE,
     DATA_PARTITION_ID,
 )
-from app.services.osdu_clients.conf import TIMEOUT
+from app.services.osdu_clients.conf import DEFAULT_RETRIES, TIMEOUT
 
 
 @dataclasses.dataclass
@@ -155,7 +155,9 @@ class SchemaServiceApiClient(object):
             },
             "schema": schema_content,
         }
-        async with httpx.AsyncClient(base_url=self.base_url, headers=self.headers, timeout=TIMEOUT) as client:
+        async with httpx.AsyncClient(
+            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+        ) as client:
             response = await client.put(SchemaServicePaths.SCHEMA, json=payload, headers=self.headers)
             response.raise_for_status()
             return response.json()
@@ -169,7 +171,20 @@ class SchemaServiceApiClient(object):
         :return: the schema
         :rtype: dict
         """
-        async with httpx.AsyncClient(base_url=self.base_url, headers=self.headers, timeout=TIMEOUT) as client:
+        async with httpx.AsyncClient(
+            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+        ) as client:
             response = await client.get(f"{SchemaServicePaths.SCHEMA}/{schema_id}", headers=self.headers)
             response.raise_for_status()
             return response.json()
+
+    def _transport(self, retries: int = DEFAULT_RETRIES, **kwargs) -> httpx.AsyncHTTPTransport:
+        """Create a new transport object.
+
+        :param retries: the number of retries, defaults to
+            DEFAULT_RETRIES
+        :type retries: int, optional
+        :return: A new transport object
+        :rtype: httpx.AsyncHTTPTransport
+        """
+        return httpx.AsyncHTTPTransport(retries=retries, **kwargs)
