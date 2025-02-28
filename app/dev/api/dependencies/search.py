@@ -39,8 +39,8 @@ async def get_analysis_type_ids_fetcher(
     partition: str = Depends(require_data_partition_id),
     entitlements_service: entitlements.EntitlementsService = Depends(get_async_entitlements_service),
 ) -> SamplesAnalysisTypeIdsFetcher:
-    is_index_initialized_flag = await is_index_initialized(SAMPLESANALYSIS_IX.format(partition=partition))
-    if get_app_settings().redis_index_enable and is_index_initialized_flag:
+    redis_index_enable = get_app_settings().redis_index_enable
+    if redis_index_enable and await is_index_initialized(SAMPLESANALYSIS_IX.format(partition=partition)):
         logger.info("Using redis index to fetch ids")
         fetcher = RedisSamplesAnalysisTypeIdsFetcher(await get_redis_client(), entitlements_service)
     else:
