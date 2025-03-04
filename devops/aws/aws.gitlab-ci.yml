@@ -1,10 +1,10 @@
 include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/aws-global-variables.yml"
-    ref: release/0.28
+    ref: v0.28.1
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/aws-global.yml"
-    ref: release/0.28
+    ref: v0.28.1
 
 aws_test_py:
   extends:
