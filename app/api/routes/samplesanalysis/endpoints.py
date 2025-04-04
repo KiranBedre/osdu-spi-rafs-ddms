@@ -275,16 +275,28 @@ class SamplesAnalysisSearchDataView:
         logger.debug("Found analysis types and datasets: ")
         logger.debug(analysis_type_ids)
 
-        df_triplets_gen = self._get_search_data(
-            analysis_type_ids,
-            dataset_service,
-            df_filter,
-            parquet_loader,
-        )
+        if self._is_non_empty_filter(df_filter):
+            df_triplets_gen = await self._get_search_data(
+                analysis_type_ids=analysis_type_ids,
+                dataset_service=dataset_service,
+                parquet_loader=parquet_loader,
+                df_filter=df_filter,
+            )
 
-        result_df, total_size = await self._build_result_df(
-            df_triplets_gen, df_filter, offset, page_limit, analysis_type_ids,
-        )
+            result_df, total_size = await self._build_result_df(
+                df_triplets_gen, df_filter, offset, page_limit, analysis_type_ids,
+            )
+        else:
+            df_triplets_gen = await self._get_search_data(
+                analysis_type_ids=analysis_type_ids[offset:offset + page_limit],
+                dataset_service=dataset_service,
+                parquet_loader=parquet_loader,
+                df_filter=df_filter,
+            )
+            total_size = len(analysis_type_ids)
+            result_df, _ = await self._build_result_df(
+                df_triplets_gen, df_filter, 0, page_limit, analysis_type_ids,
+            )
 
         if mime_type == SupportedMimeTypes.PARQUET:
             content_response = result_df.astype(str).to_parquet() if result_df.any else b""
@@ -353,25 +365,28 @@ class SamplesAnalysisSearchDataView:
             data_partition_id, analysis_type, content_schema_version, search_service,
         )
 
-        df_triplets_gen = self._get_search_data(
-            analysis_type_ids,
-            dataset_service,
-            df_filter,
-            parquet_loader,
-        )
+        if self._is_non_empty_filter(df_filter):
+            df_triplets_gen = await self._get_search_data(
+                analysis_type_ids=analysis_type_ids,
+                dataset_service=dataset_service,
+                parquet_loader=parquet_loader,
+                df_filter=df_filter,
+            )
 
-        result_set = []
-        errors = []
-        analysis_type_ids = dict(analysis_type_ids)
-        async for batch_df_triplets in df_triplets_gen:
-            for dataset_id, df, error_msg in batch_df_triplets:
-                if not df.empty:
-                    result_set.append(analysis_type_ids[dataset_id])
-                if error_msg:
-                    errors.append((dataset_id, error_msg))
+            result_set = []
+            errors = []
+            analysis_type_ids = dict(analysis_type_ids)
+            async for batch_df_triplets in df_triplets_gen:
+                for dataset_id, df, error_msg in batch_df_triplets:
+                    if not df.empty:
+                        result_set.append(analysis_type_ids[dataset_id])  # noqa: WPS220
+                    if error_msg:
+                        errors.append((dataset_id, error_msg))  # noqa: WPS220
 
-        if errors:
-            self._handle_errors(analysis_type_ids, errors)
+            if errors:
+                self._handle_errors(analysis_type_ids, errors)
+        else:
+            result_set = [samplesanalysis_ids for _, samplesanalysis_ids in analysis_type_ids]
 
         response = {
             "result": result_set[offset:offset + page_limit],
@@ -380,6 +395,11 @@ class SamplesAnalysisSearchDataView:
             "total_size": len(result_set),
         }
         return JSONResponse(content=response)
+
+    def _is_non_empty_filter(self, df_filter: DataFrameFilterValidator) -> bool:
+        is_column_filter = df_filter.raw_columns_aggregation or df_filter.raw_columns_filter
+        is_row_filter = df_filter.raw_rows_filter
+        return is_column_filter or is_row_filter
 
     def _prepare_api_routes(self) -> None:
         """Prepare and add api routes."""
