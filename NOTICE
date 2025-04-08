@@ -129,7 +129,7 @@ The following software have components provided under the terms of this license:
 - mypy-extensions (from https://github.com/python/mypy_extensions)
 - numpy
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
-- pandera (from https://github.com/pandera-dev/pandera)
+- pandera (from https://pypi.org/project/pandera/)
 - pendulum (from https://pendulum.eustace.io)
 - prometheus-fastapi-instrumentator (from https://github.com/trallnag/prometheus-fastapi-instrumentator)
 - pydantic (from https://github.com/samuelcolvin/pydantic, https://pypi.org/project/pydantic/)
