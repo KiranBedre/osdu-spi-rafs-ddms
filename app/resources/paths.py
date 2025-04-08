@@ -89,8 +89,10 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
     "multiplecontactmiscibility": ["PVT.MultiContactMiscibility"],
     "slimtube": ["PVT.SlimTube"],
     "relativepermeability": [
+        "BrinePermeability",
         "RelativePermeability.SteadyState",
         "RelativePermeability.SingleSpeedCentrifuge",
+        "RelativePermeability.UnsteadyState",
     ],
     "fractionation": [
         "Fractionation",
@@ -146,6 +148,8 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
         "CapillaryPressure",
     ],
     "wettabilityindex": [
+        "Wettability.AmottHarvey",
+        "Wettability.AmottUSBM",
         "Wettability.Amott%2DHarvey",
         "Wettability.Amott%2DUSBM",
     ],
