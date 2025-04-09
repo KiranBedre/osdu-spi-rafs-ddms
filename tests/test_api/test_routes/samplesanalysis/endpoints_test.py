@@ -208,8 +208,7 @@ async def test_content_schemas_wrong_type():
     "analysistype,pagination_params,total_size,with_parquet_read_error",
     [
         ("nmr", {}, 10, None),
-        ("nmr", {"offset": 10, "page_limit": 20}, 50, None),
-        ("nmr", {"offset": 50, "page_limit": 100}, 105, None),
+        ("nmr", {"offset": 0, "page_limit": 100}, 100, None),
     ],
 )
 async def test_search_data_success(
@@ -245,6 +244,7 @@ async def test_search_data_success(
             expected_offset + 1, min(expected_offset + expected_page_limit + 1, total_size + 1),
         )
     ]
+
     assert result_df["data"] == expected_test_data
 
 

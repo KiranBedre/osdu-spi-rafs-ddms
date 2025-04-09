@@ -276,22 +276,21 @@ class SamplesAnalysisSearchDataView:
         logger.debug(analysis_type_ids)
 
         if self._is_non_empty_filter(df_filter):
-            df_triplets_gen = await self._get_search_data(
-                analysis_type_ids=analysis_type_ids,
-                dataset_service=dataset_service,
-                parquet_loader=parquet_loader,
-                df_filter=df_filter,
+            df_triplets_gen = self._get_search_data(
+                analysis_type_ids,
+                dataset_service,
+                df_filter,
+                parquet_loader,
             )
-
             result_df, total_size = await self._build_result_df(
                 df_triplets_gen, df_filter, offset, page_limit, analysis_type_ids,
             )
         else:
-            df_triplets_gen = await self._get_search_data(
-                analysis_type_ids=analysis_type_ids[offset:offset + page_limit],
-                dataset_service=dataset_service,
-                parquet_loader=parquet_loader,
-                df_filter=df_filter,
+            df_triplets_gen = self._get_search_data(
+                analysis_type_ids[offset:offset + page_limit],
+                dataset_service,
+                df_filter,
+                parquet_loader,
             )
             total_size = len(analysis_type_ids)
             result_df, _ = await self._build_result_df(
@@ -364,13 +363,12 @@ class SamplesAnalysisSearchDataView:
         analysis_type_ids = await self._find_analysis_type_ids(
             data_partition_id, analysis_type, content_schema_version, search_service,
         )
-
         if self._is_non_empty_filter(df_filter):
-            df_triplets_gen = await self._get_search_data(
-                analysis_type_ids=analysis_type_ids,
-                dataset_service=dataset_service,
-                parquet_loader=parquet_loader,
-                df_filter=df_filter,
+            df_triplets_gen = self._get_search_data(
+                analysis_type_ids,
+                dataset_service,
+                df_filter,
+                parquet_loader,
             )
 
             result_set = []
@@ -379,9 +377,9 @@ class SamplesAnalysisSearchDataView:
             async for batch_df_triplets in df_triplets_gen:
                 for dataset_id, df, error_msg in batch_df_triplets:
                     if not df.empty:
-                        result_set.append(analysis_type_ids[dataset_id])  # noqa: WPS220
+                        result_set.append(analysis_type_ids[dataset_id])
                     if error_msg:
-                        errors.append((dataset_id, error_msg))  # noqa: WPS220
+                        errors.append((dataset_id, error_msg))
 
             if errors:
                 self._handle_errors(analysis_type_ids, errors)

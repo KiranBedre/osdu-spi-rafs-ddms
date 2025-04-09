@@ -45,6 +45,7 @@ from app.resources.paths import COMMON_RELATIVE_PATHS, PVTModelRelativePaths
 from app.services.schema import SchemaService
 from app.services.storage import StorageService
 
+SAMPLESANALYSIS_PARENT_RECORDS_FIELD = "ParentSamplesAnalysesReports"
 SAMPLESANALYSIS_TYPE_RECORD_FIELD = "SampleAnalysisTypeIDs"
 
 Model = TypeVar("Model", bound=BaseModel)
@@ -346,15 +347,9 @@ async def validate_samples_analyses_report_v2_payload(
     schema_service: SchemaService = Depends(get_async_schema_service),
 ):
     records = await validate_osdu_wks_records(
-        records_list,
-        schema_service,
-        [osdu_models_base.SAMPLES_ANALYSES_REPORT_KIND],
+        records_list, schema_service, [osdu_models_base.SAMPLES_ANALYSES_REPORT_KIND],
     )
-    await validate_referential_integrity(
-        records,
-        [],
-        storage_service,
-    )
+    await validate_referential_integrity(records, [SAMPLESANALYSIS_TYPE_RECORD_FIELD], storage_service)
     return records
 
 
@@ -373,15 +368,9 @@ async def validate_samplesanalysis_records_v2_payload(
     storage_service: StorageService = Depends(get_async_storage_service),
     schema_service: SchemaService = Depends(get_async_schema_service),
 ):
-    records = await validate_osdu_wks_records(
-        records_list,
-        schema_service,
-        [osdu_models_base.SAMPLESANALYSIS_KIND],
-    )
+    records = await validate_osdu_wks_records(records_list, schema_service, [osdu_models_base.SAMPLESANALYSIS_KIND])
     await validate_referential_integrity(
-        records,
-        [SAMPLESANALYSIS_TYPE_RECORD_FIELD],
-        storage_service,
+        records, [SAMPLESANALYSIS_PARENT_RECORDS_FIELD, SAMPLESANALYSIS_TYPE_RECORD_FIELD], storage_service,
     )
     return records
 
