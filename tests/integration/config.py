@@ -179,6 +179,8 @@ class DataTypes:
 
 class SamplesAnalysisTypes:  # Custom values
     NMR = "nmr"
+    MSS = "multistageseparator"
+    CCE = "constantcompositionexpansion"
     MULTIPLE_SALINITY = "multiplesalinitytests"
     AROMATICS = "gcmsaromatics"
     ALKANES = "gcmsalkanes"

@@ -14,10 +14,8 @@
 
 from typing import List, Optional
 
-from fastapi_cache.decorator import cache
 from starlette import status
 
-from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.core.settings.app import AppSettings
 from app.models.schemas.user import User
 from app.services.base import ISearchService
@@ -51,7 +49,6 @@ class SearchService(ISearchService):
         ],
         detail="Failed to query records using SearchService.",
     )
-    @cache(expire=CACHE_DEFAULT_TTL)
     async def find_records(
         self,
         kind: Optional[str] = "*:*:*:*",
@@ -70,7 +67,7 @@ class SearchService(ISearchService):
         :return: records
         :rtype: List[dict]
         """
-        return await self.search_client.query({
+        return await self.search_client.query_with_cursor({
             **{
                 "kind": kind,
                 "query": query,
