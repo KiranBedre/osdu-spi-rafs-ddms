@@ -76,6 +76,7 @@ build_rafs_tests:
 rafs_code_quality_check:
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
   stage: scan
+  tags: ["osdu-small"]
   extends:
     - .skipForTriggeringMergeRequests
   variables:
@@ -85,3 +86,6 @@ rafs_code_quality_check:
     # Flake8 hands indefinately within venv
     - flake8 ${CI_PROJECT_DIR} --config=${CONFIG_FILE}
     - flake8 ${CI_PROJECT_DIR} --select T1
+
+sonarqube-scan-python:
+  tags: ["osdu-medium"]
