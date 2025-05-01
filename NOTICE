@@ -126,7 +126,7 @@ The following software have components provided under the terms of this license:
 - loguru (from https://pypi.org/project/loguru/)
 - msal (from https://github.com/AzureAD/microsoft-authentication-library-for-python)
 - msal-extensions (from https://pypi.org/project/msal-extensions/1.0.0/)
-- mypy-extensions (from https://github.com/python/mypy_extensions)
+- mypy-extensions (from https://pypi.org/project/mypy-extensions/)
 - numpy
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 - pandera (from https://pypi.org/project/pandera/)
