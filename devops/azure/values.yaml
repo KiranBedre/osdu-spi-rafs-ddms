@@ -19,7 +19,7 @@ podDisruptionBudget:
 configuration:
 - service: rafs-ddms
   container:
-    image: rafs-ddms
+    image: ""
     containerPort: 8080
   path: /api/rafs-ddms
   podAnnotations:
@@ -115,8 +115,8 @@ configuration:
 # docker build -t <acr>/rafs/cronjob .
 - service: rafs-cronjob
   container:
-    image: rafs/cronjob
-    tag: latest
+    image: ""
+    tag: ""
   cronjobEnabled: true
   schedule: "0 * * * *"
   backOffLimit: "2"

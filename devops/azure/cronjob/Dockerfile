@@ -1,5 +1,5 @@
 # Build the application from source
-FROM golang:1.21-bookworm AS build-stage
+FROM golang:1.24-bookworm AS build-stage
 
 WORKDIR /app
 
