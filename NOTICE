@@ -134,7 +134,7 @@ The following software have components provided under the terms of this license:
 - prometheus-fastapi-instrumentator (from https://github.com/trallnag/prometheus-fastapi-instrumentator)
 - pydantic (from https://github.com/samuelcolvin/pydantic, https://pypi.org/project/pydantic/)
 - pytz (from http://pythonhosted.org/pytz)
-- redis (from https://github.com/redis/redis-py)
+- redis (from https://pypi.org/project/redis/)
 - referencing (from https://pypi.org/project/referencing/, https://pypi.org/project/referencing/0.30.2/, https://pypi.org/project/referencing/0.31.1/)
 - rpds-py (from https://pypi.org/project/rpds-py/0.10.6/)
 - six (from http://pypi.python.org/pypi/six/, https://github.com/benjaminp/six)
@@ -213,4 +213,3 @@ The following software have components provided under the terms of this license:
 - numpy
 - pytz (from http://pythonhosted.org/pytz)
 - tzdata (from https://github.com/python/tzdata)
-
