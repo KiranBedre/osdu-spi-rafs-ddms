@@ -306,7 +306,7 @@ class SamplesAnalysisSearchDataView:
             )
 
         if mime_type == SupportedMimeTypes.PARQUET:
-            content_response = result_df.astype(str).to_parquet() if result_df.any else b""
+            content_response = result_df.to_parquet() if result_df.any else b""
             response = Response(
                 content=content_response,
                 media_type=SupportedMimeTypes.PARQUET.mime_type,
