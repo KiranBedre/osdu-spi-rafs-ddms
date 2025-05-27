@@ -30,6 +30,7 @@ include:
 
   # AZURE provider
   - local: "/devops/azure/azure.gitlab-ci.yml"
+  - local: "/devops/azure/qa/newman-test.gitlab-ci.yml"
 
   # AWS provider
   - local: "/devops/aws/aws.gitlab-ci.yml"
