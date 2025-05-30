@@ -1,5 +1,4 @@
 {
-    "id": "{data_partition_id}:work-product-component--SamplesAnalysis:{record_id}",
     "kind": "{schema_authority}:wks:work-product-component--SamplesAnalysis:{schema_version}",
     "acl": {
         "viewers": [
@@ -26,35 +25,31 @@
             "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:"
         ],
         "ReportSampleIdentifiers": [
-            "88Y"
+            "53B"
         ],
-        "AnalysisDate": "2022-12-16",
+        "AnalysisDate": "2015-01-01",
         "LaboratoryIDs": [
-            "{data_partition_id}:master-data--Organisation:TBD_Lab_1:"
+            "{data_partition_id}:master-data--Organisation:GenericOrganisation_100:"
         ],
         "LaboratoryNames": [
             "TestLab"
         ],
-        "LaboratoryAnalysts": [
-            "Analyst Contact 1"
-        ],
         "Remarks": [
             {
-                "Remark": "Test was successfully conducted",
+                "Remark": "Kentish Knock South 1 - Special Core Analysis (SCAL) Report, Section 6.2 Page 91, 92",
                 "RemarkSequenceNumber": 1,
-                "RemarkSource": "Lab",
-                "RemarkDate": "2023-10-23"
+                "RemarkSource": "RAFSDDMS",
+                "RemarkDate": "2023-12-21"
             }
         ],
-        "DateAnalyzed": "2022-12-01",
-        "DatePublished": "2022-12-16",
+        "DatePublished": "2015-01-01",
         "ParentSamplesAnalysesReports": [
             {
                 "ParentSamplesAnalysesReportID": "{sar_v2_record_id}:"
             }
         ],
         "SampleAnalysisTypeIDs": [
-            "{data_partition_id}:reference-data--SampleAnalysisType:Extraction:"
+            "{data_partition_id}:reference-data--SampleAnalysisType:NMR:"
         ],
         "SamplesAnalysisCategoryTagIDs": [
             "{data_partition_id}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:"

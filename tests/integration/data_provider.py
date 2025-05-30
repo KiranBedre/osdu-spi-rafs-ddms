@@ -62,7 +62,7 @@ def create_gc_values(data_partition_id: str) -> RecordValues:
     )
 
 
-def test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes] = None) -> dict:
+def load_test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes] = None) -> dict:
     data_values = None
     if CONFIG["CLOUD_PROVIDER"] == "azure":
         data_values = azure_values
@@ -75,10 +75,6 @@ def test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes] = No
             json_file.read(
             ).replace(
                 "{record_id}", f"{CommonHelper.generate_random_record_id()}",
-            ).replace(
-                "{pvt_record_id}", TEST_DATA_STORE.get("pvt_record_id", ""),
-            ).replace(
-                "{sar_record_id}", TEST_DATA_STORE.get("sar_record_id", ""),
             ).replace(
                 "{sar_v2_record_id}", TEST_DATA_STORE.get("sar_v2_record_id", ""),
             ).replace(
@@ -95,8 +91,6 @@ def test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes] = No
                 "{acl_owners}", data_values.acl_owners,
             ).replace(
                 "{legal_tag}", TEST_DATA_STORE.get("legal_tag"),
-            ).replace(
-                "{analysis_type}", analysis_type if analysis_type else "",
             )
         )
         return json.loads(data_str)

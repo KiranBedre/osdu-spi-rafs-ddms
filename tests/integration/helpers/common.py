@@ -13,9 +13,14 @@
 #  limitations under the License.
 
 import copy
+import json
 import os
 import secrets
 import string
+from io import BytesIO
+
+import pandas
+from deepdiff import DeepDiff
 
 from app.api.routes.utils.query import find_osdu_ids_from_string
 from tests.integration.config import DataTypes
@@ -91,3 +96,31 @@ class CommonHelper(object):
         :rtype: set
         """
         return find_osdu_ids_from_string(input_string)
+
+    @staticmethod
+    def load_parquet_data(body: bytes, content_type: str) -> dict | None:
+        """
+        Converts the input body to a unified dictionary format.
+
+        If content_type is 'parquet', parses it and converts to dict in 'split' format.
+        """
+        if content_type == 'parquet':
+            df = pandas.read_parquet(BytesIO(body))
+            return json.loads(df.to_json(orient='split'))
+        else:
+            raise ValueError(f"Unsupported content type: {content_type}")
+
+
+    def compare_responses(self, json_body: dict, parquet_body: bytes):
+        """
+        Compares actual response to expected response (both JSON or Parquet), ignoring dynamic fields.
+        """
+
+        parquet_data = self.load_parquet_data(parquet_body, content_type='parquet')
+
+        diff = DeepDiff(json_body, parquet_data, ignore_order=True, significant_digits=6)
+
+        if diff:
+            assert False, f"Responses do not match!\n{diff.to_json(indent=2)}\n"
+
+

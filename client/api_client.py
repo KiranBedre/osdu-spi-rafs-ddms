@@ -71,9 +71,13 @@ class APIClient(object):
             CORRELATION_ID: f"rafs-ddms-autotest-{uuid.uuid4()}",
         }
 
-        if kwargs.get("headers") is not None:
-            headers.update(kwargs.get("headers"))
-            kwargs.pop("headers")
+        extra_headers = kwargs.pop("headers", None)
+        if extra_headers:
+            headers.update(extra_headers)
+
+        content_type_override = kwargs.pop("content_type", None)
+        if content_type_override:
+            headers["Content-Type"] = content_type_override
 
         return headers
 
@@ -129,37 +133,22 @@ class APIClient(object):
         path: str,
         **kwargs,
     ) -> requests.Response:
-        """Resending API request if API error.
+        """Resending API request if API error."""
+        allowed_codes = kwargs.pop("allowed_codes", [status.HTTP_200_OK])
+        headers = self._build_headers(kwargs)
 
-        :param method: API method
-        :type method: str
-        :param path: path of the endpoint
-        :type path: str
-        :param allowed_codes: available response codes
-        :type allowed_codes: list
-        :param retry_attempts: limit of sending retries
-        :type retry_attempts: int
-        :param retry_delay: seconds between sending
-        :type retry_delay: int
-        :param kwargs: additional request params
-        :type kwargs: dict
-        :raises APIException: API Exception
-        :return: response
-        :rtype: requests.Response
-        """
-        allowed_codes = [status.HTTP_200_OK]
-        if kwargs.get("allowed_codes"):
-            allowed_codes = kwargs.get("allowed_codes")
-            kwargs.pop("allowed_codes")
         self.url = urljoin(self.host, f"{self.url_prefix}{path}")
+
         for retry_attempt in range(self.retry_attempts + 1):
             logger.info(f"Sending {method.upper()} request to {path}")
             request_body = kwargs.get("json", kwargs.get("body", ""))
             logger.debug(f"{method.upper()} request body: {request_body}")
+
             try:
                 response = self._base_request(
                     path=path,
                     method=method,
+                    headers=headers,
                     allowed_codes=allowed_codes,
                     **kwargs,
                 )
