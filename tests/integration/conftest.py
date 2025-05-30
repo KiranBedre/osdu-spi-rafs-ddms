@@ -16,7 +16,7 @@ import pytest
 
 from client.api import ApiWorker
 from tests.integration.config import CONFIG
-from tests.integration.data_provider import test_data
+from tests.integration.data_provider import load_test_data
 from tests.integration.helpers import HelperManager
 
 
@@ -54,4 +54,4 @@ def helper(api):
 @pytest.fixture(scope="session")
 def tests_data():
     """A fixture to provide dataset to the rock sample analysis tests."""
-    yield test_data
+    yield load_test_data

@@ -1,4 +1,5 @@
 from loguru import logger
+from requests import Response
 from starlette import status
 
 from client.api.settings import ApiClientSettings
@@ -13,7 +14,7 @@ class APIStorage(APIClient):
     def __init__(self, data_partition: str, token: str) -> None:
         super().__init__(ApiClientSettings().service_host_storage, "", "", data_partition, token)
 
-    def create_or_update_records(self, records: list, **kwargs) -> dict:
+    def create_or_update_records(self, records: list, **kwargs) -> Response:
         """Method to create records."""
         logger.info("Creating records in storage")
         return self.put(

@@ -31,15 +31,6 @@ class DataFiles:
     SAMPLE_ANALYSIS = "v2/samplesanalysis.json"
     SAR_V2 = "v2/sar.json"
     NMR_DATA = "v2/NMR/nmr_data.json"
-    NMR_WRONG_ID = "v2/NMR/nmr_wrong_ids.json"
-    MULTIPLE_SALINITY_DATA = "v2/multiple_salinity/multiplesalinity_data.json"
-    MULTIPLE_SALINITY_WRONG_ID = "v2/multiple_salinity/multiplesalinity_wrong_ids.json"
-    AROMATICS_DATA = "v2/aromatics/aromatics_data.json"
-    AROMATICS_WRONG_ID = "v2/aromatics/aromatics_wrong_ids.json"
-    HPMI_DATA = "v2/HPMI/hpmi_data.json"
-    HPMI_WRONG_ID = "v2/HPMI/hpmi_wrong_ids.json"
-    ALKANES_DATA = "v2/alkanes/alkanes_data.json"
-    ALKANES_WRONG_ID = "v2/alkanes/alkanes_wrong_ids.json"
 
 
 class DataTemplates:
@@ -60,16 +51,8 @@ class DataTypes:
 
 class SamplesAnalysisTypes:  # Custom values
     NMR = "nmr"
-    MSS = "multistageseparator"
-    CCE = "constantcompositionexpansion"
-    MULTIPLE_SALINITY = "multiplesalinitytests"
-    AROMATICS = "gcmsaromatics"
-    ALKANES = "gcmsalkanes"
 
 
 class DatasetPrefix:
     # v2
     NMR = "nmr"
-    MULTIPLE_SALINITY = "multiplesalinitytests"
-    AROMATICS = "gcmsaromatics"
-    ALKANES = "gcmsalkanes"

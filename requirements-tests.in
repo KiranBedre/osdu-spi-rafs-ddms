@@ -2,6 +2,7 @@
 # Keeping testing requirements segregated from runtime requirements.
 # dependencies for tests and checks
 asgi-lifespan==2.1.0
+deepdiff==8.5.0
 httpx==0.26.0
 httpcore==1.0.9
 pytest==7.2.0

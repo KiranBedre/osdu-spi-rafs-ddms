@@ -4787,6 +4787,67 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "04 - Search all records",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "data-partition-id",
+										"value": "{{data-partition-id}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Cache-Control",
+										"value": "no-store",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "*/*;version={{rafsddms-content-schema-version}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/nmr/search",
+									"protocol": "https",
+									"host": [
+										"{{RAFS_DDMS_HOST}}"
+									],
+									"path": [
+										"v2",
+										"samplesanalysis",
+										"nmr",
+										"search"
+									]
+								}
+							},
+							"response": []
 						}
 					],
 					"description": "Kentish Knock South 1 - Special Core Analysis (SCAL) Report, Section 6.2 Page 91, 92"
@@ -18430,6 +18491,68 @@
 							"response": []
 						}
 					]
+				},
+				{
+					"name": "04 - Search all records data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}",
+								"type": "text"
+							},
+							{
+								"key": "data-partition-id",
+								"value": "{{data-partition-id}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cache-Control",
+								"value": "no-store",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "*/*;version={{rafsddms-content-schema-version}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/mininggeotechlogging/search/data",
+							"protocol": "https",
+							"host": [
+								"{{RAFS_DDMS_HOST}}"
+							],
+							"path": [
+								"v2",
+								"samplesanalysis",
+								"mininggeotechlogging",
+								"search",
+								"data"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
