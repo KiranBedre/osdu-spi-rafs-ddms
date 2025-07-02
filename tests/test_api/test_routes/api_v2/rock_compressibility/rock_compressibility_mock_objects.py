@@ -86,25 +86,25 @@ TEST_FILTERED_DATA = {
             "opendes:work-product-component--SamplesAnalysis:RockCompressibilityDevTest:",
             [
                 {
-                    "StepNumber":1,
-                    "ConfiningStress":1.23,
-                    "Porosity":1.23,
-                    "Compressibility":[
+                    "StepNumber": 1,
+                    "ConfiningStress": 1.23,
+                    "Porosity": 1.23,
+                    "Compressibility": [
                         {
-                        "CompressibilityMeasurementTypeID":"opendes:reference-data--CompressibilityMeasurementType:Hydrostatic:",
-                        "Value":1.23,
+                            "CompressibilityMeasurementTypeID": "opendes:reference-data--CompressibilityMeasurementType:Hydrostatic:",
+                            "Value": 1.23,
                         },
                         {
-                        "CompressibilityMeasurementTypeID":"opendes:reference-data--CompressibilityMeasurementType:Hydrostatic:",
-                        "Value":1.23,
+                            "CompressibilityMeasurementTypeID": "opendes:reference-data--CompressibilityMeasurementType:Hydrostatic:",
+                            "Value": 1.23,
                         },
                     ],
-                    "Remarks":[
+                    "Remarks": [
                         {
-                        "RemarkSequenceNumber":1,
-                        "Remark":"Remark",
-                        "RemarkSource":"Remark Source",
-                        "RemarkDate":"2025-01-01",
+                            "RemarkSequenceNumber": 1,
+                            "Remark": "Remark",
+                            "RemarkSource": "Remark Source",
+                            "RemarkDate": "2025-01-01",
                         },
                     ],
                 },

@@ -28,11 +28,13 @@ BLOB_ID_EXAMPLE = f"samplesanalysis/{ANALYSIS_TYPE_EXAMPLE}/{VERSION_EXAMPLE}/{U
 VALID_BLOB_URN = f"urn://rafs/{WPC_ID_EXAMPLE}/{BLOB_ID_EXAMPLE}"
 VALID_DATASET_URN = f"urn://rafs-v2/{ANALYSIS_TYPE_EXAMPLE}data/{WPC_ID_EXAMPLE}/{DATASET_ID_EXAMPLE}/{VERSION_EXAMPLE}"
 
+
 @pytest.fixture
 def mock_settings():
     settings = MagicMock()
     settings.use_blob_storage = True
     return settings
+
 
 @pytest.fixture
 def ddms_datasets():
@@ -42,6 +44,7 @@ def ddms_datasets():
         VALID_DATASET_URN,
         "urn://invalid/urn",  # Invalid URN
     ]
+
 
 def test_get_valid_ids_blob_storage_enabled(mock_settings, ddms_datasets, monkeypatch):
     """Test get_valid_ids_from_ddms_datasets with blob storage enabled."""
@@ -56,6 +59,7 @@ def test_get_valid_ids_blob_storage_enabled(mock_settings, ddms_datasets, monkey
     )
 
     assert result == [(BLOB_ID_EXAMPLE, WPC_ID_EXAMPLE)]
+
 
 def test_get_valid_ids_blob_storage_disabled(ddms_datasets):
     """Test get_valid_ids_from_ddms_datasets with blob storage disabled."""

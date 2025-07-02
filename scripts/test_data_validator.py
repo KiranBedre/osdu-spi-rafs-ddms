@@ -20,10 +20,10 @@ import sys
 import pandas as pd
 from pydantic.error_wrappers import ValidationError
 
+from app.models.data_schemas.api_v2 import base
+
 app_dir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(app_dir)
-
-from app.models.data_schemas.api_v2 import base
 
 
 def create_test_data_from_example(

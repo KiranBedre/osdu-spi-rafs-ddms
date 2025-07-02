@@ -52,13 +52,14 @@ aws_values = RecordValues(
     acl_owners="data.default.owners@opendes.example.com",
 )
 
+
 def create_gc_values(data_partition_id: str) -> RecordValues:
     return RecordValues(
         data_partition_id=data_partition_id,
         schema_authority="osdu",
         custom_schema_authority="rafsddms",
         acl_viewers=f"data.default.viewers@{data_partition_id}.group",
-        acl_owners=f"data.default.owners@{data_partition_id}.group"
+        acl_owners=f"data.default.owners@{data_partition_id}.group",
     )
 
 

@@ -1,7 +1,8 @@
 import argparse
 import json
-import jsonref
 import os
+
+import jsonref
 
 
 def expand_schema(directory_path: str, filename: str):

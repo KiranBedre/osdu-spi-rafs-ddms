@@ -80,6 +80,7 @@ async def test_read_parquet_files(blob_ids, blob_data, df_filter_processor, expe
     assert result[0].error_msg == expected_result.error_msg
     assert result[0].df.equals(expected_result.df)
 
+
 @pytest.mark.asyncio
 async def test_read_parquet_handles_pyarrow_exception():
     blob_loader = BlobParquetLoader()

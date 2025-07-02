@@ -87,11 +87,11 @@ TEST_FILTERED_DATA = {
             "opendes:work-product-component--SamplesAnalysis:XRD_SamplesAnalysis:",
             "opendes:master-data--Sample:XRD_Sample:",
             [
-        {
-          "MineralID":"opendes:reference-data--Minerals:actinolite:",
-          "WeightPercent":1.23,
-          "VolumePercent":1.23,
-        },
+                {
+                    "MineralID": "opendes:reference-data--Minerals:actinolite:",
+                    "WeightPercent": 1.23,
+                    "VolumePercent": 1.23,
+                },
             ],
         ],
     ],

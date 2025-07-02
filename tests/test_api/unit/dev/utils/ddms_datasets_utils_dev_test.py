@@ -36,6 +36,7 @@ def mock_blob():
         ),
     )
 
+
 @pytest.fixture
 def mock_blob_metadata():
     return BlobMetadata(
@@ -58,7 +59,6 @@ def mock_settings():
     settings = MagicMock()
     settings.ddms_id = "rafs"
     return settings
-
 
 
 @pytest.mark.asyncio

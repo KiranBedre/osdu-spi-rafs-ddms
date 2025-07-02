@@ -99,28 +99,24 @@ class CommonHelper(object):
 
     @staticmethod
     def load_parquet_data(body: bytes, content_type: str) -> dict | None:
-        """
-        Converts the input body to a unified dictionary format.
+        """Converts the input body to a unified dictionary format.
 
-        If content_type is 'parquet', parses it and converts to dict in 'split' format.
+        If content_type is 'parquet', parses it and converts to dict in
+        'split' format.
         """
-        if content_type == 'parquet':
+        if content_type == "parquet":
             df = pandas.read_parquet(BytesIO(body))
-            return json.loads(df.to_json(orient='split'))
+            return json.loads(df.to_json(orient="split"))
         else:
             raise ValueError(f"Unsupported content type: {content_type}")
 
-
     def compare_responses(self, json_body: dict, parquet_body: bytes):
-        """
-        Compares actual response to expected response (both JSON or Parquet), ignoring dynamic fields.
-        """
+        """Compares actual response to expected response (both JSON or
+        Parquet), ignoring dynamic fields."""
 
-        parquet_data = self.load_parquet_data(parquet_body, content_type='parquet')
+        parquet_data = self.load_parquet_data(parquet_body, content_type="parquet")
 
         diff = DeepDiff(json_body, parquet_data, ignore_order=True, significant_digits=6)
 
         if diff:
             assert False, f"Responses do not match!\n{diff.to_json(indent=2)}\n"
-
-
