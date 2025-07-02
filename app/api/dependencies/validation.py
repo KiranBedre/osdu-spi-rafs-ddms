@@ -15,6 +15,7 @@
 import asyncio
 import copy
 import json
+from datetime import date
 from typing import Iterable, List, Optional, Set, Tuple, TypeVar
 
 from fastapi import Depends, HTTPException, Query, Request
@@ -421,8 +422,22 @@ async def get_search_data_pagination_parameters(
         example=100,
         ge=0,
     ),
-) -> Tuple[int, int]:
-    return offset, page_limit
+    indexed_start_date: Optional[date] = Query(
+        default=None,
+        example="2023-01-01",
+    ),
+    indexed_end_date: Optional[date] = Query(
+        default=None,
+        example="2023-12-31",
+    ),
+) -> Tuple[int, int, Optional[date], Optional[date]]:
+    if indexed_start_date and indexed_end_date:
+        if indexed_start_date > indexed_end_date:
+            raise HTTPException(
+                status_code=422,
+                detail="indexed_start_date must be before or equal to indexed_end_date",
+            )
+    return offset, page_limit, indexed_start_date, indexed_end_date
 
 
 async def get_search_pagination_parameters(
@@ -437,5 +452,19 @@ async def get_search_pagination_parameters(
         example=100,
         ge=0,
     ),
-) -> Tuple[int, int]:
-    return offset, page_limit
+    indexed_start_date: Optional[date] = Query(
+        default=None,
+        example="2023-01-01",
+    ),
+    indexed_end_date: Optional[date] = Query(
+        default=None,
+        example="2023-12-31",
+    ),
+) -> Tuple[int, int, Optional[date], Optional[date]]:
+    if indexed_start_date and indexed_end_date:
+        if indexed_start_date > indexed_end_date:
+            raise HTTPException(
+                status_code=422,
+                detail="indexed_start_date must be before or equal to indexed_end_date",
+            )
+    return offset, page_limit, indexed_start_date, indexed_end_date

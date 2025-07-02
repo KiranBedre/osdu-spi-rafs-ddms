@@ -18,7 +18,7 @@ prometheus-fastapi-instrumentator==6.1.0
 pyarrow==14.0.2
 pydantic[dotenv]==1.10.13
 requests[security]==2.31.0
-setuptools==75.8.0
+setuptools==78.1.1
 tenacity==8.2.3
 uvicorn==0.23.2
 urllib3==1.26.18

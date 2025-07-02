@@ -94,57 +94,57 @@ TEST_FILTERED_DATA = {
                         {
                             "ComponentNameID": "C032-",
                             "Value": 11,
-                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:IonChromatography:"
+                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:IonChromatography:",
                         },
                         {
                             "ComponentNameID": "HCO3",
                             "Value": 427,
-                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-OES:"
-                        }
+                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-OES:",
+                        },
                     ],
                     "Cations": [
                         {
                             "ComponentNameID": "Na+",
                             "Value": 89,
-                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-OES:"
+                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-OES:",
                         },
                         {
                             "ComponentNameID": "K+",
                             "Value": 112,
-                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-MS:"
-                        }
+                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-MS:",
+                        },
                     ],
                     "DissolvedMetals": [
                         {
                             "ComponentNameID": "Fe",
                             "Value": 0.198,
-                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-MS:"
+                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-MS:",
                         },
                         {
                             "ComponentNameID": "Sr2+",
                             "Value": 18.1,
-                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:IonChromatography:"
-                        }
+                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:IonChromatography:",
+                        },
                     ],
                     "OrganicAcids": [
                         {
                             "ComponentNameID": "Fe",
                             "Value": 0.198,
-                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-OES:"
+                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-OES:",
                         },
                         {
                             "ComponentNameID": "Sr2+",
                             "Value": 18.1,
-                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-MS:"
-                        }
+                            "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-MS:",
+                        },
                     ],
                     "IonDifference": 0.22,
                     "MolarConcentration": 0.1,
                     "VolumeConcentration": 0.853,
                     "MassConcentration": 0.176,
                     "EquivalentConcentration": 0.095,
-                    "ConcentrationRelativeToDetectableLimits": 0.066
-                }
+                    "ConcentrationRelativeToDetectableLimits": 0.066,
+                },
             ],
         ],
     ],

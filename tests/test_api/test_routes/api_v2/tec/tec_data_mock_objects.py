@@ -92,8 +92,8 @@ TEST_FILTERED_DATA = {
             1.23,
             [
                 {
-                    "PressureMeasurementTypeID":"opendes:reference-data--PressureMeasurementType:Ambient:",
-                    "Value":1.23,
+                    "PressureMeasurementTypeID": "opendes:reference-data--PressureMeasurementType:Ambient:",
+                    "Value": 1.23,
                 },
             ],
         ],

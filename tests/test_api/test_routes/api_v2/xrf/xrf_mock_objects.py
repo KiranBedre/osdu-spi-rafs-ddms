@@ -87,14 +87,14 @@ TEST_FILTERED_DATA = {
             "opendes:work-product-component--SamplesAnalysis:XRF_WPC:",
             "opendes:master-data--Sample:XRF_Sample:",
             [
-        {
-          "ElementID":"opendes:reference-data--Elements:Cr:",
-          "Content":1.23,
-        },
-        {
-          "ElementID":"opendes:reference-data--Elements:Th:",
-          "Content":1.23,
-        },
+                {
+                    "ElementID": "opendes:reference-data--Elements:Cr:",
+                    "Content": 1.23,
+                },
+                {
+                    "ElementID": "opendes:reference-data--Elements:Th:",
+                    "Content": 1.23,
+                },
             ],
         ],
     ],

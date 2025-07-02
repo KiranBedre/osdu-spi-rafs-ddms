@@ -35,7 +35,7 @@ def test_validate_file_data_content(
     api, create_record, helper, tests_data, measurements_file, dataset_prefix, analysis_type,
 ):
     record_data, _ = create_record(
-        DataTypes.SAMPLE_ANALYSIS, 
+        DataTypes.SAMPLE_ANALYSIS,
         DataFiles.SAMPLE_ANALYSIS,
         DataTemplates.ID_SAMPLE_ANALYSIS.format(partition=CONFIG["DATA_PARTITION"]),
         analysis_type,
@@ -48,6 +48,8 @@ def test_validate_file_data_content(
     content_id = helper.get_content_id_from_ddms_urn(full_dataset_id)
 
     measurements_json = api.sample_analysis.get_measurements(record_data["id"], content_id, analysis_type)
-    measurements_parquet = api.sample_analysis.get_measurements(record_data["id"], content_id, analysis_type, json=False, content_type="application/x-parquet").content
+    measurements_parquet = api.sample_analysis.get_measurements(
+        record_data["id"], content_id, analysis_type, json=False, content_type="application/x-parquet",
+    ).content
 
     helper.compare_responses(measurements_json, measurements_parquet)

@@ -15,29 +15,29 @@ Apache-2.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- aiofiles (from https://pypi.org/project/aiofiles/)
+- aiofiles (from <https://pypi.org/project/aiofiles/>, https://pypi.org/project/aiofiles/)
 - aiohttp (from https://github.com/aio-libs/aiohttp, https://github.com/aio-libs/aiohttp/)
-- aiosignal (from https://github.com/aio-libs/aiosignal)
+- aiosignal (from <https://github.com/aio-libs/aiosignal>, https://github.com/aio-libs/aiosignal)
 - async-timeout (from https://github.com/aio-libs/async-timeout, https://github.com/aio-libs/async_timeout/)
-- boto3 (from https://github.com/boto/boto3)
-- botocore (from https://github.com/boto/botocore)
-- cryptography (from https://github.com/pyca/cryptography)
+- boto3 (from <https://github.com/boto/boto3>, https://github.com/boto/boto3)
+- botocore (from <https://github.com/boto/botocore>, https://github.com/boto/botocore)
+- cryptography (from <https://github.com/pyca/cryptography>, https://github.com/pyca/cryptography, https://pypi.org/project/cryptography/)
 - fastapi (from https://pypi.org/project/fastapi/, https://pypi.org/project/fastapi/0.86.0/)
-- fastapi-cache2 (from https://github.com/long2ice/fastapi-cache)
-- frozenlist (from https://github.com/aio-libs/frozenlist)
+- fastapi-cache2 (from <https://github.com/long2ice/fastapi-cache>, https://github.com/long2ice/fastapi-cache)
+- frozenlist (from <https://github.com/aio-libs/frozenlist>, https://github.com/aio-libs/frozenlist)
 - multidict (from https://github.com/aio-libs/multidict)
 - multimethod (from https://pypi.org/project/multimethod/, https://pypi.org/project/multimethod/1.10/, https://pypi.org/project/multimethod/1.9.1/)
-- numpy
+- numpy (from https://pypi.org/project/numpy/)
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
-- prometheus-client (from https://github.com/prometheus/client_python)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
+- prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python, https://pypi.org/project/prometheus-client/)
 - pyarrow (from https://arrow.apache.org/, https://pypi.org/project/pyarrow/, https://pypi.org/project/pyarrow/17.0.0/)
-- python-dateutil (from https://github.com/dateutil/dateutil)
+- python-dateutil (from <https://github.com/dateutil/dateutil>, https://github.com/dateutil/dateutil)
 - requests (from http://python-requests.org, https://requests.readthedocs.io)
-- s3transfer (from https://github.com/boto/s3transfer)
+- s3transfer (from <https://github.com/boto/s3transfer>, https://github.com/boto/s3transfer)
 - sniffio (from https://github.com/python-trio/sniffio, https://pypi.org/project/sniffio/, https://pypi.org/project/sniffio/1.3.1/)
-- tenacity (from https://github.com/jd/tenacity)
-- tzdata (from https://github.com/python/tzdata)
+- tenacity (from <https://github.com/jd/tenacity>, https://github.com/jd/tenacity)
+- tzdata (from <https://github.com/python/tzdata>, https://github.com/python/tzdata)
 - urllib3 (from https://pypi.org/project/urllib3/, https://pypi.org/project/urllib3/2.0.2/, https://pypi.org/project/urllib3/2.0.4/)
 - yarl (from https://github.com/aio-libs/yarl, https://github.com/aio-libs/yarl/)
 
@@ -46,11 +46,11 @@ BSD-2-Clause
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- numpy
+- numpy (from https://pypi.org/project/numpy/)
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
-- prometheus-client (from https://github.com/prometheus/client_python)
-- wrapt (from https://github.com/GrahamDumpleton/wrapt)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
+- prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python, https://pypi.org/project/prometheus-client/)
+- wrapt (from <https://github.com/GrahamDumpleton/wrapt>, https://github.com/GrahamDumpleton/wrapt)
 
 ========================================================================
 BSD-3-Clause
@@ -58,44 +58,44 @@ BSD-3-Clause
 The following software have components provided under the terms of this license:
 
 - click (from https://palletsprojects.com/p/click/, https://pypi.org/project/click/)
-- cryptography (from https://github.com/pyca/cryptography)
+- cryptography (from <https://github.com/pyca/cryptography>, https://github.com/pyca/cryptography, https://pypi.org/project/cryptography/)
 - httpcore (from https://github.com/encode/httpcore, https://pypi.org/project/httpcore/, https://pypi.org/project/httpcore/0.18.0/)
 - httpx (from https://pypi.org/project/httpx/, https://pypi.org/project/httpx/0.23.1/)
 - idna (from https://pypi.org/project/idna/, https://pypi.org/project/idna/3.4/)
 - isodate (from http://cheeseshop.python.org/pypi/isodate, https://github.com/gweis/isodate/, https://pypi.org/project/isodate/)
-- numpy
+- numpy (from https://pypi.org/project/numpy/)
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
-- prometheus-fastapi-instrumentator (from https://github.com/trallnag/prometheus-fastapi-instrumentator)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
+- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
 - pyarrow (from https://arrow.apache.org/, https://pypi.org/project/pyarrow/, https://pypi.org/project/pyarrow/17.0.0/)
-- pycparser (from https://github.com/eliben/pycparser)
-- python-dateutil (from https://github.com/dateutil/dateutil)
-- python-dotenv (from https://github.com/theskumar/python-dotenv)
+- pycparser (from <https://github.com/eliben/pycparser>, https://github.com/eliben/pycparser)
+- python-dateutil (from <https://github.com/dateutil/dateutil>, https://github.com/dateutil/dateutil)
+- python-dotenv (from <https://github.com/theskumar/python-dotenv>, https://github.com/theskumar/python-dotenv)
 - sniffio (from https://github.com/python-trio/sniffio, https://pypi.org/project/sniffio/, https://pypi.org/project/sniffio/1.3.1/)
 - starlette (from https://pypi.org/project/starlette/, https://pypi.org/project/starlette/0.22.0/)
 - uvicorn (from https://github.com/tomchristie/uvicorn, https://pypi.org/project/uvicorn/, https://www.uvicorn.org/)
-- wrapt (from https://github.com/GrahamDumpleton/wrapt)
+- wrapt (from <https://github.com/GrahamDumpleton/wrapt>, https://github.com/GrahamDumpleton/wrapt)
 
 ========================================================================
 CC-BY-4.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- numpy
+- numpy (from https://pypi.org/project/numpy/)
 
 ========================================================================
 CC0-1.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
 
 ========================================================================
 ISC
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- prometheus-fastapi-instrumentator (from https://github.com/trallnag/prometheus-fastapi-instrumentator)
+- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
 
 ========================================================================
 MIT
@@ -105,43 +105,43 @@ The following software have components provided under the terms of this license:
 - PyJWT (from http://github.com/jpadilla/pyjwt, https://pypi.org/project/PyJWT/)
 - aiohttp (from https://github.com/aio-libs/aiohttp, https://github.com/aio-libs/aiohttp/)
 - anyio (from https://pypi.org/project/anyio/, https://pypi.org/project/anyio/3.3.0/)
-- async-lru (from https://github.com/aio-libs/async-lru)
+- async-lru (from <https://github.com/aio-libs/async-lru>, https://github.com/aio-libs/async-lru)
 - attrs (from https://attrs.readthedocs.io/, https://pypi.org/project/attrs/, https://www.attrs.org/)
-- azure-core (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/core/azure-core)
+- azure-core (from <https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/core/azure-core>, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/core/azure-core)
 - azure-identity (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/identity/azure-identity)
 - azure-keyvault (from https://github.com/Azure/azure-sdk-for-python, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault)
-- azure-keyvault-certificates (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-certificates)
-- azure-keyvault-keys (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-keys)
-- azure-keyvault-secrets (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-secrets)
-- azure-storage-blob (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/storage/azure-storage-blob)
-- botocore (from https://github.com/boto/botocore)
-- cffi
+- azure-keyvault-certificates (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-certificates)
+- azure-keyvault-keys (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-keys)
+- azure-keyvault-secrets (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-secrets)
+- azure-storage-blob (from <https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/storage/azure-storage-blob>, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/storage/azure-storage-blob)
+- botocore (from <https://github.com/boto/botocore>, https://github.com/boto/botocore)
+- cffi (from http://cffi.readthedocs.org)
 - charset-normalizer (from https://github.com/Ousret/charset_normalizer, https://pypi.org/project/charset-normalizer/)
 - fastapi (from https://pypi.org/project/fastapi/, https://pypi.org/project/fastapi/0.86.0/)
-- h11
-- jmespath (from https://github.com/jmespath/jmespath.py)
+- h11 (from https://github.com/python-hyper/h11)
+- jmespath (from <https://github.com/jmespath/jmespath.py>, https://github.com/jmespath/jmespath.py)
 - jsonref (from https://pypi.org/project/jsonref/, https://pypi.org/project/jsonref/1.1.0/)
-- jsonschema
+- jsonschema (from https://pypi.org/project/jsonschema/)
 - jsonschema-specifications (from https://pypi.org/project/jsonschema-specifications/, https://pypi.org/project/jsonschema-specifications/2023.11.2/, https://pypi.org/project/jsonschema-specifications/2023.7.1/)
-- loguru (from https://pypi.org/project/loguru/)
-- msal (from https://github.com/AzureAD/microsoft-authentication-library-for-python)
-- msal-extensions (from https://pypi.org/project/msal-extensions/1.0.0/)
-- mypy-extensions (from https://pypi.org/project/mypy-extensions/)
-- numpy
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
-- pandera (from https://pypi.org/project/pandera/)
-- pendulum (from https://pendulum.eustace.io)
-- prometheus-fastapi-instrumentator (from https://github.com/trallnag/prometheus-fastapi-instrumentator)
+- loguru (from <https://pypi.org/project/loguru/>, https://pypi.org/project/loguru/)
+- msal (from <https://github.com/AzureAD/microsoft-authentication-library-for-python>, https://github.com/AzureAD/microsoft-authentication-library-for-python)
+- msal-extensions (from https://pypi.org/project/msal-extensions/, https://pypi.org/project/msal-extensions/1.0.0/)
+- mypy-extensions (from https://github.com/python/mypy_extensions, https://pypi.org/project/mypy-extensions/)
+- numpy (from https://pypi.org/project/numpy/)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
+- pandera (from <https://pypi.org/project/pandera/>, https://pypi.org/project/pandera/)
+- pendulum (from <https://pendulum.eustace.io>, https://pendulum.eustace.io, https://pypi.org/project/pendulum/)
+- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
 - pydantic (from https://github.com/samuelcolvin/pydantic, https://pypi.org/project/pydantic/)
-- pytz (from http://pythonhosted.org/pytz)
-- redis (from https://pypi.org/project/redis/)
+- pytz (from <http://pythonhosted.org/pytz>, http://pythonhosted.org/pytz)
+- redis (from <https://github.com/redis/redis-py>, https://github.com/redis/redis-py, https://pypi.org/project/redis/)
 - referencing (from https://pypi.org/project/referencing/, https://pypi.org/project/referencing/0.30.2/, https://pypi.org/project/referencing/0.31.1/)
-- rpds-py (from https://pypi.org/project/rpds-py/0.10.6/)
+- rpds-py (from <https://pypi.org/project/rpds-py/0.10.6/>, https://pypi.org/project/rpds-py/, https://pypi.org/project/rpds-py/0.10.6/)
 - six (from http://pypi.python.org/pypi/six/, https://github.com/benjaminp/six)
 - sniffio (from https://github.com/python-trio/sniffio, https://pypi.org/project/sniffio/, https://pypi.org/project/sniffio/1.3.1/)
 - time-machine (from https://pypi.org/project/time-machine/, https://pypi.org/project/time-machine/2.14.1/, https://pypi.org/project/time-machine/2.14.2/)
 - typeguard (from https://pypi.org/project/typeguard/, https://pypi.org/project/typeguard/4.2.1/, https://pypi.org/project/typeguard/4.3.0/)
-- typing-inspect (from https://github.com/ilevkivskyi/typing_inspect)
+- typing-inspect (from <https://github.com/ilevkivskyi/typing_inspect>, https://github.com/ilevkivskyi/typing_inspect)
 - urllib3 (from https://pypi.org/project/urllib3/, https://pypi.org/project/urllib3/2.0.2/, https://pypi.org/project/urllib3/2.0.4/)
 
 ========================================================================
@@ -149,32 +149,32 @@ MPL-2.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- botocore (from https://github.com/boto/botocore)
-- certifi (from https://github.com/certifi/python-certifi)
+- botocore (from <https://github.com/boto/botocore>, https://github.com/boto/botocore)
+- certifi (from <https://github.com/certifi/python-certifi>, https://github.com/certifi/python-certifi)
 
 ========================================================================
 NCSA
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- numpy
+- numpy (from https://pypi.org/project/numpy/)
 
 ========================================================================
 OPL-1.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- numpy
+- numpy (from https://pypi.org/project/numpy/)
 
 ========================================================================
 Python-2.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- cryptography (from https://github.com/pyca/cryptography)
-- numpy
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
-- portalocker (from https://github.com/WoLpH/portalocker)
+- cryptography (from <https://github.com/pyca/cryptography>, https://github.com/pyca/cryptography, https://pypi.org/project/cryptography/)
+- numpy (from https://pypi.org/project/numpy/)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
+- portalocker (from <https://github.com/WoLpH/portalocker>, https://github.com/WoLpH/portalocker, https://pypi.org/project/portalocker/)
 - typing-extensions (from https://pypi.org/project/typing-extensions/4.2.0/, https://pypi.org/project/typing-extensions/4.4.0/)
 
 ========================================================================
@@ -182,34 +182,41 @@ SunPro
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- numpy
+- numpy (from https://pypi.org/project/numpy/)
 
 ========================================================================
 TCL
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
+
+========================================================================
+X11
+========================================================================
+The following software have components provided under the terms of this license:
+
+- numpy (from https://pypi.org/project/numpy/)
 
 ========================================================================
 Zlib
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- numpy
+- numpy (from https://pypi.org/project/numpy/)
 
 ========================================================================
 mit-old-style-no-advert
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- pytz (from http://pythonhosted.org/pytz)
+- pytz (from <http://pythonhosted.org/pytz>, http://pythonhosted.org/pytz)
 
 ========================================================================
 public-domain
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- numpy
-- pytz (from http://pythonhosted.org/pytz)
-- tzdata (from https://github.com/python/tzdata)
+- numpy (from https://pypi.org/project/numpy/)
+- pytz (from <http://pythonhosted.org/pytz>, http://pythonhosted.org/pytz)
+- tzdata (from <https://github.com/python/tzdata>, https://github.com/python/tzdata)

@@ -82,51 +82,60 @@ TEST_FILTERED_DATA = {
     "index": [
         0,
     ],
-    'data': [
-        ['opendes:work-product-component--SamplesAnalysis:WettabilityIndex_WPC:',
-         'opendes:master-data--Sample:WettabilityIndex_Sample:',
-         {'BrineDisplacementOilSaturation': 10.0,
-          'BrineImbibitionBrineSaturation': 1.0,
-          'CapillaryPressureAnalysisID': 'opendes:work-product-component--SamplesAnalysis:CapillaryPressure_WPC:',
-          'ConfiningPressure': 9.0,
-          'DesaturationMethod': 'opendes:reference-data--DesaturationMethod:AmottOil:',
-          'DisplacedBrineVolume': 4.0,
-          'DisplacedFluidID': 'opendes:reference-data--DisplacedFluidType:Brine:',
-          'DisplacedOilVolume': 2.0,
-          'DisplacementRatio': 5.0,
-          'FluidSystem': 'opendes:reference-data--FluidSystemAnalysisType:Gas:',
-          'ForcedImbibedBrineVolume': 6.0,
-          'ForcedImbibedOilVolume': 10.0,
-          'ForcedOilImbibition': 3.0,
-          'ForcedWaterImbibition': 9.0,
-          'InitialBrineSaturation': 5.0,
-          'InitialCapillaryPressure': 8.0,
-          'InitialOilSaturation': 9.0,
-          'InitialWaterSaturation': 7.0,
-          'InjectionFluidID': 'opendes:reference-data--SampleInjectionFluidType:GasUnspecified:',
-          'OilImbibitionBrineSaturation': 6.0,
-          'OilImbibitionOilSaturation': 9.0,
-          'Remarks': [
-              {'Remark': 'ABCDEFGHIJKLMNOPQRSTUVW',
-               'RemarkDate': '2024-10-10',
-               'RemarkSequenceNumber': 6.0,
-               'RemarkSource': 'ABCDEFGHIJKLMNOPQRSTUVWXY'}
-          ],
-          'SpontaneousImbibedBrineVolume': 4.0,
-          'SpontaneousImbibedOilVolume': 7.0,
-          'Temperature': 8.0,
-          'WettabilityIndex': [
-              {'Value': 9.0,
-               'WettabilityIndexTypeID': 'opendes:reference-data--WettabilityIndexType:AmottWater:'
-               },
-              {'Value': 9.0,
-               'WettabilityIndexTypeID': 'opendes:reference-data--WettabilityIndexType:AmottWater:'},
-              {'Value': 9.0,
-               'WettabilityIndexTypeID': 'opendes:reference-data--WettabilityIndexType:AmottWater:'}
-          ]
-          }
-         ]
-    ]
+    "data": [
+        [
+            "opendes:work-product-component--SamplesAnalysis:WettabilityIndex_WPC:",
+            "opendes:master-data--Sample:WettabilityIndex_Sample:",
+            {
+                "BrineDisplacementOilSaturation": 10.0,
+                "BrineImbibitionBrineSaturation": 1.0,
+                "CapillaryPressureAnalysisID": "opendes:work-product-component--SamplesAnalysis:CapillaryPressure_WPC:",
+                "ConfiningPressure": 9.0,
+                "DesaturationMethod": "opendes:reference-data--DesaturationMethod:AmottOil:",
+                "DisplacedBrineVolume": 4.0,
+                "DisplacedFluidID": "opendes:reference-data--DisplacedFluidType:Brine:",
+                "DisplacedOilVolume": 2.0,
+                "DisplacementRatio": 5.0,
+                "FluidSystem": "opendes:reference-data--FluidSystemAnalysisType:Gas:",
+                "ForcedImbibedBrineVolume": 6.0,
+                "ForcedImbibedOilVolume": 10.0,
+                "ForcedOilImbibition": 3.0,
+                "ForcedWaterImbibition": 9.0,
+                "InitialBrineSaturation": 5.0,
+                "InitialCapillaryPressure": 8.0,
+                "InitialOilSaturation": 9.0,
+                "InitialWaterSaturation": 7.0,
+                "InjectionFluidID": "opendes:reference-data--SampleInjectionFluidType:GasUnspecified:",
+                "OilImbibitionBrineSaturation": 6.0,
+                "OilImbibitionOilSaturation": 9.0,
+                "Remarks": [
+                    {
+                        "Remark": "ABCDEFGHIJKLMNOPQRSTUVW",
+                        "RemarkDate": "2024-10-10",
+                        "RemarkSequenceNumber": 6.0,
+                        "RemarkSource": "ABCDEFGHIJKLMNOPQRSTUVWXY",
+                    },
+                ],
+                "SpontaneousImbibedBrineVolume": 4.0,
+                "SpontaneousImbibedOilVolume": 7.0,
+                "Temperature": 8.0,
+                "WettabilityIndex": [
+                    {
+                        "Value": 9.0,
+                        "WettabilityIndexTypeID": "opendes:reference-data--WettabilityIndexType:AmottWater:",
+                    },
+                    {
+                        "Value": 9.0,
+                        "WettabilityIndexTypeID": "opendes:reference-data--WettabilityIndexType:AmottWater:",
+                    },
+                    {
+                        "Value": 9.0,
+                        "WettabilityIndexTypeID": "opendes:reference-data--WettabilityIndexType:AmottWater:",
+                    },
+                ],
+            },
+        ],
+    ],
 }
 
 INCORRECT_SCHEMA_TEST_DATA = {

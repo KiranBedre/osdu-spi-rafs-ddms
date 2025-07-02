@@ -25,10 +25,10 @@ def transform_filename(filename: str) -> str:
     match = re.match(r"([A-Za-z]+)DataSchema(\.\d+\.\d+\.\d+\.json)", filename)
     if not match:
         return filename  # Return as is if the pattern does not match
-    
+
     prefix, version_ext = match.groups()
-    snake_case_prefix = re.sub(r'([a-z])([A-Z])', r'\1_\2', prefix).lower()
-    
+    snake_case_prefix = re.sub(r"([a-z])([A-Z])", r"\1_\2", prefix).lower()
+
     return f"{snake_case_prefix}{version_ext}"
 
 
@@ -82,7 +82,7 @@ def process_schema_file(directory_path, old_filename, new_filename):
 
     old_filepath = os.path.join(directory_path, old_filename)
     new_filepath = os.path.join(directory_path, new_filename)
-    
+
     with open(old_filepath, "r") as file:
         schema = json.load(file)
 
@@ -91,7 +91,7 @@ def process_schema_file(directory_path, old_filename, new_filename):
         update_additional_properties(schema["properties"])
         if not "additionalProperties" in schema:
             schema["additionalProperties"] = False
-    
+
     update_id(schema, new_filename)
 
     # Write the updated schema back to the new file and delete old one

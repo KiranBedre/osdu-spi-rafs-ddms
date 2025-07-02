@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import json
+from datetime import date
 from typing import Annotated, AsyncGenerator, Dict, List, Optional, Tuple
 
 import pandas as pd
@@ -20,6 +21,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi_cache.decorator import cache
 from loguru import logger
+from pandas._libs.json import ujson_dumps
 from starlette import status
 
 from app.api.dependencies.request import (
@@ -221,7 +223,10 @@ class SamplesAnalysisSearchDataView:
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
                 query parameters can be used to manage data in response. <br><br> \
             Use `offset`, `page_limit` query parameters to control response data size. \
-                The `page_limit` and `total_size (found in response)` refers to the number of parquet files read.",
+            The `page_limit` and `total_size` (found in response) <br> refers to the number of parquet files read.<br><br>\
+            Use `indexed_start_date` and `indexed_end_date` query parameters to filter the data based on indexing \
+                date. <br><br>  - `indexed_start_date`: Filter for data indexed on or after this date. <br><br>  "
+            "- `indexed_end_date`: Filter for data indexed on or before this date. <br><br>",
         )
         self._prepare_api_routes()
         self._batch_size = SEARCH_READ_BATCH_SIZE
@@ -238,7 +243,9 @@ class SamplesAnalysisSearchDataView:
         search_service: search.SearchService = Depends(get_async_search_service),
         df_filter: DataFrameFilterValidator = Depends(validate_filters),
         content_schema_version: str = Depends(get_content_schema_version),
-        pagination_parameters: Tuple[int, int] = Depends(get_search_data_pagination_parameters),
+        pagination_parameters: Tuple[int, int, Optional[date], Optional[date]] = Depends(
+            get_search_data_pagination_parameters,
+        ),
     ) -> Response:
         """Search Data Endpoint.
 
@@ -261,22 +268,28 @@ class SamplesAnalysisSearchDataView:
         :param content_schema_version: content schema version, defaults
             to Depends(get_content_schema_version)
         :type content_schema_version: str, optional
-        :param pagination_parameters: oagination parameters, defaults to
-            Depends(get_pagination_parameters)
-        :type pagination_parameters: Tuple[int, int], optional
+        :param pagination_parameters: A tuple containing pagination and filtering parameters:
+            - `offset` (int): The starting index for pagination.
+            - `page_limit` (int): The maximum number of items to return per page.
+            - `indexed_start_date` (Optional[date]): The earliest date to filter data, or `None` if not provided.
+            - `indexed_end_date` (Optional[date]): The latest date to filter data, or `None` if not provided.
+            This parameter is populated via FastAPI's dependency injection using `Depends(get_search_pagination_parameters)`.
+        :type pagination_parameters: Tuple[int, int, Optional[date], Optional[date]]
         :return: Either json or parquet response from concatenated
             dataframes from search result
         :rtype: Response
         """
         data_partition_id = request.headers.get("data-partition-id")
         mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
-        offset, page_limit = pagination_parameters
+        offset, page_limit, indexed_start_date, indexed_end_date = pagination_parameters
+        query_date_range = (indexed_start_date, indexed_end_date)
 
         analysis_type_ids_fetcher = SearchServiceSamplesAnalysisTypeIdsFetcher(
             search_service=search_service,
         )
         analysis_type_ids = await analysis_type_ids_fetcher.get_ids(
-            data_partition_id, analysis_type, content_schema_version,
+            data_partition_id, analysis_type,
+            content_schema_version, query_date_range,
         )
         analysis_type_ids.sort(key=lambda analysis_type_id: analysis_type_id[1])
         logger.debug("Found analysis types and datasets: ")
@@ -312,18 +325,17 @@ class SamplesAnalysisSearchDataView:
                 media_type=SupportedMimeTypes.PARQUET.mime_type,
             )
         else:
-            content_response = result_df.to_json(orient="split") if result_df.any else json.dumps({})
+            content_response = result_df.to_dict(orient="split") if result_df.any else json.dumps({})
             dict_response = {
-                "result": json.loads(content_response),
+                "result": content_response,
                 "offset": offset,
                 "page_limit": page_limit,
                 "total_size": total_size,
             }
             response = Response(
-                content=json.dumps(dict_response),
+                content=ujson_dumps(dict_response),
                 media_type=SupportedMimeTypes.JSON.mime_type,
             )
-
         return response
 
     @cache(expire=CACHE_DEFAULT_TTL, coder=ResponseCoder, key_builder=key_builder_using_token)
@@ -336,8 +348,12 @@ class SamplesAnalysisSearchDataView:
         search_service: search.SearchService = Depends(get_async_search_service),
         df_filter: DataFrameFilterValidator = Depends(validate_filters),
         content_schema_version: str = Depends(get_content_schema_version),
-        pagination_parameters: Tuple[int, int] = Depends(get_search_pagination_parameters),
+        pagination_parameters: Tuple[
+            int, int, Optional[date],
+            Optional[date],
+        ] = Depends(get_search_pagination_parameters),
     ) -> JSONResponse:
+
         """Search Endpoint.
 
         :param request: the request object
@@ -361,18 +377,27 @@ class SamplesAnalysisSearchDataView:
         :type content_schema_version: str, optional
         :param pagination_parameters: oagination parameters, defaults to
             Depends(get_pagination_parameters)
-        :type pagination_parameters: Tuple[int, int], optional
+        :param pagination_parameters: A tuple containing pagination and filtering parameters:
+            - `offset` (int): The starting index for pagination.
+            - `page_limit` (int): The maximum number of items to return per page.
+            - `indexed_start_date` (Optional[date]): The earliest date to filter data, or `None` if not provided.
+            - `indexed_end_date` (Optional[date]): The latest date to filter data, or `None` if not provided.
+            This parameter is populated via FastAPI's dependency injection using `Depends(get_search_pagination_parameters)`.
+        :type pagination_parameters: Tuple[int, int, Optional[date], Optional[date]]
+
         :return: The list with SamplesAnalysis ids obtained from search
         :rtype: Response
         """
         data_partition_id = request.headers.get("data-partition-id")
-        offset, page_limit = pagination_parameters
+        offset, page_limit, indexed_start_date, indexed_end_date = pagination_parameters
+        query_date_range = (indexed_start_date, indexed_end_date)
 
         analysis_type_ids_fetcher = SearchServiceSamplesAnalysisTypeIdsFetcher(
             search_service=search_service,
         )
         analysis_type_ids = await analysis_type_ids_fetcher.get_ids(
-            data_partition_id, analysis_type, content_schema_version,
+            data_partition_id, analysis_type,
+            content_schema_version, query_date_range,
         )
         analysis_type_ids.sort(key=lambda analysis_type_id: analysis_type_id[1])
 

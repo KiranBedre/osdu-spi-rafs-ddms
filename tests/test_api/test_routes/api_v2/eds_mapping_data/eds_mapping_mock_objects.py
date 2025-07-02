@@ -94,7 +94,7 @@ TEST_FILTERED_DATA = {
                             "XCoordinate": 4,
                             "YCoordinate": 2,
                         },
-                        "Value": 6.0
+                        "Value": 6.0,
                     },
                 },
                 {
@@ -104,7 +104,7 @@ TEST_FILTERED_DATA = {
                             "XCoordinate": 3,
                             "YCoordinate": 8,
                         },
-                        "Value": 13.6
+                        "Value": 13.6,
                     },
                 },
             ],

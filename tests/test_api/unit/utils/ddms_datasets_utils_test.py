@@ -40,6 +40,7 @@ def mock_blob():
         ),
     )
 
+
 @pytest.fixture
 def mock_blob_metadata():
     return BlobMetadata(

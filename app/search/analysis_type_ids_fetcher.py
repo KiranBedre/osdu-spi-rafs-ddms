@@ -13,7 +13,10 @@
 #  limitations under the License.
 
 from abc import ABC, abstractmethod
+from datetime import date
 from typing import List, Optional, Tuple
+
+from loguru import logger
 
 from app.api.routes.utils.search import get_valid_ids_from_ddms_datasets
 from app.models.domain.osdu.base import SAMPLESANALYSIS_KIND
@@ -29,6 +32,7 @@ class SamplesAnalysisTypeIdsFetcher(ABC):
         data_partition_id: str,
         analysis_type: str,
         target_schema_version: str,
+        query_date_range: Tuple[date, date],
         wks_parameters: Optional[dict] = None,
     ):
         raise NotImplementedError()
@@ -44,11 +48,17 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(SamplesAnalysisTypeIdsFetcher):
         data_partition_id: str,
         analysis_type: str,
         target_schema_version: str,
+        query_date_range: Tuple[date, date],
         wks_parameters: Optional[dict] = None,
     ):
         """Performs a query to search service to build a list of tuples
         dataset_id, samples_analysis_id."""
-        query = self._build_sampleanalysistype_query(data_partition_id, SAMPLESANALYSIS_TYPE_MAPPING[analysis_type])
+        query = self._build_sampleanalysistype_query(
+            data_partition_id,
+            SAMPLESANALYSIS_TYPE_MAPPING[analysis_type],
+            query_date_range[0],
+            query_date_range[1],
+        )
 
         result_records = []
         cursor = None
@@ -67,16 +77,39 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(SamplesAnalysisTypeIdsFetcher):
 
         return self._build_result_ids(result_records, target_schema_version, analysis_type)
 
-    def _build_sampleanalysistype_query(self, data_partition_id: str, analysis_types: List[str]) -> str:
+    def _build_sampleanalysistype_query(
+        self,
+        data_partition_id: str,
+        analysis_types: List[str],
+        indexed_start_date: date,
+        indexed_end_date: date,
+    ) -> str:
         """Build a query to be used within search service for
         SamplesAnalysisType."""
-
         analysis_types = [
             f'"{data_partition_id}:reference-data--SampleAnalysisType:{analysis_type}"'
             for analysis_type in analysis_types
         ]
         analysis_types_str = " OR ".join(analysis_types)
-        return f"data.SampleAnalysisTypeIDs:({analysis_types_str})"
+        query_parts = [
+            f"data.SampleAnalysisTypeIDs:({analysis_types_str})",
+        ]
+        # Append time filters based on start and end dates
+        if indexed_start_date and indexed_end_date:
+            query_parts.append(
+                f"index.lastUpdateTime:[{indexed_start_date.isoformat()} TO {indexed_end_date.isoformat()}]",
+            )
+        elif indexed_start_date:
+            query_parts.append(
+                f"index.lastUpdateTime:[{indexed_start_date.isoformat()} TO *]",
+            )
+        elif indexed_end_date:
+            query_parts.append(
+                f"index.lastUpdateTime:[* TO {indexed_end_date.isoformat()}]",
+            )
+        query = " AND ".join(query_parts)
+        logger.debug(f"Query for search service: {query}")
+        return query
 
     def _build_result_ids(  # noqa: CCR001
         self,
@@ -89,6 +122,7 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(SamplesAnalysisTypeIdsFetcher):
         result_ids = []
         for record in result_records:
             if ddms_datasets := record.get("data", {}).get("DDMSDatasets"):  # noqa: WPS332
+                logger.debug(f"ddms_datasets: {ddms_datasets}")
                 result_ids.extend(
                     get_valid_ids_from_ddms_datasets(
                         ddms_datasets=ddms_datasets,
@@ -97,5 +131,5 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(SamplesAnalysisTypeIdsFetcher):
                         target_schema_version=target_schema_version,
                     ),
                 )
-
+        logger.debug(f"Result_ids: {result_ids}")
         return result_ids

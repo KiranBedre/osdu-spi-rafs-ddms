@@ -12,9 +12,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from datetime import datetime, timezone, timedelta
 import io
 import json
+from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
 import boto3
@@ -22,12 +22,16 @@ import pytest
 from botocore.response import StreamingBody
 from botocore.stub import Stubber
 
-from app.providers.dependencies.aws.blob_loader import CREDENTIALS_CACHE, AWSBlobLoader
+from app.providers.dependencies.aws.blob_loader import (
+    CREDENTIALS_CACHE,
+    AWSBlobLoader,
+)
 
 TEST_BUCKET = "test-bucket"
 TEST_KEY = "opendes/abc/123"
 TEST_BLOB_URL = f"https://{TEST_BUCKET}.s3.us-east-1.amazonaws.com/{TEST_KEY}?Param=p"
 TEST_BLOB = b"blob"
+
 
 class TestBlobLoader:
     @pytest.fixture(autouse=True)
@@ -44,19 +48,19 @@ class TestBlobLoader:
     @pytest.mark.asyncio
     async def test_aws_blob_loader_without_s3_client(self):
         expired_time = datetime.now(timezone.utc) - timedelta(minutes=10)
-        CREDENTIALS_CACHE['expiration'] = expired_time
-        mock_s3_client = MagicMock()  
-        
-        with patch('app.providers.dependencies.aws.blob_loader.datetime') as mock_datetime, \
-            patch('app.providers.dependencies.aws.blob_loader.refresh_credentials') as mock_refresh_credentials:
+        CREDENTIALS_CACHE["expiration"] = expired_time
+        mock_s3_client = MagicMock()
+
+        with patch("app.providers.dependencies.aws.blob_loader.datetime") as mock_datetime, \
+                patch("app.providers.dependencies.aws.blob_loader.refresh_credentials") as mock_refresh_credentials:
             mock_datetime.now.return_value = datetime.now(timezone.utc)
-            mock_refresh_credentials.return_value = None 
-            CREDENTIALS_CACHE["s3_client"] = mock_s3_client 
-            
+            mock_refresh_credentials.return_value = None
+            CREDENTIALS_CACHE["s3_client"] = mock_s3_client
+
             loader = AWSBlobLoader()
-            
+
             mock_refresh_credentials.assert_called_once()
-            
+
             assert loader.s3_client == mock_s3_client
 
     @pytest.mark.asyncio
@@ -64,7 +68,7 @@ class TestBlobLoader:
         expected_params = {
             "Bucket": TEST_BUCKET,
             "Key": TEST_KEY,
-            "Body": TEST_BLOB
+            "Body": TEST_BLOB,
         }
         put_response = {
             "ETag": "6805f2cfc46c0f04559748bb039d69ae",
@@ -72,7 +76,7 @@ class TestBlobLoader:
             "ResponseMetadata": {
                 "RequestId": "abc123",
                 "HTTPStatusCode": 200,
-                "HostId": "abc123"
+                "HostId": "abc123",
             },
         }
         self.stubber.add_response("put_object", put_response, expected_params)
@@ -83,16 +87,16 @@ class TestBlobLoader:
     @pytest.mark.asyncio
     async def test_download_blob(self):
         expected_message = {
-            "message": "blob"
+            "message": "blob",
         }
 
         encoded_message = json.dumps(expected_message).encode()
         raw_stream = StreamingBody(
             io.BytesIO(encoded_message),
-            len(encoded_message)
+            len(encoded_message),
         )
         get_response = {
-            "Body": raw_stream
+            "Body": raw_stream,
         }
         self.stubber.add_response("get_object", get_response)
         download_response = await self.blob_loader.download_blob(TEST_BLOB_URL)
