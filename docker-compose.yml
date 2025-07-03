@@ -11,6 +11,8 @@ services:
         commit_message: "Local Development"
         release_version: "0.0.0-local"
     restart: on-failure
+    security_opt:
+      - no-new-privileges:true
     env_file:
       - .env
     ports:
@@ -26,6 +28,8 @@ services:
       context: .
       dockerfile: Dockerfile.tests
     image: osdu-rafsddms_tests
+    security_opt:
+      - no-new-privileges:true
     restart: "no"
     volumes:
       - ./app:/app
@@ -38,6 +42,8 @@ services:
 
   integration:
     image: osdu-rafsddms_tests
+    security_opt:
+      - no-new-privileges:true
     restart: "no"
     env_file:
       - .env
@@ -54,6 +60,8 @@ services:
 
   redis:
     image: redis/redis-stack-server:latest
+    security_opt:
+      - no-new-privileges:true
     ports:
       - "6379:6379"
     command: ["redis-stack-server", "/usr/local/etc/redis/redis.conf"]
