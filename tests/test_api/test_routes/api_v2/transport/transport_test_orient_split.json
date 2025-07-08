@@ -20,6 +20,7 @@
         {
           "kind":"Unit",
           "name":"pound-force per square inch",
+          "persistableReference":"{\"abcd\":{\"a\":0.0,\"b\":4.4482216152605,\"c\":6.4516E-4,\"d\":0.0},\"symbol\":\"psi\",\"baseMeasurement\":{\"ancestry\":\"M/LT2\",\"type\":\"UM\"},\"type\":\"UAD\"}",
           "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:psi:",
           "propertyNames":[
             "ReservoirPressure"
