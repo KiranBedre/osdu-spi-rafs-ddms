@@ -15,8 +15,8 @@
 import json
 from datetime import date
 from typing import Annotated, AsyncGenerator, Dict, List, Optional, Tuple
-
 import pandas as pd
+import pandas._libs.json as pdujson
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi_cache.decorator import cache
@@ -279,6 +279,7 @@ class SamplesAnalysisSearchDataView:
             dataframes from search result
         :rtype: Response
         """
+        #TODO: perfomance tuning
         data_partition_id = request.headers.get("data-partition-id")
         mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
         offset, page_limit, indexed_start_date, indexed_end_date = pagination_parameters
@@ -293,7 +294,7 @@ class SamplesAnalysisSearchDataView:
         )
         analysis_type_ids.sort(key=lambda analysis_type_id: analysis_type_id[1])
         logger.debug("Found analysis types and datasets: ")
-        logger.debug(analysis_type_ids)
+        #logger.debug(analysis_type_ids)
 
         if self._is_non_empty_filter(df_filter):
             df_triplets_gen = await self._get_search_data(
@@ -333,7 +334,7 @@ class SamplesAnalysisSearchDataView:
                 "total_size": total_size,
             }
             response = Response(
-                content=ujson_dumps(dict_response),
+                content=pdujson.ujson_dumps(dict_response),
                 media_type=SupportedMimeTypes.JSON.mime_type,
             )
         return response
