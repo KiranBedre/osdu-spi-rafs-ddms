@@ -92,7 +92,8 @@
               }
             },
             "required": [
-              "kind"
+              "kind",
+              "persistableReference"
             ]
           },
           {
@@ -357,6 +358,18 @@
               "x-osdu-inheriting-from-kind": [],
               "additionalProperties": false
             }
+          },
+          "OilDensity": {
+            "type": "number",
+            "title": "Oil Density",
+            "description": "The mass per volume of oil in the sample.",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          },
+          "GasDensity": {
+            "type": "number",
+            "title": "Gas Density",
+            "description": "The mass per volume of gas in the sample.",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
           }
         },
         "additionalProperties": false
