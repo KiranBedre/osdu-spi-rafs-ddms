@@ -1,7 +1,8 @@
 global:
   domain: ""
-  onPremEnabled: false
   limitsEnabled: true
+  tier: ""
+  autoscalingMode: "cpu"
 
 data:
   # Configmaps
@@ -24,7 +25,7 @@ data:
   redisRafsDdmsPort: "6379"
   redisIndexEnable: "True"
   # Deployments
-  requestsCpu: "5m"
+  requestsCpu: "50m"
   requestsMemory: "350Mi"
   limitsCpu: "2"
   limitsMemory: "3G"
@@ -34,13 +35,41 @@ data:
   image: ""
   imagePullPolicy: "IfNotPresent"
   serviceAccountName: "rafs-ddms"
+  affinityLabelsSpot:
+    cloud.google.com/gke-provisioning:
+      - spot
 
 conf:
   configmap: "rafs-ddms-config"
   appName: "rafs-ddms"
   rafsDdmsRedisSecretName: "rafs-ddms-redis-secret"
-  replicas: 1
 
 istio:
   redisProxyCPU: "50m"
   redisProxyMemory: "100Mi"
+
+hpa:
+  minReplicas: 1
+  maxReplicas: 6
+  cpu:
+    utilization: 200
+    scaleUpStabilizationWindowSeconds: 30
+    scaleUpValue: 200
+    scaleUpPeriod: 15
+    scaleDownStabilizationWindowSeconds: 150
+    scaleDownValue: 100
+    scaleDownPeriod: 15
+  requests:
+    targetType: "AverageValue"
+    targetValue: 140 ## TODO: Perform additional performance tests to refine the request value.
+    scaleUpStabilizationWindowSeconds: 10
+    scaleUpValue: 50
+    scaleUpPeriod: 15
+    scaleDownStabilizationWindowSeconds: 60
+    scaleDownValue: 25
+    scaleDownPeriod: 60
+
+limits:
+  max_tokens: 100
+  tokens_per_fill: 100
+  fill_interval: "1s"

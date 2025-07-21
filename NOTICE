@@ -21,7 +21,7 @@ The following software have components provided under the terms of this license:
 - async-timeout (from https://github.com/aio-libs/async-timeout, https://github.com/aio-libs/async_timeout/)
 - boto3 (from <https://github.com/boto/boto3>, https://github.com/boto/boto3)
 - botocore (from <https://github.com/boto/botocore>, https://github.com/boto/botocore)
-- cryptography (from <https://github.com/pyca/cryptography>, https://github.com/pyca/cryptography, https://pypi.org/project/cryptography/)
+- cryptography (from <https://github.com/pyca/cryptography>, https://github.com/pyca/cryptography)
 - fastapi (from https://pypi.org/project/fastapi/, https://pypi.org/project/fastapi/0.86.0/)
 - fastapi-cache2 (from <https://github.com/long2ice/fastapi-cache>, https://github.com/long2ice/fastapi-cache)
 - frozenlist (from <https://github.com/aio-libs/frozenlist>, https://github.com/aio-libs/frozenlist)
@@ -29,8 +29,8 @@ The following software have components provided under the terms of this license:
 - multimethod (from https://pypi.org/project/multimethod/, https://pypi.org/project/multimethod/1.10/, https://pypi.org/project/multimethod/1.9.1/)
 - numpy (from https://pypi.org/project/numpy/)
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
-- prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python, https://pypi.org/project/prometheus-client/)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
+- prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python)
 - pyarrow (from https://arrow.apache.org/, https://pypi.org/project/pyarrow/, https://pypi.org/project/pyarrow/17.0.0/)
 - python-dateutil (from <https://github.com/dateutil/dateutil>, https://github.com/dateutil/dateutil)
 - requests (from http://python-requests.org, https://requests.readthedocs.io)
@@ -48,8 +48,8 @@ The following software have components provided under the terms of this license:
 
 - numpy (from https://pypi.org/project/numpy/)
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
-- prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python, https://pypi.org/project/prometheus-client/)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
+- prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python)
 - wrapt (from <https://github.com/GrahamDumpleton/wrapt>, https://github.com/GrahamDumpleton/wrapt)
 
 ========================================================================
@@ -58,14 +58,14 @@ BSD-3-Clause
 The following software have components provided under the terms of this license:
 
 - click (from https://palletsprojects.com/p/click/, https://pypi.org/project/click/)
-- cryptography (from <https://github.com/pyca/cryptography>, https://github.com/pyca/cryptography, https://pypi.org/project/cryptography/)
+- cryptography (from <https://github.com/pyca/cryptography>, https://github.com/pyca/cryptography)
 - httpcore (from https://github.com/encode/httpcore, https://pypi.org/project/httpcore/, https://pypi.org/project/httpcore/0.18.0/)
 - httpx (from https://pypi.org/project/httpx/, https://pypi.org/project/httpx/0.23.1/)
 - idna (from https://pypi.org/project/idna/, https://pypi.org/project/idna/3.4/)
 - isodate (from http://cheeseshop.python.org/pypi/isodate, https://github.com/gweis/isodate/, https://pypi.org/project/isodate/)
 - numpy (from https://pypi.org/project/numpy/)
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 - prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
 - pyarrow (from https://arrow.apache.org/, https://pypi.org/project/pyarrow/, https://pypi.org/project/pyarrow/17.0.0/)
 - pycparser (from <https://github.com/eliben/pycparser>, https://github.com/eliben/pycparser)
@@ -88,7 +88,7 @@ CC0-1.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 
 ========================================================================
 ISC
@@ -125,18 +125,18 @@ The following software have components provided under the terms of this license:
 - jsonschema-specifications (from https://pypi.org/project/jsonschema-specifications/, https://pypi.org/project/jsonschema-specifications/2023.11.2/, https://pypi.org/project/jsonschema-specifications/2023.7.1/)
 - loguru (from <https://pypi.org/project/loguru/>, https://pypi.org/project/loguru/)
 - msal (from <https://github.com/AzureAD/microsoft-authentication-library-for-python>, https://github.com/AzureAD/microsoft-authentication-library-for-python)
-- msal-extensions (from https://pypi.org/project/msal-extensions/, https://pypi.org/project/msal-extensions/1.0.0/)
+- msal-extensions (from https://pypi.org/project/msal-extensions/1.0.0/)
 - mypy-extensions (from https://github.com/python/mypy_extensions, https://pypi.org/project/mypy-extensions/)
 - numpy (from https://pypi.org/project/numpy/)
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 - pandera (from <https://pypi.org/project/pandera/>, https://pypi.org/project/pandera/)
-- pendulum (from <https://pendulum.eustace.io>, https://pendulum.eustace.io, https://pypi.org/project/pendulum/)
+- pendulum (from <https://pendulum.eustace.io>, https://pendulum.eustace.io)
 - prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
 - pydantic (from https://github.com/samuelcolvin/pydantic, https://pypi.org/project/pydantic/)
 - pytz (from <http://pythonhosted.org/pytz>, http://pythonhosted.org/pytz)
 - redis (from <https://github.com/redis/redis-py>, https://github.com/redis/redis-py, https://pypi.org/project/redis/)
 - referencing (from https://pypi.org/project/referencing/, https://pypi.org/project/referencing/0.30.2/, https://pypi.org/project/referencing/0.31.1/)
-- rpds-py (from <https://pypi.org/project/rpds-py/0.10.6/>, https://pypi.org/project/rpds-py/, https://pypi.org/project/rpds-py/0.10.6/)
+- rpds-py (from <https://pypi.org/project/rpds-py/0.10.6/>, https://pypi.org/project/rpds-py/0.10.6/)
 - six (from http://pypi.python.org/pypi/six/, https://github.com/benjaminp/six)
 - sniffio (from https://github.com/python-trio/sniffio, https://pypi.org/project/sniffio/, https://pypi.org/project/sniffio/1.3.1/)
 - time-machine (from https://pypi.org/project/time-machine/, https://pypi.org/project/time-machine/2.14.1/, https://pypi.org/project/time-machine/2.14.2/)
@@ -171,10 +171,10 @@ Python-2.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- cryptography (from <https://github.com/pyca/cryptography>, https://github.com/pyca/cryptography, https://pypi.org/project/cryptography/)
+- cryptography (from <https://github.com/pyca/cryptography>, https://github.com/pyca/cryptography)
 - numpy (from https://pypi.org/project/numpy/)
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
-- portalocker (from <https://github.com/WoLpH/portalocker>, https://github.com/WoLpH/portalocker, https://pypi.org/project/portalocker/)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
+- portalocker (from <https://github.com/WoLpH/portalocker>, https://github.com/WoLpH/portalocker)
 - typing-extensions (from https://pypi.org/project/typing-extensions/4.2.0/, https://pypi.org/project/typing-extensions/4.4.0/)
 
 ========================================================================
@@ -189,7 +189,7 @@ TCL
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- pandas (from http://pandas.pydata.org, https://pandas.pydata.org, https://pypi.org/project/pandas/)
+- pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 
 ========================================================================
 X11
