@@ -18,6 +18,8 @@ ARG python_version=3.11
 ARG amazonlinux_image=public.ecr.aws/amazonlinux/amazonlinux:2023
 FROM ${amazonlinux_image} AS build-env
 
+RUN dnf update libxml2
+
 RUN dnf update python-setuptools --releasever 2023.5.20240805
 
 RUN dnf -y install python3.11 python3.11-pip
@@ -31,7 +33,7 @@ ENV PATH="/app/venv/bin:${PATH}"
 
 RUN /app/venv/bin/python3 -m pip install --upgrade pip \
       && /app/venv/bin/python3 -m pip install --no-cache-dir -I -r /app/requirements.txt \
-      && /app/venv/bin/python3 -m pip install --no-cache-dir setuptools==70.0.0 --upgrade \
+      && /app/venv/bin/python3 -m pip install --no-cache-dir setuptools==78.1.1 --upgrade \
       && /app/venv/bin/python3 -m pip install --no-cache-dir -I uvicorn[standard]==0.23.2
 
 COPY ./app /app/
@@ -42,6 +44,7 @@ RUN cp -v /app/venv/bin/uvicorn .
 FROM ${amazonlinux_image}
 ARG python_version
 
+RUN dnf update libxml2
 RUN dnf -y install shadow-utils
 RUN dnf -y install python3.11
 RUN dnf update python-setuptools --releasever 2023.5.20240805
@@ -66,7 +69,7 @@ ENV COMMIT_BRANCH $commit_branch
 ENV COMMIT_MESSAGE=$commit_message
 ENV RELEASE_VERSION=$release_version
 
-RUN /app/app/venv/bin/python3 -m pip install setuptools==70.0.0 --upgrade
+RUN /app/app/venv/bin/python3 -m pip install setuptools==78.1.1 --upgrade
 
 WORKDIR /app
 EXPOSE 8080
