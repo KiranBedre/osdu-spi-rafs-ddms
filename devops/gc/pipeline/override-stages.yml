@@ -29,6 +29,7 @@ gc-osdutest:
 gc-acceptance-test-python:
   extends:
     - .gc-variables
+  image: python:3.11
   script:
     - curl https://community.opengroup.org/api/v4/projects/1410/packages/generic/gc_auth_token/master/gc_auth_token -o gc_auth_token
     - chmod +x gc_auth_token
