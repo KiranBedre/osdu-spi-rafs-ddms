@@ -16,8 +16,8 @@
     curl -s https://${AZURE_DNS_NAME}/api/rafs-ddms/info | tee info.json
     branch=$(jq -r '.branch' info.json)
     echo "ℹ️ Branch reported by service: $branch"
-    if [[ "$branch" != "${CI_COMMIT_REF_NAME}" ]]; then
-      echo "❌ Mismatch: expected branch to include ${CI_COMMIT_REF_NAME}"
+    if [[ "$branch" != "${CI_COMMIT_REF_SLUG}" ]]; then
+      echo "❌ Mismatch: expected branch to include ${CI_COMMIT_REF_SLUG}, but got $branch"
       exit 1
     fi
   - sleep 180 # Wait for the service to be ready
@@ -54,7 +54,7 @@
 # This job is for running the Postman collection for the RAFS DDMS API
 # against the OSDU Azure environment.
 
-azure-rafs-ddms-test:
+azure-postman-test:
   extends: .newman_rafs_tests
   variables:
     ENVIRONMENT: "./devops/azure/qa/Postman Collection/Environment/OSDU_AZURE_GLAB.postman_environment.json"
