@@ -20,7 +20,7 @@ FROM ${amazonlinux_image} AS build-env
 
 RUN dnf update libxml2
 
-RUN dnf update python-setuptools --releasever 2023.5.20240805
+RUN dnf update python-setuptools --releasever 2023.7.20250609
 
 RUN dnf -y install python3.11 python3.11-pip
 
@@ -47,7 +47,7 @@ ARG python_version
 RUN dnf update libxml2
 RUN dnf -y install shadow-utils
 RUN dnf -y install python3.11
-RUN dnf update python-setuptools --releasever 2023.5.20240805
+RUN dnf update python-setuptools --releasever 2023.7.20250609
 
 RUN groupadd --system appusers && useradd --system appuser && usermod -a -G appusers appuser
 
