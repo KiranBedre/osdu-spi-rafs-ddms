@@ -346,12 +346,20 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"pm.test(\"Status code is 200\", function() {\r",
+													"pm.test(\"Status code is 201\", function() {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"No records were skipped\", function () {\r",
 													"    var jsonData = pm.response.json();\r",
-													"    var runId = jsonData.runId;\r",
-													"    pm.environment.set(\"run_id\", runId);\r",
-													"    pm.response.to.have.status(200);\r",
-													"});"
+													"    pm.expect(jsonData.skippedRecordIds.length).to.equal(0);\r",
+													"});\r",
+													"\r",
+													"var jsonData = pm.response.json();\r",
+													"var parts = jsonData.recordIds[0].split(\":\");\r",
+													"var record_id = parts.slice(0, 3).join(\":\");\r",
+													"pm.addRecordToCleanUp(pm, record_id)\r",
+													""
 												],
 												"type": "text/javascript",
 												"packages": {}
@@ -364,16 +372,8 @@
 										}
 									},
 									"request": {
-										"auth": {
-											"type": "noauth"
-										},
-										"method": "POST",
+										"method": "PUT",
 										"header": [
-											{
-												"key": "Authorization",
-												"value": "Bearer {{access_token}}",
-												"type": "text"
-											},
 											{
 												"key": "Content-Type",
 												"value": "application/json",
@@ -387,18 +387,16 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{data-partition-id}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"{{authority}}:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{data-partition-id}}:reference-data--CompoundsAreaHeight:Area\",\r\n                    \"kind\": \"{{authority}}:wks:reference-data--CompoundsAreaHeight:1.0.0\",\r\n                    \"acl\": {\r\n                        \"viewers\": [\r\n                            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n                        ],\r\n                        \"owners\": [\r\n                            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LtagName}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"US\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Area\",\r\n                        \"Description\": \"integrated peak area\",\r\n                        \"Code\": \"AREA\",\r\n                        \"AttributionAuthority\": \"CGG\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{data-partition-id}}:reference-data--CompoundsAreaHeight:Height\",\r\n                    \"kind\": \"{{authority}}:wks:reference-data--CompoundsAreaHeight:1.0.0\",\r\n                    \"acl\": {\r\n                        \"viewers\": [\r\n                            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n                        ],\r\n                        \"owners\": [\r\n                            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LtagName}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"US\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Height\",\r\n                        \"Description\": \"measured peak height\",\r\n                        \"Code\": \"HEIGHT\",\r\n                        \"AttributionAuthority\": \"CGG\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{data-partition-id}}:reference-data--CompoundsAreaHeight:Unknown\",\r\n                    \"kind\": \"{{authority}}:wks:reference-data--CompoundsAreaHeight:1.0.0\",\r\n                    \"acl\": {\r\n                        \"viewers\": [\r\n                            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n                        ],\r\n                        \"owners\": [\r\n                            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LtagName}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"US\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Unknown\",\r\n                        \"Description\": \"Unknown peak\",\r\n                        \"Code\": \"UNKNOWN\",\r\n                        \"AttributionAuthority\": \"CGG\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
+											"raw": "[\r\n    {\r\n        \"data\": {\r\n            \"Code\": \"AREA\",\r\n            \"CommitDate\": \"\",\r\n            \"Description\": \"integrated peak area\",\r\n            \"FamilyID\": \"\",\r\n            \"Name\": \"Area\",\r\n            \"Source\": \"CGG\",\r\n            \"SubFamilyID\": \"\"\r\n        },\r\n        \"meta\": null,\r\n        \"modifyUser\": \"\",\r\n        \"modifyTime\": \"\",\r\n        \"id\": \"{{data-partition-id}}:reference-data--CompoundsAreaHeight:Area\",\r\n        \"kind\": \"{{authority}}:wks:reference-data--CompoundsAreaHeight:1.0.0\",\r\n        \"acl\": {\r\n            \"viewers\": [\r\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n            ],\r\n            \"owners\": [\r\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n            ]\r\n        },\r\n        \"legal\": {\r\n            \"legaltags\": [\r\n                \"{{LtagName}}\"\r\n            ],\r\n            \"otherRelevantDataCountries\": [\r\n                \"US\"\r\n            ],\r\n            \"status\": \"compliant\"\r\n        }\r\n    },\r\n    {\r\n        \"data\": {\r\n            \"Code\": \"HEIGHT\",\r\n            \"CommitDate\": \"\",\r\n            \"Description\": \"measured peak height\",\r\n            \"FamilyID\": \"\",\r\n            \"Name\": \"Height\",\r\n            \"Source\": \"CGG\",\r\n            \"SubFamilyID\": \"\"\r\n        },\r\n        \"meta\": null,\r\n        \"modifyUser\": \"\",\r\n        \"modifyTime\": \"\",\r\n        \"id\": \"{{data-partition-id}}:reference-data--CompoundsAreaHeight:Height\",\r\n        \"kind\": \"{{authority}}:wks:reference-data--CompoundsAreaHeight:1.0.0\",\r\n        \"acl\": {\r\n            \"viewers\": [\r\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n            ],\r\n            \"owners\": [\r\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n            ]\r\n        },\r\n        \"legal\": {\r\n            \"legaltags\": [\r\n                \"{{LtagName}}\"\r\n            ],\r\n            \"otherRelevantDataCountries\": [\r\n                \"US\"\r\n            ],\r\n            \"status\": \"compliant\"\r\n        }\r\n    },\r\n    {\r\n        \"data\": {\r\n            \"Code\": \"UNKNOWN\",\r\n            \"CommitDate\": \"\",\r\n            \"Description\": \"Unknown peak\",\r\n            \"FamilyID\": \"\",\r\n            \"Name\": \"Unknown\",\r\n            \"Source\": \"CGG\",\r\n            \"SubFamilyID\": \"\"\r\n        },\r\n        \"meta\": null,\r\n        \"modifyUser\": \"\",\r\n        \"modifyTime\": \"\",\r\n        \"id\": \"{{data-partition-id}}:reference-data--CompoundsAreaHeight:Unknown\",\r\n        \"kind\": \"{{authority}}:wks:reference-data--CompoundsAreaHeight:1.0.0\",\r\n        \"acl\": {\r\n            \"viewers\": [\r\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n            ],\r\n            \"owners\": [\r\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n            ]\r\n        },\r\n        \"legal\": {\r\n            \"legaltags\": [\r\n                \"{{LtagName}}\"\r\n            ],\r\n            \"otherRelevantDataCountries\": [\r\n                \"US\"\r\n            ],\r\n            \"status\": \"compliant\"\r\n        }\r\n    }\r\n]"
 										},
 										"url": {
-											"raw": "https://{{WORKFLOW_URL}}/workflow/{{workflow_name_manifest}}/workflowRun",
+											"raw": "https://{{STORAGE_HOST}}/records",
 											"protocol": "https",
 											"host": [
-												"{{WORKFLOW_URL}}"
+												"{{STORAGE_HOST}}"
 											],
 											"path": [
-												"workflow",
-												"{{workflow_name_manifest}}",
-												"workflowRun"
+												"records"
 											]
 										}
 									},
@@ -411,12 +409,19 @@
 											"listen": "test",
 											"script": {
 												"exec": [
-													"pm.test(\"Status code is 200\", function() {\r",
+													"pm.test(\"Status code is 201\", function() {\r",
+													"    pm.response.to.have.status(201);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"No records were skipped\", function () {\r",
 													"    var jsonData = pm.response.json();\r",
-													"    var runId = jsonData.runId;\r",
-													"    pm.environment.set(\"run_id\", runId);\r",
-													"    pm.response.to.have.status(200);\r",
-													"});"
+													"    pm.expect(jsonData.skippedRecordIds.length).to.equal(0);\r",
+													"});\r",
+													"\r",
+													"var jsonData = pm.response.json();\r",
+													"var parts = jsonData.recordIds[0].split(\":\");\r",
+													"var record_id = parts.slice(0, 3).join(\":\");\r",
+													"pm.addRecordToCleanUp(pm, record_id)"
 												],
 												"type": "text/javascript",
 												"packages": {}
@@ -432,7 +437,7 @@
 										"auth": {
 											"type": "noauth"
 										},
-										"method": "POST",
+										"method": "PUT",
 										"header": [
 											{
 												"key": "Authorization",
@@ -452,18 +457,16 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{data-partition-id}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"{{authority}}:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{data-partition-id}}:reference-data--FluidSaturantType:LabOil\",\r\n                    \"kind\": \"{{authority}}:wks:reference-data--FluidSaturantType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"viewers\": [\r\n                            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n                        ],\r\n                        \"owners\": [\r\n                            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LtagName}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"US\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"LabOil\",\r\n                        \"ID\": null,\r\n                        \"Description\": \"LabOil\",\r\n                        \"Code\": \"LabOil\",\r\n                        \"AttributionAuthority\": \"RAFSDDMS\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
+											"raw": "[\r\n    {\r\n        \"data\": {\r\n            \"Code\": \"LabOil\",\r\n            \"CommitDate\": \"\",\r\n            \"Description\": \"LabOil\",\r\n            \"FamilyID\": \"\",\r\n            \"Name\": \"LabOil\",\r\n            \"Source\": \"RAFSDDMS\",\r\n            \"SubFamilyID\": \"\"\r\n        },\r\n        \"meta\": null,\r\n        \"modifyUser\": \"\",\r\n        \"modifyTime\": \"\",\r\n        \"id\": \"{{data-partition-id}}:reference-data--FluidSaturantType:LabOil\",\r\n        \"kind\": \"{{authority}}:wks:reference-data--FluidSaturantType:1.0.0\",\r\n        \"acl\": {\r\n            \"viewers\": [\r\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n            ],\r\n            \"owners\": [\r\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n            ]\r\n        },\r\n        \"legal\": {\r\n            \"legaltags\": [\r\n                \"{{LtagName}}\"\r\n            ],\r\n            \"otherRelevantDataCountries\": [\r\n                \"US\"\r\n            ],\r\n            \"status\": \"compliant\"\r\n        }\r\n    }\r\n]"
 										},
 										"url": {
-											"raw": "https://{{WORKFLOW_URL}}/workflow/{{workflow_name_manifest}}/workflowRun",
+											"raw": "https://{{STORAGE_HOST}}/records",
 											"protocol": "https",
 											"host": [
-												"{{WORKFLOW_URL}}"
+												"{{STORAGE_HOST}}"
 											],
 											"path": [
-												"workflow",
-												"{{workflow_name_manifest}}",
-												"workflowRun"
+												"records"
 											]
 										}
 									},
@@ -19126,7 +19129,7 @@
 		},
 		{
 			"key": "Geochem_DatasetAPI_filename",
-			"value": "./devops/azure/qa/Postman Collection/206_12a-_5_rep_GEOL_CHEM_267794802.pdf"
+			"value": "./devops/azure/qa/resources/Postman Collection/206_12a-_5_rep_GEOL_CHEM_267794802.pdf"
 		},
 		{
 			"key": "RCA_parquet_data_filename",
