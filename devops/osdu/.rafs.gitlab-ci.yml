@@ -1,0 +1,35 @@
+# RAFS Specific jobs
+
+# Build image for rafs tests
+build_rafs_tests:
+  stage: build
+  image: docker:24.0.1-cli
+  tags: ["osdu-medium"]
+  extends:
+    - .skipForTriggeringMergeRequests
+  before_script:
+    - apk add git && docker buildx create --use
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - >
+      docker buildx build --push -t ${CI_REGISTRY_IMAGE}:build-latest -t ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
+      --cache-to type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache
+      --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache
+      -f Dockerfile.tests .
+  after_script:
+    - docker buildx rm
+
+# For quality check
+rafs_code_quality_check:
+  image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
+  stage: scan
+  tags: ["osdu-small"]
+  extends:
+    - .skipForTriggeringMergeRequests
+  variables:
+    CONFIG_FILE: "setup.cfg"
+  script:
+    - pylint ${CI_PROJECT_DIR} --rcfile=${CONFIG_FILE} --errors-only
+    # Flake8 hands indefinately within venv
+    - flake8 ${CI_PROJECT_DIR} --config=${CONFIG_FILE}
+    - flake8 ${CI_PROJECT_DIR} --select T1

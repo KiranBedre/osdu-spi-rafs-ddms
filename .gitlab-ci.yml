@@ -15,78 +15,58 @@ variables:
   AWS_EKS_DEPLOYMENT_NAME: os-rafs-ddms
 
 include:
+  
+  # IMPORTS FROM CENTRAL CI/CD REPOSITORY (https://community.opengroup.org/osdu/platform/ci-cd-pipelines)
+
+  # standard pipeline setup
   - project: "osdu/platform/ci-cd-pipelines"
     file: "standard-setup.yml"
 
-  # for compile-and-unit-test
+  # build stage
   - project: "osdu/platform/ci-cd-pipelines"
     file: "build/python.yml"
 
+  # fossa scan
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/fossa-python.yml"
 
+  # gitlab ultimate scan
   - project: "osdu/platform/ci-cd-pipelines"
     file: "scanners/gitlab-ultimate.yml"
 
+  # Community/OSDU
+  - local: "/devops/osdu/.osdu.gitlab-ci.yml"
+
   # AZURE provider
-  - local: "/devops/azure/azure.gitlab-ci.yml"
-  - local: "/devops/azure/qa/newman-test.gitlab-ci.yml"
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/azure.yml"
 
   # AWS provider
-  - local: "/devops/aws/aws.gitlab-ci.yml"
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/aws-global.yml"
 
   # GC provider
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/gc-global.yml"
 
+  # OVERRIDE STAGES
+  
+  # general
+  - local: "/devops/osdu/override-stages.yml"
+  
+  # AZURE provider
+  - local: "/devops/azure/override-stages.yml"
+
+  # AWS provider
+  - local: "/devops/aws/override-stages.yml"
+
+  # GC provider
   - local: "devops/gc/pipeline/override-stages.yml"
 
-compile-and-unit-test:
-  image: mcr.microsoft.com/mirror/docker/library/python:3.11-slim
-  variables:
-    PIP_CMD: pip
-    PIP_REQUIREMENTS: >
-      requirements.txt
-    PYTEST_COV: app
-    PYTEST_DIR: ./tests
-    PYTEST_OPTIONS: >
-      -p no:cacheprovider
-      --ignore=${CI_PROJECT_DIR}/tests/integration
-    PIP_REQUIREMENTS_TOOLING_ONLY: >-
-      requirements-tests.in
+  # ADD SERVICE SPECIFIC JOBS
 
-# RAFS Specific jobs for quality check
-build_rafs_tests:
-  stage: build
-  image: docker:24.0.1-cli
-  tags: ["osdu-medium"]
-  extends:
-    - .skipForTriggeringMergeRequests
-  before_script:
-    - apk add git && docker buildx create --use
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    - >
-      docker buildx build --push -t ${CI_REGISTRY_IMAGE}:build-latest -t ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
-      --cache-to type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache
-      --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache
-      -f Dockerfile.tests .
-  after_script:
-    - docker buildx rm
+  # add service specific build jobs
+  - local: "/devops/osdu/.rafs.gitlab-ci.yml"
 
-rafs_code_quality_check:
-  image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
-  stage: scan
-  tags: ["osdu-small"]
-  extends:
-    - .skipForTriggeringMergeRequests
-  variables:
-    CONFIG_FILE: "setup.cfg"
-  script:
-    - pylint ${CI_PROJECT_DIR} --rcfile=${CONFIG_FILE} --errors-only
-    # Flake8 hands indefinately within venv
-    - flake8 ${CI_PROJECT_DIR} --config=${CONFIG_FILE}
-    - flake8 ${CI_PROJECT_DIR} --select T1
-
-sonarqube-scan-python:
-  tags: ["osdu-medium"]
+  # AZURE provider
+  - local: "/devops/azure/qa/newman-test.gitlab-ci.yml"

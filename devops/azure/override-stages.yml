@@ -1,9 +1,18 @@
-include:
-  - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/azure.yml"
-
 .maven:
   variables:
+
+.azure_get_version:
+  script:
+    - |
+      AZ_VER=0.0.0-${CI_COMMIT_SHORT_SHA};
+      if [[ -z $CI_COMMIT_TAG ]] && [[ $CI_COMMIT_BRANCH =~ ^release\/[0-9]{1,2}.[0-9]{1,2}$ ]]; 
+      then
+          RELEASE_VER=$(echo $CI_COMMIT_BRANCH | sed "s?^release/??");
+          AZ_VER=$RELEASE_VER
+      elif [[ $CI_COMMIT_TAG =~ ^v[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; 
+      then
+          AZ_VER=$(echo $CI_COMMIT_TAG | sed "s/^v//;s/-.*$//");
+      fi;
 
 .python_test_report:
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
@@ -16,82 +25,73 @@ include:
 
 azure_containerize:
   image: docker:24.0.1-cli
-  variables:
-    SHA_IMAGE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
   before_script:
-    - apk add git && docker buildx create --use
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - apk add git
     - docker login ${AZURE_REGISTRY}.azurecr.io --username $AZURE_PRINCIPAL_ID --password $AZURE_PRINCIPAL_SECRET
-    - >
-      AZ_VER=0.0.0-${CI_COMMIT_SHORT_SHA};
-      if [[ -z $CI_COMMIT_TAG ]] && [[ $CI_COMMIT_BRANCH =~ ^release\/[0-9]{1,2}.[0-9]{1,2}$ ]]; 
-      then
-          RELEASE_VER=$(echo $CI_COMMIT_BRANCH | sed "s?^release/??");
-          AZ_VER=$RELEASE_VER
-      elif [[ $CI_COMMIT_TAG =~ ^v[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$ ]]; 
-      then
-          AZ_VER=$(echo $CI_COMMIT_TAG | sed "s/^v//;s/-.*$//");
-      fi;
   script:
-    - >
-      docker buildx build --push -f Dockerfile
-      --provenance=false
-      --build-arg "build_date=$(TZ=UTC date)"
-      --build-arg "commit_id=$CI_COMMIT_SHORT_SHA"
-      --build-arg "commit_branch=$CI_COMMIT_REF_SLUG"
-      --build-arg "commit_message=$CI_COMMIT_MESSAGE"
-      --build-arg "release_version=$AZ_VER"
-      --cache-to type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache
-      --cache-from type=registry,ref=${CI_REGISTRY_IMAGE}:build-cache
-      -t ${CI_REGISTRY_IMAGE}/${SHA_IMAGE}
-      -t ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE .
-  after_script:
-    - docker buildx rm
-
-azure_containerize_cronjob:
-  stage: containerize
-  needs: ["compile-and-unit-test"]
-  tags: ["osdu-medium"]
-  environment: $DEPLOY_ENVIRONMENT_AZURE
-  extends:
-    - .azure_variables
-  image: docker:24.0.1-cli
-  variables:
-    SHA_IMAGE: ${CI_PROJECT_NAME}-cronjob:${CI_COMMIT_SHA}
-  only:
-    variables:
-      - $AZURE == '1'
-  before_script:
-    - apk add git && docker buildx create --use
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker login ${AZURE_REGISTRY}.azurecr.io --username $AZURE_PRINCIPAL_ID --password $AZURE_PRINCIPAL_SECRET
+    - !reference [.azure_get_version, script]
     - |
-      set -e
-      AZ_VER="0.0.0-${CI_COMMIT_SHORT_SHA}"
-      if [ -z "$CI_COMMIT_TAG" ] && echo "$CI_COMMIT_BRANCH" | grep -qE '^release/[0-9]{1,2}\.[0-9]{1,2}$'; then
-        RELEASE_VER=$(echo "$CI_COMMIT_BRANCH" | sed "s?^release/??")
-        AZ_VER="$RELEASE_VER"
-      elif echo "$CI_COMMIT_TAG" | grep -qE '^v[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$'; then
-        AZ_VER=$(echo "$CI_COMMIT_TAG" | sed "s/^v//;s/-.*$//")
+      docker buildx build --push --provenance=false \
+      -f Dockerfile \
+      --build-arg "build_date=$(TZ=UTC date)" \
+      --build-arg "commit_id=$CI_COMMIT_SHORT_SHA" \
+      --build-arg "commit_branch=$CI_COMMIT_REF_SLUG" \
+      --build-arg "commit_message=$CI_COMMIT_MESSAGE" \
+      --build-arg "release_version=$AZ_VER" \
+      -t ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE \
+      -t ${AZURE_REGISTRY}.azurecr.io/$LATEST_IMAGE \
+      .
+    - |
+      if [ ! -z "$CI_COMMIT_TAG" ]; then
+        docker buildx build --push --provenance=false \
+        -f Dockerfile \
+        --build-arg "build_date=$(TZ=UTC date)" \
+        --build-arg "commit_id=$CI_COMMIT_SHORT_SHA" \
+        --build-arg "commit_branch=$CI_COMMIT_REF_SLUG" \
+        --build-arg "commit_message=$CI_COMMIT_MESSAGE" \
+        --build-arg "release_version=$VER" \
+        -t ${AZURE_REGISTRY}.azurecr.io/$RELEASE_IMAGE \
+        .
       fi
-  script:
-    - >
-      docker buildx build --push -f ./devops/azure/cronjob/Dockerfile
-      --provenance=false
-      --build-arg "release_version=$AZ_VER"
-      -t ${CI_REGISTRY_IMAGE}/${SHA_IMAGE}
-      -t ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE ./devops/azure/cronjob/
-  after_script:
-    - docker buildx rm
 
-# Allowing to fail as the base image issue it a false positive in trivy:
-## https://github.com/aquasecurity/trivy/issues/4067
-container_scanning:
-  allow_failure: true
+cronjob-azure_containerize:
+  extends:
+    - azure_containerize
+  variables:
+    SHA_IMAGE: ${CI_PROJECT_NAME}-cronjob-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
+    LATEST_IMAGE: ${CI_PROJECT_NAME}-cronjob-${CI_COMMIT_REF_SLUG}:latest
+    RELEASE_IMAGE: release-${CI_COMMIT_TAG}:${CI_PROJECT_NAME}-cronjob-${CI_COMMIT_TAG}
+  script:
+    - !reference [.azure_get_version, script]
+    - |
+      docker buildx build --push --provenance=false \
+      -f ./devops/azure/cronjob/Dockerfile \
+      --build-arg "release_version=$VER" \
+      -t ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE \
+      -t ${AZURE_REGISTRY}.azurecr.io/$LATEST_IMAGE \
+      ./devops/azure/cronjob/
+    - |
+      if [ ! -z "$CI_COMMIT_TAG" ]; then
+        docker buildx build --push --provenance=false \
+        -f ./devops/azure/cronjob/Dockerfile \
+        --build-arg "release_version=$VER" \
+        -t ${AZURE_REGISTRY}.azurecr.io/$RELEASE_IMAGE \
+        ./devops/azure/cronjob/
+      fi
 
 azure_containerize_helm:
   variables:
     AZURE_HELM_SUBDIR: osdu-ddms/standard-ddms
+
+container_scanning:
+  needs: ["containerize"]
+
+cronjob-container_scanning:
+  needs: ["cronjob-containerize"]
+  extends:
+    - container_scanning
+  variables:
+    DOCKER_IMAGE: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-cronjob-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
 
 azure_deploy:
   needs:
@@ -105,7 +105,7 @@ azure_deploy:
     optional: true
   - job: azure_containerize
     optional: false
-  - job: azure_containerize_cronjob
+  - job: cronjob-azure_containerize
     optional: false
   script:
     # Install Service
@@ -129,33 +129,13 @@ azure_deploy:
     - |
       echo "AZURE_REGISTRY_TOKEN=$(az acr login -n $AZURE_REGISTRY --expose-token --query 'accessToken' -otsv)" >> ${CI_PROJECT_DIR}/acr_tokens.env
       echo "DST_REGISTRY_TOKEN=$(az acr login -n msosdu --expose-token --query 'accessToken' -otsv)" >> ${CI_PROJECT_DIR}/acr_tokens.env
-  artifacts:
-    reports:
-      dotenv: ${CI_PROJECT_DIR}/acr_tokens.env
-
-azure_swagger_test:
-  variables:
-    AZURE_SWAGGER_PATH: api/rafs-ddms/docs#/
-
-azure-publish:
-  variables:
-    DST_REGISTRY: "msosdu"
-    SHA_IMAGE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
-    SHA_CRONJOB_IMAGE: ${CI_PROJECT_NAME}-cronjob:${CI_COMMIT_SHA}
-  script:
-    - crane copy ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE ${DST_REGISTRY}.azurecr.io/${REL_IMG_NAME}:${AZ_VER}
-    - crane copy ${AZURE_REGISTRY}.azurecr.io/$SHA_CRONJOB_IMAGE ${DST_REGISTRY}.azurecr.io/${REL_IMG_NAME}-cronjob:${AZ_VER}
-    - crane copy ${HELM_CHART_OCI#"oci://"}:${HELM_CHART_OCI_VERSION} ${DST_REGISTRY}.azurecr.io/helm/${HELM_CHART_SUBDIR}:${HELM_CHART_OCI_VERSION} || echo "[WARN] Not able to publish helm chart"
 
 # To be able to run these aggressive tests we need to scale up CosmosDB at least to 8000RU/s
 # More than 6 workers will cause failure in the Cosmos Backend.
 # Large will create aggresive tests / most likely fail
 azure_test_py:
-  tags: ["osdu-medium"]
-  stage: integration
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
-  needs: ["azure_deploy"]
-  allow_failure: true
+  tags: ["osdu-medium"]
   variables:
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
     PARTITION: opendes
@@ -163,6 +143,7 @@ azure_test_py:
     SERVICE_HOST_LEGAL: https://${AZURE_DNS_NAME}/api/legal/v1
     RAFS_USE_BLOB_STORAGE: "True"
   extends:
+    - .azure_variables
     - .python_test_report
   before_script:
     - apt update -qqq -y && apt install -qqq -y curl jq &> /dev/null
@@ -180,12 +161,20 @@ azure_test_py:
       --bearer-token ${ACCESS_TOKEN}
       --partition ${PARTITION}
       --cloud-provider azure
-  only:
-    variables:
-      - $AZURE == '1' && $AZURE_SKIP_DEPLOY != 'true' && $AZURE_TEST_TYPE == 'python'
-  except:
-    variables:
-      - $AZURE_SKIP_TEST == 'true'
+
+azure_swagger_test:
+  variables:
+    AZURE_SWAGGER_PATH: api/rafs-ddms/docs#/
+
+azure-publish:
+  variables:
+    DST_REGISTRY: "msosdu"
+    SHA_IMAGE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
+    SHA_CRONJOB_IMAGE: ${CI_PROJECT_NAME}-cronjob:${CI_COMMIT_SHA}
+  script:
+    - crane copy ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE ${DST_REGISTRY}.azurecr.io/${REL_IMG_NAME}:${AZ_VER}
+    - crane copy ${AZURE_REGISTRY}.azurecr.io/$SHA_CRONJOB_IMAGE ${DST_REGISTRY}.azurecr.io/${REL_IMG_NAME}-cronjob:${AZ_VER}
+    - crane copy ${HELM_CHART_OCI#"oci://"}:${HELM_CHART_OCI_VERSION} ${DST_REGISTRY}.azurecr.io/helm/${HELM_CHART_SUBDIR}:${HELM_CHART_OCI_VERSION} || echo "[WARN] Not able to publish helm chart"
 
 .get_azure_access_token:
   script:
