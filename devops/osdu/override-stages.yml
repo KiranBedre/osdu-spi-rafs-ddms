@@ -1,0 +1,16 @@
+compile-and-unit-test:
+  image: mcr.microsoft.com/mirror/docker/library/python:3.11-slim
+  variables:
+    PIP_CMD: pip
+    PIP_REQUIREMENTS: >
+      requirements.txt
+    PYTEST_COV: app
+    PYTEST_DIR: ./tests
+    PYTEST_OPTIONS: >
+      -p no:cacheprovider
+      --ignore=${CI_PROJECT_DIR}/tests/integration
+    PIP_REQUIREMENTS_TOOLING_ONLY: >-
+      requirements-tests.in
+
+sonarqube-scan-python:
+  tags: ["osdu-medium"]
