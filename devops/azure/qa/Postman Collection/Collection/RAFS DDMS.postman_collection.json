@@ -18770,7 +18770,7 @@
 									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
 									"});",
 									"",
-									"pm.test(\"Проверка, что result содержит нужный record_id\", function () {",
+									"pm.test(\"Checking that result contains the required record_id\", function () {",
 									"    let jsonData = pm.response.json();",
 									"    let expectedId = pm.variables.get(\"v2_cce_record_id\");",
 									"",
