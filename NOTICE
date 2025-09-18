@@ -8,7 +8,7 @@ This software includes the following software and licenses:
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- typing-extensions (from https://pypi.org/project/typing-extensions/4.2.0/, https://pypi.org/project/typing-extensions/4.4.0/)
+- typing-extensions (from https://pypi.org/project/typing-extensions/, https://pypi.org/project/typing-extensions/4.4.0/)
 
 ========================================================================
 Apache-2.0
@@ -108,7 +108,7 @@ The following software have components provided under the terms of this license:
 - async-lru (from <https://github.com/aio-libs/async-lru>, https://github.com/aio-libs/async-lru)
 - attrs (from https://attrs.readthedocs.io/, https://pypi.org/project/attrs/, https://www.attrs.org/)
 - azure-core (from <https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/core/azure-core>, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/core/azure-core)
-- azure-identity (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/identity/azure-identity)
+- azure-identity (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/identity/azure-identity, https://pypi.org/project/azure-identity/)
 - azure-keyvault (from https://github.com/Azure/azure-sdk-for-python, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault)
 - azure-keyvault-certificates (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-certificates)
 - azure-keyvault-keys (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-keys)
@@ -175,7 +175,7 @@ The following software have components provided under the terms of this license:
 - numpy (from https://pypi.org/project/numpy/)
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 - portalocker (from <https://github.com/WoLpH/portalocker>, https://github.com/WoLpH/portalocker)
-- typing-extensions (from https://pypi.org/project/typing-extensions/4.2.0/, https://pypi.org/project/typing-extensions/4.4.0/)
+- typing-extensions (from https://pypi.org/project/typing-extensions/, https://pypi.org/project/typing-extensions/4.4.0/)
 
 ========================================================================
 SunPro
