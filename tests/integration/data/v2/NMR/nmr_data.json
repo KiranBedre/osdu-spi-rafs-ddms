@@ -515,7 +515,7 @@
                       "Permeability": [
                           {
                               "Value": 4740,
-                              "PermeabilityMeasurementTypeID": "{data_partition_id}:reference-data--PermeabilityMeasurementType:Air:"
+                              "PermeabilityMeasurementTypeID": "{data_partition_id}:reference-data--PermeabilityMeasurementType:Gas:"
                           }
                       ],
                       "NMRT2Swirr": 8.7,

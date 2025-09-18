@@ -1,6 +1,6 @@
 # Build the application from source
 ARG golang_version=1.24
-FROM golang:${golang_version}-trixie AS build-env
+FROM golang:${golang_version}-alpine AS build-env
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY *.go ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o /rafs-cronjob
 
 # Deploy the application binary into a secure image
-FROM golang:${golang_version}-trixie AS release-env
+FROM golang:${golang_version}-alpine AS release-env
 ARG golang_version
 ARG user_id=nonroot
 
@@ -28,10 +28,10 @@ ARG USER_UID=1000
 ARG USER_GID=1000
 
 # Create group and user without sudo privileges
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID --create-home --home-dir /home/$USERNAME --shell /usr/sbin/nologin $USERNAME
+RUN addgroup -g $USER_GID $USERNAME \
+    && adduser -D --disabled-password --no-create-home -u $USER_UID -G $USERNAME --shell /sbin/nologin $USERNAME
 
-RUN rm -R /bin/bash \
+RUN rm -R /bin/ash \
     && rm -R /bin/sh
 
 COPY --from=build-env --chown=${USERNAME}:${USERNAME} /rafs-cronjob /rafs-cronjob
