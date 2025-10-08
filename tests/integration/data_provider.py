@@ -35,15 +35,6 @@ class RecordValues(object):
     acl_viewers: str
     acl_owners: str
 
-
-azure_values = RecordValues(
-    data_partition_id="opendes",
-    schema_authority="osdu",
-    custom_schema_authority="rafsddms",
-    acl_viewers="data.default.viewers@opendes.contoso.com",
-    acl_owners="data.default.owners@opendes.contoso.com",
-)
-
 aws_values = RecordValues(
     data_partition_id="opendes",
     schema_authority="osdu",
@@ -62,11 +53,19 @@ def create_gc_values(data_partition_id: str) -> RecordValues:
         acl_owners=f"data.default.owners@{data_partition_id}.group",
     )
 
+def create_azure_values(data_partition_id: str) -> RecordValues:
+    return RecordValues(
+        data_partition_id=data_partition_id,
+        schema_authority="osdu",
+        custom_schema_authority="rafsddms",
+        acl_viewers=f"data.default.viewers@{data_partition_id}.{CONFIG['DOMAIN']}",
+        acl_owners=f"data.default.owners@{data_partition_id}.{CONFIG['DOMAIN']}",
+    )
 
 def load_test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes] = None) -> dict:
     data_values = None
     if CONFIG["CLOUD_PROVIDER"] == "azure":
-        data_values = azure_values
+        data_values = create_azure_values(CONFIG["DATA_PARTITION"])
     elif CONFIG["CLOUD_PROVIDER"] == "aws":
         data_values = aws_values
     elif CONFIG["CLOUD_PROVIDER"] == "gc":

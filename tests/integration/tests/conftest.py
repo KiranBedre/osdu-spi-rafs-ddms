@@ -49,6 +49,7 @@ def create_referenced_records(api, helper, tests_data):
         copy.deepcopy(tests_data(DataFiles.SAMPLE)),
         copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS)),
         copy.deepcopy(tests_data(DataFiles.SAR_V2)),
+        copy.deepcopy(tests_data(DataFiles.NMR_DATA)),
     ]
 
     storage_dependencies = set()

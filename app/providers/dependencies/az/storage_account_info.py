@@ -27,7 +27,6 @@ from app.services.osdu_clients.partition_client import (
 )
 
 STORAGE_ACCOUNT_NAME = "storage-account-name"
-STORAGE_ACCOUNT_KEY = "storage-account-key"
 
 
 class AzureStorageAccountInfo(object):
@@ -69,17 +68,12 @@ class AzureStorageAccountInfo(object):
                 STORAGE_ACCOUNT_NAME: {
                     "value": f"{self._data_partition_id}-storage",
                 },
-                STORAGE_ACCOUNT_KEY: {
-                    "value": f"{self._data_partition_id}-storage-key",
-                },
             }
 
         async with SecretClient(self._cloud_provider_config.az_keyvault_url, self._credential) as kv_client:
             account_name = await kv_client.get_secret(partition_info[STORAGE_ACCOUNT_NAME]["value"])
-            account_key = await kv_client.get_secret(partition_info[STORAGE_ACCOUNT_KEY]["value"])
 
         return {
             STORAGE_ACCOUNT_NAME: account_name.value,
-            STORAGE_ACCOUNT_KEY: account_key.value,
             "container_name": self._cloud_provider_config.az_container_name,
         }

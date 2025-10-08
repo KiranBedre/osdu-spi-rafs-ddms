@@ -52,7 +52,7 @@ services:
       - ./client/:/client
     working_dir: /
     entrypoint: [ "bash", "-c",
-      "time pytest -n 1 --cov=app --cov-report=term ./tests/integration/tests --ddms-base-url \"${DDMS_BASE_URL}\" --url-prefix \"${URL_PREFIX}\" --partition \"${PARTITION}\" --bearer-token \"${ACCESS_TOKEN}\" --cloud-provider \"${CLOUD_PROVIDER}\""]
+      "time pytest -n 1 --cov=app --cov-report=term ./tests/integration/tests --ddms-base-url \"${DDMS_BASE_URL}\" --url-prefix \"${URL_PREFIX}\" --partition \"${PARTITION}\" --bearer-token \"${ACCESS_TOKEN}\" --cloud-provider \"${CLOUD_PROVIDER}\" --domain \"${DOMAIN}\""]
     profiles: ["tests"]
     depends_on:
       - rafs

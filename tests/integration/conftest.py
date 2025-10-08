@@ -28,6 +28,7 @@ def pytest_addoption(parser: pytest.Parser):
 
     parser.addoption("--partition", type=str, help="Data partition")
     parser.addoption("--url-prefix", type=str, help="URL prefix")
+    parser.addoption("--domain", type=str, default="contoso.com", help="Azure ACL domain (default: contoso.com)")
 
 
 def pytest_configure(config: pytest.Config):
@@ -37,6 +38,7 @@ def pytest_configure(config: pytest.Config):
     CONFIG["DDMS_BASE_URL"] = config.getoption("--ddms-base-url")
     CONFIG["URL_PREFIX"] = config.getoption("--url-prefix")
     CONFIG["DATA_PARTITION"] = config.getoption("--partition")
+    CONFIG["DOMAIN"] = config.getoption("--domain")
 
 
 @pytest.fixture(scope="session")

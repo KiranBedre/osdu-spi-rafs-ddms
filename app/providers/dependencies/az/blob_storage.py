@@ -22,6 +22,7 @@ from azure.core.exceptions import (
     ServiceRequestError,
     ServiceResponseError,
 )
+from azure.identity.aio import DefaultAzureCredential
 from azure.storage.blob import BlobType, ContentSettings
 from azure.storage.blob.aio import BlobServiceClient
 from loguru import logger
@@ -31,7 +32,6 @@ from app.exceptions.exceptions import (
     UnprocessableContentException,
 )
 from app.providers.dependencies.az.storage_account_info import (
-    STORAGE_ACCOUNT_KEY,
     STORAGE_ACCOUNT_NAME,
 )
 from app.providers.dependencies.blob_storage import (
@@ -56,8 +56,8 @@ class AzureBlobStorage(IBlobStorage):
     def __init__(self, storage_partition_info: StoragePartitionInfo):
         account_name = storage_partition_info.storage_account_info[STORAGE_ACCOUNT_NAME]
         self._account_url = f"https://{account_name}.blob.core.windows.net/"
-        self._account_key = storage_partition_info.storage_account_info[STORAGE_ACCOUNT_KEY]
         self._container_name = storage_partition_info.storage_account_info["container_name"]
+        self._credential = DefaultAzureCredential()
 
     async def create_blob(self, blob) -> BlobMetadata:
         return await self._upload_blob(blob)
@@ -68,7 +68,7 @@ class AzureBlobStorage(IBlobStorage):
     async def get_blob(self, blob_metadata: BlobMetadata) -> Blob:
         object_name = blob_metadata.object_name
         async with BlobServiceClient(
-            account_url=self._account_url, credential=self._account_key,
+            account_url=self._account_url, credential=self._credential,
         ) as blob_service_client:
             container_client = blob_service_client.get_container_client(container=self._container_name)
             blob_client = container_client.get_blob_client(object_name)
@@ -87,7 +87,7 @@ class AzureBlobStorage(IBlobStorage):
 
     async def list_blobs(self, subpath: str) -> List[str]:
         async with BlobServiceClient(
-            account_url=self._account_url, credential=self._account_key,
+            account_url=self._account_url, credential=self._credential,
         ) as blob_service_client:
             container_client = blob_service_client.get_container_client(container=self._container_name)
 
@@ -100,7 +100,7 @@ class AzureBlobStorage(IBlobStorage):
     async def delete_blob(self, blob_metadata: BlobMetadata) -> bool:
         object_name = blob_metadata.object_name
         async with BlobServiceClient(
-            account_url=self._account_url, credential=self._account_key,
+            account_url=self._account_url, credential=self._credential,
         ) as blob_service_client:
             container_client = blob_service_client.get_container_client(container=self._container_name)
             blob_client = container_client.get_blob_client(object_name)
@@ -123,7 +123,7 @@ class AzureBlobStorage(IBlobStorage):
         blob_type: BlobType = BlobType.BLOCKBLOB,
     ) -> BlobMetadata:
         async with BlobServiceClient(
-            account_url=self._account_url, credential=self._account_key,
+            account_url=self._account_url, credential=self._credential,
         ) as blob_service_client:
             container_client = blob_service_client.get_container_client(container=self._container_name)
             blob_client = container_client.get_blob_client(blob.blob_metadata.object_name)
