@@ -267,7 +267,7 @@
                     {
                         "WorkflowUsageTypeID": "{data_partition_id}:reference-data--WorkflowUsageType:SeismicProcessing:",
                         "WorkflowPersonaTypeID": "{data_partition_id}:reference-data--WorkflowPersonaType:SeismicProcessor:",
-                        "DataQualityRuleSetID": "{data_partition_id}:reference-data--DataQualityRuleSet:SeismicProcessingQCRuleSet:",
+                        "DataQualityRuleSetID": "{data_partition_id}:reference-data--DataQualityRuleSet:OperatorNamespace.MDR.SeismicBinGrid:",
                         "DataQualityID": "{data_partition_id}:work-product-component--DataQuality:6a433d16-07c8-4f4d-9ddc-5608e2ec4234:1562066077849221",
                         "ValueChainStatusTypeID": "{data_partition_id}:reference-data--ValueChainStatusType:Exploration:"
                     }
@@ -276,7 +276,7 @@
                     {
                         "WorkflowUsageTypeID": "{data_partition_id}:reference-data--WorkflowUsageType:SeismicInterpretation:",
                         "WorkflowPersonaTypeID": "{data_partition_id}:reference-data--WorkflowPersonaType:SeismicInterpreter:",
-                        "DataQualityRuleSetID": "{data_partition_id}:reference-data--DataQualityRuleSet:SeismicInterpretationQCRuleSet:",
+                        "DataQualityRuleSetID": "{data_partition_id}:reference-data--DataQualityRuleSet:OperatorNamespace.MDR.SeismicBinGrid:",
                         "DataQualityID": "{data_partition_id}:work-product-component--DataQuality:d79bf97c-ff7c-4b82-89b5-c88520c15017:1562066009929332",
                         "ValueChainStatusTypeID": "{data_partition_id}:reference-data--ValueChainStatusType:FieldDevelopment:"
                     }
@@ -361,7 +361,7 @@
                 },
                 "AcquisitionGOR": 340.0,
                 "MudBaseTypeID": "{data_partition_id}:reference-data--MudBaseType:Brine:",
-                "MudTracerTypeID": "{data_partition_id}:reference-data--MudTracerType:SomeUniqueMudTracerTypeID:"
+                "MudTracerTypeID": "{data_partition_id}:reference-data--MudTracerType:ChemicalTracer:"
             },
             "SampleAcquisitionTypeID": "{data_partition_id}:reference-data--SampleAcquisitionType:DownholeSampleAcquisition:",
             "SampleAcquisitionContainerID": "{data_partition_id}:master-data--SampleContainer:dr23383830303032991154:",
@@ -403,12 +403,12 @@
             "RecombinationSaturationPressure": 120.0,
             "TargetSampleComposition": [
                 {
-                    "SampleCompositionComponentID": "{data_partition_id}:reference-data--SampleCompositionComponent:ETHANE:",
+                    "SampleCompositionComponentID": "{data_partition_id}:reference-data--SampleCompositionComponent:C2:",
                     "MassFraction": 0.2,
                     "MoleFraction": 0.1
                 },
                 {
-                    "SampleCompositionComponentID": "{data_partition_id}:reference-data--SampleCompositionComponent:PENTANE:",
+                    "SampleCompositionComponentID": "{data_partition_id}:reference-data--SampleCompositionComponent:N%2520C5:",
                     "MassFraction": 0.4,
                     "MoleFraction": 0.4
                 },

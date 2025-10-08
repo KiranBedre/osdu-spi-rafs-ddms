@@ -205,6 +205,7 @@ export ACCESS_TOKEN=<access_token>
 export PARTITION=<partition>
 export URL_PREFIX=api/rafs-ddms
 export CLOUD_PROVIDER=<cloud-provider>
+export DOMAIN=<domain>
 # Run test
 docker-compose build tests
 docker-compose --profile tests run --rm integration
@@ -228,7 +229,7 @@ docker-compose down
 3. 
 - Run via Terminal:
     ```
-    pytest -n auto tests/integration/tests --ddms-base-url {DDMS_BASE_URL} --url-prefix {URL_PREFIX} --partition {PARTITION} --bearer-token {TOKEN} --cloud-provider {CLOUD_PROVIDER}
+    pytest -n auto tests/integration/tests --ddms-base-url {DDMS_BASE_URL} --url-prefix {URL_PREFIX} --partition {PARTITION} --bearer-token {TOKEN} --cloud-provider {CLOUD_PROVIDER} --domain {DOMAIN}
     ```
 - Run/Debug via PyCharm:
   1. Open "Run/Debug Configurations" in the upper right corner.
@@ -237,7 +238,7 @@ docker-compose down
   4. Choose "Working directory" as root directory of the project
   5. Fill "Additional Arguments" with -n auto  
      ```
-     -n auto --ddms-base-url={DDMS_BASE_URL} --url-prefix={URL_PREFIX} --partition={PARTITION} --bearer-token={token}
+     -n auto --ddms-base-url={DDMS_BASE_URL} --url-prefix={URL_PREFIX} --partition={PARTITION} --bearer-token={token} --domain={DOMAIN}     
      ```
   6. Apply and OK
   7. Use the green arrow next to the test name to run or debug it.

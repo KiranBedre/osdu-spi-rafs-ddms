@@ -18,7 +18,6 @@ import pytest
 
 from app.exceptions.exceptions import UnprocessableContentException
 from app.providers.dependencies.az.blob_storage import (
-    STORAGE_ACCOUNT_KEY,
     STORAGE_ACCOUNT_NAME,
     AzureBlobStorage,
 )
@@ -45,7 +44,6 @@ def blob_metadata():
 def storage_partition_info():
     storage_account = {
         STORAGE_ACCOUNT_NAME: "accountname",
-        STORAGE_ACCOUNT_KEY: "test+test+test==",
         "container_name": "test_container",
     }
     return StoragePartitionInfo(

@@ -1,0 +1,59 @@
+# Dockerfile for running RAFS DDMS Integration Tests
+# Enhanced version with secure pip index URL mounting and corrected paths
+ARG python_version=3.11
+FROM mcr.microsoft.com/devcontainers/python:${python_version}-bookworm as test-stage
+
+ARG pip_version=25.1.1
+ARG piptools_version=7.3.0
+
+COPY requirements.txt /app/requirements.txt
+RUN --mount=type=secret,id=pip_index_url,target=/run/secrets/pip_index_url \
+    pip install --index-url $(cat /run/secrets/pip_index_url) --no-cache-dir -r /app/requirements.txt
+
+ENV PYTHONUNBUFFERED 1
+ENV PYTHONPATH=./
+
+COPY requirements-tests.in ./
+COPY requirements.in ./
+RUN --mount=type=secret,id=pip_index_url,target=/run/secrets/pip_index_url \
+    pip install --index-url $(cat /run/secrets/pip_index_url) --upgrade pip==${pip_version} && \
+    pip install --index-url $(cat /run/secrets/pip_index_url) pip-tools==${piptools_version} && \
+    pip-compile --index-url $(cat /run/secrets/pip_index_url) requirements.in requirements-tests.in -o requirements-tests.txt -v && \
+    pip install --index-url $(cat /run/secrets/pip_index_url) -r requirements-tests.txt
+
+COPY ./app /app
+COPY ./tests /tests
+COPY ./client /client
+
+ARG HOSTNAME
+ARG ACCESS_TOKEN
+ARG DATA_PARTITION_ID
+ARG DOMAIN=dataservices.energy
+
+ENV SERVICE_NAME=rafs-ddms
+ENV OPENAPI_PREFIX=/api/rafs-ddms
+ENV CLOUD_PROVIDER=azure
+ENV SERVICE_HOST_STORAGE=$HOSTNAME/api/storage/v2
+ENV SERVICE_HOST_PARTITION=$HOSTNAME/api/partition/v1
+ENV SERVICE_HOST_DATASET=$HOSTNAME/api/dataset/v1
+ENV SERVICE_HOST_SCHEMA=$HOSTNAME/api/schema-service/v1
+ENV SERVICE_HOST_SEARCH=$HOSTNAME/api/search/v2
+ENV SERVICE_HOST_LEGAL=$HOSTNAME/api/legal/v1
+ENV CACHE_ENABLE=False
+ENV DDMS_BASE_URL=$HOSTNAME
+ENV OSDU_ENDPOINT=$HOSTNAME
+ENV APP_ENV=dev
+ENV API_BASE_URL=$HOSTNAME
+ENV RAFS_USE_BLOB_STORAGE=True
+ENV DOMAIN=$DOMAIN
+
+WORKDIR /
+
+RUN python -m pytest tests/integration/tests \
+    --ddms-base-url $HOSTNAME \
+    --url-prefix /api/rafs-ddms \
+    --partition $DATA_PARTITION_ID \
+    --bearer-token $ACCESS_TOKEN \
+    --cloud-provider azure \
+    --domain $DOMAIN \
+    -v
