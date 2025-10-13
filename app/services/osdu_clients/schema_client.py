@@ -27,7 +27,7 @@ from app.services.osdu_clients.conf import DEFAULT_RETRIES, TIMEOUT
 
 
 @dataclasses.dataclass
-class SchemaIdentity:
+class SchemaIdentity(object):
     id: str
     _auth_index: int = 0
     _source_index: int = 1

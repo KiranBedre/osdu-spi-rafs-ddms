@@ -37,7 +37,7 @@ def format_errors(errors: list) -> list:
             entity = pattern.split(":")[1]
             error_message = f'{entity} ID is not provided in expected OSDU pattern "{pattern}"'
         else:
-            error_message = f"{error_field} {error['msg']}"
+            error_message = f'{error_field} {error["msg"]}'
         formatted_errors.append(error_message)
     return formatted_errors
 

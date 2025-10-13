@@ -35,7 +35,7 @@ class DFPayload(NamedTuple):
     error_msg: Optional[str]
 
 
-class ParquetLoader:
+class ParquetLoader(object):
 
     @cache(expire=CACHE_DEFAULT_TTL, coder=PickleCoder)
     async def read_parquet_files(
@@ -87,19 +87,7 @@ class ParquetLoader:
             error_msg = f"Request error for URL: {url} - {req_exc}"
             logger.error(error_msg)
             df = pd.DataFrame()
-        except (
-            pa.lib.ArrowCancelled,
-            pa.lib.ArrowCapacityError,
-            pa.lib.ArrowException,
-            pa.lib.ArrowKeyError,
-            pa.lib.ArrowIndexError,
-            pa.lib.ArrowInvalid,
-            pa.lib.ArrowIOError,
-            pa.lib.ArrowMemoryError,
-            pa.lib.ArrowNotImplementedError,
-            pa.lib.ArrowTypeError,
-            pa.lib.ArrowSerializationError,
-        ) as exc:
+        except pa.lib.ArrowException as exc:
             error_msg = f"PyArrowException: {exc}"
             logger.error(error_msg)
             df = pd.DataFrame()

@@ -16,7 +16,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class MimeType:
+class MimeType(object):
     mime_type: str
     file_extension: str
     alternative_types: list = None
@@ -28,7 +28,7 @@ class MimeType:
         return extension == self.file_extension
 
 
-class SupportedMimeTypes:
+class SupportedMimeTypes(object):
     PARQUET = MimeType("application/x-parquet", ".parquet", ["application/parquet"])
     JSON = MimeType("application/json", ".json")
     ZIP = MimeType("application/zip", ".zip", ["application/x-zip-compressed"])

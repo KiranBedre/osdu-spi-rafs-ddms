@@ -19,7 +19,7 @@ from fastapi_cache.backends import Backend
 from app.core.helpers.cache.backends.base_cache import BaseCacheBackend
 
 
-class BackendBuilder:
+class BackendBuilder(object):
     """Import cache layer class from string path inside the CACHE_BACKEND
     variable to get prepared fastapi-cache backend instance."""
 

@@ -63,7 +63,7 @@ from app.resources.mime_types import SupportedMimeTypes
 from app.services import dataset, storage
 
 
-class BaseDataView:
+class BaseDataView(object):
     def __init__(
         self,
         router: APIRouter,
@@ -483,7 +483,7 @@ class BaseDataView:
             return dataset_id
 
         self._router.add_api_route(
-            path="/{record_id}/%sdata/{dataset_id}" % self._specific_route_type,
+            path=f"/{{record_id}}/{self._specific_route_type}data/{{dataset_id}}",
             endpoint=self.get_data,
             methods=["GET"],
             status_code=status.HTTP_200_OK,
@@ -508,7 +508,7 @@ class BaseDataView:
             return record_id
 
         self._router.add_api_route(
-            path="/{record_id}/%sdata" % self._specific_route_type,
+            path=f"/{{record_id}}/{self._specific_route_type}data",
             endpoint=self.post_data,
             methods=["POST"],
             status_code=status.HTTP_200_OK,

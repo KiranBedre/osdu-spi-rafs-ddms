@@ -102,7 +102,7 @@ class DatasetService(IDatasetService):
         registered_dataset = await self.dataset_client.create_or_update_dataset_registry(dataset_registries=record_list)
 
         stored_dataset = registered_dataset["datasetRegistries"][0]
-        return f"{stored_dataset['id']}:{stored_dataset['version']}"
+        return f'{stored_dataset["id"]}:{stored_dataset["version"]}'
 
     @handle_core_services_http_status_error(
         expected_codes=[

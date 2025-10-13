@@ -21,8 +21,8 @@ from app.api.routes.osdu.storage_records import BaseStorageRecordView
 from app.api.routes.utils.records import parse_kind
 from app.models.domain.osdu.base import MASTER_DATA_KINDS_V2
 
-RECORD_TYPE_STR = f"({'|'.join(MASTER_DATA_KINDS_V2)})"  # noqa: WPS237
-SUPPORTED_TYPES = f"({'|'.join([parse_kind(kind)['entity_type'] for kind in MASTER_DATA_KINDS_V2])})"  # noqa: WPS237
+RECORD_TYPE_STR = f'({"|".join(MASTER_DATA_KINDS_V2)})'  # noqa: WPS237
+SUPPORTED_TYPES = f'({"|".join([parse_kind(kind)["entity_type"] for kind in MASTER_DATA_KINDS_V2])})'  # noqa: WPS237
 MD_ID_REGEX_STR = f"^[\w\-\.]+:{SUPPORTED_TYPES}:[\w\-\.\:\%]+$"  # noqa: W605
 
 md_router = APIRouter()

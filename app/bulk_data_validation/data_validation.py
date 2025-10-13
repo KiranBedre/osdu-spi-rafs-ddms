@@ -27,7 +27,7 @@ settings = get_app_settings()
 
 
 @dataclass
-class DataValidator:
+class DataValidator(object):
     data_schema: pa.DataFrameSchema
     storage_service: StorageService
     api_version: str

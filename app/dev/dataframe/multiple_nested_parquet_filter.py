@@ -92,7 +92,7 @@ def apply_filters_from_df(
     return query_df.df
 
 
-class RowsFilterProcessor:
+class RowsFilterProcessor(object):
 
     def apply_rows_filter(  # noqa:CCR001
         self,
@@ -203,7 +203,7 @@ class RowsFilterProcessor:
 
         if case_nested_array:
             nested_array_rows_filter = RowsFilter(
-                column=re.sub(re.escape(Separator.ARRAY), "", rows_filter.column, 1),
+                column=re.sub(re.escape(Separator.ARRAY), "", rows_filter.column, count=1),
                 operator=rows_filter.operator,
                 comp_value=rows_filter.comp_value,
             )
@@ -272,7 +272,7 @@ class RowsFilterProcessor:
         return PandasDFQueryNested(df[cond])
 
 
-class ColumnsFilterProcessor:
+class ColumnsFilterProcessor(object):
 
     def apply_columns_filter(
         self,
@@ -308,7 +308,7 @@ def normalize_df_column(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
     return normalized_df
 
 
-class ColumnsAggregationProcessor:
+class ColumnsAggregationProcessor(object):
 
     def apply_columns_aggregation_filter(
         self,
@@ -358,7 +358,7 @@ class ColumnsAggregationProcessor:
         return query_df
 
 
-class RowsMultipleFilterProcessor:
+class RowsMultipleFilterProcessor(object):
 
     SOLVED_FILTER: str = "solved_filter"
 

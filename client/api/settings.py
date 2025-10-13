@@ -11,5 +11,5 @@ class ApiClientSettings(BaseSettings):
 
     service_host_storage: str = None
 
-    class Config:
+    class Config(object):
         env_file = ".env"

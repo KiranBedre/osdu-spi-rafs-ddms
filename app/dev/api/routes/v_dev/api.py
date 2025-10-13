@@ -18,9 +18,9 @@ from app.api.dependencies.request import require_data_partition_id
 from app.dev.api.routes.v_dev.index import api as index_api
 from app.dev.api.routes.v_dev.samplesanalysis import api as sampleanalysis_api
 
-COMMON_DEPENDENCIES = [
+COMMON_DEPENDENCIES = (
     Depends(require_data_partition_id),
-]
+)
 
 SAMPLES_ANALYSIS_PREFIX = "/samplesanalysis"
 router = APIRouter()

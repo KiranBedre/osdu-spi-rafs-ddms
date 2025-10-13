@@ -15,7 +15,7 @@
 from app.resources.required_roles import RecordRequiredRoles
 
 
-class APIDescriptionHelper:
+class APIDescriptionHelper(object):
     """The class can help with building API routes description."""
 
     description_template_roles = "<br><br>\

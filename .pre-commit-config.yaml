@@ -19,11 +19,12 @@ repos:
       - id: isort
         exclude: "(app/models/domain)|(app/models/data_schemas)|(devops/aws)"
 
-  - repo: https://github.com/pre-commit/mirrors-autopep8
-    rev: v2.0.4
+  - repo: https://github.com/hhatto/autopep8
+    rev: v2.3.2
     hooks:
       - id: autopep8
         exclude: "(app/models/domain)|(app/models/data_schemas)|(devops/aws)"
+        language_version: python3.12
 
   - repo: https://github.com/PyCQA/autoflake
     rev: v2.2.1
@@ -52,43 +53,43 @@ repos:
           --in-place,
           --quote="
         ]
-        exclude: "(app/models/domain)|(app/models/data_schemas)|(devops/aws)"
+        exclude: "(app/models/domain)|(app/models/data_schemas)|(devops/aws)|(tests)"
+        language_version: python3.12
 
 # Linters
 
   - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+    rev: 7.1.1
     hooks:
       - id: flake8
         additional_dependencies: [
           darglint==1.8.1,
           flake8-async==22.11.14,
-          flake8-bandit==3.0.0,
+          flake8-bandit==4.1.1,
           flake8-blind-except==0.2.1,
-          flake8-broken-line==0.5.0,
-          flake8-bugbear==22.12.6,
+          flake8-broken-line==1.0.0,
+          flake8-bugbear==24.8.19,
           flake8-cognitive-complexity==0.1.0,
-          flake8-commas==2.1.0,
-          flake8-comprehensions==3.10.1,
+          flake8-comprehensions==3.15.0,
           flake8-debugger==4.1.2,
           flake8-docstrings==1.7.0,
-          flake8-eradicate==1.4.0,
+          flake8-eradicate==1.5.0,
           flake8-functions==0.0.8,
-          flake8-isort==4.2.0,
+          flake8-isort==6.1.1,
           flake8-logging-format==0.9.0,
           flake8-polyfill==1.0.2,
-          flake8-quotes==3.3.2,
-          flake8-rst-docstrings==0.2.7,
+          flake8-quotes==3.4.0,
+          flake8-rst-docstrings==0.3.0,
           flake8-string-format==0.3.0,
-          mccabe==0.6.1,
-          pep8-naming==0.13.2,
-          pycodestyle==2.8.0,
+          mccabe==0.7.0,
+          pep8-naming==0.13.3,
+          pycodestyle==2.12.1,
           pydocstyle==6.3.0,
-          pyflakes==2.4.0,
-          wemake_python_styleguide==0.17.0,
+          pyflakes==3.2.0,
         ]
         args: [--config=setup.cfg]
         exclude: "(app/models/domain)|(app/models/data_schemas)|(devops/aws)|(scripts)"
+        language_version: python3.12
 
   - repo: https://github.com/PyCQA/pylint
     rev: v3.0.3

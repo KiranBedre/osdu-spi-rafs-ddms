@@ -15,6 +15,7 @@
 import json
 from datetime import date
 from typing import Annotated, AsyncGenerator, Dict, List, Optional, Tuple
+
 import pandas as pd
 import pandas._libs.json as pdujson
 from fastapi import APIRouter, Body, Depends, HTTPException, Request, Response
@@ -87,7 +88,15 @@ class SamplesAnalysisRecordView(BaseStorageRecordView):
     async def post_records(
         self,
         request: Request,
-        request_records: Annotated[List[dict], Body(example=load_data_example("samples_analysis.json"))],
+        request_records: Annotated[
+            List[dict], Body(
+                openapi_examples={
+                    "example": {
+                        "value": load_data_example("samples_analysis.json"),
+                    },
+                },
+            ),
+        ],
         storage_service: storage.StorageService = Depends(get_async_storage_service),
     ) -> StorageUpsertResponse:
         return await super().post_records(request, request_records, storage_service)
@@ -279,7 +288,7 @@ class SamplesAnalysisSearchDataView:
             dataframes from search result
         :rtype: Response
         """
-        #TODO: perfomance tuning
+        # TODO: perfomance tuning
         data_partition_id = request.headers.get("data-partition-id")
         mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
         offset, page_limit, indexed_start_date, indexed_end_date = pagination_parameters
@@ -294,7 +303,7 @@ class SamplesAnalysisSearchDataView:
         )
         analysis_type_ids.sort(key=lambda analysis_type_id: analysis_type_id[1])
         logger.debug("Found analysis types and datasets: ")
-        #logger.debug(analysis_type_ids)
+        # logger.debug(analysis_type_ids)
 
         if self._is_non_empty_filter(df_filter):
             df_triplets_gen = await self._get_search_data(
@@ -354,7 +363,6 @@ class SamplesAnalysisSearchDataView:
             Optional[date],
         ] = Depends(get_search_pagination_parameters),
     ) -> JSONResponse:
-
         """Search Endpoint.
 
         :param request: the request object

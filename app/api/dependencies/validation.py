@@ -338,15 +338,27 @@ async def validate_filters(
     model: BaseModel = Depends(get_data_model),
     columns_filter: Optional[str] = Query(
         default=None,
-        example="PropertyX,PropertyY,PropertyZ",
+        openapi_examples={
+            "example": {
+                "value": "PropertyX,PropertyY,PropertyZ",
+            },
+        },
     ),
     rows_filter: Optional[str] = Query(
         default=None,
-        example="PropertyX[.PropertyXFieldA],gt,4000",
+        openapi_examples={
+            "example": {
+                "value": "PropertyX[.PropertyXFieldA],gt,4000",
+            },
+        },
     ),
     columns_aggregation: Optional[str] = Query(
         default=None,
-        example="PropertyX[.PropertyXFieldA],avg",
+        openapi_examples={
+            "example": {
+                "value": "PropertyX[.PropertyXFieldA],avg",
+            },
+        },
     ),
 ) -> DataFrameFilterValidator:
     """Validates query parameters used for dataframe filtering.
@@ -413,28 +425,44 @@ async def get_validated_bulk_data_json(request: Request) -> str:
 async def get_search_data_pagination_parameters(
     page_limit: Optional[int] = Query(
         default=100,
-        example=100,
+        openapi_examples={
+            "example": {
+                "value": 100,
+            },
+        },
         gt=0,
         le=100,
     ),
     offset: Optional[int] = Query(
         default=0,
-        example=100,
+        openapi_examples={
+            "example": {
+                "value": 100,
+            },
+        },
         ge=0,
     ),
     indexed_start_date: Optional[date] = Query(
         default=None,
-        example="2023-01-01",
+        openapi_examples={
+            "example": {
+                "value": "2023-01-01",
+            },
+        },
     ),
     indexed_end_date: Optional[date] = Query(
         default=None,
-        example="2023-12-31",
+        openapi_examples={
+            "example": {
+                "value": "2023-12-31",
+            },
+        },
     ),
 ) -> Tuple[int, int, Optional[date], Optional[date]]:
     if indexed_start_date and indexed_end_date:
         if indexed_start_date > indexed_end_date:
             raise HTTPException(
-                status_code=422,
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
     return offset, page_limit, indexed_start_date, indexed_end_date
@@ -443,28 +471,44 @@ async def get_search_data_pagination_parameters(
 async def get_search_pagination_parameters(
     page_limit: Optional[int] = Query(
         default=1000,
-        example=1000,
+        openapi_examples={
+            "example": {
+                "value": 1000,
+            },
+        },
         gt=0,
         le=1000,
     ),
     offset: Optional[int] = Query(
         default=0,
-        example=100,
+        openapi_examples={
+            "example": {
+                "value": 100,
+            },
+        },
         ge=0,
     ),
     indexed_start_date: Optional[date] = Query(
         default=None,
-        example="2023-01-01",
+        openapi_examples={
+            "example": {
+                "value": "2023-01-01",
+            },
+        },
     ),
     indexed_end_date: Optional[date] = Query(
         default=None,
-        example="2023-12-31",
+        openapi_examples={
+            "example": {
+                "value": "2023-12-31",
+            },
+        },
     ),
 ) -> Tuple[int, int, Optional[date], Optional[date]]:
     if indexed_start_date and indexed_end_date:
         if indexed_start_date > indexed_end_date:
             raise HTTPException(
-                status_code=422,
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
     return offset, page_limit, indexed_start_date, indexed_end_date

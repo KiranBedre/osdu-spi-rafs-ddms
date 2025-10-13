@@ -10,7 +10,7 @@ from tests.integration.config import (
 )
 
 
-class SamplesAnalysisPaths:
+class SamplesAnalysisPaths(object):
     VERSION = "/v2"
     POST = "/samplesanalysis"
     GET = "/samplesanalysis/{record_id}"

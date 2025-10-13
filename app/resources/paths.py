@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from types import MappingProxyType
 from typing import NamedTuple
 
 
@@ -67,10 +68,10 @@ class CommonRelativePathsDev(CommonRelativePathsV2):
     pass
 
 
-COMMON_RELATIVE_PATHS = {
+COMMON_RELATIVE_PATHS = MappingProxyType({
     "v2": CommonRelativePathsV2,
     "dev": CommonRelativePathsDev,
-}
+})
 
 
 SAMPLESANALYSIS_TYPE_MAPPING = {

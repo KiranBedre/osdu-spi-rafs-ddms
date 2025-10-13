@@ -35,7 +35,7 @@ from app.models.domain.osdu.base import SAMPLESANALYSIS_KIND
 from app.services import search, storage
 
 
-class RedisIndexView:
+class RedisIndexView(object):
 
     def __init__(
         self,

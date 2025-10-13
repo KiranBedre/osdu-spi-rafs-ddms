@@ -22,7 +22,7 @@ from app.models.schemas.user import User
 from app.services.error_handlers import handle_core_services_http_status_error
 
 
-class PartitionService:
+class PartitionService(object):
 
     def __init__(
         self,

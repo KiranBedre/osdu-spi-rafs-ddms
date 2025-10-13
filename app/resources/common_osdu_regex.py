@@ -17,4 +17,4 @@ REFERENCE_DATA = r"[\"\'\s]{1}[\w\-\.]+:reference-data\-\-[\w]+:[\w\-\.\:\%]+:?[
 MASTER_DATA = r"[\"\'\s]{1}[\w\-\.]+:master-data\-\-[\w]+:[\w\-\.\:\%]+:?[0-9]*[\"\'\s]{1}"
 WPC = r"[\"\'\s]{1}[\w\-\.]+:work-product-component\-\-[\w]+:[\w\-\.\:\%]+:?[0-9]*[\"\'\s]{1}"
 
-ALL_OSDU_REGEXES = [REFERENCE_DATA, MASTER_DATA, WPC]
+ALL_OSDU_REGEXES = (REFERENCE_DATA, MASTER_DATA, WPC)

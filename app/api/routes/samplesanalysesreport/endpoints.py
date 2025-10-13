@@ -44,7 +44,15 @@ class SamplesAnalysesReportView(BaseStorageRecordView):
     async def post_records(
         self,
         request: Request,
-        request_records: Annotated[List[dict], Body(example=load_data_example("samples_analyses_report.json"))],
+        request_records: Annotated[
+            List[dict], Body(
+                openapi_examples={
+                    "example": {
+                        "value": load_data_example("samples_analyses_report.json"),
+                    },
+                },
+            ),
+        ],
         storage_service: storage.StorageService = Depends(get_async_storage_service),
     ) -> StorageUpsertResponse:
         return await super().post_records(request, request_records, storage_service)

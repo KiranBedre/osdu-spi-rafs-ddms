@@ -6,16 +6,19 @@ import pandas as pd
 from IPython.display import Markdown, display
 from requests import Response
 
+# Constants for output formatting
+SEPARATOR_WIDTH = 90
+
 
 def print_json(json_data: dict, length=None, title=None):
     json_dumped = json.dumps(json_data, indent=4)
-    print("*" * 90)
+    print("*" * SEPARATOR_WIDTH)
     if title:
         print(title.upper())
     print(json_dumped[:length])
     if (length and len(json_dumped) > length):
         print("...")
-    print("*" * 90)
+    print("*" * SEPARATOR_WIDTH)
 
 
 def get_id_from_response(response_dict: dict, position: int = 0) -> str:
