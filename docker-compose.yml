@@ -10,6 +10,9 @@ services:
         commit_branch: "Local"
         commit_message: "Local Development"
         release_version: "0.0.0-local"
+        # Embed cache in image layers (works with default docker driver)
+        # This allows cache to be stored within the image itself
+        BUILDKIT_INLINE_CACHE: 1
     restart: on-failure
     security_opt:
       - no-new-privileges:true
@@ -19,7 +22,8 @@ services:
       - "8080:8080"
     volumes:
       - ./app/:/app/app
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "1", "--reload"]
+    entrypoint: ["/app/uvicorn"]
+    command: ["app.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "1", "--reload"]
     depends_on:
       - redis
 
@@ -27,6 +31,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.tests
+      args:
+        # Embed cache in image layers for test builds (works with default docker driver)
+        BUILDKIT_INLINE_CACHE: 1
     image: osdu-rafsddms_tests
     security_opt:
       - no-new-privileges:true

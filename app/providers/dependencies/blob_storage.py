@@ -29,7 +29,7 @@ from app.resources.mime_types import MimeType
 
 
 @dataclass
-class BlobMetadata:
+class BlobMetadata(object):
     analysis_family: str
     analysis_type: str
     version: str
@@ -53,13 +53,13 @@ class BlobMetadata:
 
 
 @dataclass
-class Blob:
+class Blob(object):
     blob_data: bytes
     blob_metadata: BlobMetadata
 
 
 @dataclass
-class StoragePartitionInfo:
+class StoragePartitionInfo(object):
     data_partition_id: str
     storage_account_info: Dict[str, Any]
 

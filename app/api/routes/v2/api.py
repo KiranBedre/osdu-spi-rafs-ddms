@@ -21,9 +21,9 @@ from app.api.routes.samplesanalysesreport import (
 from app.api.routes.samplesanalysis import api as sampleanalysis_api
 from app.api.routes.v2.master_data import api as masterdata_api
 
-COMMON_DEPENDENCIES = [
+COMMON_DEPENDENCIES = (
     Depends(require_data_partition_id),
-]
+)
 
 SAMPLES_ANALYSIS_PREFIX = "/samplesanalysis"
 router = APIRouter()

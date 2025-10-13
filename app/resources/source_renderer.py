@@ -30,7 +30,7 @@ class DatasetSourceFile(NamedTuple):
     content: bytes  # noqa: WPS110
 
 
-class FileSourceRenderer:
+class FileSourceRenderer(object):
 
     def __init__(self, data_source_files: List[DatasetSourceFile]) -> None:
         self.data_source_files = data_source_files

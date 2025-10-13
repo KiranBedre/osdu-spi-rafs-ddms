@@ -32,7 +32,7 @@ class AzureConfig(BaseSettings):
 
     az_aad_client_id_key: str = "aad-client-id"
 
-    class Config:
+    class Config(object):
         env_file = ".env"
 
 

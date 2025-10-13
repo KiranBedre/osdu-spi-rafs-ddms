@@ -27,7 +27,7 @@ from app.resources.source_renderer import FileSourceRenderer
 from app.services import dataset, storage
 
 
-class WPCDatasetSourceView:
+class WPCDatasetSourceView(object):
     """WorkProducComponent Dataset Source View."""
 
     def __init__(
@@ -90,7 +90,7 @@ class WPCDatasetSourceView:
             return record_id
 
         self._router.add_api_route(
-            path="/{record_id}/%ssource" % self._specific_route_prefix,
+            path=f"/{{record_id}}/{self._specific_route_prefix}source",
             endpoint=self.get_source_data,
             methods=["GET"],
             status_code=status.HTTP_200_OK,

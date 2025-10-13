@@ -32,5 +32,5 @@ class RedisCacheConfig(BaseSettings):
 
     redis_index_database: conint(gt=-1, lt=1) = 0  # only at 'db = 0' can be created the index
 
-    class Config:
+    class Config(object):
         env_file = ".env"

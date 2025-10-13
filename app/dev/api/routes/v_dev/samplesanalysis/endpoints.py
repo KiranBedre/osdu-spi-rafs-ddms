@@ -62,7 +62,7 @@ from app.services import dataset
 SEARCH_READ_BATCH_SIZE = 100  # max number of parquet files retrieved
 
 
-class SamplesAnalysisSearchDataView:
+class SamplesAnalysisSearchDataView(object):
 
     def __init__(
         self,

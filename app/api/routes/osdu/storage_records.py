@@ -33,7 +33,7 @@ from app.models.schemas.osdu_storage import (
 from app.services import schema, storage
 
 
-class BaseStorageRecordView:
+class BaseStorageRecordView(object):
     def __init__(
         self,
         router: APIRouter,

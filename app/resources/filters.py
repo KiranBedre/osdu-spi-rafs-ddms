@@ -67,7 +67,7 @@ class ColumnsAggregation(NamedTuple):
 
 
 @dataclass
-class DataFrameFilterValidator:
+class DataFrameFilterValidator(object):
     """Validation of query paramenters.
 
     :raises FilterValidationError: If any validation error occurs

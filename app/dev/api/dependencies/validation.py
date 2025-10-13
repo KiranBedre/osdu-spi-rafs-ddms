@@ -38,22 +38,38 @@ async def validate_multiple_nested_filters(
     columns_filter: Optional[str] = Query(
         default=None,
         description="A valid json array of property names",
-        example=json.dumps(FilterExamples.PROJECTION),
+        openapi_examples={
+            "example": {
+                "value": json.dumps(FilterExamples.PROJECTION),
+            },
+        },
     ),
     rows_filter: Optional[str] = Query(
         default=None,
         description="A valid json object with property name, operator and value",
-        example=json.dumps(FilterExamples.PREDICATE),
+        openapi_examples={
+            "example": {
+                "value": json.dumps(FilterExamples.PREDICATE),
+            },
+        },
     ),
     columns_aggregation: Optional[str] = Query(
         default=None,
         description="A valid json array with property name and aggregator function",
-        example=json.dumps(FilterExamples.AGGREGATION),
+        openapi_examples={
+            "example": {
+                "value": json.dumps(FilterExamples.AGGREGATION),
+            },
+        },
     ),
     rows_multiple_filter: Optional[str] = Query(
         default=None,
         description="A valid json object with combined rows filters with optional $or and $and keys",
-        example=json.dumps(FilterExamples.LOGICAL_PREDICATE),
+        openapi_examples={
+            "example": {
+                "value": json.dumps(FilterExamples.LOGICAL_PREDICATE),
+            },
+        },
     ),
 ) -> DFMultipleNestedFilterValidator:
     """Validates query parameters used for dataframe filtering.

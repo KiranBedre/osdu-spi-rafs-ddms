@@ -22,29 +22,29 @@ from loguru import logger
 from app.resources.errors import FilterValidationError
 
 
-class Aggregation:
+class Aggregation(object):
     FUNCTIONS = {"mean", "count", "max", "min", "sum", "describe"}
     N_ELEMENTS = 2
 
 
-class LogicalOperators:
+class LogicalOperators(object):
     OR = "$or"
     AND = "$and"
 
 
-class Predicate:
+class Predicate(object):
     OPERATORS = {"$lt": "<", "$gt": ">", "$lte": "<=", "$gte": ">=", "$eq": "=", "$neq": "!="}
     N_ELEMENTS = 3
     LOGICAL_OPERATORS = {LogicalOperators.OR, LogicalOperators.AND}
 
 
-class Separator:
+class Separator(object):
     DOT = "."
     COMMA = ","
     ARRAY = "[]"
 
 
-class FilterExamples:
+class FilterExamples(object):
     PREDICATE = {
         "PropertyX[.PropertyXFieldA]": {
             "$gt": "{Value}",
@@ -77,14 +77,14 @@ class FilterExamples:
     }
 
 
-class FilterErrorMessage:
+class FilterErrorMessage(object):
     ROWS_FILTER = f"Bad rows_filter expression. Correct form {FilterExamples.PREDICATE}"
     COLUMNS_AGGREGATION = f"Bad columns_aggregation expression. Correct form {FilterExamples.AGGREGATION}"
     COLUMNS_FILTER = f"Bad columns expression. Correct form {FilterExamples.PROJECTION}"
     ROWS_MULTIPLE_FILTER = f"Bad rows_multiple_filter expression. Correct form {FilterExamples.LOGICAL_PREDICATE}"
 
 
-class FilterIndex:
+class FilterIndex(object):
     COLUMN_OR_PROP_NAME = 0
     OPERATOR = 1
     COMP_VALUE = 2
@@ -115,7 +115,7 @@ class ColumnsAggregation(NamedTuple):
 
 
 @dataclass
-class DFMultipleNestedFilterValidator:
+class DFMultipleNestedFilterValidator(object):
     """Validation of query paramenters.
 
     :raises FilterValidationError: If any validation error occurs
@@ -199,7 +199,7 @@ class DFMultipleNestedFilterValidator:
         return self._columns_filter_validator.validate(columns_filter_list)
 
 
-class PropertyInfoProcessor:
+class PropertyInfoProcessor(object):
 
     def __init__(self, schema: dict):
         self._schema = schema
@@ -249,7 +249,7 @@ class PropertyInfoProcessor:
         return prop_schema
 
 
-class RowsFilterValidator:
+class RowsFilterValidator(object):
 
     VALID_FILTER: str = "valid_filter"
 
@@ -381,7 +381,7 @@ class RowsFilterValidator:
             raise FilterValidationError(exc)
 
 
-class ColumnsAggregationValidator:
+class ColumnsAggregationValidator(object):
 
     def __init__(self, prop_processor: PropertyInfoProcessor):
         self._prop_processor = prop_processor
@@ -413,7 +413,7 @@ class ColumnsAggregationValidator:
         return agg_func
 
 
-class ColumnsFilterValidator:
+class ColumnsFilterValidator(object):
 
     def __init__(self, prop_processor: PropertyInfoProcessor):
         self._prop_processor = prop_processor

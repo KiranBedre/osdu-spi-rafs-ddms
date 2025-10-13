@@ -45,5 +45,5 @@ class BaseAppSettings(BaseSettings):
 
     release_version: str = None  # Not the same as version (api version)
 
-    class Config:
+    class Config(object):
         env_file = ".env"

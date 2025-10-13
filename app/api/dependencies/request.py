@@ -42,7 +42,11 @@ async def get_data_partition_id(request: Request):
 def require_data_partition_id(
     data_partition_id=Header(
         title="data-partition-id",
-        example="opendes",
+        openapi_examples={
+            "example": {
+                "value": "opendes",
+            },
+        },
         description="Specifies the proper data partition id",
     ),
 ):

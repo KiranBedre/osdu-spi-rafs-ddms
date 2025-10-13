@@ -13,21 +13,22 @@
 #  limitations under the License.
 
 import operator
+from types import MappingProxyType
 from typing import Any, List, Optional
 
 import pandas as pd
 
-OPERATOR_TYPES = {
+OPERATOR_TYPES = MappingProxyType({
     "=": operator.eq,
     "!=": operator.ne,
     "<=": operator.le,
     ">=": operator.ge,
     "<": operator.lt,
     ">": operator.gt,
-}
+})
 
 
-class PandasDFQueryBase:
+class PandasDFQueryBase(object):
     """Class to perform simple queries on a Pandas DataFrame."""
 
     def __init__(self, df: pd.DataFrame) -> None:

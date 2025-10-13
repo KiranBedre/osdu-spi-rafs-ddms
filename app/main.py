@@ -19,18 +19,16 @@ from requests.exceptions import HTTPError
 from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
 
-from app.api.errors.data_validation_error import (
+from app.api.errors import (
     data_validation_http_error_handler,
-)
-from app.api.errors.http_error import http_error_handler
-from app.api.errors.invalid_body_error import invalid_body_error_handler
-from app.api.errors.invalid_header_error import invalid_header_error_handler
-from app.api.errors.osdu_api_error import (
+    http422_error_handler,
+    http_error_handler,
+    invalid_body_error_handler,
+    invalid_header_error_handler,
     osdu_api_custom_exc_handler,
     osdu_api_http_error_handler,
     osdu_api_httpx_error_handler,
 )
-from app.api.errors.validation_error import http422_error_handler
 from app.api.routes.api import router as api_router
 from app.api.routes.v2.api import router as api_router_v2
 from app.core.config import get_app_settings

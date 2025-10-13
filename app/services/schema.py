@@ -90,7 +90,7 @@ class OSDURefResolver(jsonschema.RefResolver):
         return document
 
 
-class SchemaService:
+class SchemaService(object):
     """Class to get and validate wks schemas."""
 
     def __init__(
@@ -130,7 +130,6 @@ class SchemaService:
         return await self.schema_client.get_schema(schema_id)
 
     async def validate(self, record: dict, schema_id: str, optional_id: Optional[str] = None) -> Optional[dict]:
-
         """Validate a record against its schema using jsonschema.
 
         :param record: the record

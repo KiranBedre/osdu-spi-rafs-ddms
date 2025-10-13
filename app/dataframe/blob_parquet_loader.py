@@ -30,7 +30,7 @@ from app.providers.dependencies.blob_storage import BlobMetadata, IBlobStorage
 from app.resources.mime_types import SupportedMimeTypes
 
 
-class BlobParquetLoader:
+class BlobParquetLoader(object):
 
     @cache(expire=CACHE_DEFAULT_TTL, coder=PickleCoder)
     async def read_parquet_files(
@@ -86,19 +86,7 @@ class BlobParquetLoader:
             error_msg = f"Unable to fetch: {object_name}. Not found, status code: {u_exc.status_code}"  # noqa: WPS237
             logger.error(error_msg)
             df = pd.DataFrame()
-        except (
-            pa.lib.ArrowCancelled,
-            pa.lib.ArrowCapacityError,
-            pa.lib.ArrowException,
-            pa.lib.ArrowKeyError,
-            pa.lib.ArrowIndexError,
-            pa.lib.ArrowInvalid,
-            pa.lib.ArrowIOError,
-            pa.lib.ArrowMemoryError,
-            pa.lib.ArrowNotImplementedError,
-            pa.lib.ArrowTypeError,
-            pa.lib.ArrowSerializationError,
-        ) as exc:
+        except pa.lib.ArrowException as exc:
             error_msg = f"PyArrowException: {exc}"
             logger.error(error_msg)
             df = pd.DataFrame()

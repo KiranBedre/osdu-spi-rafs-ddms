@@ -35,6 +35,7 @@ class RecordValues(object):
     acl_viewers: str
     acl_owners: str
 
+
 aws_values = RecordValues(
     data_partition_id="opendes",
     schema_authority="osdu",
@@ -53,6 +54,7 @@ def create_gc_values(data_partition_id: str) -> RecordValues:
         acl_owners=f"data.default.owners@{data_partition_id}.group",
     )
 
+
 def create_azure_values(data_partition_id: str) -> RecordValues:
     return RecordValues(
         data_partition_id=data_partition_id,
@@ -61,6 +63,7 @@ def create_azure_values(data_partition_id: str) -> RecordValues:
         acl_viewers=f"data.default.viewers@{data_partition_id}.{CONFIG['DOMAIN']}",
         acl_owners=f"data.default.owners@{data_partition_id}.{CONFIG['DOMAIN']}",
     )
+
 
 def load_test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes] = None) -> dict:
     data_values = None

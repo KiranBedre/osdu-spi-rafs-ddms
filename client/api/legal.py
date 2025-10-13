@@ -8,6 +8,10 @@ from starlette import status
 from client.api.settings import ApiClientSettings
 from client.api_client import APIClient
 
+# Constants for random legal tag name generation
+RANDOM_NUMBER_MIN = 11111
+RANDOM_NUMBER_RANGE = 88889
+
 
 class APILegal(APIClient):
     """API storage service methods."""
@@ -20,7 +24,7 @@ class APILegal(APIClient):
         current_date = datetime.date.today()
 
         # Use the secrets module to generate a cryptographically secure random number.
-        random_number = secrets.randbelow(88889) + 11111
+        random_number = secrets.randbelow(RANDOM_NUMBER_RANGE) + RANDOM_NUMBER_MIN
 
         # Generate a random string using string.ascii_uppercase and string.digits.
         random_string = "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(5))
