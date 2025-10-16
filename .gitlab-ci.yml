@@ -3,6 +3,8 @@ variables:
   GIT_DEPTH: 20
   URL_PREFIX: api/rafs-ddms
 
+  REDIS_IMAGE_VERSION: redis/redis-stack-server:7.4.0-v7
+
   # Azure specific
   AZURE_TEST_TYPE: python
   AZURE_SKIP_COVERAGE: "true"

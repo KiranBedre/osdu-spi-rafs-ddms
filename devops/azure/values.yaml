@@ -80,9 +80,9 @@ configuration:
 # az acr import --force --name osdumvpcrglabqh63cr --source docker.io/redis/redis-stack-server:7.4.0-rc2 --image rafs/redis-stack-server:7.4.0-rc2
 - service: redis-rafs
   container:
-    image: rafs/redis-stack-server
+    image: ""
+    tag: ""
     containerPort: 6379
-    tag: 7.4.0-rc2
   probe:
     execTypeLiveness:
       command:
