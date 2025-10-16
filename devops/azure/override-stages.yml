@@ -79,6 +79,23 @@ cronjob-azure_containerize:
         ./devops/azure/cronjob/
       fi
 
+redis-azure_containerize:
+  extends:
+    - azure_containerize
+  variables:
+    SHA_IMAGE: ${CI_PROJECT_NAME}-redis-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
+    LATEST_IMAGE: ${CI_PROJECT_NAME}-redis-${CI_COMMIT_REF_SLUG}:latest
+    RELEASE_IMAGE: release-${CI_COMMIT_TAG}:${CI_PROJECT_NAME}-redis-${CI_COMMIT_TAG}
+  script:
+    - apk add crane
+    - !reference [.azure_get_version, script]
+    - crane copy ${REDIS_IMAGE_VERSION} ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE
+    - crane copy ${REDIS_IMAGE_VERSION} ${AZURE_REGISTRY}.azurecr.io/$LATEST_IMAGE
+    - |
+      if [ ! -z "$CI_COMMIT_TAG" ]; then
+        crane copy ${REDIS_IMAGE_VERSION} ${AZURE_REGISTRY}.azurecr.io/$RELEASE_IMAGE
+      fi
+
 azure_containerize_helm:
   variables:
     AZURE_HELM_SUBDIR: osdu-ddms/standard-ddms
@@ -93,6 +110,13 @@ cronjob-container_scanning:
   variables:
     DOCKER_IMAGE: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-cronjob-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
 
+redis-container_scanning:
+  needs: ["redis-containerize"]
+  extends:
+    - container_scanning
+  variables:
+    DOCKER_IMAGE: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-redis-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
+
 azure_deploy:
   needs:
   - job: azure_code_coverage
@@ -106,6 +130,8 @@ azure_deploy:
   - job: azure_containerize
     optional: false
   - job: cronjob-azure_containerize
+    optional: false
+  - job: redis-azure_containerize
     optional: false
   script:
     # Install Service
@@ -123,7 +149,9 @@ azure_deploy:
       --set azure.acr=${AZURE_REGISTRY}.azurecr.io
       --set configuration[0].container.image=${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}
       --set configuration[0].container.tag=${CI_COMMIT_SHA}
-      --set configuration[2].container.image=${CI_PROJECT_NAME}-cronjob
+      --set configuration[1].container.image=${CI_PROJECT_NAME}-redis-${CI_COMMIT_REF_SLUG}
+      --set configuration[1].container.tag=${CI_COMMIT_SHA}
+      --set configuration[2].container.image=${CI_PROJECT_NAME}-cronjob-${CI_COMMIT_REF_SLUG}
       --set configuration[2].container.tag=${CI_COMMIT_SHA}
       --set ingress.dns=$AZURE_DNS_NAME
     - |
@@ -171,9 +199,11 @@ azure-publish:
     DST_REGISTRY: "msosdu"
     SHA_IMAGE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
     SHA_CRONJOB_IMAGE: ${CI_PROJECT_NAME}-cronjob:${CI_COMMIT_SHA}
+    SHA_REDIS_IMAGE: ${CI_PROJECT_NAME}-redis:${CI_COMMIT_SHA}
   script:
     - crane copy ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE ${DST_REGISTRY}.azurecr.io/${REL_IMG_NAME}:${AZ_VER}
     - crane copy ${AZURE_REGISTRY}.azurecr.io/$SHA_CRONJOB_IMAGE ${DST_REGISTRY}.azurecr.io/${REL_IMG_NAME}-cronjob:${AZ_VER}
+    - crane copy ${AZURE_REGISTRY}.azurecr.io/$SHA_REDIS_IMAGE ${DST_REGISTRY}.azurecr.io/${REL_IMG_NAME}-redis:${AZ_VER}
     - crane copy ${HELM_CHART_OCI#"oci://"}:${HELM_CHART_OCI_VERSION} ${DST_REGISTRY}.azurecr.io/helm/${HELM_CHART_SUBDIR}:${HELM_CHART_OCI_VERSION} || echo "[WARN] Not able to publish helm chart"
 
 .get_azure_access_token:

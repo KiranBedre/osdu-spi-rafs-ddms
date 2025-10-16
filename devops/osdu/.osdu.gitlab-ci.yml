@@ -73,3 +73,20 @@ cronjob-containerize:
         -t $CI_REGISTRY_IMAGE/$RELEASE_IMAGE \
         ./devops/azure/cronjob/
       fi
+
+redis-containerize:
+  extends:
+    - containerize
+  variables:
+    SHA_IMAGE: ${CI_PROJECT_NAME}-redis-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
+    LATEST_IMAGE: ${CI_PROJECT_NAME}-redis-${CI_COMMIT_REF_SLUG}:latest
+    RELEASE_IMAGE: release-${CI_COMMIT_TAG}:${CI_PROJECT_NAME}-redis-${CI_COMMIT_TAG}
+  script:
+    - apk add crane
+    - !reference [.get_version, script]
+    - crane copy ${REDIS_IMAGE_VERSION} $CI_REGISTRY_IMAGE/$SHA_IMAGE
+    - crane copy ${REDIS_IMAGE_VERSION} $CI_REGISTRY_IMAGE/$LATEST_IMAGE
+    - |
+      if [ ! -z "$CI_COMMIT_TAG" ]; then
+        crane copy ${REDIS_IMAGE_VERSION} $CI_REGISTRY_IMAGE/$RELEASE_IMAGE
+      fi
