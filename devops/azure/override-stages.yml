@@ -118,6 +118,7 @@ redis-container_scanning:
     DOCKER_IMAGE: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-redis-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
 
 azure_deploy:
+  allow_failure: true
   needs:
   - job: azure_code_coverage
     optional: true

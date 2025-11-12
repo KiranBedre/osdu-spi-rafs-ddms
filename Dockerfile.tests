@@ -1,8 +1,9 @@
 ARG python_version=3.11
 FROM python:${python_version}-bookworm
 
+ARG pip_version=25.2
 COPY requirements.txt /app/requirements.txt
-RUN pip install --upgrade pip \
+RUN pip install --upgrade pip==${pip_version} \
       && pip install --no-cache-dir -r /app/requirements.txt
 
 ENV PYTHONUNBUFFERED 1
@@ -10,7 +11,7 @@ ENV PYTHONPATH=./
 
 COPY requirements-tests.in ./
 COPY requirements.in ./
-RUN pip install --upgrade pip && pip install pip-tools && \
+RUN pip install --upgrade pip==${pip_version} && pip install pip-tools && \
       pip-compile requirements.in requirements-tests.in -o requirements-tests.txt -v && \
       pip install -r requirements-tests.txt
 

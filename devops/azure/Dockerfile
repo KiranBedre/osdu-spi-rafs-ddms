@@ -4,7 +4,7 @@
 ARG python_version=3.11
 FROM mcr.microsoft.com/devcontainers/python:${python_version}-bookworm as test-stage
 
-ARG pip_version=25.1.1
+ARG pip_version=25.2
 ARG piptools_version=7.3.0
 
 COPY requirements.txt /app/requirements.txt
@@ -38,7 +38,7 @@ ARG python_version=3.11
 
 FROM mcr.microsoft.com/devcontainers/python:${python_version}-bookworm AS build-env
 
-ARG pip_version=25.1.1
+ARG pip_version=25.2
 ARG setuptools_version=70.0.0
 ARG uvicorn_version=0.23.2
 

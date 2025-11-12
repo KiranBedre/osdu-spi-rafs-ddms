@@ -29,10 +29,10 @@ configuration:
   probe:
     readiness:
       path: /api/rafs-ddms/readiness # make the API version as a variable
-      delay: 60
+      delay: 30
     liveness:
       path: /api/rafs-ddms/healthz
-      delay: 60
+      delay: 30
   auth:
     disable:
     - "/api/rafs-ddms/info"

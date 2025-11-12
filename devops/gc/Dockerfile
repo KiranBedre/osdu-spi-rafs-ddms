@@ -3,9 +3,10 @@
 ARG python_version=3.11
 ARG python_distroless_image=gcr.io/distroless/python3-debian12:nonroot
 FROM python:${python_version}-bookworm AS build-env
+ARG pip_version=25.2
 
 COPY requirements.txt /app/requirements.txt
-RUN pip install --upgrade pip setuptools \
+RUN pip install --upgrade pip==${pip_version} setuptools \
       && pip install --no-cache-dir -r /app/requirements.txt
 
 COPY ./app /app/

@@ -6,7 +6,7 @@ async-timeout==4.0.3
 boto3==1.35.0
 certifi==2025.1.31
 fastapi-cache2[redis]==0.2.1
-fastapi==0.116.1
+fastapi==0.121.0
 httpx==0.26.0
 httpcore==1.0.9
 jsonref==1.1.0
