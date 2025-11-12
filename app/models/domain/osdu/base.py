@@ -37,3 +37,5 @@ MASTER_DATA_KINDS_V2 = (
 SAMPLESANALYSIS_KIND = f"{settings.schema_authority}:wks:work-product-component--SamplesAnalysis:1.0.0"
 
 SAMPLES_ANALYSES_REPORT_KIND = f"{settings.schema_authority}:wks:work-product-component--SamplesAnalysesReport:1.0.0"
+
+SATURATION_FUNCTION_SET_KIND = f"{settings.schema_authority}:wks:work-product-component--SaturationFunctionSet:1.0.0"

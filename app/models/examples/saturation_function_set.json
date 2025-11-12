@@ -1,0 +1,49 @@
+[
+    {
+        "id": "namespace:work-product-component--SaturationFunctionSet:87c41e82-e179-4aa2-8ef7-b991fc8fa912",
+        "data": {
+            "Name": "Saturation function Name",
+            "Description": "Saturation function Desc",
+            "Source": "Saturation function Source",
+            "SaturationFunctions": [
+                {
+                    "FunctionName": "Relative permeabilitiy functions (SGFN: krg(Sg), SWFN: Krw(Sw),SOF3: Krow(So),SOF3: Krog(So)",
+                    "FunctionUsageTypeID": "namespace:reference-data--SaturationFunctionUsageType:Drainage:",
+                    "DatePublished": "2010-09-09",
+                    "HasRelativePermeability":true,
+                    "HasCapillaryPressure":false,
+                    "ModellingContacts": [
+                        {
+                            "Name": "John Doe"
+                        }
+                    ]
+                }
+            ],
+            "Remarks": [
+                {
+                    "RemarkSequenceNumber": 1,
+                    "Remark": "For SGFN: COREY = 2 as in old model, but uses equidistant SG after recommendation",
+                    "RemarkSource": "John Doe",
+                    "RemarkDate": "2010-03-24"
+                }
+            ]
+        },
+        "kind": "osdu:wks:work-product-component--SaturationFunctionSet:1.0.0",
+        "acl": {
+            "viewers": [
+                "someone@company.com"
+            ],
+            "owners": [
+                "someone@company.com"
+            ]
+        },
+        "legal": {
+            "legaltags": [
+                "Example legaltags"
+            ],
+            "otherRelevantDataCountries": [
+                "US"
+            ]
+        }
+    }
+]
