@@ -2,8 +2,9 @@
 ARG python_version=3.11
 FROM python:${python_version}-trixie AS build-env
 
+ARG pip_version=25.2
 COPY requirements.txt /app/requirements.txt
-RUN pip install --upgrade pip setuptools \
+RUN pip install --upgrade pip==${pip_version} setuptools \
       && pip install --no-cache-dir -r /app/requirements.txt
 
 COPY ./app /app/

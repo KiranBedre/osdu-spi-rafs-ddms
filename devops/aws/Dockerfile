@@ -17,6 +17,7 @@
 ARG python_version=3.11
 ARG amazonlinux_image=public.ecr.aws/amazonlinux/amazonlinux:2023
 FROM ${amazonlinux_image} AS build-env
+ARG pip_version=25.2
 
 RUN dnf update libxml2
 
@@ -31,7 +32,7 @@ ENV PYTHONUNBUFFERED=1
 ENV VIRTUAL_ENV /app/venv/
 ENV PATH="/app/venv/bin:${PATH}"
 
-RUN /app/venv/bin/python3 -m pip install --upgrade pip \
+RUN /app/venv/bin/python3 -m pip install --upgrade pip==${pip_version} \
       && /app/venv/bin/python3 -m pip install --no-cache-dir -I -r /app/requirements.txt \
       && /app/venv/bin/python3 -m pip install --no-cache-dir setuptools==78.1.1 --upgrade \
       && /app/venv/bin/python3 -m pip install --no-cache-dir -I uvicorn[standard]==0.23.2
