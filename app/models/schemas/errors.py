@@ -28,5 +28,5 @@ class OsduApiErrorResponse(BadRequestResponse):
 
 
 class ValidationErrorResponse(BadRequestResponse):
-    code: int = status.HTTP_422_UNPROCESSABLE_ENTITY
+    code: int = status.HTTP_422_UNPROCESSABLE_CONTENT
     errors: Optional[dict]

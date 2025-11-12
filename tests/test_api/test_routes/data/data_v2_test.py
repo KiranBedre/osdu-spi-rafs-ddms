@@ -5471,7 +5471,7 @@ async def test_invalid_data_with_nan(path):
                 content=json.dumps(INVALID_DATA_WITH_NAN),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert ["code", "reason", "errors"] == list(body.keys())
     assert body["reason"] == "Data validation failed."

@@ -39,7 +39,7 @@ def test_get_id_version_with_full_id_raises():
     with pytest.raises(UnprocessableContentException) as exc:
         get_id_version("partition:entity_type:record_id:1234s")
 
-    assert exc.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert exc.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert exc.value.detail == "Record id version '1234s' should be numeric"
 
 

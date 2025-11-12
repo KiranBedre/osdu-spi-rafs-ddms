@@ -14,7 +14,7 @@
 
 import pytest
 from fastapi import HTTPException
-from starlette.status import HTTP_422_UNPROCESSABLE_ENTITY
+from starlette.status import HTTP_422_UNPROCESSABLE_CONTENT
 
 from app.api.dependencies.validation import (
     validate_ids_from_records,
@@ -42,7 +42,7 @@ async def test_validate_ids_from_records_raises(mocker):
             TEST_ID_MISSING_FIELD,
         )
 
-    assert exc_info.value.status_code == HTTP_422_UNPROCESSABLE_ENTITY
+    assert exc_info.value.status_code == HTTP_422_UNPROCESSABLE_CONTENT
 
     expected_response_detail = ["Missing MissingField in index 0"]
     assert exc_info.value.detail == expected_response_detail
@@ -58,7 +58,7 @@ async def test_validate_referential_integrity(mocker):
             mock_get_storage_service,
         )
 
-    assert exc_info.value.status_code == HTTP_422_UNPROCESSABLE_ENTITY
+    assert exc_info.value.status_code == HTTP_422_UNPROCESSABLE_CONTENT
 
     error_title = "Request can't be processed due to missing referenced records."
     error_details = f"Records not found: [{EXPECTED_IDS_LIST}]"
