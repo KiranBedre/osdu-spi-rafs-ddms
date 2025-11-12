@@ -320,7 +320,7 @@ async def test_post_record_no_kind(path):
             )
 
     response_json = response.json()
-    assert response_json["code"] == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response_json["code"] == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert storage_mock_objects.EXPECTED_422_NO_KIND_RESPONSE == response_json
 
 
@@ -337,7 +337,7 @@ async def test_post_record_invalid_payload_type(path):
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.post(f"/api/os-rafs-ddms/{path}", headers=TEST_HEADERS, json={})
 
-    assert response.json()["code"] == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.json()["code"] == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert response.json()["errors"][0] == EXPECTED_422_TYPER_ERROR_LIST
 
 
@@ -440,7 +440,7 @@ async def test_post_samplesanalysis_with_missing_reference(
         "reason": f"{title} {detail}",
     }
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     result_json = response.json()
     assert result_json == expected_response
 
@@ -914,7 +914,7 @@ async def test_get_record_wrong_id_pattern(endpoint, record_id):
                 headers=TEST_HEADERS,
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 @pytest.mark.asyncio
@@ -935,7 +935,7 @@ async def test_post_record_wrong_kind(endpoint, manifest):
             )
 
     response_json = response.json()
-    assert response_json["code"] == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response_json["code"] == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert EXPECTED_422_INVALID_KIND_REASON.format(manifest["kind"]) in response_json["reason"]
 
 
@@ -955,7 +955,7 @@ async def test_delete_record_wrong_id_pattern(endpoint, record_id):
                 headers=TEST_HEADERS,
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 @pytest.mark.asyncio
@@ -998,5 +998,5 @@ async def test_post_record_invalid_field_type_jsonschema(path, osdu_record, fiel
             )
     from loguru import logger
     logger.warning(response.json())
-    assert response.json()["code"] == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.json()["code"] == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert "'wrong_pattern' does not match" in response.json()["reason"][0]["errors"][0]

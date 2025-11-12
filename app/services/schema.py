@@ -29,8 +29,11 @@ from app.models.schemas.user import User
 from app.services.error_handlers import handle_core_services_http_status_error
 from app.services.osdu_clients.schema_client import SchemaServiceApiClient
 
+# Create a custom format checker instance
+custom_format_checker = jsonschema.FormatChecker()
 
-@jsonschema.FormatChecker.cls_checks("date-time", raises=jsonschema.exceptions.FormatError)
+
+@custom_format_checker.checks("date-time", raises=jsonschema.exceptions.FormatError)
 def validate_date_time(str_value: str) -> bool:
     """Check if a date-time value follows formats specified in indexer:
 
@@ -51,7 +54,7 @@ def validate_date_time(str_value: str) -> bool:
         return False
 
 
-@jsonschema.FormatChecker.cls_checks("time", raises=jsonschema.exceptions.FormatError)
+@custom_format_checker.checks("time", raises=jsonschema.exceptions.FormatError)
 def validate_time(str_value: str) -> bool:
     """Check if a time value follows isoformat:
 
@@ -68,7 +71,13 @@ def validate_time(str_value: str) -> bool:
 
 
 class OSDURefResolver(jsonschema.RefResolver):
-    """Extends base jsonschema resolver for OSDU."""
+    """Extends base jsonschema resolver for OSDU.
+
+    Note: RefResolver is deprecated as of jsonschema v4.18.0 in favor of the
+    'referencing' library. Migration to the new API requires significant
+    refactoring to preserve the custom $id handling behavior.
+    TODO: Migrate to jsonschema.referencing library (see https://github.com/python-jsonschema/referencing)
+    """
 
     def resolve_fragment(self, document: dict, fragment: str) -> dict:
         """Add deleting $id field, as long as RefResolver uses the "$id" for
@@ -176,7 +185,7 @@ class SchemaService(object):
         validator = validator_class(
             schema=schema,
             resolver=resolver,
-            format_checker=jsonschema.FormatChecker(),
+            format_checker=custom_format_checker,
         )
         self._schema_validators[schema_id] = validator
         return validator

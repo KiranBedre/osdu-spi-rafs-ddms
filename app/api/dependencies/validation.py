@@ -105,7 +105,7 @@ def validate_ids_from_records(
                 errors.append(f"Missing {field} in index {index}")
     if errors:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=errors,
         )
 
@@ -144,7 +144,7 @@ async def validate_referential_integrity(
         reason = f"{error_title} {error_details}"
         logger.debug(reason)
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=reason,
         )
 
@@ -320,7 +320,7 @@ async def get_data_model(request: Request, content_schema_version: str = Depends
     if not version_models:
         reason = f"Unimplemented model for route {request_path}."
         logger.debug(reason)
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=reason)
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=reason)
 
     model = version_models.get(content_schema_version)
     if not model:
@@ -462,7 +462,7 @@ async def get_search_data_pagination_parameters(
     if indexed_start_date and indexed_end_date:
         if indexed_start_date > indexed_end_date:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
     return offset, page_limit, indexed_start_date, indexed_end_date
@@ -508,7 +508,7 @@ async def get_search_pagination_parameters(
     if indexed_start_date and indexed_end_date:
         if indexed_start_date > indexed_end_date:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
     return offset, page_limit, indexed_start_date, indexed_end_date

@@ -49,7 +49,7 @@ class UnprocessableContentException(HTTPException):
         detail: Any = None,
         headers: Optional[Dict[str, Any]] = None,
     ) -> None:
-        super().__init__(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=detail, headers=headers)
+        super().__init__(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=detail, headers=headers)
 
 
 class RecordValidationException(UnprocessableContentException):
