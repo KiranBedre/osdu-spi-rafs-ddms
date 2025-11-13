@@ -23,6 +23,7 @@ from fastapi_cache.decorator import cache
 from loguru import logger
 from starlette import status
 
+from app.core.helpers.cache.key_builder import key_builder_for_service_methods
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.core.settings.app import AppSettings
 from app.models.schemas.user import User
@@ -126,7 +127,7 @@ class SchemaService(object):
         detail="Failed to fetch schema from SchemaService.",
     )
     @alru_cache(maxsize=None)
-    @cache(expire=CACHE_DEFAULT_TTL)
+    @cache(expire=CACHE_DEFAULT_TTL, key_builder=key_builder_for_service_methods)
     async def get_schema(self, schema_id: str) -> dict:
         """Get schema from schema service.
 

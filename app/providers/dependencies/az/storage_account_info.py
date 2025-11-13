@@ -19,6 +19,7 @@ from fastapi_cache.decorator import cache
 from pydantic import BaseSettings
 
 from app.core.config import AppSettings
+from app.core.helpers.cache.key_builder import key_builder_for_service_methods
 from app.core.helpers.cache.settings import (
     STORAGE_ACCOUNT_INFO_CACHE_DEFAULT_TTL,
 )
@@ -50,7 +51,7 @@ class AzureStorageAccountInfo(object):
         await self._credential.close()
 
     @alru_cache
-    @cache(expire=STORAGE_ACCOUNT_INFO_CACHE_DEFAULT_TTL)
+    @cache(expire=STORAGE_ACCOUNT_INFO_CACHE_DEFAULT_TTL, key_builder=key_builder_for_service_methods)
     async def get_info(self) -> dict:
 
         if self._cloud_provider_config.az_use_partition_service:

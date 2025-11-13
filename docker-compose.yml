@@ -65,6 +65,23 @@ services:
       - rafs
       - tests
 
+  cache_tests:
+    image: osdu-rafsddms_tests
+    security_opt:
+      - no-new-privileges:true
+    restart: "no"
+    env_file:
+      - .env
+    volumes:
+      - ./app:/app
+      - ./tests/:/tests
+    working_dir: /
+    entrypoint: [ "bash", "-c"]
+    command: ["pytest -v ./tests/test_cache_integration"]
+    profiles: ["tests"]
+    depends_on:
+      - redis
+
   redis:
     image: redis/redis-stack-server:latest
     security_opt:

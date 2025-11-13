@@ -1,0 +1,1 @@
+# Redis cache integration tests

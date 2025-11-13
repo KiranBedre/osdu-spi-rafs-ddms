@@ -72,3 +72,6 @@ requirements-*.txt
 
 # Pipenv
 Pipfile*
+
+# SSL certificates and keys
+ssl/
