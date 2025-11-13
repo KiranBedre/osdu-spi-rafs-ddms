@@ -9,6 +9,56 @@ az login
 az acr build --registry <acr-name> --file ./Dockerfile -t rafsddms:latest .
 ```
 
+## Redis Configuration
+
+RAFS DDMS uses Redis for caching and indexing. The Redis configuration for Azure deployments is defined in `devops/azure/values.yaml`.
+
+### Environment Variables
+
+The following Redis environment variables are configured in the Helm values (see `devops/azure/values.yaml` lines 56-63):
+
+```yaml
+CACHE_ENABLE: "True"
+CACHE_BACKEND: "app.core.helpers.cache.backends.redis_cache.RedisCacheBackend"
+REDIS_HOSTNAME: redis-rafs-service  # Internal Kubernetes service name
+REDIS_PASSWORD: redispass           # Default password (overridden by KeyVault)
+REDIS_DATABASE: "13"
+REDIS_SSL: "False"                  # Internal Redis doesn't use SSL
+REDIS_PORT: "6379"
+REDIS_INDEX_ENABLE: "True"
+```
+
+### Azure KeyVault Integration
+
+For production deployments, Redis credentials are pulled from Azure KeyVault (see `devops/azure/values.yaml` lines 11-14):
+
+```yaml
+azure:
+  keyvault:
+    secrets:
+    - key: redis-host      # KeyVault secret name
+      obj: redis-hostname  # Maps to REDIS_HOSTNAME env var
+    - key: redis-pass      # KeyVault secret name
+      obj: redis-password  # Maps to REDIS_PASSWORD env var
+```
+
+**Note:** KeyVault secrets take precedence over hardcoded values in the configmap for production security.
+
+### Internal Redis Deployment
+
+An internal Redis instance is deployed alongside RAFS DDMS (see `devops/azure/values.yaml` lines 81-110):
+
+- **Service Name**: `redis-rafs-service`
+- **Image**: `rafs/redis-stack-server:7.4.0-rc2`
+- **Port**: `6379`
+- **Authentication**: Password-protected (from KeyVault secret `redis-pass`)
+- **Storage**: EmptyDir volume (ephemeral)
+- **Resources**:
+  - Requests: 128m CPU, 4Gi memory
+  - Limits: 300m CPU, 6Gi memory
+
+**To use external Redis instead:** Update `REDIS_HOSTNAME` in your deployment values and ensure the external Redis is accessible from the AKS cluster.
+
 ## Community installation
 
 Using [helm-charts-azure/standard-ddms](https://community.opengroup.org/osdu/platform/deployment-and-operations/helm-charts-azure/-/tree/master/osdu-ddms/standard-ddms) for simplicity.

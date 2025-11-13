@@ -96,7 +96,7 @@ which is used to initialize FastAPICache like [here](https://github.com/long2ice
 You can use already prepared backends like:
  * `app.core.helpers.cache.backends.redis_cache.RedisCacheBackend`
  * `app.core.helpers.cache.backends.inmemory_cache.InMemoryCacheBackend`
-  
+
 Also, you can customize and use your own one.
 Customized backend is supposed to be based on [BaseCacheBackend class](/app/core/helpers/cache/backends/base_cache.py).
 
@@ -111,6 +111,34 @@ REDIS_PORT=6380
 
 By default `ttl = 60` sec is used. It is possible to set another ttl through the `CACHE_DEFAULT_TTL` variable.
 Also, it is possible to set ttl manually for a specific request directly at the place where @cache is used.
+
+##### Deployment-Specific Redis Configuration
+
+**Note:** Redis environment variables may be overridden in deployment configurations depending on your cloud provider:
+
+**For local development/testing (Docker):**
+```bash
+REDIS_HOSTNAME=redis        # Docker service name
+REDIS_PASSWORD=             # Empty for local Docker Redis
+REDIS_PORT=6379
+REDIS_DATABASE=0
+REDIS_SSL=False
+```
+
+**For production deployments:**
+- **Azure**: Redis hostname is configured via Helm values (default: `redis-rafs-service`) and password from Azure KeyVault. See [Azure deployment docs](./devops/azure/README.md).
+- **Google Cloud**: Redis hostname defaults to `redis-rafs-ddms` if `redisRafsDdmsHost` is empty in Helm values, otherwise uses specified external Redis. Password from Kubernetes secrets. See [GC deployment docs](./devops/gc/deploy/README.md).
+
+Deployment configurations take precedence over local `.env` settings.
+
+##### Cache Logging
+
+The Redis cache backend includes automatic logging at DEBUG level for cache operations:
+- **Cache HIT**: When data is successfully retrieved from cache
+- **Cache MISS**: When requested data is not found in cache
+- **Cache SET**: When data is stored in cache
+
+To view cache logs, ensure your logging level is set to DEBUG in `tests/integration/pytest.ini` or your application configuration. This provides visibility into cache utilization during both application runtime and integration tests.
 
 ### Run with Docker
 
@@ -190,6 +218,37 @@ docker-compose --profile tests run --rm tests flake8 / --config=/setup.cfg
 docker-compose --profile tests run --rm tests flake8 /app --select T1
 ```
 
+### Run Cache Integration Tests
+
+Redis cache integration tests verify that the cache backend is functioning correctly with a real Redis connection. These tests are isolated from the main integration tests and only run when `CACHE_ENABLE=True` in your `.env` file.
+
+**Local Docker Redis configuration for testing:**
+```shell
+# Add to .env for local Docker testing
+CACHE_ENABLE=True
+CACHE_BACKEND="app.core.helpers.cache.backends.redis_cache.RedisCacheBackend"
+REDIS_HOSTNAME=redis
+REDIS_PORT=6379
+REDIS_DATABASE=0
+REDIS_SSL=False
+REDIS_PASSWORD=
+```
+
+**Run cache tests:**
+```shell
+docker-compose --profile tests up cache_tests
+```
+
+The cache tests verify:
+- Redis backend initialization
+- Cache set and get operations
+- Cache miss behavior
+- Cache expiration/TTL
+- Cache value overwriting
+- Cache hit/miss/set logging
+
+All cache operations are logged at DEBUG level, providing visibility into cache utilization.
+
 ### Run Local Integration Tests
 
 Using Docker [env substitution from shell](https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell) capabilities.
@@ -250,14 +309,19 @@ docker-compose down
     │   ├── api_client.py               - Client module for making API requests.
     │   └── core                        - Core module containing endpoints and core functionalities.
     └── tests
-        └── integration
-            ├── data                    - Test data used in integration tests.
-            ├── helpers                 - Directory containing reusable functions for routine automation.
-            ├── tests                   - Directory with integration tests.
-            │   └── conftest.py         - Specific test fixtures  shared across different types of tests.
-            ├── conftest.py             - Main infrastructure fixtures.
-            ├── config.py               - Configuration file with constants and data file paths.
-            └── data_provider.py        - Data class to create the final data source for tests.
+        ├── integration
+        │   ├── data                    - Test data used in integration tests.
+        │   ├── helpers                 - Directory containing reusable functions for routine automation.
+        │   ├── tests                   - Directory with integration tests.
+        │   │   └── conftest.py         - Specific test fixtures shared across different types of tests.
+        │   ├── conftest.py             - Main infrastructure fixtures.
+        │   ├── config.py               - Configuration file with constants and data file paths.
+        │   └── data_provider.py        - Data class to create the final data source for tests.
+        ├── test_cache_integration      - Redis cache integration tests (isolated, requires CACHE_ENABLE=True).
+        │   └── test_redis_cache.py     - Tests for Redis cache operations with real Redis connection.
+        └── test_helpers
+            └── cache
+                └── test_redis_backend_mocked.py - Unit tests for Redis backend with mocks.
 
 
 ### Run Postman Tests

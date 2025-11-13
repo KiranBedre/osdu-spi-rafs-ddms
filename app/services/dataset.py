@@ -20,10 +20,11 @@ from fastapi_cache.decorator import cache
 from loguru import logger
 from starlette import status
 
+from app.core.helpers.cache.key_builder import key_builder_for_service_methods
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.core.settings.app import AppSettings
 from app.models.schemas.user import User
-from app.providers.dependencies.blob_loader import get_blob_loader
+from app.providers.dependencies.blob_loader import IBlobLoader, get_blob_loader
 from app.services.base import IDatasetService
 from app.services.error_handlers import handle_core_services_http_status_error
 from app.services.osdu_clients.dataset_client import DatasetServiceApiClient
@@ -46,7 +47,7 @@ class DatasetService(IDatasetService):
             bearer_token=user.access_token,
             extra_headers=extra_headers,
         )
-        self.blob_loader = get_blob_loader(settings)
+        self.blob_loader: Optional[IBlobLoader] = get_blob_loader(settings) if settings.use_blob_storage else None
         self.name = "DatasetService"
 
     async def download_file(self, dataset_id: str) -> Optional[bytes]:
@@ -57,6 +58,10 @@ class DatasetService(IDatasetService):
         :return: file content
         :rtype: Optional[bytes]
         """
+        if self.blob_loader is None:
+            logger.warning(f"{self.name}: blob_loader is not initialized. Blob storage is disabled.")
+            return None
+
         retrieval_instruction = await self.dataset_client.get_retrieval_instructions(dataset_id)
         if retrieval_instruction.get("datasets"):
             signed_url = retrieval_instruction["datasets"][0]["retrievalProperties"]["signedUrl"]
@@ -82,6 +87,11 @@ class DatasetService(IDatasetService):
         :return: stored dataset id and version
         :rtype: str
         """
+        if self.blob_loader is None:
+            # When blob storage is disabled, return mock dataset record format
+            logger.warning(f"{self.name}: Blob storage disabled. Skipping file upload for dataset: {dataset_id}")
+            return f"{dataset_id}:1"
+
         storage_instruction = await self.dataset_client.storage_instructions(
             kind_subtype="dataset--File.Generic",
         )
@@ -111,7 +121,7 @@ class DatasetService(IDatasetService):
         ],
         detail="Failed to get signed urls using DatasetService.",
     )
-    @cache(expire=CACHE_DEFAULT_TTL)
+    @cache(expire=CACHE_DEFAULT_TTL, key_builder=key_builder_for_service_methods)
     async def get_signed_urls(self, dataset_ids: List[str]) -> List[Tuple[str, str]]:
         """Get a signed url per dataset id for a list of dataset_ids.
 

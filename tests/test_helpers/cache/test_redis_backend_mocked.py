@@ -42,8 +42,12 @@ async def test_validate_redis_settings(error):
 
 @pytest.mark.asyncio
 @patch.object(RedisCacheBackend, "_validate_redis_settings")
-@patch("app.core.helpers.cache.backends.redis_cache.redis_client")
-async def test_get_backend(redis_mock, mock_validate_redis_settings):
-    await RedisCacheBackend().get_backend()
+@patch("app.core.helpers.cache.backends.redis_cache.Redis")
+async def test_get_backend(redis_class_mock, mock_validate_redis_settings):
+    redis_instance_mock = AsyncMock()
+    redis_class_mock.return_value = redis_instance_mock
 
-    mock_validate_redis_settings.assert_called_with(redis_mock)
+    backend_instance = RedisCacheBackend()
+    await backend_instance.get_backend()
+
+    mock_validate_redis_settings.assert_called_once_with(redis_instance_mock)

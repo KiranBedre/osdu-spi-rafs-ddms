@@ -50,11 +50,45 @@ Use any code editor to set variables in the **values.yaml** file. Some of the va
 **data.enableApiV1** | Deployment flag to enable api V1 | string | `True` | yes
 **data.cacheEnable** | Enable or disable cache for the application | string | `True` | yes
 **data.cacheBackend** | Path to your backend, which is used to initialize FastAPICache | string | `app.core.helpers.cache.backends.redis_cache.RedisCacheBackend` | yes
-**data.redisRafsDdmsHost** | Redis instance host. If empty, Helm installs an internal Redis instance | string | `redis-rafs-ddms` | yes
+**data.redisRafsDdmsHost** | Redis instance host. If empty (`""`), defaults to `redis-rafs-ddms` and Helm installs an internal Redis instance. Set to an external hostname to use external Redis | string | `""` | yes
 **data.redisRafsDdmsDatabase** | Redis database number | string | `13` | yes
 **data.redisRafsDdmsSsl** | Enable SSL for external Redis instance. For Redis inside k8s - should be `False` | string | `False` | yes
 **data.redisRafsDdmsPort** | Redis instance port | string | `6379` | yes
 **data.redisIndexEnable** | Enable redis index | bool | `True` | yes
+
+#### Redis Configuration Details
+
+The Redis hostname configuration has the following override logic (defined in `templates/configmap.yaml`):
+
+1. **External Redis**: If `data.redisRafsDdmsHost` is set to a non-empty value, that hostname will be used and you must provide your own external Redis instance
+2. **Internal Redis** (default): If `data.redisRafsDdmsHost` is empty (`""`), the hostname defaults to `redis-rafs-ddms` and Helm will automatically deploy an internal Redis instance
+
+**Environment Variables Set:**
+- `REDIS_HOSTNAME`: Set to either your custom hostname or `redis-rafs-ddms` (default)
+- `REDIS_DATABASE`: Database number (default: `13`)
+- `REDIS_SSL`: SSL enabled/disabled (default: `False` for internal Redis)
+- `REDIS_PORT`: Redis port (default: `6379`)
+- `REDIS_PASSWORD`: Injected from Kubernetes secret `rafs-ddms-redis-secret`
+
+**Example configurations:**
+
+Using internal Redis (default):
+```yaml
+data:
+  redisRafsDdmsHost: ""  # Empty - uses internal Redis
+  redisRafsDdmsDatabase: "13"
+  redisRafsDdmsSsl: "False"
+  redisRafsDdmsPort: "6379"
+```
+
+Using external Redis:
+```yaml
+data:
+  redisRafsDdmsHost: "my-external-redis.example.com"  # Custom external Redis
+  redisRafsDdmsDatabase: "0"
+  redisRafsDdmsSsl: "True"  # Enable SSL for external connection
+  redisRafsDdmsPort: "6380"
+```
 
 ### Deployment Variables
 
