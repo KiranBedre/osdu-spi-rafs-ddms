@@ -59,7 +59,7 @@ SAMPLESANALYSESREPORT_ID = "samplesanalysesreport_test_id"
 SAMPLESANALYSIS_TYPE = "work-product-component--SamplesAnalysis"
 SAMPLESANALYSIS_ID = "samplesanalysis_test"
 SATURATION_FUNCTION_SET_TYPE = "work-product-component--SaturationFunctionSet"
-SATURATION_FUNCTION_SET_ID = "saturation_function_set_test"
+SATURATION_FUNCTION_SET_ID = "saturation_function_set_test_id"
 FILE_GENERIC_TYPE = "dataset--File.Generic"
 TEST_DATASET_UID = "1"
 
@@ -210,7 +210,7 @@ SATURATION_FUNCTION_SET_RECORD = OsduStorageRecord(
         "SaturationFunctions": [
             {
                 "FunctionName": "Relative permeabilitiy functions (SGFN: krg(Sg), SWFN: Krw(Sw),SOF3: Krow(So),SOF3: Krog(So)",
-                "FunctionUsageTypeID": "partition:reference-data--SaturationFunctionUsageType:Drainage:",
+                "FunctionUsageTypeID": "namespace:reference-data--SaturationFunctionUsageType:Drainage:",
                 "DatePublished": "2010-09-09",
                 "HasRelativePermeability": True,
                 "HasCapillaryPressure": False,

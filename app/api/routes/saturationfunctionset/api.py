@@ -18,14 +18,14 @@ from app.api.dependencies.validation import (
     validate_saturation_function_set_v2_payload,
 )
 from app.api.routes.saturationfunctionset.endpoints import (
-    SaturationFunctionSetView,
+    SaturationFunctionSetRecordView,
 )
 
 SFS_ID_REGEX_STR = r"^[\w\-\.]+:work-product-component--SaturationFunctionSet:[\w\-\.\:\%]+$"
 
 sfs_record_router_v2 = APIRouter()
 
-SaturationFunctionSetView(
+SaturationFunctionSetRecordView(
     router=sfs_record_router_v2,
     id_regex_str=SFS_ID_REGEX_STR,
     validate_records_payload=validate_saturation_function_set_v2_payload,

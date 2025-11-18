@@ -14,45 +14,37 @@
 
 from typing import Annotated, List
 
-from fastapi import APIRouter, Body, Depends, Request
+from fastapi import Body, Depends, Request
 
 from app.api.dependencies.services import get_async_storage_service
 from app.api.routes.osdu.storage_records import BaseStorageRecordView
-from app.api.routes.osdu.wpc_dataset_source import WPCDatasetSourceView
 from app.models.schemas.osdu_storage import StorageUpsertResponse
 from app.resources.load_model_example import load_data_example
 from app.services import storage
 
+SaturationFunctionSetBody = Annotated[
+    List[dict],
+    Body(
+        openapi_examples={
+            "example": {
+                "value": load_data_example("saturation_function_set.json"),
+            },
+        },
+    ),
+]
 
-class SaturationFunctionSetView(BaseStorageRecordView):
+
+class SaturationFunctionSetRecordView(BaseStorageRecordView):
     """Saturation Function Set View.
 
     :param BaseStorageRecordView: inherits from BaseStorageRecordView
     :type BaseStorageRecordView: BaseStorageRecordView
     """
 
-    def __init__(
-        self,
-        router: APIRouter,
-        id_regex_str: str,
-        validate_records_payload: callable,
-        record_type: str,
-    ) -> None:
-        super().__init__(router, id_regex_str, validate_records_payload, record_type)
-        self._wpc_dataset_source_view = WPCDatasetSourceView(router, id_regex_str)
-
     async def post_records(
         self,
         request: Request,
-        request_records: Annotated[
-            List[dict], Body(
-                openapi_examples={
-                    "example": {
-                        "value": load_data_example("saturation_function_set.json"),
-                    },
-                },
-            ),
-        ],
+        request_records: SaturationFunctionSetBody,
         storage_service: storage.StorageService = Depends(get_async_storage_service),
     ) -> StorageUpsertResponse:
         return await super().post_records(request, request_records, storage_service)

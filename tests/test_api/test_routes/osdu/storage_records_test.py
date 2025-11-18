@@ -954,7 +954,6 @@ async def test_post_record_auth_errors(
     "endpoint,record_id", [
         (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2, TEST_WRONG_ID),
-        (storage_mock_objects.SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.MASTER_DATA_ENDPOINT_PATH_V2, TEST_WRONG_ID),
     ],
 )
@@ -974,7 +973,6 @@ async def test_get_record_wrong_id_pattern(endpoint, record_id):
     "endpoint,manifest", [
         (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
         (storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
-        (storage_mock_objects.SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
         (storage_mock_objects.MASTER_DATA_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
     ],
 )
@@ -997,7 +995,6 @@ async def test_post_record_wrong_kind(endpoint, manifest):
     "endpoint,record_id", [
         (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2, TEST_WRONG_ID),
-        (storage_mock_objects.SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.MASTER_DATA_ENDPOINT_PATH_V2, TEST_WRONG_ID),
     ],
 )

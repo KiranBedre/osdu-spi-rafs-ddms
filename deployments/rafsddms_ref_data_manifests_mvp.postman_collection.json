@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "5697c354-66b6-453f-99f0-3263faf4b2c7",
+		"_postman_id": "81f28056-1e5e-4895-b61c-26d59e62907c",
 		"name": "RAFS DDMS Reference Data Ingestion Manifests - MVP",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "13703490"
+		"_exporter_id": "38550791"
 	},
 	"item": [
 		{
@@ -1487,6 +1487,73 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{NAMESPACE}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"osdu:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--EndFaceEstimationMethod:HasslerBrunner\",\r\n                    \"kind\": \"{{rafsddms-schema-authority}}:wks:reference-data--EndFaceEstimationMethod:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"HasslerBrunner\",\r\n                        \"ID\": null,\r\n                        \"Description\": \"HasslerBrunner\",\r\n                        \"Code\": \"HasslerBrunner\",\r\n                        \"AttributionAuthority\": \"RAFSDDMS\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--EndFaceEstimationMethod:Forbes\",\r\n                    \"kind\": \"{{rafsddms-schema-authority}}:wks:reference-data--EndFaceEstimationMethod:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Forbes\",\r\n                        \"ID\": null,\r\n                        \"Description\": \"Forbes\",\r\n                        \"Code\": \"Forbes\",\r\n                        \"AttributionAuthority\": \"RAFSDDMS\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{WORKFLOW_URL}}/workflow/Osdu_ingest/workflowRun",
+					"protocol": "https",
+					"host": [
+						"{{WORKFLOW_URL}}"
+					],
+					"path": [
+						"workflow",
+						"Osdu_ingest",
+						"workflowRun"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ingest RefData FluidModelPropertyPhase",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var workflowId = jsonData.workflowId;\r",
+							"    var runId = jsonData.runId;\r",
+							"    pm.collectionVariables.set(\"run_id\", runId);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "data-partition-id",
+						"value": "{{data-partition-id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{NAMESPACE}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"osdu:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--FluidModelPropertyPhase:Oil\",\r\n                    \"kind\": \"osdu:wks:reference-data--FluidModelPropertyPhase:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Oil\",\r\n                        \"ID\": \"Oil\",\r\n                        \"Description\": \"Petroleum (oil) and other liquid hydrocarbons.\",\r\n                        \"Code\": \"Oil\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/FluidModelPropertyPhase.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--FluidModelPropertyPhase:Gas\",\r\n                    \"kind\": \"osdu:wks:reference-data--FluidModelPropertyPhase:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Gas\",\r\n                        \"ID\": \"Gas\",\r\n                        \"Description\": \"Any substance in gaseous state, including hydrocarbon gas and non-hydrocarbon gases such as water vapor.\",\r\n                        \"Code\": \"Gas\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/FluidModelPropertyPhase.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--FluidModelPropertyPhase:Water\",\r\n                    \"kind\": \"osdu:wks:reference-data--FluidModelPropertyPhase:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Water\",\r\n                        \"ID\": \"Water\",\r\n                        \"Description\": \"Liquid phase of water and water-based mixtures. Includes pure water but also other water-based (aqueous) mixtures, which includes saltwater/brine and the presence of non-water additives.\",\r\n                        \"Code\": \"Water\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/FluidModelPropertyPhase.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
 				},
 				"url": {
 					"raw": "https://{{WORKFLOW_URL}}/workflow/Osdu_ingest/workflowRun",
@@ -3004,6 +3071,140 @@
 			"response": []
 		},
 		{
+			"name": "Ingest RefData RockModelCapillaryPressurePhase",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var workflowId = jsonData.workflowId;\r",
+							"    var runId = jsonData.runId;\r",
+							"    pm.collectionVariables.set(\"run_id\", runId);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "data-partition-id",
+						"value": "{{data-partition-id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{NAMESPACE}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"osdu:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--RockModelCapillaryPressurePhase:OilWater\",\r\n                    \"kind\": \"osdu:wks:reference-data--RockModelCapillaryPressurePhase:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Oil-Water\",\r\n                        \"NameAlias\": [\r\n                            {\r\n                                \"AliasName\": \"Water-Oil\",\r\n                                \"AliasNameTypeID\": \"{{NAMESPACE}}:reference-data--AliasNameType:CommonName:\",\r\n                                \"DefinitionOrganisationID\": \"{{NAMESPACE}}:reference-data--StandardsOrganisation:OSDU:\"\r\n                            }\r\n                        ],\r\n                        \"ID\": \"OilWater\",\r\n                        \"Description\": \"The capillary pressure between water and oil.\",\r\n                        \"Code\": \"OilWater\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/RockModelCapillaryPressurePhase.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--RockModelCapillaryPressurePhase:GasWater\",\r\n                    \"kind\": \"osdu:wks:reference-data--RockModelCapillaryPressurePhase:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Gas-Water\",\r\n                        \"NameAlias\": [\r\n                            {\r\n                                \"AliasName\": \"Water-Gas\",\r\n                                \"AliasNameTypeID\": \"{{NAMESPACE}}:reference-data--AliasNameType:CommonName:\",\r\n                                \"DefinitionOrganisationID\": \"{{NAMESPACE}}:reference-data--StandardsOrganisation:OSDU:\"\r\n                            }\r\n                        ],\r\n                        \"ID\": \"GasWater\",\r\n                        \"Description\": \"The capillary pressure between gas and water.\",\r\n                        \"Code\": \"GasWater\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/RockModelCapillaryPressurePhase.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--RockModelCapillaryPressurePhase:GasOil\",\r\n                    \"kind\": \"osdu:wks:reference-data--RockModelCapillaryPressurePhase:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Gas-Oil\",\r\n                        \"NameAlias\": [\r\n                            {\r\n                                \"AliasName\": \"Oil-Gas\",\r\n                                \"AliasNameTypeID\": \"{{NAMESPACE}}:reference-data--AliasNameType:CommonName:\",\r\n                                \"DefinitionOrganisationID\": \"{{NAMESPACE}}:reference-data--StandardsOrganisation:OSDU:\"\r\n                            }\r\n                        ],\r\n                        \"ID\": \"GasOil\",\r\n                        \"Description\": \"The capillary pressure between gas and oil. \",\r\n                        \"Code\": \"GasOil\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/RockModelCapillaryPressurePhase.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{WORKFLOW_URL}}/workflow/Osdu_ingest/workflowRun",
+					"protocol": "https",
+					"host": [
+						"{{WORKFLOW_URL}}"
+					],
+					"path": [
+						"workflow",
+						"Osdu_ingest",
+						"workflowRun"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ingest RefData RockModelRelativePermeabilityPhase",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var workflowId = jsonData.workflowId;\r",
+							"    var runId = jsonData.runId;\r",
+							"    pm.collectionVariables.set(\"run_id\", runId);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "data-partition-id",
+						"value": "{{data-partition-id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{NAMESPACE}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"osdu:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--RockModelRelativePermeabilityPhase:OilInWater\",\r\n                    \"kind\": \"osdu:wks:reference-data--RockModelRelativePermeabilityPhase:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Oil-In-Water\",\r\n                        \"ID\": \"OilInWater\",\r\n                        \"Description\": \"The relative permeability to oil in the presence of water at different water or oil saturations.\",\r\n                        \"Code\": \"OilInWater\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/RockModelRelativePermeabilityPhase.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--RockModelRelativePermeabilityPhase:OilInGas\",\r\n                    \"kind\": \"osdu:wks:reference-data--RockModelRelativePermeabilityPhase:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Oil-In-Gas\",\r\n                        \"ID\": \"OilInGas\",\r\n                        \"Description\": \"The relative permeability to oil in the presence of gas at different gas or oil saturations, in the presence of connate water. \",\r\n                        \"Code\": \"OilInGas\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/RockModelRelativePermeabilityPhase.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--RockModelRelativePermeabilityPhase:Water\",\r\n                    \"kind\": \"osdu:wks:reference-data--RockModelRelativePermeabilityPhase:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Water\",\r\n                        \"ID\": \"Water\",\r\n                        \"Description\": \"The relative permeability to water in the presence of gas and/or oil at different water saturations. \",\r\n                        \"Code\": \"Water\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/RockModelRelativePermeabilityPhase.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--RockModelRelativePermeabilityPhase:Gas\",\r\n                    \"kind\": \"osdu:wks:reference-data--RockModelRelativePermeabilityPhase:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Gas\",\r\n                        \"ID\": \"Gas\",\r\n                        \"Description\": \"The relative permeability to gas in the presence of water and/or oil at different gas saturations. \",\r\n                        \"Code\": \"Gas\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/RockModelRelativePermeabilityPhase.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{WORKFLOW_URL}}/workflow/Osdu_ingest/workflowRun",
+					"protocol": "https",
+					"host": [
+						"{{WORKFLOW_URL}}"
+					],
+					"path": [
+						"workflow",
+						"Osdu_ingest",
+						"workflowRun"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Ingest RefData FluidResistivityMeasurementMethod",
 			"event": [
 				{
@@ -4118,6 +4319,73 @@
 			"response": []
 		},
 		{
+			"name": "Ingest RefData SaturationFunctionUsageType",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var workflowId = jsonData.workflowId;\r",
+							"    var runId = jsonData.runId;\r",
+							"    pm.collectionVariables.set(\"run_id\", runId);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "data-partition-id",
+						"value": "{{data-partition-id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{NAMESPACE}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"osdu:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--SaturationFunctionUsageType:Imbibition\",\r\n                    \"kind\": \"osdu:wks:reference-data--SaturationFunctionUsageType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Imbibition\",\r\n                        \"ID\": \"Imbibition\",\r\n                        \"Description\": \"The process where the wetting phase displaces the nonwetting phase(s) within the reservoir. \",\r\n                        \"Code\": \"Imbibition\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/SaturationFunctionUsageType.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--SaturationFunctionUsageType:Drainage\",\r\n                    \"kind\": \"osdu:wks:reference-data--SaturationFunctionUsageType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Drainage \",\r\n                        \"ID\": \"Drainage \",\r\n                        \"Description\": \"The process where the nonwetting phase displaces the wetting phase(s) within the reservoir. \",\r\n                        \"Code\": \"Drainage \",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/SaturationFunctionUsageType.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{WORKFLOW_URL}}/workflow/Osdu_ingest/workflowRun",
+					"protocol": "https",
+					"host": [
+						"{{WORKFLOW_URL}}"
+					],
+					"path": [
+						"workflow",
+						"Osdu_ingest",
+						"workflowRun"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Ingest RefData SaturationProcessMethod",
 			"event": [
 				{
@@ -4429,6 +4697,73 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{NAMESPACE}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"osdu:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--TensileStrengthMethod:ASTM\",\r\n                    \"kind\": \"{{rafsddms-schema-authority}}:wks:reference-data--TensileStrengthMethod:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"ASTM\",\r\n                        \"ID\": null,\r\n                        \"Description\": \"ASTM\",\r\n                        \"Code\": \"ASTM\",\r\n                        \"AttributionAuthority\": \"RAFSDDMS\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--TensileStrengthMethod:YongYu\",\r\n                    \"kind\": \"{{rafsddms-schema-authority}}:wks:reference-data--TensileStrengthMethod:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"YongYu\",\r\n                        \"ID\": null,\r\n                        \"Description\": \"YongYu\",\r\n                        \"Code\": \"YongYu\",\r\n                        \"AttributionAuthority\": \"RAFSDDMS\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--TensileStrengthMethod:Brazilian\",\r\n                    \"kind\": \"{{rafsddms-schema-authority}}:wks:reference-data--TensileStrengthMethod:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Brazilian\",\r\n                        \"ID\": null,\r\n                        \"Description\": \"Brazilian\",\r\n                        \"Code\": \"Brazilian\",\r\n                        \"AttributionAuthority\": \"RAFSDDMS\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{WORKFLOW_URL}}/workflow/Osdu_ingest/workflowRun",
+					"protocol": "https",
+					"host": [
+						"{{WORKFLOW_URL}}"
+					],
+					"path": [
+						"workflow",
+						"Osdu_ingest",
+						"workflowRun"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ingest RefData ThreePhaseRelativePermeabilityModelType",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var workflowId = jsonData.workflowId;\r",
+							"    var runId = jsonData.runId;\r",
+							"    pm.collectionVariables.set(\"run_id\", runId);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "data-partition-id",
+						"value": "{{data-partition-id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{NAMESPACE}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"osdu:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--ThreePhaseRelativePermeabilityModelType:Baker\",\r\n                    \"kind\": \"osdu:wks:reference-data--ThreePhaseRelativePermeabilityModelType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Baker\",\r\n                        \"ID\": \"Baker\",\r\n                        \"Description\": \"Three-phase oil relative permeabilities are determined by a saturation-weighted interpolation between oil\\u2013water and oil\\u2013gas data based on (Baker, L. E.: \\\"Three-Phase Relative Permeability Correlations\\\", paper SPE 17369 presented at the SPE Enhanced Oil Recovery Symposium, Tulsa, Oklahoma, USA (16-21 April 1988)).\",\r\n                        \"Code\": \"Baker\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/ThreePhaseRelativePermeabilityModelType.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--ThreePhaseRelativePermeabilityModelType:Stone1\",\r\n                    \"kind\": \"osdu:wks:reference-data--ThreePhaseRelativePermeabilityModelType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Stone 1\",\r\n                        \"NameAlias\": [\r\n                            {\r\n                                \"AliasName\": \"Stone I\",\r\n                                \"AliasNameTypeID\": \"{{NAMESPACE}}:reference-data--AliasNameType:CommonName:\",\r\n                                \"DefinitionOrganisationID\": \"{{NAMESPACE}}:reference-data--StandardsOrganisation:OSDU:\"\r\n                            }\r\n                        ],\r\n                        \"ID\": \"Stone1\",\r\n                        \"Description\": \"Model based on the channel flow theory, which states that in any flow channel there is at most only one mobile fluid. Requires two sets of two-phase data: water-oil displacement and gas-oil displacement based on (Stone, H. L.: \\\"Probability Model for Estimating Three-Phase Relative Permeability\\\", paper SPE 2116, Journal of Petroleum Technology (1970)) .\",\r\n                        \"Code\": \"Stone1\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/ThreePhaseRelativePermeabilityModelType.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--ThreePhaseRelativePermeabilityModelType:Stone2\",\r\n                    \"kind\": \"osdu:wks:reference-data--ThreePhaseRelativePermeabilityModelType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Stone 2\",\r\n                        \"NameAlias\": [\r\n                            {\r\n                                \"AliasName\": \"Stone II\",\r\n                                \"AliasNameTypeID\": \"{{NAMESPACE}}:reference-data--AliasNameType:CommonName:\",\r\n                                \"DefinitionOrganisationID\": \"{{NAMESPACE}}:reference-data--StandardsOrganisation:OSDU:\"\r\n                            }\r\n                        ],\r\n                        \"ID\": \"Stone2\",\r\n                        \"Description\": \"Model based on channel flow theory which uses of all four two-phase relative permeability relationships from the oil\\u2013gas and oil\\u2013water systems based on (Stone, H. L.: \\\"Estimation of Three-Phase Relative Permeability and Residual Oil Data\\\", Journal of Canadian Petroleum Technology (1973)). \",\r\n                        \"Code\": \"Stone2\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/ThreePhaseRelativePermeabilityModelType.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--ThreePhaseRelativePermeabilityModelType:Linear\",\r\n                    \"kind\": \"osdu:wks:reference-data--ThreePhaseRelativePermeabilityModelType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Linear\",\r\n                        \"NameAlias\": [\r\n                            {\r\n                                \"AliasName\": \"Linear interpretation\",\r\n                                \"AliasNameTypeID\": \"{{NAMESPACE}}:reference-data--AliasNameType:CommonName:\",\r\n                                \"DefinitionOrganisationID\": \"{{NAMESPACE}}:reference-data--StandardsOrganisation:OSDU:\"\r\n                            }\r\n                        ],\r\n                        \"ID\": \"Linear\",\r\n                        \"Description\": \"In this model, relative permeability to oil is obtained by true linear interpolation between two-phase relative permeability curves (oil-water and oil-gas) based on (Baker, L. E.: \\\"Three-Phase Relative Permeability Correlations\\\", paper SPE 17369 presented at the SPE Enhanced Oil Recovery Symposium, Tulsa, Oklahoma, USA (16-21 April 1988)).\",\r\n                        \"Code\": \"Linear\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Published/ThreePhaseRelativePermeabilityModelType.1.xlsx; commit SHA 5c693079.\",\r\n                        \"CommitDate\": \"2025-11-11T04:54:42+00:00\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
 				},
 				"url": {
 					"raw": "https://{{WORKFLOW_URL}}/workflow/Osdu_ingest/workflowRun",
