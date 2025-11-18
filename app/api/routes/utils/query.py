@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import re
+import string
 from typing import Any, Iterable, List
 
 from app.api.routes.utils.records import FULLID_ID_INDEX, get_id_version
@@ -44,7 +45,7 @@ def find_osdu_ids_from_string(input_string: str) -> set:
     ids_set = set()
     for osdu_regex in ALL_OSDU_REGEXES:
         found_ids = {
-            get_id_version(id_.strip("\"\' "))[FULLID_ID_INDEX]
+            get_id_version(id_.strip(f"{string.whitespace}\"\'"))[FULLID_ID_INDEX]
             for id_ in re.findall(osdu_regex, f" {input_string} ")
         }
         ids_set.update(found_ids)
