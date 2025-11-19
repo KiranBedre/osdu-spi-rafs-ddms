@@ -1,0 +1,187 @@
+variables:
+  CIMPL_SERVICE: rafs-ddms
+  CIMPL_INT_TEST_TYPE: python
+  CIMPL_SUPPORTED_PLATFORM: "linux/amd64"
+  CIMPL_IMAGE_REDIS_NAME: cimpl-redis-stack-server
+  REDIS_REPO: "docker.io/redis/redis-stack-server"
+  REDIS_VERSION: "7.4.0-v8"
+  CIMPL_IMAGE_CRONJOB_NAME: cimpl-rafs-ddms-cronjob
+
+.cimpl_get_version:
+  script:
+    - |
+      CIMPL_VERSION="0.0.0-${CI_COMMIT_SHORT_SHA}"
+      if [ -z "$CI_COMMIT_TAG" ] && echo "$CI_COMMIT_BRANCH" | grep -Eq "^release/[0-9]{1,2}\.[0-9]{1,2}$"; then
+        RELEASE_VERSION=$(echo "$CI_COMMIT_BRANCH" | sed "s?^release/??")
+        CIMPL_VERSION="$RELEASE_VERSION"
+      elif echo "$CI_COMMIT_TAG" | grep -Eq "^v[0-9]{1,2}\.[0-9]{1,2}\.[0-9]{1,2}$"; then
+        CIMPL_VERSION=$(echo "$CI_COMMIT_TAG" | sed "s/^v//;s/-.*$//")
+      fi
+      echo "CIMPL_VERSION=$CIMPL_VERSION"
+
+.cimpl_substitute_service_and_cronjob_images_in_helm:
+  script:
+    - wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
+    - IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$IMAGE_TAG" yq -i '.data.image = env(IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - CRONJOB_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_CRONJOB_NAME:$IMAGE_TAG" yq -i '.data.cronJobImage = env(CRONJOB_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - REDIS_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_REDIS_NAME:$REDIS_VERSION" yq -i '.data.redisImage = env(REDIS_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+
+.cimpl_python_test_report:
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    reports:
+      junit: integration_tests_report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
+.get_cimpl_access_token:
+  script:
+    - |
+      echo "🔐 Requesting access token from Keycloak..."
+      ACCESS_TOKEN=$(curl --fail-with-body -s -L -X POST \
+        "https://keycloak.dev1.osdu-cimpl.opengroup.org/realms/osdu/protocol/openid-connect/token" \
+        -H "Content-Type: application/x-www-form-urlencoded" \
+        -d "client_id=${TEST_EPAM_OPENID_PROVIDER_CLIENT_ID}" \
+        -d "client_secret=${CIMPL_TEST_EPAM_OPENID_PROVIDER_CLIENT_SECRET}" \
+        -d "grant_type=client_credentials" \
+        -d "scope=openid profile offline_access email" | jq -r .access_token)
+      if [[ -z "$ACCESS_TOKEN" || "$ACCESS_TOKEN" == "null" ]]; then
+        echo "❌ Failed to obtain access token from Keycloak"
+        exit 1
+      fi
+      echo "✅ Access token successfully retrieved from Keycloak"
+      echo "$ACCESS_TOKEN" | head -c 10
+      echo ""
+      export ACCESS_TOKEN
+
+cimpl-containerize-gitlab:
+  needs:
+    - job: compile-and-unit-test
+      optional: true
+  variables:
+    CIMPL_BUILD_CONTEXT: "."
+    CIMPL_BUILD_PATH: "./Dockerfile"
+  script: 
+    - !reference [.cimpl_get_version, script]
+    - !reference [.cimpl_set_image_name, script]
+    - >
+      docker build $EXTRA_TAG -f $CIMPL_BUILD_PATH
+      --build-arg build_date="$CI_JOB_STARTED_AT"
+      --build-arg commit_id="$CI_COMMIT_SHORT_SHA"
+      --build-arg commit_branch="$CI_COMMIT_BRANCH"
+      --build-arg commit_message="$CI_COMMIT_MESSAGE"
+      --build-arg release_version="$CIMPL_VERSION" $CIMPL_BUILD_CONTEXT
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME
+#  one time action    
+    # - docker pull $REDIS_REPO:$REDIS_VERSION 
+    # - docker tag $REDIS_REPO:$REDIS_VERSION $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_REDIS_NAME:$REDIS_VERSION
+    # - docker push $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_REDIS_NAME:$REDIS_VERSION
+    - wait
+
+cimpl-cronjob-containerize-gitlab:
+  extends:
+    - cimpl-containerize-gitlab
+  needs:
+    - job: compile-and-unit-test
+      optional: true
+  variables:
+    CIMPL_BUILD_CONTEXT: "./devops/core-plus/cronjob"
+    CIMPL_BUILD_PATH: "./devops/core-plus/cronjob/Dockerfile"
+    CIMPL_IMAGE_NAME: $CIMPL_IMAGE_CRONJOB_NAME
+  script: 
+    - !reference [.cimpl_get_version, script]
+    - !reference [.cimpl_set_image_name, script]
+    - >
+      docker build $EXTRA_TAG -f $CIMPL_BUILD_PATH
+      --build-arg build_date="$CI_JOB_STARTED_AT"
+      --build-arg commit_id="$CI_COMMIT_SHORT_SHA"
+      --build-arg commit_branch="$CI_COMMIT_BRANCH"
+      --build-arg commit_message="$CI_COMMIT_MESSAGE"
+      --build-arg release_version="$CIMPL_VERSION" $CIMPL_BUILD_CONTEXT
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME
+
+cimpl-helm-charts-gitlab:
+  before_script:
+    - helm registry login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - !reference [.cimpl_set_image_name, script]
+    - !reference [.cimpl_substitute_service_and_cronjob_images_in_helm, script]
+
+cimpl-deploy:
+  needs:
+    - "cimpl-containerize-gitlab"
+    - "cimpl-cronjob-containerize-gitlab"
+    - "cimpl-helm-charts-gitlab"
+  script:
+    - !reference [.cimpl_obtain_credentials, script]
+    - !reference [.cimpl_set_image_name, script]
+    - !reference [.cimpl_common_config, script]
+    - >
+      helm upgrade $CIMPL_SERVICE-deploy oci://$CI_REGISTRY_IMAGE/cimpl-helm/$CIMPL_HELM_PACKAGE_NAME
+      --version $CIMPL_HELM_PACKAGE_VERSION-$CIMPL_HELM_TAG
+      --install
+      --create-namespace
+      --namespace=$CIMPL_HELM_NAMESPACE
+      --wait
+      --history-max=3
+      --set global.onPremEnabled=true
+      --set global.domain=$CIMPL_DOMAIN
+      --set global.dataPartitionId=osdu
+      --set global.RAFS_URI=$CIMPL_TENANT.$CIMPL_DOMAIN
+      --set data.serviceAccountName=$CIMPL_SERVICE
+      --set data.cronJobClientId=$TEST_EPAM_OPENID_PROVIDER_CLIENT_ID
+      --set data.cronJobClientSecret=$CIMPL_TEST_EPAM_OPENID_PROVIDER_CLIENT_SECRET
+      --set data.logLevel=INFO
+      --set data.bucketPrefix="refi"
+      --set data.groupId=$GROUP_ID
+      --set data.sharedTenantName=$CIMPL_TENANT
+      --set data.googleCloudProject=$CIMPL_PROJECT
+      --set data.bucketName=$CIMPL_POLICY_BUCKET
+      --set data.subscriberPrivateKeyId=$CIMPL_SUBSCRIBER_PRIVATE_KEY_ID
+      --set rosa=true
+      $CIMPL_HELM_SETS
+      $CIMPL_HELM_TIMEOUT
+    - !reference [.cimpl_verify_deploy, script]
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^release/ || $CI_COMMIT_TAG || $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_REF_NAME =~ /^trusted-/ && $CIMPL == "1"
+      when: on_success
+    - when: never
+
+cimpl-test-python:
+  image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
+  variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    PARTITION: $CIMPL_TENANT
+    SERVICE_HOST_STORAGE: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/storage/v2
+    SERVICE_HOST_LEGAL: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/legal/v1
+    RAFS_USE_BLOB_STORAGE: "False"
+  extends:
+    - .cimpl-variables
+    - .cimpl_python_test_report
+  before_script:
+    - apt update -qqq -y && apt install -qqq -y curl jq &> /dev/null
+    - !reference [.get_cimpl_access_token, script]
+  script:
+    - |
+      echo "🚀 Running integration tests against ${CIMPL_TENANT}.${CIMPL_DOMAIN}"
+      time pytest -n 3 \
+        --junitxml=integration_tests_report.xml \
+        --cov=app \
+        --cov-report=xml:coverage.xml \
+        --cov-report=term \
+        ./tests/integration/tests \
+        --ddms-base-url "https://${CIMPL_TENANT}.${CIMPL_DOMAIN}" \
+        --url-prefix "${URL_PREFIX}" \
+        --bearer-token "${ACCESS_TOKEN}" \
+        --partition "${PARTITION}" \
+        --cloud-provider "gc"
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^release/ || $CI_COMMIT_TAG || $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_REF_NAME =~ /^trusted-/ && $CIMPL == "1"
+      when: on_success
+    - when: never

@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ .Values.conf.appName | quote }}
+  name: {{ .Values.conf.configmap | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+data:
+  CLOUD_PROVIDER: ""
+  SERVICE_NAME: {{ .Values.conf.appName | quote }}
+  OPENAPI_PREFIX: {{ .Values.data.openapiPrefix | quote }}
+  SERVICE_HOST_STORAGE: {{ printf "%s%s" .Values.data.storageHost "/api/storage/v2" | quote }}
+  SERVICE_HOST_SEARCH: {{ printf "%s%s" .Values.data.searchHost "/api/search/v2" | quote }}
+  SERVICE_HOST_PARTITION: {{ printf "%s%s" .Values.data.partitionHost "/api/partition/v1" | quote }}
+  SERVICE_HOST_DATASET: {{ printf "%s%s" .Values.data.datasetHost "/api/dataset/v1" | quote }}
+  SERVICE_HOST_SCHEMA: {{ printf "%s%s" .Values.data.schemaHost "/api/schema-service/v1" | quote }}
+  SERVICE_HOST_ENTITLEMENTS: {{ printf "%s%s" .Values.data.entitlementsHost "/api/entitlements/v2" | quote }}
+  SERVICE_READINESS_URLS: "{{ printf "%s%s" .Values.data.storageHost "/api/storage/v2/liveness_check" }},{{ printf "%s%s" .Values.data.schemaHost "/api/schema-service/v1/liveness_check" }}"
+  CACHE_ENABLE: {{ .Values.data.cacheEnable | quote }}
+  CACHE_BACKEND: {{ .Values.data.cacheBackend | quote }}
+  {{- if .Values.data.redisRafsDdmsHost }}
+  REDIS_HOSTNAME: {{ .Values.data.redisRafsDdmsHost | quote }}
+  {{- else }}
+  REDIS_HOSTNAME: {{ printf "redis-%s" .Values.conf.appName | quote }}
+  {{- end }}
+  REDIS_DATABASE: {{ .Values.data.redisRafsDdmsDatabase | quote }}
+  REDIS_SSL: {{ .Values.data.redisRafsDdmsSsl | quote }}
+  REDIS_PORT: {{ .Values.data.redisRafsDdmsPort | quote }}
+  REDIS_INDEX_ENABLE: {{ .Values.data.redisIndexEnable | quote }}
+  RAFS_USE_BLOB_STORAGE: {{ .Values.data.RAFS_USE_BLOB_STORAGE | quote }}

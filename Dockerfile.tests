@@ -21,4 +21,9 @@ COPY ./client /client
 
 WORKDIR ./tests
 
-CMD pytest -n auto ./tests/integration/tests --ddms-base-url ${DDMS_BASE_URL} --url-prefix {URL_PREFIX} --partition {PARTITION} --bearer-token ${ACCESS_TOKEN} --cloud-provider ${CLOUD_PROVIDER}
+CMD pytest -n auto ./tests/integration/tests \
+      --ddms-base-url ${DDMS_BASE_URL} \
+      --url-prefix ${URL_PREFIX} \
+      --partition ${PARTITION} \
+      --bearer-token ${ACCESS_TOKEN} \
+      --cloud-provider ${CLOUD_PROVIDER}

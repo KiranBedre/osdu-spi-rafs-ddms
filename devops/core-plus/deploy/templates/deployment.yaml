@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.conf.appName | quote }}
+    type: ddms
+    source: python
+  name: {{ .Values.conf.appName | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.conf.appName | quote }}
+  replicas: {{ .Values.conf.replicas }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.conf.appName | quote }}
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+    spec:
+      serviceAccountName: {{ .Values.data.serviceAccountName | quote }}
+      containers:
+        - name: {{ .Values.conf.appName | quote }}
+          image: {{ .Values.data.image | quote }}
+          imagePullPolicy: {{ .Values.data.imagePullPolicy | quote }}
+          envFrom:
+          - configMapRef:
+              name: {{ printf "%s-config" .Values.conf.appName | quote }}
+          env:
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.conf.rafsDdmsRedisSecretName | quote }}
+                key: REDIS_PASSWORD
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /api/rafs-ddms/healthz
+                port: 8080
+              initialDelaySeconds: 120
+              periodSeconds: 10
+          readinessProbe:
+              failureThreshold: 3
+              httpGet:
+                path: /api/rafs-ddms/readiness
+                port: 8080
+              initialDelaySeconds: 120 
+              periodSeconds: 10
+          resources:
+            requests:
+              cpu: {{ .Values.data.requestsCpu | quote }}
+              memory: {{ .Values.data.requestsMemory | quote }}
+            {{- if .Values.global.limitsEnabled }}
+            limits:
+              cpu: {{ .Values.data.limitsCpu | quote }}
+              memory: {{ .Values.data.limitsMemory | quote }}
+            {{- end }}
