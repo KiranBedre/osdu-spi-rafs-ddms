@@ -1,0 +1,68 @@
+{{- if and .Values.data.cronjobEnabled .Values.data.cronJobImage }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ printf "%s-indexer" .Values.conf.appName | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ printf "%s-cronjob" .Values.conf.appName | quote }}
+    type: cronjob
+spec:
+  schedule: {{ .Values.data.cronJobSchedule | default "0 2 * * *" | quote }}  # every 5 minutes for DEBUGGING
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    metadata:
+      annotations:
+        checksum/indexer-image: "{{ .Values.data.cronJobImage | sha256sum }}"
+    spec:
+      ttlSecondsAfterFinished: 60      # 1 min for DEBUGGING
+      backoffLimit: 1                   # retry once upon failure
+      template:
+        metadata:
+          labels:
+            app: {{ printf "%s-cronjob" .Values.conf.appName | quote }}
+          annotations:
+            checksum/indexer-image: "{{ .Values.data.cronJobImage | sha256sum }}"
+        spec:
+          restartPolicy: Never
+#          activeDeadlineSeconds: 1200   # 20 min for DEBUGGING --- CHANGE AFTER TESTING
+          {{- if .Values.rosa }}
+          serviceAccountName: {{ printf "%s-cronjob" .Values.conf.appName | quote }}
+          securityContext:
+            fsGroup: 999
+          {{- end }}
+          containers:
+            - name: indexer-trigger
+              image: {{ .Values.data.cronJobImage | quote }}
+              imagePullPolicy: {{ .Values.data.imagePullPolicy | quote }}
+              env:
+                - name: OAUTH_TOKEN_URL
+                  value: {{ .Values.data.oauthTokenUrl | quote }}
+                - name: CLIENT_ID
+                  value: {{ .Values.data.cronJobClientId | quote }}
+                - name: CLIENT_SECRET
+                  value: {{ .Values.data.cronJobClientSecret | quote }}
+                - name: OAUTH_SCOPE
+                  value: {{ .Values.data.oauthScope | quote }}
+                - name: RAFS_URI
+                  value: {{ printf "https://%s.%s" .Values.global.dataPartitionId .Values.global.domain | quote }}
+                - name: DATA_PARTITION_ID
+                  value: {{ .Values.global.dataPartitionId | quote }}
+              resources:
+                requests:
+                  cpu: {{ .Values.data.cronJobRequestsCpu | default "10m" | quote }}
+                  memory: {{ .Values.data.cronJobRequestsMemory | default "50Mi" | quote }}
+                {{- if .Values.global.limitsEnabled }}
+                limits:
+                  cpu: {{ .Values.data.cronJobLimitsCpu | default "100m" | quote }}
+                  memory: {{ .Values.data.cronJobLimitsMemory | default "128Mi" | quote }}
+                {{- end }}
+              {{- if .Values.rosa }}
+              securityContext:
+                allowPrivilegeEscalation: false
+                runAsNonRoot: true
+                runAsUser: 999
+              {{- end }}
+{{- end }}

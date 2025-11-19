@@ -1,0 +1,88 @@
+#  Copyright © Microsoft Corporation
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+enabled: true
+
+global:
+  limitsEnabled: true
+  # To be set in pipeline by job "cimpl-deploy"
+  domain: ""
+  dataPartitionId: ""
+  onPremEnabled: ""
+  RAFS_URI: ""
+
+data:
+  # To be set in pipeline by job "cimpl-deploy"
+  logLevel: ""
+  bucketPrefix: ""
+  groupId: ""
+  sharedTenantName: ""
+  bucketName: ""
+  # Configmaps
+  openapiPrefix: "/api/rafs-ddms"
+  storageHost: "http://storage"
+  searchHost: "http://search"
+  partitionHost: "http://partition"
+  datasetHost: "http://dataset"
+  schemaHost: "http://schema"
+  entitlementsHost: "http://entitlements"
+  RAFS_USE_BLOB_STORAGE: "False"
+  # Redis connection
+  cacheEnable: "True"
+  cacheBackend: "app.core.helpers.cache.backends.redis_cache.RedisCacheBackend"
+  enableApiV1: "True"
+  # Update 'redisRafsDdmsHost' var if you want to use external Redis
+  redisRafsDdmsHost: ""
+  redisRafsDdmsDatabase: "13"
+  redisRafsDdmsSsl: "False"
+  redisRafsDdmsPort: "6379"
+  redisIndexEnable: "True"
+  redisRafsDdmsstorageclass: "" # by default for ROSA/OpenShift will be used gp3-csi storage class
+  redisRafsDdmsstorage: 1Gi
+  # Deployments
+  requestsCpu: "50m"
+  requestsMemory: "350Mi"
+  limitsCpu: "2"
+  limitsMemory: "3G"
+  redisRequestsCpu: "5m"
+  redisRequestsMemory: "50Mi"
+  imagePullPolicy: "IfNotPresent"
+  serviceAccountName: "rafs-ddms"
+  # To be set in pipeline by job tamplate ".cimpl_substitute_service_and_cronjob_images_in_helm"
+  redisImage: ""
+  image: ""
+  cronJobImage: ""
+  # Cronjob configuration
+  cronjobEnabled: true
+  cronJobSchedule: "*/5 * * * *"  # Daily each 5 minutes for debagging!!!!!!!!!!!!!!!! FIXME: Change to "0 2 * * *" for production
+  cronJobRequestsCpu: "64m"
+  cronJobRequestsMemory: "64Mi"
+  cronJobLimitsCpu: "100m"
+  cronJobLimitsMemory: "128Mi"
+  # OAuth configuration for cronjob (to be set in pipeline)
+  oauthTokenUrl: "https://keycloak.dev1.osdu-cimpl.opengroup.org/realms/osdu/protocol/openid-connect/token"
+  oauthScope: "openid profile offline_access email"
+  cronJobClientId: ""
+  cronJobClientSecret: ""
+
+conf:
+  configmap: "rafs-ddms-config"
+  appName: "rafs-ddms"
+  rafsDdmsRedisSecretName: "rafs-ddms-redis-secret"
+  cronJobSecretName: "rafs-ddms-cronjob-secret"
+  replicas: 1
+
+istio:
+  redisProxyCPU: "50m"
+  redisProxyMemory: "100Mi"

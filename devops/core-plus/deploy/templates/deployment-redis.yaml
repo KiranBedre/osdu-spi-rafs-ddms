@@ -1,0 +1,75 @@
+{{ if not .Values.data.redisRafsDdmsHost }}
+---
+# PersistentVolumeClaim для хранения данных Redis
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ printf "redis-%s" .Values.conf.appName | quote }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.data.redisRafsDdmsstorage | quote }}
+  {{- if .Values.data.redisRafsDdmsstorageclass }}
+  storageClassName: {{ .Values.data.redisRafsDdmsstorageclass }}
+  {{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ printf "redis-%s" .Values.conf.appName | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    type: infra
+    app: {{ printf "redis-%s" .Values.conf.appName | quote }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ printf "redis-%s" .Values.conf.appName | quote }}
+  template:
+    metadata:
+      labels:
+        app: {{ printf "redis-%s" .Values.conf.appName | quote }}
+      annotations:
+        sidecar.istio.io/proxyCPU: {{ .Values.istio.redisProxyCPU | quote }}
+        sidecar.istio.io/proxyMemory: {{ .Values.istio.redisProxyMemory | quote }}
+    spec:
+      {{- if .Values.rosa }}
+      serviceAccountName: {{ printf "redis-%s" .Values.conf.appName | quote }}
+      securityContext:
+        fsGroup: 999
+      {{- end }}
+      containers:
+        - name: {{ printf "redis-%s" .Values.conf.appName | quote }}
+          image: {{ .Values.data.redisImage | quote }}
+          imagePullPolicy: {{ .Values.data.imagePullPolicy | quote }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.conf.rafsDdmsRedisSecretName | quote }}
+          env:
+            - name: REDIS_ARGS
+              value: "--requirepass $(REDIS_PASSWORD)"
+          ports:
+            - containerPort: 6379
+              protocol: TCP
+          volumeMounts:
+            - name: {{ printf "redis-%s" .Values.conf.appName | quote }}
+              mountPath: /data
+          resources:
+            requests:
+              cpu: {{ .Values.data.redisRequestsCpu | quote }}
+              memory: {{ .Values.data.redisRequestsMemory | quote }}
+          {{- if .Values.rosa }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 999
+          {{- end }}
+      volumes:
+        - name: {{ printf "redis-%s" .Values.conf.appName | quote }}
+          persistentVolumeClaim:
+            claimName: {{ printf "redis-%s" .Values.conf.appName | quote }}
+{{ end }}

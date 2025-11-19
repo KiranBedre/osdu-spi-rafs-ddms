@@ -58,20 +58,51 @@ class DatasetService(IDatasetService):
         :return: file content
         :rtype: Optional[bytes]
         """
-        if self.blob_loader is None:
-            logger.warning(f"{self.name}: blob_loader is not initialized. Blob storage is disabled.")
+        retrieval_instruction = await self.dataset_client.get_retrieval_instructions(dataset_id)
+        if not retrieval_instruction.get("datasets"):
+            logger.debug(
+                f"{self.name}: blob hasn't been downloaded due to improper retrieval "
+                f"instructions for: {dataset_id}.",
+            )
             return None
 
-        retrieval_instruction = await self.dataset_client.get_retrieval_instructions(dataset_id)
-        if retrieval_instruction.get("datasets"):
-            signed_url = retrieval_instruction["datasets"][0]["retrievalProperties"]["signedUrl"]
-            blob = await self.blob_loader.download_blob(signed_url)
-            logger.debug(f"{self.name}: blob has been downloaded for: {dataset_id}")
-            return blob
-        else:
-            logger.debug(
-                f"{self.name}: blob hasn't been downloaded due to improper retrieval instructions for: {dataset_id}.",
+        signed_url = retrieval_instruction["datasets"][0]["retrievalProperties"]["signedUrl"]
+
+        if self.blob_loader is None:
+            return await self._download_via_http(signed_url, dataset_id)
+
+        blob = await self.blob_loader.download_blob(signed_url)
+        logger.debug(f"{self.name}: blob has been downloaded for: {dataset_id}")
+        return blob
+
+    async def _download_via_http(self, signed_url: str, dataset_id: str) -> Optional[bytes]:
+        """Download file via HTTP client when blob storage is disabled."""
+        logger.debug(
+            f"{self.name}: Blob storage is disabled. Using HTTP client to "
+            f"download file from dataset service for: {dataset_id}",
+        )
+        import httpx
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(signed_url)
+                response.raise_for_status()
+                blob = await response.aread()
+                logger.debug(
+                    f"{self.name}: blob has been downloaded via dataset service "
+                    f"for: {dataset_id}",
+                )
+                return blob
+        except httpx.HTTPStatusError as exc:
+            logger.error(
+                f"{self.name}: HTTP error downloading file for {dataset_id}: "
+                f"{exc.response.status_code}",
             )
+            return None
+        except httpx.RequestError as exc:
+            logger.error(
+                f"{self.name}: Request error downloading file for {dataset_id}: {exc}",
+            )
+            return None
 
     async def upload_file(
         self, blob_file: bytes, dataset_id: str, parent_record: dict,
@@ -87,18 +118,40 @@ class DatasetService(IDatasetService):
         :return: stored dataset id and version
         :rtype: str
         """
-        if self.blob_loader is None:
-            # When blob storage is disabled, return mock dataset record format
-            logger.warning(f"{self.name}: Blob storage disabled. Skipping file upload for dataset: {dataset_id}")
-            return f"{dataset_id}:1"
-
         storage_instruction = await self.dataset_client.storage_instructions(
             kind_subtype="dataset--File.Generic",
         )
         signed_url = storage_instruction["storageLocation"]["signedUrl"]
         file_source = storage_instruction["storageLocation"]["fileSource"]
 
-        await self.blob_loader.upload_blob(signed_url, blob_file)
+        if self.blob_loader is None:
+            logger.debug(
+                f"{self.name}: Blob storage is disabled. Using HTTP client to "
+                f"upload file to dataset service for: {dataset_id}",
+            )
+            # When blob storage is disabled, use httpx to upload to the signed URL
+            import httpx
+            try:
+                async with httpx.AsyncClient() as client:
+                    response = await client.put(signed_url, content=blob_file)
+                    response.raise_for_status()
+                    logger.debug(
+                        f"{self.name}: blob has been uploaded via dataset service "
+                        f"for: {dataset_id}",
+                    )
+            except httpx.HTTPStatusError as exc:
+                logger.error(
+                    f"{self.name}: HTTP error uploading file for {dataset_id}: "
+                    f"{exc.response.status_code}",
+                )
+                raise
+            except httpx.RequestError as exc:
+                logger.error(
+                    f"{self.name}: Request error uploading file for {dataset_id}: {exc}",
+                )
+                raise
+        else:
+            await self.blob_loader.upload_blob(signed_url, blob_file)
 
         record_list = [
             create_default_dataset_record(

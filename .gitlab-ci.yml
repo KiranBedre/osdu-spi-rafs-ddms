@@ -2,7 +2,6 @@ variables:
   DDMS_NAME: rafs
   GIT_DEPTH: 20
   URL_PREFIX: api/rafs-ddms
-
   REDIS_IMAGE_VERSION: redis/redis-stack-server:7.4.0-v7
 
   # Azure specific
@@ -51,11 +50,15 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/gc-global.yml"
 
+  # CI provider
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "cloud-providers/cimpl-global.yml"  
+
   # OVERRIDE STAGES
-  
+
   # general
   - local: "/devops/osdu/override-stages.yml"
-  
+
   # AZURE provider
   - local: "/devops/azure/override-stages.yml"
 
@@ -65,6 +68,9 @@ include:
   # GC provider
   - local: "devops/gc/pipeline/override-stages.yml"
 
+  # CI provider
+  - local: "devops/core-plus/pipeline/override-stages.yml"
+
   # ADD SERVICE SPECIFIC JOBS
 
   # add service specific build jobs
@@ -72,3 +78,6 @@ include:
 
   # AZURE provider
   - local: "/devops/azure/qa/newman-test.gitlab-ci.yml"
+
+  # CI provider
+  - local: "devops/core-plus/pipeline/cimpl-newman-test.gitlab-ci.yml"

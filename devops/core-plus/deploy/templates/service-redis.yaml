@@ -1,0 +1,17 @@
+{{ if not .Values.data.redisRafsDdmsHost }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ printf "redis-%s" .Values.conf.appName | quote }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ printf "redis-%s" .Values.conf.appName | quote }}
+spec:
+  ports:
+    - port: {{ .Values.data.redisRafsDdmsPort }}
+      protocol: TCP
+      targetPort: 6379
+      name: {{ printf "redis-%s-port" .Values.conf.appName | quote }}
+  selector:
+    app: {{ printf "redis-%s" .Values.conf.appName | quote }}
+{{ end }}
