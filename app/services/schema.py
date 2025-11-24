@@ -43,6 +43,9 @@ def validate_date_time(str_value: str) -> bool:
     :return: does date-time value follow Indexer's format.
     :rtype: bool
     """
+    if not isinstance(str_value, str):
+        return False
+
     try:
         # Check if a date-time value's format is "EEE MMM dd HH:mm:ss zzz yyyy".
         # If it is not, assume that value follows ISO 8601 standart.

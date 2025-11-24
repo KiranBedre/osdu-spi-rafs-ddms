@@ -1,0 +1,37 @@
+{
+  "SaturationFunctionSetID": "Example Saturation Function Set ID",
+  "RelativePermeabilityFunctions": [
+    {
+      "FunctionUsageTypeID": "namespace:reference-data--SaturationFunctionUsageType:Imbibition:",
+      "PhaseRelativePermeabilityFunctions": [
+        {
+          "Saturation": [
+            12345.6
+          ],
+          "RelativePermeability": [
+            12345.6
+          ],
+          "PhaseRelativePermeabilityFluidID": "namespace:reference-data--RockModelRelativePermeabilityPhase:OilInWater:",
+          "PhaseSaturationFluidID": "namespace:reference-data--FluidModelPropertyPhase:Oil:"
+        }
+      ]
+    }
+  ],
+  "CapillaryPressureFunctions": [
+    {
+      "FunctionUsageTypeID": "namespace:reference-data--SaturationFunctionUsageType:Imbibition:",
+      "PhaseCapillaryPressureFunctions": [
+        {
+          "Saturation": [
+            12345.6
+          ],
+          "CapillaryPressure": [
+            12345.6
+          ],
+          "PhaseCapillaryPressureFluidID": "namespace:reference-data--RockModelCapillaryPressurePhase:OilWater:",
+          "PhaseSaturationFluidID": "namespace:reference-data--FluidModelPropertyPhase:Oil:"
+        }
+      ]
+    }
+  ]
+}

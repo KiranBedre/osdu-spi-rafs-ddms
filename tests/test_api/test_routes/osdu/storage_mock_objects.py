@@ -209,18 +209,54 @@ SATURATION_FUNCTION_SET_RECORD = OsduStorageRecord(
     data={
         "SaturationFunctions": [
             {
-                "FunctionName": "Relative permeabilitiy functions (SGFN: krg(Sg), SWFN: Krw(Sw),SOF3: Krow(So),SOF3: Krog(So)",
-                "FunctionUsageTypeID": "namespace:reference-data--SaturationFunctionUsageType:Drainage:",
-                "DatePublished": "2010-09-09",
-                "HasRelativePermeability": True,
-                "HasCapillaryPressure": False,
+                "FunctionName": "Example Function Name",
+                "FunctionUsageTypeID": "partition:reference-data--SaturationFunctionUsageType:Imbibition:",
+                "BasisOfModelling": {
+                    "CapillaryPressureInputDataCollectionID": "partition:work-product-component--PersistedCollection:PersistedCollection-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+                    "CapillaryPressureInputSampleAnalysisIDs": [
+                        "partition:work-product-component--SamplesAnalysis:SamplesAnalysis-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+                    ],
+                    "RelativePermeabilityInputDataCollectionID": "partition:work-product-component--PersistedCollection:PersistedCollection-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+                    "RelativePermeabilityInputSampleAnalysisIDs": [
+                        "partition:work-product-component--SamplesAnalysis:SamplesAnalysis-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+                    ],
+                    "ModellingApplicationsUsed": [
+                        "Example ModellingApplicationsUsed",
+                    ],
+                    "IntendedWorkflowUsageIDs": [
+                        "partition:reference-data--WorkflowUsageType:All:",
+                    ],
+                },
+                "DatePublished": "2020-02-13T09:13:15.55Z",
                 "ModellingContacts": [
                     {
-                        "Name": "John Doe"
-                    }
-                ]
-            }
-        ]
+                        "EmailAddress": "support@company.com",
+                        "PhoneNumber": "1-555-281-5555",
+                        "RoleTypeID": "partition:reference-data--ContactRoleType:AccountOwner:",
+                        "DataGovernanceRoleTypeID": "partition:reference-data--DataGovernanceRoleType:ExecutiveSponsor:",
+                        "WorkflowPersonaTypeID": "partition:reference-data--WorkflowPersonaType:All:",
+                        "Comment": "Example Comment",
+                        "OrganisationID": "partition:master-data--Organisation:SomeUniqueOrganisationID:",
+                        "Name": "Example Name",
+                    },
+                ],
+                "ModelAreaOfInterestIDs": [
+                    "partition:work-product-component--WellboreIntervalSet:WellboreIntervalSet-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+                ],
+                "HasRelativePermeability": True,
+                "HasCapillaryPressure": True,
+            },
+        ],
+        "Remarks": [
+            {
+                "RemarkSequenceNumber": 1,
+                "Remark": "Example Remark",
+                "RemarkSource": "Example Remark Source",
+                "RemarkDate": "2020-02-13",
+            },
+        ],
+        "ParentModelID": "partition:work-product-component--SaturationFunctionSet:SaturationFunctionSet-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+        "ExtensionProperties": {},
     },
 )
 

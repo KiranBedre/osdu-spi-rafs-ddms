@@ -268,7 +268,7 @@ async def validate_saturation_function_set_v2_payload(
     )
     await validate_referential_integrity(
         records,
-        ["FunctionUsageTypeID", "HasRelativePermeability", "HasCapillaryPressure"],
+        ["SaturationFunctions"],
         storage_service,
     )
     return records
