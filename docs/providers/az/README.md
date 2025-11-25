@@ -1,3 +1,11 @@
+# ⚠️ Note
+
+This README describes a CSP-specific implementation of a blob storage provider (`AzureBlobStorage`).  
+It is **not actively used or maintained** in the main CI/CD pipelines.  
+
+The primary data handling in **CI** environment is **cloud-agnostic**, using the core services `dataset` and `storage`.  
+CSP-specific setups should only be used or modified by the teams responsible for maintaining them.
+
 ## Blob Storage  
 
 The [`AzureBlobStorage`](../../../app/providers/dependencies/az/blob_storage.py?ref_type=heads#L45) class implements the `IBlobStorage` interface and relies on [`StoragePartitionInfo`](../../../app/providers/dependencies/az/storage_account_info.py?ref_type=heads#L33). Under the hood, it leverages the **Partition service** and **Azure Key Vault** to retrieve container credentials securely.  
