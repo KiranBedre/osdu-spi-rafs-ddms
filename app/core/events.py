@@ -28,7 +28,8 @@ def create_start_app_handler(
 ) -> Callable:  # type: ignore
 
     async def start_app() -> None:
-        logger.debug(f"App started with settings: {settings}")
+        for setting in settings:
+            logger.debug(f"App setting: {setting}")
         await init_cache(settings)
         await init_pandas()
 
