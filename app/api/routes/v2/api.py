@@ -20,6 +20,9 @@ from app.api.routes.samplesanalysesreport import (
 )
 from app.api.routes.samplesanalysis import api as sampleanalysis_api
 from app.api.routes.v2.master_data import api as masterdata_api
+from app.api.routes.saturationfunctionset import (
+    api as saturationfunctionset_api,
+)
 
 COMMON_DEPENDENCIES = (
     Depends(require_data_partition_id),
@@ -38,6 +41,12 @@ router.include_router(
     sampleanalysis_api.sa_router,
     prefix=SAMPLES_ANALYSIS_PREFIX,
     tags=["samplesanalysis"],
+    dependencies=COMMON_DEPENDENCIES,
+)
+router.include_router(
+    saturationfunctionset_api.sfs_record_router_v2,
+    prefix="/saturationfunctionset",
+    tags=["saturationfunctionset"],
     dependencies=COMMON_DEPENDENCIES,
 )
 

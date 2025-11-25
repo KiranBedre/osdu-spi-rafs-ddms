@@ -1,0 +1,229 @@
+{
+  "x-osdu-license": "Copyright 2025, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "x-osdu-review-status": "Accepted",
+  "$id": "saturation_function_set.1.0.0.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Saturation Function Set",
+  "description": "Set of relative permeability and capillary pressure functions defining the content of the work-product-component SaturationFunctionSet.",
+  "type": "object",
+  "x-osdu-virtual-properties": {
+    "data.VirtualProperties.DefaultName": {
+      "type": "string",
+      "priority": [
+        {
+          "path": "data.Name"
+        }
+      ]
+    },
+    "data.VirtualProperties.DefaultLocation": {
+      "type": "object",
+      "priority": [
+        {
+          "path": "data.SpatialArea"
+        },
+        {
+          "path": "data.SpatialPoint"
+        }
+      ]
+    }
+  },
+  "properties": {
+    "SaturationFunctionSetID": {
+      "type": "string",
+      "title": "Saturation Function Set ID",
+      "description": "A reference back to the work product component SaturationFunctionSet record, to which the content belongs."
+    },
+    "RelativePermeabilityFunctions": {
+      "type": "array",
+      "title": "Relative Permeability Functions",
+      "description": "Set of relative permeability values as a function of saturation in two-, or three-phase systems for drainage and/or imbibition processes.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Relative Permeability Functions",
+        "description": "Set of relative permeability values as a function of saturation in two-, or three-phase systems for drainage and/or imbibition processes.",
+        "properties": {
+          "FunctionUsageTypeID": {
+            "type": "string",
+            "title": "Function Usage Type ID",
+            "description": "Identifies the type of usage for which the function is designed (such as imbibition, drainage, etc)",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationFunctionUsageType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "SaturationFunctionUsageType"
+              }
+            ]
+          },
+          "PhaseRelativePermeabilityFunctions": {
+            "type": "array",
+            "title": "Phase Relative Permeability Functions",
+            "description": "Set of relative permeability functions of fluid phases present in the reservoir as a function of a saturation.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Phase Relative Permeability Function",
+              "description": "Relative permeability of a fluid phase (oil, water, gas) as a function of saturation.",
+              "properties": {
+                "Saturation": {
+                  "type": "array",
+                  "title": "Saturation",
+                  "description": "Saturation values for which the relative permeabilities are tabulated.",
+                  "x-osdu-frame-of-reference": "UOM:volume per volume",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "RelativePermeability": {
+                  "type": "array",
+                  "title": "Relative Permeability",
+                  "description": "Relative permeability values of the fluid phase at the corresponding saturation values. ",
+                  "x-osdu-frame-of-reference": "UOM:area per area",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "PhaseRelativePermeabilityFluidID": {
+                  "type": "string",
+                  "title": "Phase Relative Permeability Fluid ID",
+                  "description": "Identifies the fluid phase that the relative permeability characterizes.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-RockModelRelativePermeabilityPhase:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "RockModelRelativePermeabilityPhase"
+                    }
+                  ]
+                },
+                "PhaseSaturationFluidID": {
+                  "type": "string",
+                  "title": "Phase Saturation Fluid ID",
+                  "description": "Identifies the fluid phase that is being used for the saturation.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidModelPropertyPhase:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "FluidModelPropertyPhase"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "PhaseRelativePermeabilityFluidID",
+                "PhaseSaturationFluidID"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "FunctionUsageTypeID",
+          "PhaseRelativePermeabilityFunctions"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "CapillaryPressureFunctions": {
+      "type": "array",
+      "title": "Capillary Pressure Functions",
+      "description": "Set of capillary pressure values as function of saturation in two-, or three-phase systems for drainage and/or imbibition processes.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Capillary Pressure Functions",
+        "description": "Set of capillary pressure values as a function of saturation in two-, or three-phase systems for drainage and/or imbibition processes.",
+        "properties": {
+          "FunctionUsageTypeID": {
+            "type": "string",
+            "title": "Function Usage Type ID",
+            "description": "Identifies the type of usage for which the function is designed (such as imbibition, drainage, etc).",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationFunctionUsageType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "SaturationFunctionUsageType"
+              }
+            ]
+          },
+          "PhaseCapillaryPressureFunctions": {
+            "type": "array",
+            "title": "Phase Capillary Pressure Functions",
+            "description": "Set of capillary pressure functions of fluid phases present in the reservoir as a function of a saturation.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Phase Capillary Pressure Function",
+              "description": "Capillary Pressure of a fluid phase (oil, water, gas) as a function of saturation.",
+              "properties": {
+                "Saturation": {
+                  "type": "array",
+                  "title": "Saturation",
+                  "description": "Saturation values for which the capillary pressures are tabulated.",
+                  "x-osdu-frame-of-reference": "UOM:volume per volume",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "CapillaryPressure": {
+                  "type": "array",
+                  "title": "Capillary Pressure",
+                  "description": "Capillary Pressure values of the fluid phase at the corresponding saturation values.",
+                  "x-osdu-frame-of-reference": "UOM:pressure",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "PhaseCapillaryPressureFluidID": {
+                  "type": "string",
+                  "title": "Phase Capillary Pressure Fluid ID",
+                  "description": "Identifies the fluid phase that refers to the capillary pressure.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-RockModelCapillaryPressurePhase:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "RockModelCapillaryPressurePhase"
+                    }
+                  ]
+                },
+                "PhaseSaturationFluidID": {
+                  "type": "string",
+                  "title": "Phase Saturation Fluid ID",
+                  "description": "Identifies the fluid phase that is being used for the saturation.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidModelPropertyPhase:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "FluidModelPropertyPhase"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "PhaseCapillaryPressureFluidID",
+                "PhaseSaturationFluidID"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "FunctionUsageTypeID",
+          "PhaseCapillaryPressureFunctions"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "SaturationFunctionSetID"
+  ],
+  "additionalProperties": false
+}

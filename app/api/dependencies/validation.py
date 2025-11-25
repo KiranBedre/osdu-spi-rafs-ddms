@@ -256,6 +256,24 @@ async def validate_samplesanalysis_records_v2_payload(
     return records
 
 
+async def validate_saturation_function_set_v2_payload(
+    records_list: List[OsduStorageRecord],
+    storage_service: StorageService = Depends(get_async_storage_service),
+    schema_service: SchemaService = Depends(get_async_schema_service),
+):
+    records = await validate_osdu_wks_records(
+        records_list,
+        schema_service,
+        [osdu_models_base.SATURATION_FUNCTION_SET_KIND],
+    )
+    await validate_referential_integrity(
+        records,
+        ["SaturationFunctions"],
+        storage_service,
+    )
+    return records
+
+
 async def validate_master_data_records_payload(
     records_list: List[OsduStorageRecord],
     schema_service: SchemaService,

@@ -58,6 +58,8 @@ SAMPLESANALYSESREPORT_TYPE = "work-product-component--SamplesAnalysesReport"
 SAMPLESANALYSESREPORT_ID = "samplesanalysesreport_test_id"
 SAMPLESANALYSIS_TYPE = "work-product-component--SamplesAnalysis"
 SAMPLESANALYSIS_ID = "samplesanalysis_test"
+SATURATION_FUNCTION_SET_TYPE = "work-product-component--SaturationFunctionSet"
+SATURATION_FUNCTION_SET_ID = "saturation_function_set_test_id"
 FILE_GENERIC_TYPE = "dataset--File.Generic"
 TEST_DATASET_UID = "1"
 
@@ -77,6 +79,8 @@ TEST_SAMPLESANALYSESREPORT_ID = f"{PARTITION}:{SAMPLESANALYSESREPORT_TYPE}:{SAMP
 TEST_SAMPLESANALYSESREPORT_KIND_V2 = f"{SCHEMA_AUTHORITY}:wks:{SAMPLESANALYSESREPORT_TYPE}:{KindVersion.V_1_0_0}"
 TEST_SAMPLESANALYSIS_ID = f"{PARTITION}:{SAMPLESANALYSIS_TYPE}:{SAMPLESANALYSIS_ID}"
 TEST_SAMPLESANALYSIS_KIND_V2 = f"{SCHEMA_AUTHORITY}:wks:{SAMPLESANALYSIS_TYPE}:{KindVersion.V_1_0_0}"
+TEST_SATURATION_FUNCTION_SET_ID = f"{PARTITION}:{SATURATION_FUNCTION_SET_TYPE}:{SATURATION_FUNCTION_SET_ID}"
+TEST_SATURATION_FUNCTION_SET_KIND = f"{SCHEMA_AUTHORITY}:wks:{SATURATION_FUNCTION_SET_TYPE}:{KindVersion.V_1_0_0}"
 TEST_ACL = Acl(viewers=["viewers@domain.com"], owners=["owners@domain.com"])
 TEST_LEGAL = Legal(legaltags=["legaltag"], otherRelevantDataCountries=["US"], status="compliant")
 TEST_WRONG_ID = "partition:entity-type:id"
@@ -196,6 +200,66 @@ SAMPLESANALYSIS_RECORD_V2 = OsduStorageRecord(
     },
 )
 
+
+SATURATION_FUNCTION_SET_RECORD = OsduStorageRecord(
+    id=TEST_SATURATION_FUNCTION_SET_ID,
+    kind=TEST_SATURATION_FUNCTION_SET_KIND,
+    acl=TEST_ACL,
+    legal=TEST_LEGAL,
+    data={
+        "SaturationFunctions": [
+            {
+                "FunctionName": "Example Function Name",
+                "FunctionUsageTypeID": "partition:reference-data--SaturationFunctionUsageType:Imbibition:",
+                "BasisOfModelling": {
+                    "CapillaryPressureInputDataCollectionID": "partition:work-product-component--PersistedCollection:PersistedCollection-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+                    "CapillaryPressureInputSampleAnalysisIDs": [
+                        "partition:work-product-component--SamplesAnalysis:SamplesAnalysis-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+                    ],
+                    "RelativePermeabilityInputDataCollectionID": "partition:work-product-component--PersistedCollection:PersistedCollection-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+                    "RelativePermeabilityInputSampleAnalysisIDs": [
+                        "partition:work-product-component--SamplesAnalysis:SamplesAnalysis-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+                    ],
+                    "ModellingApplicationsUsed": [
+                        "Example ModellingApplicationsUsed",
+                    ],
+                    "IntendedWorkflowUsageIDs": [
+                        "partition:reference-data--WorkflowUsageType:All:",
+                    ],
+                },
+                "DatePublished": "2020-02-13T09:13:15.55Z",
+                "ModellingContacts": [
+                    {
+                        "EmailAddress": "support@company.com",
+                        "PhoneNumber": "1-555-281-5555",
+                        "RoleTypeID": "partition:reference-data--ContactRoleType:AccountOwner:",
+                        "DataGovernanceRoleTypeID": "partition:reference-data--DataGovernanceRoleType:ExecutiveSponsor:",
+                        "WorkflowPersonaTypeID": "partition:reference-data--WorkflowPersonaType:All:",
+                        "Comment": "Example Comment",
+                        "OrganisationID": "partition:master-data--Organisation:SomeUniqueOrganisationID:",
+                        "Name": "Example Name",
+                    },
+                ],
+                "ModelAreaOfInterestIDs": [
+                    "partition:work-product-component--WellboreIntervalSet:WellboreIntervalSet-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+                ],
+                "HasRelativePermeability": True,
+                "HasCapillaryPressure": True,
+            },
+        ],
+        "Remarks": [
+            {
+                "RemarkSequenceNumber": 1,
+                "Remark": "Example Remark",
+                "RemarkSource": "Example Remark Source",
+                "RemarkDate": "2020-02-13",
+            },
+        ],
+        "ParentModelID": "partition:work-product-component--SaturationFunctionSet:SaturationFunctionSet-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+        "ExtensionProperties": {},
+    },
+)
+
 SAMPLESANALYSIS_RECORD_WITHOUT_PARENT_V2 = copy.deepcopy(SAMPLESANALYSIS_RECORD_V2)
 
 
@@ -240,6 +304,7 @@ EXPECTED_200_VERSIONS_RESPONSE = STORAGE_SERVICE_200_VERSIONS_RESPONSE
 # V2 endpoint paths
 SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/samplesanalysesreport"
 SAMPLESANALYSIS_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/samplesanalysis"
+SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/saturationfunctionset"
 MASTER_DATA_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/masterdata"
 
 # data endpoints v2
@@ -357,6 +422,10 @@ with open(f"{dir_path}/schemas/samples_analyses_report.json") as fp:
 with open(f"{dir_path}/schemas/samples_analysis.json") as fp:
     SAMPLES_ANALYSIS_SCHEMA = json.load(fp)
     SAMPLES_ANALYSIS_SCHEMA["definitions"] = WPC_DEFINITIONS
+
+with open(f"{dir_path}/schemas/saturation_function_set.json") as fp:
+    SATURATION_FUNCTION_SET_SCHEMA = json.load(fp)
+    SATURATION_FUNCTION_SET_SCHEMA["definitions"] = WPC_DEFINITIONS
 
 with open(f"{dir_path}/schemas/md_definitions.json") as fp:
     MD_DEFINITIONS = json.load(fp)
