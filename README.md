@@ -1,5 +1,11 @@
 # Rock and Fluid Sample (RAFS) DDMS
 
+## ⚠️ CI/CD Migration Notice
+
+The project is undergoing a phased migration to a unified CI environment (CI env), where build, containerization, Helm packaging, testing, and deployment are handled centrally through GitLab CI.
+
+Detailed documentation for the new CI/CD structure is available here [READMY.md](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/tree/main/devops/core-plus/pipeline/README.md?ref_type=heads)
+
 ## Introduction
 
 Rock and Fluid Sample Domain Data Management Services (RAFS DDMS) Open Subsurface Data Universe (OSDU) is a microservices-based project that comprises OSDU software ecosystem, written in Python that provides an API for Rock and Fluid Sample related data.
