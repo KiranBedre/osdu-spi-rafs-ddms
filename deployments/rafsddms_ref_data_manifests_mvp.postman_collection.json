@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "81f28056-1e5e-4895-b61c-26d59e62907c",
+		"_postman_id": "2fe31604-11df-49fb-b7b9-641b26f44318",
 		"name": "RAFS DDMS Reference Data Ingestion Manifests - MVP",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "38550791"
+		"_exporter_id": "13703490"
 	},
 	"item": [
 		{
@@ -770,6 +770,73 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{NAMESPACE}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"osdu:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--CompressibilityMeasurementType:Hydrostatic\",\r\n                    \"kind\": \"{{rafsddms-schema-authority}}:wks:reference-data--CompressibilityMeasurementType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Hydrostatic\",\r\n                        \"ID\": null,\r\n                        \"Description\": \"Hydrostatic\",\r\n                        \"Code\": \"Hydrostatic\",\r\n                        \"AttributionAuthority\": \"RAFSDDMS\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--CompressibilityMeasurementType:Uniaxial\",\r\n                    \"kind\": \"{{rafsddms-schema-authority}}:wks:reference-data--CompressibilityMeasurementType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Uniaxial\",\r\n                        \"ID\": null,\r\n                        \"Description\": \"Uniaxial\",\r\n                        \"Code\": \"Uniaxial\",\r\n                        \"AttributionAuthority\": \"RAFSDDMS\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{WORKFLOW_URL}}/workflow/Osdu_ingest/workflowRun",
+					"protocol": "https",
+					"host": [
+						"{{WORKFLOW_URL}}"
+					],
+					"path": [
+						"workflow",
+						"Osdu_ingest",
+						"workflowRun"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ingest RefData CompressibilityModelType",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var workflowId = jsonData.workflowId;\r",
+							"    var runId = jsonData.runId;\r",
+							"    pm.collectionVariables.set(\"run_id\", runId);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "data-partition-id",
+						"value": "{{data-partition-id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{NAMESPACE}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"osdu:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--CompressibilityModelType:Constant\",\r\n                    \"kind\": \"osdu:wks:reference-data--CompressibilityModelType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Constant\",\r\n                        \"ID\": \"Constant\",\r\n                        \"Description\": \"A compressibility model which uses a constant value independent of pressure.\",\r\n                        \"Code\": \"Constant\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Authoring/CompressibilityModelType.1.xlsx; commit SHA 76239ee5.\",\r\n                        \"CommitDate\": \"2025-11-21T15:40:28+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--CompressibilityModelType:Correlation\",\r\n                    \"kind\": \"osdu:wks:reference-data--CompressibilityModelType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Correlation\",\r\n                        \"ID\": \"Correlation\",\r\n                        \"Description\": \"A compressibility model which uses empirical relationships or equations based on observed data to calculate compressibility as a function of pressure.\",\r\n                        \"Code\": \"Correlation\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Authoring/CompressibilityModelType.1.xlsx; commit SHA 76239ee5.\",\r\n                        \"CommitDate\": \"2025-11-21T15:40:28+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--CompressibilityModelType:Table\",\r\n                    \"kind\": \"osdu:wks:reference-data--CompressibilityModelType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Table\",\r\n                        \"ID\": \"Table\",\r\n                        \"Description\": \"A compressibility model which uses tabulated values of compressibility at different pressures. \",\r\n                        \"Code\": \"Table\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Authoring/CompressibilityModelType.1.xlsx; commit SHA 76239ee5.\",\r\n                        \"CommitDate\": \"2025-11-21T15:40:28+00:00\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
 				},
 				"url": {
 					"raw": "https://{{WORKFLOW_URL}}/workflow/Osdu_ingest/workflowRun",
@@ -4697,6 +4764,73 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{NAMESPACE}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"osdu:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--TensileStrengthMethod:ASTM\",\r\n                    \"kind\": \"{{rafsddms-schema-authority}}:wks:reference-data--TensileStrengthMethod:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"ASTM\",\r\n                        \"ID\": null,\r\n                        \"Description\": \"ASTM\",\r\n                        \"Code\": \"ASTM\",\r\n                        \"AttributionAuthority\": \"RAFSDDMS\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--TensileStrengthMethod:YongYu\",\r\n                    \"kind\": \"{{rafsddms-schema-authority}}:wks:reference-data--TensileStrengthMethod:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"YongYu\",\r\n                        \"ID\": null,\r\n                        \"Description\": \"YongYu\",\r\n                        \"Code\": \"YongYu\",\r\n                        \"AttributionAuthority\": \"RAFSDDMS\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--TensileStrengthMethod:Brazilian\",\r\n                    \"kind\": \"{{rafsddms-schema-authority}}:wks:reference-data--TensileStrengthMethod:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Brazilian\",\r\n                        \"ID\": null,\r\n                        \"Description\": \"Brazilian\",\r\n                        \"Code\": \"Brazilian\",\r\n                        \"AttributionAuthority\": \"RAFSDDMS\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "https://{{WORKFLOW_URL}}/workflow/Osdu_ingest/workflowRun",
+					"protocol": "https",
+					"host": [
+						"{{WORKFLOW_URL}}"
+					],
+					"path": [
+						"workflow",
+						"Osdu_ingest",
+						"workflowRun"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ingest RefData ThermalModelType",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function() {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    var workflowId = jsonData.workflowId;\r",
+							"    var runId = jsonData.runId;\r",
+							"    pm.collectionVariables.set(\"run_id\", runId);\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "data-partition-id",
+						"value": "{{data-partition-id}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{NAMESPACE}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"osdu:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--ThermalModelType:Constant\",\r\n                    \"kind\": \"osdu:wks:reference-data--ThermalModelType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Constant\",\r\n                        \"ID\": \"Constant\",\r\n                        \"Description\": \"A compressibility model which uses a constant value independent of temperature.\",\r\n                        \"Code\": \"Constant\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Authoring/ThermalModelType.1.xlsx; commit SHA 76239ee5.\",\r\n                        \"CommitDate\": \"2025-11-21T15:40:28+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--ThermalModelType:Correlation\",\r\n                    \"kind\": \"osdu:wks:reference-data--ThermalModelType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Correlation\",\r\n                        \"ID\": \"Correlation\",\r\n                        \"Description\": \"A compressibility model which uses empirical relationships or equations based on observed data to calculate compressibility as a function of temperature.\",\r\n                        \"Code\": \"Correlation\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Authoring/ThermalModelType.1.xlsx; commit SHA 76239ee5.\",\r\n                        \"CommitDate\": \"2025-11-21T15:40:28+00:00\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": \"{{NAMESPACE}}:reference-data--ThermalModelType:Table\",\r\n                    \"kind\": \"osdu:wks:reference-data--ThermalModelType:1.0.0\",\r\n                    \"acl\": {\r\n                        \"owners\": [\r\n                            \"{{DATA_OWNERS_GROUP}}\"\r\n                        ],\r\n                        \"viewers\": [\r\n                            \"{{DATA_VIEWERS_GROUP}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LEGAL_TAG}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"{{ISO_3166_ALPHA_2_CODE}}\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Table\",\r\n                        \"ID\": \"Table\",\r\n                        \"Description\": \"A compressibility model which uses tabulated values of compressibility at different temperatures. \",\r\n                        \"Code\": \"Table\",\r\n                        \"AttributionAuthority\": \"OSDU\",\r\n                        \"AttributionRevision\": \"evergreen\",\r\n                        \"Source\": \"Workbook ReferenceValues/Authoring/ThermalModelType.1.xlsx; commit SHA 76239ee5.\",\r\n                        \"CommitDate\": \"2025-11-21T15:40:28+00:00\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}"
 				},
 				"url": {
 					"raw": "https://{{WORKFLOW_URL}}/workflow/Osdu_ingest/workflowRun",

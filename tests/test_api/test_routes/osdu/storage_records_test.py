@@ -24,6 +24,7 @@ from app.api.dependencies.services import (
     get_async_storage_service,
 )
 from app.main import app
+from app.resources.paths import RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR
 from app.services.schema import SchemaService
 from app.services.storage import StorageService
 from tests.test_api.api_version import API_VERSION_V2
@@ -211,6 +212,11 @@ def with_patched_storage_samplesanalysis_existing_parent():
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "storage_method,path,record_id", [
+        (
+            "get_record",
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
+        ),
         ("get_record", f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID),
         ("get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
         ("get_record", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
@@ -231,6 +237,11 @@ async def test_get_record_not_found(storage_method, path, record_id, with_patche
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "storage_method,path,record_id", [
+        (
+            "get_record",
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
+        ),
         ("get_record", f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID),
         ("get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
         ("get_record", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
@@ -253,11 +264,18 @@ async def test_get_record_version_not_found(storage_method, path, record_id, wit
 @pytest.mark.parametrize(
     "storage_method,path,record_id", [
         (
+            "get_record_versions", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
+        ),
+        (
             "get_record_versions", f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
         ("get_record_versions", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
-        ("get_record_versions", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
+        (
+            "get_record_versions", f"{API_VERSION_V2}/saturationfunctionset",
+            storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
+        ),
         ("get_record_versions", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
     ],
 )
@@ -280,11 +298,18 @@ async def test_get_record_versions_not_found(
 @pytest.mark.parametrize(
     "storage_method,path,record_id", [
         (
+            "soft_delete_record", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
+        ),
+        (
             "soft_delete_record", f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
         ("soft_delete_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
-        ("soft_delete_record", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
+        (
+            "soft_delete_record", f"{API_VERSION_V2}/saturationfunctionset",
+            storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
+        ),
         ("soft_delete_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
     ],
 )
@@ -306,6 +331,7 @@ async def test_delete_record_not_found(
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "path", [
+        (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}"),
         (f"{API_VERSION_V2}/samplesanalysesreport"),
         (f"{API_VERSION_V2}/samplesanalysis"),
         (f"{API_VERSION_V2}/saturationfunctionset"),
@@ -332,6 +358,7 @@ async def test_post_record_no_kind(path):
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "path", [
+        (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}"),
         (f"{API_VERSION_V2}/samplesanalysesreport"),
         (f"{API_VERSION_V2}/samplesanalysis"),
         (f"{API_VERSION_V2}/saturationfunctionset"),
@@ -351,6 +378,11 @@ async def test_post_record_invalid_payload_type(path):
 @pytest.mark.parametrize(
     "storage_method,path,osdu_record,schema",
     [
+        (
+            "upsert_records", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
+            storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_SCHEMA,
+        ),
         (
             "upsert_records", f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
@@ -500,13 +532,17 @@ async def test_post_samplesanalysis_success(
     "storage_method,path,osdu_record",
     [
         (
+            "upsert_records", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
+        ),
+        (
             "upsert_records", f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
         ),
         ("upsert_records", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.SAMPLESANALYSIS_RECORD_V2),
         (
             "upsert_records", f"{API_VERSION_V2}/saturationfunctionset",
-            storage_mock_objects.SATURATION_FUNCTION_SET_RECORD
+            storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
         ),
         (
             "upsert_records", f"{API_VERSION_V2}/masterdata",
@@ -563,6 +599,11 @@ async def test_post_record_no_id(
     "storage_method,path,osdu_record,record_id",
     [
         (
+            "get_record", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
+            storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
+        ),
+        (
             "get_record", f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
@@ -617,6 +658,11 @@ async def test_get_record_success(
 @pytest.mark.parametrize(
     "storage_method,path,osdu_record,record_id",
     [
+        (
+            "get_record", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
+            storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
+        ),
         (
             "get_record", f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
@@ -675,11 +721,18 @@ async def test_get_record_version_success(
 @pytest.mark.parametrize(
     "storage_method,path,record_id", [
         (
+            "get_record_versions", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
+        ),
+        (
             "get_record_versions", f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
         ("get_record_versions", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
-        ("get_record_versions", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
+        (
+            "get_record_versions", f"{API_VERSION_V2}/saturationfunctionset",
+            storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
+        ),
         ("get_record_versions", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
 
     ],
@@ -700,6 +753,21 @@ async def test_get_record_versions_success(
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "storage_method,api_status_code,path", [
+        (
+            "get_record",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/{storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID}",
+        ),
+        (
+            "get_record_versions",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/{storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID}/versions",
+        ),
+        (
+            "get_record",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/{storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID}/versions/1234",
+        ),
         (
             "get_record",
             status.HTTP_401_UNAUTHORIZED,
@@ -772,6 +840,9 @@ async def test_get_record_auth_errors_from_storage(
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "path", [
+        (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/record_id"),
+        (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/record_id/versions"),
+        (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/record_id/versions/1234"),
         (f"{API_VERSION_V2}/samplesanalysesreport/record_id"),
         (f"{API_VERSION_V2}/samplesanalysesreport/record_id/versions"),
         (f"{API_VERSION_V2}/samplesanalysesreport/record_id/versions/1234"),
@@ -798,6 +869,10 @@ async def test_get_record_auth_errors(
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "storage_method,api_status_code,path", [
+        (
+            "soft_delete_record", status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/{storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID}",
+        ),
         (
             "soft_delete_record", status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/samplesanalysesreport/{storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID}",
@@ -830,6 +905,7 @@ async def test_delete_record_auth_errors_from_storage(
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "path", [
+        (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/record_id"),
         (f"{API_VERSION_V2}/samplesanalysesreport/record_id"),
         (f"{API_VERSION_V2}/samplesanalysis/record_id"),
         (f"{API_VERSION_V2}/saturationfunctionset/record_id"),
@@ -849,6 +925,10 @@ async def test_delete_record_auth_errors(
 @pytest.mark.parametrize(
     "storage_method,api_status_code,path,osdu_record",
     [
+        (
+            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
+        ),
         (
             "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
@@ -907,6 +987,10 @@ async def test_post_record_auth_errors_from_storage(
 @pytest.mark.parametrize(
     "path,osdu_record",
     [
+        (
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
+        ),
         (f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2),
         (f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.SAMPLESANALYSIS_RECORD_V2),
         (f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.SATURATION_FUNCTION_SET_RECORD),
@@ -1013,6 +1097,11 @@ async def test_delete_record_wrong_id_pattern(endpoint, record_id):
 @pytest.mark.parametrize(
     "path,osdu_record,field,schema",
     [
+        (
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD, "ResourceHomeRegionID",
+            storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_SCHEMA,
+        ),
         (
             f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2, "ResourceHomeRegionID",

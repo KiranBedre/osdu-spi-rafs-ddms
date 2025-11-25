@@ -1,0 +1,52 @@
+[
+  {
+    "id": "namespace:work-product-component--ReservoirSimulationRockPhysicsModel:volve-eclpise-rockphysics-1",
+    "data": {
+      "CompressibilityModelTypeID": "namespace:reference-data--CompressibilityModelType:SomeUniqueCompressibilityModelTypeID:",
+      "ThermalModelTypeID": "namespace:reference-data--ThermalModelType:SomeUniqueThermalModelTypeID:",
+      "BasisOfModelling": {
+        "CompressibilityModelInputSampleAnalysisIDs": [
+          "namespace:work-product-component--SamplesAnalysis:SamplesAnalysis-911bb71f-06ab-4deb-8e68-b8c9229dc76b:"
+        ],
+        "CompressibilityModelInputDataCollectionID": "namespace:work-product-component--PersistedCollection:PersistedCollection-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+        "ThermalModelInputSampleAnalysisIDs": [
+          "namespace:work-product-component--SamplesAnalysis:SamplesAnalysis-911bb71f-06ab-4deb-8e68-b8c9229dc76b:"
+        ],
+        "ThermalModelInputDataCollectionID": "namespace:work-product-component--PersistedCollection:PersistedCollection-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+        "ModellingApplicationsUsed": [
+          "Example ModellingApplicationsUsed"
+        ],
+        "IntendedWorkflowUsageIDs": [
+          "namespace:reference-data--WorkflowUsageType:All:"
+        ]
+      },
+      "ParentModelID": "namespace:work-product-component--ReservoirSimulationRockPhysicsModel:f3e451d1-9d49-559f-93d8-2e36722016fb:",
+      "DatePublished": "2020-02-13T09:13:15.55Z",
+      "Remarks": [
+        {
+          "RemarkSequenceNumber": 1,
+          "Remark": "Example Remark",
+          "RemarkSource": "Example Remark Source",
+          "RemarkDate": "2020-02-13"
+        }
+      ]
+    },
+    "kind": "osdu:wks:work-product-component--ReservoirSimulationRockPhysicsModel:1.0.0",
+    "acl": {
+      "viewers": [
+        "someone@company.com"
+      ],
+      "owners": [
+        "someone@company.com"
+      ]
+    },
+    "legal": {
+      "legaltags": [
+        "namespace-default-legal"
+      ],
+      "otherRelevantDataCountries": [
+        "US"
+      ]
+    }
+  }
+]

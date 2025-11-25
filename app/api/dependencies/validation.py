@@ -284,6 +284,24 @@ async def validate_master_data_records_payload(
     return records
 
 
+async def validate_reservoir_sim_rock_physics_payload(
+    records_list: List[OsduStorageRecord],
+    storage_service: StorageService = Depends(get_async_storage_service),
+    schema_service: SchemaService = Depends(get_async_schema_service),
+):
+    records = await validate_osdu_wks_records(
+        records_list,
+        schema_service,
+        [osdu_models_base.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND],
+    )
+    await validate_referential_integrity(
+        records,
+        [],
+        storage_service,
+    )
+    return records
+
+
 def get_content_model_paths(request_path: str, api_version: str) -> tuple:
     """Get the paths to search for the appropriate content model.
 

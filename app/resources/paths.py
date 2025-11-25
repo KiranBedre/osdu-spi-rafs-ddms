@@ -165,3 +165,5 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
     "crushedrockanalysis": ["BasicRockProperties.CrushedRockAnalysis"],
     "mininggeotechlogging": ["Mining.Geotechlogging"],
 }
+
+RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR = "reservoirsimulationrockphysicsmodel"
