@@ -86,7 +86,7 @@ Use any code editor to set variables in the **values.yaml** file. Some of the va
 | **conf.configmap** | configmap to be used | string | `rafs-ddms-config` | yes |
 | **conf.rafsDdmsRedisSecretName** | rafs-ddms redis secret | string | `rafs-ddms-redis-secret` | yes |
 | **conf.cronJobSecretName** | cronjob OAuth credentials secret | string | `rafs-ddms-cronjob-secret` | no |
-| **conf.replicas** | Number of replicas for the application k8s deployment | string | `rafs-ddms` | yes |
+| **conf.replicas** | Number of replicas for the application k8s deployment | string | `1` | yes |
 
 ### Istio Variables
 

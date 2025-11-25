@@ -4,7 +4,6 @@ While the RAFSDDMS is publicly released and available, the community continues t
 
 Frequent version bumps for each backward-incompatible change can make API management challenging. To address this issue, a **dev** version of the API is being added and maintained.
 
-
 ## **dev** version
 
 A **dev** version has been introduced to support new or experimental changes that may potentially be incompatible (breaking) with the current **v2** version.
@@ -13,7 +12,7 @@ A **dev** version has been introduced to support new or experimental changes tha
 
 The **dev/** directory structure mirrors that of **app/** and **tests/**. This design allows for seamless promotion of new features to a stable version, as the involved directories and modules can be easily moved to their respective locations within **app/** and **tests/**.
 
-```
+```txt
 app/
     ├── dev/
     │   ├── api/
@@ -31,13 +30,15 @@ test/
 ```
 
 ### Adding a new feature
+
 To add a new feature in development, it is recommended to reuse existing code as much as possible and place only the new code into the **dev/** folder.
 
-# Current Features in Development
+## Current Features in Development
 
-## Filters and Aggregation
+### Filters and Aggregation
 
 Currently, the following query parameters are supported for performing filtering and aggregation over the properties in a given analysis type schema:
+
 - **_columns_filter_**
 - **_columns_aggregation_**
 - **_rows_filter_**
@@ -48,6 +49,7 @@ Currently, the following query parameters are supported for performing filtering
 **_columns_aggregation_**, **_rows_filter_**, and **_rows_multiple_filter_** support `ColumnName.PropertyName.SubPropertyName` dotted notation, also known as flattened property syntax, to work with nested properties.
 
 In general:
+
 - **_columns_aggregation_** works for any nested level with any number of arrays of objects.
 - **_rows_filter_** and **_rows_multiple_filter_** support limited scenarios. See the Rows Filter section for supported cases.
 - **_columns_filter_** does not support dotted notation.
@@ -122,15 +124,15 @@ In general:
 A flattened **property_name**, i.e., _PropertyA.SubPropertyB.SubsubpropertyC.SubsubsubPropertyD_, is correct if it falls under one of the following cases (brackets are illustrative and mark a property as an array):
 
 - None of the flattened properties is an array of objects:
-    - "PropertyA.SubPropertyB.SubsubpropertyC.SubsubsubPropertyD"
+  - "PropertyA.SubPropertyB.SubsubpropertyC.SubsubsubPropertyD"
 - Only one of the flattened properties is an array of objects:
-    - "PropertyA<b>[]</b>.SubPropertyB.SubsubpropertyC.SubsubsubPropertyD"
-    - "PropertyA.SubPropertyB<b>[]</b>.SubsubpropertyC.SubsubsubPropertyD"
+  - "PropertyA<b>[]</b>.SubPropertyB.SubsubpropertyC.SubsubsubPropertyD"
+  - "PropertyA.SubPropertyB<b>[]</b>.SubsubpropertyC.SubsubsubPropertyD"
 - If two flattened properties are arrays, the first property should be array:
-    - "PropertyA<b>[]</b>.SubPropertyB<b>[]</b>.SubsubpropertyC.SubsubsubPropertyD"
+  - "PropertyA<b>[]</b>.SubPropertyB<b>[]</b>.SubsubpropertyC.SubsubsubPropertyD"
 - Other scenarios, where two or more flattened properties are arrays, are not supported:
-    - "PropertyA<b>[]</b>.SubPropertyB<b>[]</b>.SubsubpropertyC<b>[]</b>.SubsubsubPropertyD"
-    - "PropertyA.SubPropertyB<b>[]</b>.SubsubpropertyC<b>[]</b>.SubsubsubPropertyD"
+  - "PropertyA<b>[]</b>.SubPropertyB<b>[]</b>.SubsubpropertyC<b>[]</b>.SubsubsubPropertyD"
+  - "PropertyA.SubPropertyB<b>[]</b>.SubsubpropertyC<b>[]</b>.SubsubsubPropertyD"
 
 A **value** is correct if it can be cast to the type defined in the schema.
 
@@ -142,7 +144,7 @@ Filter only the "InitialConditions" column and only the rows where "InitialCondi
 ```sh
 curl --location '{RAFS_DDMS_URL}/dev/samplesanalysis/{SamplesAnalysisID}/data/relativepermeability/{DatasetID}?rows_filter={%22InitialConditions.EffectivePermeability.Value%22%3A%20{%22%24lt%22%3A%205000}}&columns_filter=[%22InitialConditions%22]' \
 --header 'Authorization: Bearer token' \
---header 'data-partition-id: opendes' \
+--header 'data-partition-id: osdu' \
 --header 'Content-Type: application/json' \
 --header 'Accept: */*;version=1.0.0'
 ```
@@ -164,7 +166,7 @@ Obtaining the "mean" value of "InitialConditions.EffectivePermeability.Value" of
 ```sh
 curl --location --globoff '{RAFS_DDMS_URL}/api/rafs-ddms/dev/samplesanalysis/{SamplesAnalysisID}/data/relativepermeability/{DatasetID}?columns_aggregation=[%22InitialConditions.EffectivePermeability.Value%22%2C%20%22mean%22]' \
 --header 'Authorization: Bearer token' \
---header 'data-partition-id: opendes' \
+--header 'data-partition-id: osdu' \
 --header 'Content-Type: application/json' \
 --header 'Accept: */*;version=1.0.0'
 ```
@@ -182,7 +184,7 @@ Used to retrieve a list of work-product-component--SamplesAnalysis record IDs fo
 - If the search is provided with filters as query parameters, the result set will include only the samples analysis IDs that comply with the given filters.
 - Query filter parameters work as described for filter and aggregation for single content retrieval.
 
-#### Example
+#### Search Example
 
 Retrieve all samples analysis IDs for analysis_type=multistageseparator where the SaturationPressure is greater than 950 psi.
 ![Search result example](search_result_example.png "Search result example")
@@ -196,7 +198,7 @@ Used to retrieve a concatenated dataframe of all content found for a given analy
 - If the search is provided with filters as query parameters, the concatenated result will include only the analysis types that comply with the given filters.
 - Query filter parameters work as described for filter and aggregation for single content retrieval.
 
-#### Example
+#### Search Data Example
 
 Retrieve all multistageseparator tests where the SaturationPressure is greater than 950 psi.
 ![Search result example](search_data_result_example.png "Search result example")
@@ -206,13 +208,15 @@ Retrieve all multistageseparator tests where the SaturationPressure is greater t
 Examples can be found in the [Search_and_Filters](../../notebooks/Search_and_Filters.ipynb) notebook.
 
 ### Metadata Filtering
+
 In addition to filtering within content schemas, the result set of an analysis can be further refined using the metadata filter.
 
 #### Redis Indexing Feature
 
 Metadata filtering is available **only if the REDIS index is enabled and indexing has been performed**.
 
-To enable the REDIS index, set the following environment variable:  
+To enable the REDIS index, set the following environment variable:
+
 ```bash
 REDIS_INDEX_ENABLE=True
 ```
@@ -221,16 +225,23 @@ For additional REDIS environment variables, please refer to the [README - Cache 
 
 #### Triggering the Indexer  
 
-The indexer can be triggered using the following endpoint:  
+The indexer can be triggered using the following endpoint:
+
 ```bash
 api/rafs-ddms/dev/trigger-sa-indexer
 ```  
 
-For example, the Azure CSP has implemented a [cron job](../../devops/azure/cronjob/main.go) to automate the indexing process.
+For example to automate the indexing process:
+
+```txt
+    - the Azure CSP has implemented a [cron job](../../devops/azure/cronjob/main.go).
+    - the CI has implemented a [cron job](../../devops/core-plus/cronjob/main.go).
+```
 
 #### Privileged Access  
 
-The indexer endpoint requires a **privileged user** to execute the request. However, for local development, you can bypass the call to the Partition service by enabling the following environment variable:  
+The indexer endpoint requires a **privileged user** to execute the request. However, for local development, you can bypass the call to the Partition service by enabling the following environment variable:
+
 ```bash
 ALLOW_INDEXING_BY_END_USER=True
 ```
@@ -238,7 +249,9 @@ ALLOW_INDEXING_BY_END_USER=True
 This setting allows end users to perform indexing during development but should not be used in production environments for security reasons.
 
 #### Available Metadata Fields
+
 The following fields are available for filtering, based on the defined [SamplesAnalysis schema](../../app/dev/core/helpers/redis_index.py):
+
 - "SampleIDs"
 - "SampleTypeIDs"
 - "ParentSamplesAnalysesReports"
@@ -250,19 +263,24 @@ The following fields are available for filtering, based on the defined [SamplesA
 - "FieldNames"
 
 #### Metadata Query Format
+
 The metadata is passed as a query parameter, formatted as a JSON string:
+
 ```json
 {
     "FieldNameA": ["ValueA1", "ValueA2"],
     "FieldNameB": ["ValueB1"]
 }
 ```
+
 Each field name must be one of the available fields listed above.
 
 #### Metadata $and and $or Behavior
+
 Field names should be unique keys, with different keys representing conjunctions ($and). The values within each field's array represent disjunctions ($or).
 
 For example, the following metadata filter will return all related sample analyses from either WellboreID1 or WellboreID2:
+
 ```json
 {
     "WellboreIDs": ["WellboreID1", "WellboreID2"]
@@ -270,6 +288,7 @@ For example, the following metadata filter will return all related sample analys
 ```
 
 The following metadata filter will return all related sample analyses from either WellboreID1 or WellboreID2, and also match SampleTypeID1:
+
 ```json
 {
     "WellboreIDs": ["WellboreID1", "WellboreID2"],
@@ -278,9 +297,14 @@ The following metadata filter will return all related sample analyses from eithe
 ```
 
 #### Request Example
+
 To retrieve all Routine Core Analysis data from a specific wellbore (using WellboreID), you can use the following query:
 
 ![Metadata filter](metadata_filter.png "Metadata filter")
 
 ### QA Collection
-For a more comprehensive set of examples, refer to the [QA Postman collection](https://community.opengroup.org/osdu/qa/-/blob/main/Dev/48_CICD_Setup_RAFSDDMSAPI/RAFSDDMS_API_CI-CD_v1.0.postman_collection.json?ref_type=heads).
+
+For a more comprehensive set of examples, you can use the Postman collections:
+
+- **Release version:** [RAFSDDMS API CI-CD v1.0](https://community.opengroup.org/osdu/qa/-/blob/main/Dev/48_CICD_Setup_RAFSDDMSAPI/RAFSDDMS_API_CI-CD_v1.0.postman_collection.json?ref_type=heads) – this is the official release collection.
+- **Development version:** [RAFS DDMS Development Collection](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/devops/azure/qa/Postman%20Collection/Collection/RAFS%20DDMS.postman_collection.json?ref_type=heads) – the version currently under development.
