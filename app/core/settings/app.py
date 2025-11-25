@@ -100,7 +100,12 @@ class AppSettings(BaseAppSettings):
             "%(asctime)s [%(process)d][%(levelname)s] --- {correlation-id=%(correlation_id)s} %(name)s: %(message)s",
         )
         console_handler.setFormatter(formatter)
-
+        # Configure cloud provider-specific logging (if applicable)
+        if self.cloud_provider == "gc":
+            from app.providers.dependencies.gc.logging_setup import (  # noqa: WPS433
+                setup_logging,
+            )
+            setup_logging()
         for logger_name in self.loggers:
             logging_logger = logging.getLogger(logger_name)
             logging_logger.handlers.clear()
