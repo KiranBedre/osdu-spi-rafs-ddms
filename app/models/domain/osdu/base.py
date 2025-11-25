@@ -38,4 +38,6 @@ SAMPLESANALYSIS_KIND = f"{settings.schema_authority}:wks:work-product-component-
 
 SAMPLES_ANALYSES_REPORT_KIND = f"{settings.schema_authority}:wks:work-product-component--SamplesAnalysesReport:1.0.0"
 
+RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND = f"{settings.schema_authority}:wks:work-product-component--ReservoirSimulationRockPhysicsModel:1.0.0"
+
 SATURATION_FUNCTION_SET_KIND = f"{settings.schema_authority}:wks:work-product-component--SaturationFunctionSet:1.0.0"

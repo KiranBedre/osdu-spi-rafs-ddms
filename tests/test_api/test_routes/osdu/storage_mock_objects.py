@@ -46,6 +46,8 @@ GENERIC_FACILITY_TYPE = "master-data--GenericFacility"
 GENERIC_FACILITY_ID = "generic_facility_test"
 GENERIC_SITE_TYPE = "master-data--GenericSite"
 GENERIC_SITE_ID = "generic_site_test"
+RESERVOIR_SIMULATION_ROCK_PHYSICS_TYPE = "work-product-component--ReservoirSimulationRockPhysicsModel"
+RESERVOIR_SIMULATION_ROCK_PHYSICS_ID = "reservoirsimulationrockphysics_test_id"
 SAMPLE_TYPE = "master-data--Sample"
 SAMPLE_ID = "sample_test"
 SAMPLE_ACQUISITION_JOB_TYPE = "master-data--SampleAcquisitionJob"
@@ -67,6 +69,8 @@ TEST_GENERIC_FACILITY_ID = f"{PARTITION}:{GENERIC_FACILITY_TYPE}:{GENERIC_FACILI
 TEST_GENERIC_FACILITY_KIND = f"{SCHEMA_AUTHORITY}:wks:{GENERIC_FACILITY_TYPE}:{KindVersion.V_1_0_0}"
 TEST_GENERIC_SITE_ID = f"{PARTITION}:{GENERIC_SITE_TYPE}:{GENERIC_SITE_ID}"
 TEST_GENERIC_SITE_KIND = f"{SCHEMA_AUTHORITY}:wks:{GENERIC_SITE_TYPE}:{KindVersion.V_1_0_0}"
+TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID = f"{PARTITION}:{RESERVOIR_SIMULATION_ROCK_PHYSICS_TYPE}:{RESERVOIR_SIMULATION_ROCK_PHYSICS_ID}"
+TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_KIND = f"{SCHEMA_AUTHORITY}:wks:{RESERVOIR_SIMULATION_ROCK_PHYSICS_TYPE}:{KindVersion.V_1_0_0}"
 TEST_SAMPLE_ID = f"{PARTITION}:{SAMPLE_TYPE}:{SAMPLE_ID}"
 TEST_SAMPLE_KIND = f"{SCHEMA_AUTHORITY}:wks:{SAMPLE_TYPE}:{KindVersion.V_2_0_0}"
 TEST_SAMPLE_ACQUISITION_JOB_ID = f"{PARTITION}:{SAMPLE_ACQUISITION_JOB_TYPE}:{SAMPLE_ACQUISITION_JOB_ID}"
@@ -109,6 +113,35 @@ GENERIC_SITE_RECORD = OsduStorageRecord(
     data={
         "Name": "Name",
         "SiteTypeID": "partition:reference-data--SiteType:Coal:",
+    },
+)
+
+RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD = OsduStorageRecord(
+    id=TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
+    kind=TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_KIND,
+    acl=TEST_ACL,
+    legal=TEST_LEGAL,
+    data={
+        "CompressibilityModelTypeID": "namespace:reference-data--CompressibilityModelType:SomeUniqueCompressibilityModelTypeID:",
+        "ThermalModelTypeID": "namespace:reference-data--ThermalModelType:SomeUniqueThermalModelTypeID:",
+        "BasisOfModelling": {
+            "CompressibilityModelInputSampleAnalysisIDs": [
+                "namespace:work-product-component--SamplesAnalysis:SamplesAnalysis-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+            ],
+            "CompressibilityModelInputDataCollectionID": "namespace:work-product-component--PersistedCollection:PersistedCollection-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+            "ThermalModelInputSampleAnalysisIDs": [
+                "namespace:work-product-component--SamplesAnalysis:SamplesAnalysis-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+            ],
+            "ThermalModelInputDataCollectionID": "namespace:work-product-component--PersistedCollection:PersistedCollection-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+            "ModellingApplicationsUsed": [
+                "Example ModellingApplicationsUsed",
+            ],
+            "IntendedWorkflowUsageIDs": [
+                "namespace:reference-data--WorkflowUsageType:All:",
+            ],
+        },
+        "ParentModelID": "namespace:work-product-component--ReservoirSimulationRockPhysicsModel:f3e451d1-9d49-559f-93d8-2e36722016fb:",
+        "DatePublished": "2020-02-13T09:13:15.55Z",
     },
 )
 
@@ -302,6 +335,7 @@ STORAGE_SERVICE_200_VERSIONS_RESPONSE = {
 EXPECTED_200_VERSIONS_RESPONSE = STORAGE_SERVICE_200_VERSIONS_RESPONSE
 
 # V2 endpoint paths
+RESERVOIR_SIMULATION_ROCK_PHYSICS_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/reservoirsimulationrockphysics"
 SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/samplesanalysesreport"
 SAMPLESANALYSIS_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/samplesanalysis"
 SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/saturationfunctionset"
@@ -414,6 +448,10 @@ class BulkDatasetIdV2(NamedTuple):
 
 with open(f"{dir_path}/schemas/wpc_definitions.json") as fp:
     WPC_DEFINITIONS = json.load(fp)
+
+with open(f"{dir_path}/schemas/reservoir_simulation_rock_physics_model.json") as fp:
+    RESERVOIR_SIMULATION_ROCK_PHYSICS_SCHEMA = json.load(fp)
+    RESERVOIR_SIMULATION_ROCK_PHYSICS_SCHEMA["definitions"] = WPC_DEFINITIONS
 
 with open(f"{dir_path}/schemas/samples_analyses_report.json") as fp:
     SAMPLES_ANALYSES_REPORT_SCHEMA = json.load(fp)
