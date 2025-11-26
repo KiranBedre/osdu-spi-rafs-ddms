@@ -307,7 +307,9 @@ class BaseDataView(object):
 
         logger.info(f"Data has been read from {mime_type} format")
 
-        errors = await data_validator.validate(df)
+        # Use bulk_mode for relaxed validation: allows NaN in optional object fields
+        # This handles DataFrame column alignment constraint in bulk ingestion
+        errors = await data_validator.validate(df, bulk_mode=True)
         if errors:
             self._handle_errors(errors)
 

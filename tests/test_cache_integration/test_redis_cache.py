@@ -23,7 +23,7 @@ from app.core.settings.app import AppSettings
 # Skip all tests in this module if cache is not enabled
 pytestmark = pytest.mark.skipif(
     not os.getenv("CACHE_ENABLE", "false").lower() in ["true", "1", "yes"],
-    reason="Redis cache tests only run when CACHE_ENABLE is set to true in .env"
+    reason="Redis cache tests only run when CACHE_ENABLE is set to true in .env",
 )
 
 

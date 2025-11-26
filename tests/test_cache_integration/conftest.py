@@ -19,12 +19,14 @@ This conftest STOPS the cache mock from the parent conftest.py,
 allowing real cache behavior to be tested.
 """
 
-import pytest
 from unittest import mock
+
+import pytest
 
 # The parent tests/conftest.py mocks the cache decorator globally.
 # We need to stop that mock for cache integration tests to work properly.
 # This finds and stops the active cache decorator mock.
+
 
 @pytest.fixture(scope="session", autouse=True)
 def unmock_cache_decorator():

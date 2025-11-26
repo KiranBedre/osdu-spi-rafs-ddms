@@ -27,7 +27,7 @@ def test_key_builder_for_service_methods_with_string_arg():
             request=None,  # Service methods don't have request
             response=None,
             args=(None, schema_id),  # (self, schema_id)
-            kwargs={}
+            kwargs={},
         )
 
         # Second call with same schema_id
@@ -37,7 +37,7 @@ def test_key_builder_for_service_methods_with_string_arg():
             request=None,
             response=None,
             args=(None, schema_id),  # Same args!
-            kwargs={}
+            kwargs={},
         )
 
     # Keys should match for same input
@@ -70,7 +70,7 @@ def test_key_builder_for_service_methods_with_list_arg():
             request=None,
             response=None,
             args=(None, dataset_ids),  # (self, dataset_ids)
-            kwargs={}
+            kwargs={},
         )
 
         # Second call with same list (same order)
@@ -80,7 +80,7 @@ def test_key_builder_for_service_methods_with_list_arg():
             request=None,
             response=None,
             args=(None, dataset_ids),
-            kwargs={}
+            kwargs={},
         )
 
         # Third call with same list but different order
@@ -90,7 +90,7 @@ def test_key_builder_for_service_methods_with_list_arg():
             request=None,
             response=None,
             args=(None, ["dataset-2", "dataset-1"]),  # Reversed order
-            kwargs={}
+            kwargs={},
         )
 
     # Keys with same list should match
@@ -109,13 +109,13 @@ def test_key_builder_for_service_methods_different_args():
         key1 = key_builder_for_service_methods(
             func=func,
             args=(None, "schema-id-1"),
-            kwargs={}
+            kwargs={},
         )
 
         key2 = key_builder_for_service_methods(
             func=func,
             args=(None, "schema-id-2"),  # Different schema_id
-            kwargs={}
+            kwargs={},
         )
 
     # Different arguments should produce different keys
@@ -132,21 +132,21 @@ def test_key_builder_for_service_methods_with_kwargs():
         key1 = key_builder_for_service_methods(
             func=func,
             args=(None,),
-            kwargs={"schema_id": "test-schema", "version": "1.0"}
+            kwargs={"schema_id": "test-schema", "version": "1.0"},
         )
 
         # Same kwargs, same order
         key2 = key_builder_for_service_methods(
             func=func,
             args=(None,),
-            kwargs={"schema_id": "test-schema", "version": "1.0"}
+            kwargs={"schema_id": "test-schema", "version": "1.0"},
         )
 
         # Same kwargs, different order (should still match - sorted internally)
         key3 = key_builder_for_service_methods(
             func=func,
             args=(None,),
-            kwargs={"version": "1.0", "schema_id": "test-schema"}
+            kwargs={"version": "1.0", "schema_id": "test-schema"},
         )
 
     assert key1 == key2, "Same kwargs should produce same key"

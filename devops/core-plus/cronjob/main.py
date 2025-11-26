@@ -121,10 +121,10 @@ def trigger_indexer(config: dict, token: str) -> None:
 
         if response.status_code != HTTP_OK:
             logger.warning(
-                f"Indexer endpoint returned status {response.status_code}: {response.text}"
+                f"Indexer endpoint returned status {response.status_code}: {response.text}",
             )
             raise RuntimeError(
-                f"Expected {HTTP_OK} response, got {response.status_code}"
+                f"Expected {HTTP_OK} response, got {response.status_code}",
             )
 
         logger.info("Indexer triggered successfully")
