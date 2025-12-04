@@ -1,5 +1,7 @@
 # RAFSDDMS on Azure
 
+[[_TOC_]]
+
 ## Build image
 
 **WARN** It is recommended to use the [distroless](../../Dockerfile) image for production systems, which it is more secure and lighter than develop and test images.
@@ -59,7 +61,7 @@ An internal Redis instance is deployed alongside RAFS DDMS (see `devops/azure/va
 
 **To use external Redis instead:** Update `REDIS_HOSTNAME` in your deployment values and ensure the external Redis is accessible from the AKS cluster.
 
-## Community installation
+## Installation
 
 Using [helm-charts-azure/standard-ddms](https://community.opengroup.org/osdu/platform/deployment-and-operations/helm-charts-azure/-/tree/master/osdu-ddms/standard-ddms) for simplicity.
 
@@ -138,3 +140,48 @@ helm upgrade -i ${ddms}-services "oci://msosdu.azurecr.io/helm/standard-ddms" --
 ## Azure Container
 
 A [Merge Request !973](https://community.opengroup.org/osdu/platform/deployment-and-operations/infra-azure-provisioning/-/merge_requests/973/diffs) has been merged into the **infra-azure-provisioning** repository. However, assurance is needed to confirm that the container `rafs-ddms` has been successfully created.
+
+## Additional Notes for Azure
+
+### Compatibility / Portability
+
+- `Metrics`: Prometheus is implemented for Azure only; not mandatory for other CSPs.
+- `AzureBlobHandler`: Handles uploads/downloads to Azure Storage using pre-signed URLs. Can be replaced by standard HTTP PUT/GET for other CSPs.
+- `Redis`: Optional, standard Redis parameters; no CSP-specific customization required.
+
+**NOTE: Distroless dockerfile compatibility** - RAFS project borned with the higher security standards, we developed distroless dockerfile definition, which uses the `msosdu` registry as public registry to get the distroless and python images, nonetheless, this public image it is not CSP's specific, only to avoid using external (and some times unavailable) registries such as `cgr.dev/chainguard/` or to prevent hitting the download limit from `docker.io`.
+
+### Resiliency / Availability
+
+- RAFS generate lots of requests to storage, schema and search services for schema and reference data validation.
+  - If **policy service** it is enabled, it is recommended to increase the availability of the entitlements services as this is highly used by policy service as well as legal. We had noticed that by using entitlements separated service helps to aleviate the delay/load in policy service.
+  - [Uviloop](https://www.uvicorn.org/#quickstart) it is intended to increase the performance and lower the pod resources consumption, however, we hadn't measure this yet.
+- Integration tests can be executed in `auto` mode, nevertheless this will generate large ammount of async request to core services (mostly storage service). If storage backend it is not configured correctly it might fail randomly.
+  - To overcome this in azure side, we increased the CosmosDB throughput (for storage and entitlements).
+  - We needed to scale vertically storage service.
+  - Needed to increase replicas at AGIC.
+  - Improved the policy service docker image for azure.
+
+### Monitoring Customization
+
+- FastAPI Prometheus controller onboarded in Azure deployment, more information can be found on the [prometheus use-case implementation](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/tree/main/devops/azure/monitoring)
+- Can configure metrics per CSP via [app/providers/helpers/metrics](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/app/providers/helpers/metric.py)
+
+### Readiness Feature
+
+`SERVICE_READINESS_URLS` defines dependent services for liveness/readiness checks.
+
+Example:
+
+```shell
+SERVICE_READINESS_URLS="http://storage/api/storage/v2/liveness_check,http://schema/api/schema-service/v1/liveness_check"
+```
+
+**NOTE** This is an optional feature, omit setting up `SERVICE_READINESS_URLS` env var if don't need to use it at all.
+
+### Security
+
+- Leveraged authentication and authorization to the istio envoy CSP specific implementation.
+- RAFS does not require any additional or privileged service accounts, it will proxy the access_token as it is to the proper OSDU core services.
+- `[Optional]` Azure implementation disables auth in swagger endpoints.
+- Distroless production ready docker image [Dockerfile](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/Dockerfile)

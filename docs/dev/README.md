@@ -307,4 +307,4 @@ To retrieve all Routine Core Analysis data from a specific wellbore (using Wellb
 For a more comprehensive set of examples, you can use the Postman collections:
 
 - **Release version:** [RAFSDDMS API CI-CD v1.0](https://community.opengroup.org/osdu/qa/-/blob/main/Dev/48_CICD_Setup_RAFSDDMSAPI/RAFSDDMS_API_CI-CD_v1.0.postman_collection.json?ref_type=heads) – this is the official release collection.
-- **Development version:** [RAFS DDMS Development Collection](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/devops/azure/qa/Postman%20Collection/Collection/RAFS%20DDMS.postman_collection.json?ref_type=heads) – the version currently under development.
+- **Development version:** [RAFS DDMS Development Collection](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/devops/core-plus/qa/Postman%20Collection/Collection/RAFS%20DDMS.postman_collection.json?ref_type=heads) – the version currently under development.

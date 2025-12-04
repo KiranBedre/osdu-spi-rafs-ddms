@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ .Values.data.serviceAccountName | quote }}
+  name: {{ .Values.conf.serviceAccountName | quote }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
     app: {{ .Values.conf.appName | quote }}
@@ -33,7 +33,7 @@ metadata:
     app: {{ .Values.conf.appName | quote }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Values.data.serviceAccountName | quote }}
+    name: {{ .Values.conf.serviceAccountName | quote }}
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
@@ -45,7 +45,7 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: nonroot-scc-{{ .Values.data.serviceAccountName }}
+  name: nonroot-scc-{{ .Values.conf.serviceAccountName }}
   namespace: {{ .Release.Namespace | quote }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -53,6 +53,6 @@ roleRef:
   name: system:openshift:scc:nonroot-v2
 subjects:
   - kind: ServiceAccount
-    name: {{ .Values.data.serviceAccountName }}
+    name: {{ .Values.conf.serviceAccountName }}
     namespace: {{ .Release.Namespace | quote }}
 {{- end }}
