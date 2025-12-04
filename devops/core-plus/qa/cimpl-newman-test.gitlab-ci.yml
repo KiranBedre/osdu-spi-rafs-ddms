@@ -35,13 +35,6 @@
       --env-var "TENANT_ID=${CIMPL_TENANT}" \
       --env-var "CLIENT_ID=${TEST_EPAM_OPENID_PROVIDER_CLIENT_ID}" \
       --env-var "CLIENT_SECRET=${CIMPL_TEST_EPAM_OPENID_PROVIDER_CLIENT_SECRET}" \
-      --env-var "HOSTNAME=${CIMPL_TENANT}.${CIMPL_DOMAIN}" \
-      --env-var "Token_Fetch_URL=${TEST_OPENID_PROVIDER_URL}/protocol/openid-connect/token" \
-      --env-var "auth_url=https://accounts.google.com/o/oauth2/auth" \
-      --env-var "cloud_platform=GCP" \
-      --env-var "domain=.${GROUP_ID}" \
-      --env-var "data-partition-id=osdu" \
-      --env-var "Scope=openid profile offline_access email" \
       --reporters cli,htmlextra \
       --reporter-htmlextra-template ./custom-dashboard-template.hbs \
       --reporter-htmlextra-export $REPORT_HTML \
@@ -97,12 +90,13 @@
     - when: never
 
 # --------------------------------------------------------------------------------
-# This job is for running the Postman collection for the RAFS DDMS API against the OSDU Azure environment.
+# This job is for running the Postman collection for the RAFS DDMS API 
+# against the OSDU Community Implementation (CI) environment.
 # --------------------------------------------------------------------------------
 cimpl-postman-test:
   extends: .cimpl_newman_rafs_tests
   variables:
-    ENVIRONMENT: "./devops/azure/qa/Postman Collection/Environment/OSDU_AZURE_GLAB.postman_environment.json"
-    COLLECTION_JSON: "./devops/azure/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
+    ENVIRONMENT: "./devops/core-plus/qa/Postman Collection/Environment/OSDU_CI.postman_environment.json"
+    COLLECTION_JSON: "./devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
     REPORT_HTML: "report-newman.html"
   allow_failure: true

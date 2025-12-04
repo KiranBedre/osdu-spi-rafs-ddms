@@ -19,7 +19,7 @@ spec:
       annotations:
         rollme: {{ randAlphaNum 5 | quote }}
     spec:
-      serviceAccountName: {{ .Values.data.serviceAccountName | quote }}
+      serviceAccountName: {{ .Values.conf.serviceAccountName | quote }}
       containers:
         - name: {{ .Values.conf.appName | quote }}
           image: {{ .Values.data.image | quote }}
