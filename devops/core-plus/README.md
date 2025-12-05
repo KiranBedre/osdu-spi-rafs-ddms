@@ -161,12 +161,48 @@ This ensures that deployments are fully parameterized and environment-specific, 
 - Schedule, CPU/memory requests, and limits configurable via [values.yaml](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/devops/core-plus/deploy/values.yaml?ref_type=heads) or CI variables
 - OAuth credentials injected by the pipeline (cronJobClientId, cronJobClientSecret)
 
-## QA / Postman Collections
+## QA / Postman Collections / Postman Environment
 
 Available collections:
 
 - Release collection: [RAFSDDMS API CI-CD v1.0](https://community.opengroup.org/osdu/qa/-/blob/main/Dev/48_CICD_Setup_RAFSDDMSAPI/RAFSDDMS_API_CI-CD_v1.0.postman_collection.json?ref_type=heads)
 - Development collection: [RAFS DDMS Development Collection](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/devops/core-plus/qa/Postman%20Collection/Collection/RAFS%20DDMS.postman_collection.json?ref_type=heads) (is used by default for development and testing purposes)
+
+Import the Collection into Postman
+
+- Download or copy the provided [Postman collection file](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/devops/core-plus/qa/Postman%20Collection/Collection/RAFS%20DDMS.postman_collection.json?ref_type=heads)
+
+- Download Development and test Environment: [RAFS DDMS Environment file](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/devops/core-plus/qa/Postman%20Collection/Environment/OSDU_CI.postman_environment.json?ref_type=heads) (is used by default for development and testing purposes on Community implementation (CI) env)
+
+- Open Postman and follow the official guide to import the collection: [Importing and Exporting Data in Postman](https://learning.postman.com/docs/getting-started/importing-and-exporting/importing-and-exporting-overview/)
+
+Tests for Rock and Fluid are located inside the same collection, but are organized into separate folders.
+
+### Location of Test Suites
+
+The folders relevant for Rock & Fluid testing are:
+
+- RAFS DDMS
+  - v2
+    - Simulation Rock Physics
+    - Saturation Function Set
+
+**Note:** Tests for the Fluid data type are still under development and will be added later.
+
+### Folder Structure
+
+Each new type contains two main subfolders:
+
+- Positive - These tests demonstrate the expected behavior and can be used as a reference flow.
+- Negative - Negative scenarios are split into folders per endpoint. Each folder contains tests validating error behavior
+
+### How to Start Testing
+
+Before running any positive or negative tests, you must initialize the collection.
+
+- Set required variables
+- Run the folder: Configure collection
+This folder contains a request that prepares authentication and environment variables for the collection.
 
 ## Running Postman Collections via Newman
 
@@ -239,7 +275,7 @@ If you want to test the RAFS-DDMS service on an existing OSDU instance (e.g., CI
 
   ```bash
   # Path to the Postman collection and Postman environment files used for testing
-  COLLECTION_JSON="./rafs-ddms-services/devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
+  COLLECTION_JSON="./rafs-ddms-services/devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json" # change the path to the postman collection file if you want to test your own collection
   ENVIRONMENT="./rafs-ddms-services/devops/core-plus/qa/Postman Collection/Environment/OSDU_CI.postman_environment.json"
   ```
 
