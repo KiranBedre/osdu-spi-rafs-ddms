@@ -8,8 +8,9 @@ metadata:
     app: {{ printf "%s-cronjob" .Values.conf.appName | quote }}
     type: cronjob
 spec:
-  schedule: {{ .Values.data.cronJobSchedule | default "0 2 * * *" | quote }}  # every 5 minutes for DEBUGGING
+  schedule: {{ .Values.data.cronJobSchedule | default "0 2 * * *" | quote }}
   concurrencyPolicy: Forbid
+  startingDeadlineSeconds: {{ .Values.data.cronJobstartingDeadlineSeconds | default 600 }}
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 2
   jobTemplate:
@@ -17,8 +18,8 @@ spec:
       annotations:
         checksum/indexer-image: "{{ .Values.data.cronJobImage | sha256sum }}"
     spec:
-      ttlSecondsAfterFinished: 60      # 1 min for DEBUGGING
-      backoffLimit: 1                   # retry once upon failure
+      ttlSecondsAfterFinished: 300
+      backoffLimit: 1
       template:
         metadata:
           labels:
@@ -27,7 +28,6 @@ spec:
             checksum/indexer-image: "{{ .Values.data.cronJobImage | sha256sum }}"
         spec:
           restartPolicy: Never
-#          activeDeadlineSeconds: 1200   # 20 min for DEBUGGING --- CHANGE AFTER TESTING
           {{- if .Values.rosa }}
           serviceAccountName: {{ printf "%s-cronjob" .Values.conf.appName | quote }}
           securityContext:
