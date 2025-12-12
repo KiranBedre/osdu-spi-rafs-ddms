@@ -34,8 +34,8 @@ ReservoirSimulationRockPhysicsBody = Annotated[
 ]
 
 
-class ReservoirSimulationRockPhysicsReportView(BaseStorageRecordView):
-    """Reservoir Simulation Rock Physics Report View.
+class ReservoirSimulationRockPhysicsRecordView(BaseStorageRecordView):
+    """Reservoir Simulation Rock Physics Record View.
 
     :param BaseStorageRecordView: inherits from BaseStorageRecordView
     :type BaseStorageRecordView: BaseStorageRecordView

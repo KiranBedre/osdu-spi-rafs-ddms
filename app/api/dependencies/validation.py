@@ -15,7 +15,7 @@
 import asyncio
 import copy
 import json
-from datetime import date
+from datetime import date, datetime
 from typing import Iterable, List, Optional, Set, Tuple, TypeVar
 
 from fastapi import Depends, HTTPException, Query, Request
@@ -28,21 +28,23 @@ from app.api.dependencies.services import (
     get_async_schema_service,
     get_async_storage_service,
 )
-from app.api.routes.utils.api_version import get_api_version_from_url
+from app.api.routes.utils.api_version import (
+    get_api_version_from_url,
+    get_domain_from_url,
+)
 from app.api.routes.utils.query import divide_chunks, find_osdu_ids_from_string
 from app.core.config import get_app_settings
 from app.exceptions.exceptions import (
-    BadRequestException,
-    InvalidDatasetException,
+    NotFoundException,
     RecordValidationException,
+    UnprocessableContentException,
 )
-from app.models.data_schemas.base import PATHS_TO_DATA_MODEL
+from app.models.data_schemas.base import CONTENT_PATTERNS, MAPS_TO_DATA_MODEL
 from app.models.domain.osdu import base as osdu_models_base
 from app.models.schemas.osdu_storage import OsduStorageRecord
 from app.models.schemas.pandas_dataframe import OrientSplit
 from app.resources.errors import FilterValidationError
 from app.resources.filters import DataFrameFilterValidator
-from app.resources.paths import COMMON_RELATIVE_PATHS
 from app.services.schema import SchemaService
 from app.services.storage import StorageService
 
@@ -50,6 +52,30 @@ SAMPLESANALYSIS_TYPE_RECORD_FIELD = "SampleAnalysisTypeIDs"
 
 Model = TypeVar("Model", bound=BaseModel)
 settings = get_app_settings()
+ColumnsFilter = Query(
+    default=None,
+    openapi_examples={
+        "example": {
+            "value": "PropertyX,PropertyY,PropertyZ",
+        },
+    },
+)
+RowsFilter = Query(
+    default=None,
+    openapi_examples={
+        "example": {
+            "value": "PropertyX[.PropertyXFieldA],gt,4000",
+        },
+    },
+)
+ColumnsAggregation = Query(
+    default=None,
+    openapi_examples={
+        "example": {
+            "value": "PropertyX[.PropertyXFieldA],mean",
+        },
+    },
+)
 
 
 def get_id(id_data):  # noqa: CCR001
@@ -302,117 +328,145 @@ async def validate_reservoir_sim_rock_physics_payload(
     return records
 
 
-def get_content_model_paths(request_path: str, api_version: str) -> tuple:
-    """Get the paths to search for the appropriate content model.
+async def validate_fluid_model_v2_payload(
+    records_list: List[OsduStorageRecord],
+    storage_service: StorageService = Depends(get_async_storage_service),
+    schema_service: SchemaService = Depends(get_async_schema_service),
+):
+    records = await validate_osdu_wks_records(
+        records_list,
+        schema_service,
+        [osdu_models_base.FLUID_MODEL_KIND],
+    )
+    await validate_referential_integrity(
+        records,
+        [],
+        storage_service,
+    )
+    return records
 
-    :param request_path: the request path
-    :type request_path: str
-    :param api_version: the api version
-    :type api_version: str
-    :return: appropiate paths to retrieve content models
-    :rtype: tuple
+
+def raise_model_not_found(
+    analysis_type: str,
+    content_schema_version: str,
+    available_versions: Iterable = None,
+):
+    """Raises model not found 404 exception
+
+    :param analysis_type: given analysis or model type
+    :type analysis_type: str
+    :param content_schema_version: content schema version
+    :type content_schema_version: str
+    :param available_versions: a list of available schema versions, defaults to None
+    :type available_versions: Iterable, optional
+    :raises HTTPException: Raises HTTP 404 Not found.
     """
-    relative_paths = COMMON_RELATIVE_PATHS[api_version]()
-    paths_to_content_models = PATHS_TO_DATA_MODEL[api_version]
+    message = " ".join([
+        f"Model not found for type '{analysis_type}', ",
+        f"version '{content_schema_version}'.",
+    ])
+    if available_versions:
+        message = f"{message} Available versions: {available_versions}."
 
-    if api_version in {"v2", "dev"} and "search" in request_path:
-        start_index = 5  # skip '/data'
-        relative_paths = [f"{path[start_index:]}/search" for path in relative_paths]  # noqa: WPS237
-        search_path_to_content_models = {}
-        for path, model in paths_to_content_models.items():
-            search_path_to_content_models[f"{path[start_index:]}/search"] = model  # noqa: WPS237
-
-        paths_to_content_models = search_path_to_content_models
-
-    return (relative_paths, paths_to_content_models)
+    logger.debug(message)
+    raise NotFoundException(detail=message)
 
 
-async def get_data_model(request: Request, content_schema_version: str = Depends(get_content_schema_version)) -> Model:
-    """Get the model based on the request path.
+async def get_data_model(
+    analysis_type: str,
+    request: Request,
+    content_schema_version: str = Depends(get_content_schema_version),
+) -> Model:
+    """Get the model based on the analysis type.
 
+    :param analysis_type: type of analysis
+    :type analysis_type: str
     :param request: request object
     :type request: Request
     :param content_schema_version: version obtained from header,
-        defaults to Depends(retrieve_schema_version)
+        defaults to Depends(get_content_schema_version)
     :type content_schema_version: str, optional
-    :raises BadRequestException: if model is not implemented for given
-        version
-    :raises HTTPException: if model is not implemented neither for path
-        nor version
-    :return: The corresponding data model according to path and version
+    :raises NotFoundException: if API version configuration not found
+    :raises NotFoundException: if model is not implemented for given analysis type
+    :return: The corresponding data model according to analysis type and version
     :rtype: Model
     """
-    model = None
-
-    version_models = None
     request_path = request.url.path
     api_version = get_api_version_from_url(request_path)
-    relative_paths, paths_to_content_models = get_content_model_paths(request_path, api_version)
-    for path in relative_paths:
-        if path in str(request_path):
-            version_models = paths_to_content_models.get(path)
+    domain = get_domain_from_url(request_path)
+
+    all_models_for_api_version_and_domain = MAPS_TO_DATA_MODEL.get(api_version, {}).get(domain)
+
+    if not all_models_for_api_version_and_domain:
+        raise_model_not_found(analysis_type, content_schema_version, domain)
+
+    version_models = None
+    for pattern in CONTENT_PATTERNS:
+        model_key = pattern.format(analysistype=analysis_type)
+        version_models = all_models_for_api_version_and_domain.get(model_key)
+        if version_models:
             break
 
     if not version_models:
-        reason = f"Unimplemented model for route {request_path}."
-        logger.debug(reason)
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=reason)
+        raise_model_not_found(analysis_type, content_schema_version)
 
     model = version_models.get(content_schema_version)
     if not model:
         available_versions = set(version_models.keys())
-        error_title = "There is no model for given version."
-        error_details = f"Schema version {content_schema_version} is not one of proper versions: {available_versions}"
-        reason = f"{error_title} {error_details}"
-        logger.debug(reason)
-        raise BadRequestException(detail=reason)
+        raise_model_not_found(analysis_type, content_schema_version, available_versions)
 
     return model
 
 
+async def get_data_model_for_content_type(
+    content_type: str,
+    request: Request,
+    content_schema_version: str = Depends(get_content_schema_version),
+) -> Model:
+    """Get the model based on the content_type.
+
+    :param content_type: type of analysis
+    :type content_type: str
+    :param request: request object
+    :type request: Request
+    :param content_schema_version: version obtained from header,
+        defaults to Depends(get_content_schema_version)
+    """
+    return await get_data_model(content_type, request, content_schema_version)
+
+
+async def get_data_model_inferred_from_domain(
+    request: Request,
+    content_schema_version: str = Depends(get_content_schema_version),
+) -> Model:
+    """Get the model based on the domain of the request path.
+
+    :param request: request object
+    :type request: Request
+    :param content_schema_version: version obtained from header,
+        defaults to Depends(get_content_schema_version)
+    """
+    domain = get_domain_from_url(request.url.path)
+    return await get_data_model(domain, request, content_schema_version)
+
+
 async def validate_filters(
     model: BaseModel = Depends(get_data_model),
-    columns_filter: Optional[str] = Query(
-        default=None,
-        openapi_examples={
-            "example": {
-                "value": "PropertyX,PropertyY,PropertyZ",
-            },
-        },
-    ),
-    rows_filter: Optional[str] = Query(
-        default=None,
-        openapi_examples={
-            "example": {
-                "value": "PropertyX[.PropertyXFieldA],gt,4000",
-            },
-        },
-    ),
-    columns_aggregation: Optional[str] = Query(
-        default=None,
-        openapi_examples={
-            "example": {
-                "value": "PropertyX[.PropertyXFieldA],avg",
-            },
-        },
-    ),
+    columns_filter: Optional[str] = ColumnsFilter,
+    rows_filter: Optional[str] = RowsFilter,
+    columns_aggregation: Optional[str] = ColumnsAggregation,
 ) -> DataFrameFilterValidator:
     """Validates query parameters used for dataframe filtering.
 
-    :param model: pydantic model, defaults to Depends(get_data_model)
+    :param model: Pydantic Model, defaults to Depends(get_data_model)
     :type model: BaseModel, optional
-    :param columns_filter: comma separated string of columns, defaults
-        to Query( default=None, example="PropertyX,PropertyY,PropertyZ",
-        )
+    :param columns_filter: comma separated string of columns, defaults to ColumnsFilter
     :type columns_filter: Optional[str], optional
-    :param rows_filter: comma separated predicate, defaults to Query(
-        default=None, example="PropertyX[.PropertyXFieldA],gt,4000", )
+    :param rows_filter: comma separated predicate, defaults to RowsFilter
     :type rows_filter: Optional[str], optional
-    :param columns_aggregation: comma separated aggregation, defaults to
-        Query( default=None, example="PropertyX[.PropertyXFieldA],avg",
-        )
+    :param columns_aggregation: comma separated aggregation, defaults to ColumnsAggregation
     :type columns_aggregation: Optional[str], optional
-    :raises HTTPException: when validation  fails
+    :raises HTTPException: when validation fails
     :return: filter object with validations
     :rtype: DataFrameFilterValidator
     """
@@ -430,10 +484,56 @@ async def validate_filters(
         ])
     except FilterValidationError as exc:
         logger.debug(f"Query parameters are invalid: {exc}")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+        raise UnprocessableContentException(detail=str(exc))
 
     logger.debug("Query parameters are valid.")
     return sql_filter
+
+
+async def validate_filters_for_content_type(
+    model: BaseModel = Depends(get_data_model_for_content_type),
+    columns_filter: Optional[str] = ColumnsFilter,
+    rows_filter: Optional[str] = RowsFilter,
+    columns_aggregation: Optional[str] = ColumnsAggregation,
+) -> DataFrameFilterValidator:
+    """Validates query parameters used for dataframe filtering.
+
+    :param model: Pydantic Model, defaults to Depends(get_data_model)
+    :type model: BaseModel, optional
+    :param columns_filter: comma separated string of columns, defaults to ColumnsFilter
+    :type columns_filter: Optional[str], optional
+    :param rows_filter: comma separated predicate, defaults to RowsFilter
+    :type rows_filter: Optional[str], optional
+    :param columns_aggregation: comma separated aggregation, defaults to ColumnsAggregation
+    :type columns_aggregation: Optional[str], optional
+    :raises HTTPException: when validation fails
+    :return: filter object with validations
+    :rtype: DataFrameFilterValidator
+    """
+    return await validate_filters(model, columns_filter, rows_filter, columns_aggregation)
+
+
+async def validate_filters_for_domain_inferred_model(
+    model: BaseModel = Depends(get_data_model_inferred_from_domain),
+    columns_filter: Optional[str] = ColumnsFilter,
+    rows_filter: Optional[str] = RowsFilter,
+    columns_aggregation: Optional[str] = ColumnsAggregation,
+) -> DataFrameFilterValidator:
+    """Validates query parameters used for dataframe filtering.
+
+    :param model: Pydantic Model, defaults to Depends(get_data_model)
+    :type model: BaseModel, optional
+    :param columns_filter: comma separated string of columns, defaults to ColumnsFilter
+    :type columns_filter: Optional[str], optional
+    :param rows_filter: comma separated predicate, defaults to RowsFilter
+    :type rows_filter: Optional[str], optional
+    :param columns_aggregation: comma separated aggregation, defaults to ColumnsAggregation
+    :type columns_aggregation: Optional[str], optional
+    :raises HTTPException: when validation fails
+    :return: filter object with validations
+    :rtype: DataFrameFilterValidator
+    """
+    return await validate_filters(model, columns_filter, rows_filter, columns_aggregation)
 
 
 async def get_validated_bulk_data_json(request: Request) -> str:
@@ -441,7 +541,7 @@ async def get_validated_bulk_data_json(request: Request) -> str:
 
     :param request: the incoming request object
     :type request: Request
-    :raises InvalidDatasetException: if data and index are inconsistent
+    :raises UnprocessableContentException: if data and index are inconsistent
     :raises ValidationError: if orientsplit frame can't be build from
         request body
     :return: validated json data
@@ -454,7 +554,7 @@ async def get_validated_bulk_data_json(request: Request) -> str:
     data_length = len(bulk_data.data)
     if index_length != data_length:
         detail = f"Data error: 'index' lenght: {index_length} != 'data' lenght: {data_length}"
-        raise InvalidDatasetException(detail=detail)
+        raise UnprocessableContentException(detail=detail)
     return bulk_data.json()
 
 
@@ -478,30 +578,38 @@ async def get_search_data_pagination_parameters(
         },
         ge=0,
     ),
-    indexed_start_date: Optional[date] = Query(
+    indexed_start_date: Optional[str] = Query(
         default=None,
-        openapi_examples={
-            "example": {
-                "value": "2023-01-01",
-            },
-        },
+        openapi_examples={"example": {"value": "2023-01-01"}},
+        description="Start date in YYYY-MM-DD format",
     ),
-    indexed_end_date: Optional[date] = Query(
+    indexed_end_date: Optional[str] = Query(
         default=None,
-        openapi_examples={
-            "example": {
-                "value": "2023-12-31",
-            },
-        },
+        openapi_examples={"example": {"value": "2023-12-31"}},
+        description="End date in YYYY-MM-DD format",
     ),
 ) -> Tuple[int, int, Optional[date], Optional[date]]:
-    if indexed_start_date and indexed_end_date:
-        if indexed_start_date > indexed_end_date:
+    def validate_and_parse_date(date_str: Optional[str], field_name: str) -> Optional[date]:  # noqa: WPS430
+        if not date_str:
+            return None
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                detail=f"Invalid format for {field_name}: '{date_str}'. Expected format: YYYY-MM-DD.",
+            )
+
+    start_date_obj = validate_and_parse_date(indexed_start_date, "indexed_start_date")
+    end_date_obj = validate_and_parse_date(indexed_end_date, "indexed_end_date")
+
+    if start_date_obj and end_date_obj:
+        if start_date_obj > end_date_obj:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
-    return offset, page_limit, indexed_start_date, indexed_end_date
+    return offset, page_limit, start_date_obj, end_date_obj
 
 
 async def get_search_pagination_parameters(

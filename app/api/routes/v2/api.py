@@ -14,7 +14,8 @@
 
 from fastapi import APIRouter, Depends
 
-from app.api.dependencies.request import require_data_partition_id
+from app.api.dependencies.request import get_data_partition_id
+from app.api.routes.fluidmodel import api as fluidmodel_api
 from app.api.routes.reservoirsimulationrockphysicsmodel import (
     api as reservoirsimulationrockphysics_api,
 )
@@ -29,7 +30,7 @@ from app.api.routes.v2.master_data import api as masterdata_api
 from app.resources.paths import RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR
 
 COMMON_DEPENDENCIES = (
-    Depends(require_data_partition_id),
+    Depends(get_data_partition_id),
 )
 
 SAMPLES_ANALYSIS_PREFIX = "/samplesanalysis"
@@ -65,5 +66,12 @@ router.include_router(
     reservoirsimulationrockphysics_api.rsrp_router,
     prefix=f"/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
     tags=[RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR],
+    dependencies=COMMON_DEPENDENCIES,
+)
+
+router.include_router(
+    fluidmodel_api.fm_record_router_v2,
+    prefix="/fluidmodel",
+    tags=["fluidmodel"],
     dependencies=COMMON_DEPENDENCIES,
 )

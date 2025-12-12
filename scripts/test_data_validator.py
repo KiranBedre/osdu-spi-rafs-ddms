@@ -20,7 +20,13 @@ import sys
 import pandas as pd
 from pydantic.error_wrappers import ValidationError
 
-from app.models.data_schemas.api_v2 import base
+from app.models.data_schemas.reservoir_simulation_rock_physics_v2 import (
+    base as rsrpm_base,
+)
+from app.models.data_schemas.sample_analysis_api_v2 import base as sa_base
+from app.models.data_schemas.saturation_function_set_api_v2 import (
+    base as sfs_base,
+)
 
 app_dir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(app_dir)
@@ -29,11 +35,18 @@ sys.path.append(app_dir)
 def create_test_data_from_example(
     data_example_path: str,
     test_data_path: str,
+    domain: str,
     model_class_name: str,
 ):
     """Create test data using pandas after validating the example provided."""
 
-    model = getattr(base, model_class_name)
+    match domain:
+        case "samplesanalysis":
+            model = getattr(sa_base, model_class_name)
+        case "reservoirsimulationrockphysicsmodel":
+            model = getattr(rsrpm_base, model_class_name)
+        case "saturationfunctionset":
+            model = getattr(sfs_base, model_class_name)
 
     with open(data_example_path) as fp:
         example = json.load(fp)
@@ -51,7 +64,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process example files, validates and create test data.")
     parser.add_argument("data_example_path", type=str, help="DataExample file path in format orient='records'.")
     parser.add_argument("test_data_path", type=str, help="target test data path")
+    parser.add_argument("domain", type=str, help="Domain of the model (eg. samplesanalysis).")
     parser.add_argument("model_class_name", type=str, help="Class name of the model use for validation.")
     args = parser.parse_args()
 
-    create_test_data_from_example(args.data_example_path, args.test_data_path, args.model_class_name)
+    create_test_data_from_example(args.data_example_path, args.test_data_path, args.domain, args.model_class_name)

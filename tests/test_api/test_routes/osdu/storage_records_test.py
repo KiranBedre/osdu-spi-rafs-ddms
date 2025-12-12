@@ -220,6 +220,7 @@ def with_patched_storage_samplesanalysis_existing_parent():
         ("get_record", f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID),
         ("get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
         ("get_record", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
+        ("get_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
         ("get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
     ],
 )
@@ -245,6 +246,7 @@ async def test_get_record_not_found(storage_method, path, record_id, with_patche
         ("get_record", f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID),
         ("get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
         ("get_record", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
+        ("get_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
         ("get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
     ],
 )
@@ -276,6 +278,7 @@ async def test_get_record_version_not_found(storage_method, path, record_id, wit
             "get_record_versions", f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
+        ("get_record_versions", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
         ("get_record_versions", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
     ],
 )
@@ -310,6 +313,7 @@ async def test_get_record_versions_not_found(
             "soft_delete_record", f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
+        ("soft_delete_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
         ("soft_delete_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
     ],
 )
@@ -335,6 +339,7 @@ async def test_delete_record_not_found(
         (f"{API_VERSION_V2}/samplesanalysesreport"),
         (f"{API_VERSION_V2}/samplesanalysis"),
         (f"{API_VERSION_V2}/saturationfunctionset"),
+        (f"{API_VERSION_V2}/fluidmodel"),
         (f"{API_VERSION_V2}/masterdata"),
     ],
 )
@@ -362,6 +367,7 @@ async def test_post_record_no_kind(path):
         (f"{API_VERSION_V2}/samplesanalysesreport"),
         (f"{API_VERSION_V2}/samplesanalysis"),
         (f"{API_VERSION_V2}/saturationfunctionset"),
+        (f"{API_VERSION_V2}/fluidmodel"),
         (f"{API_VERSION_V2}/masterdata"),
     ],
 )
@@ -397,6 +403,11 @@ async def test_post_record_invalid_payload_type(path):
             "upsert_records", f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
             storage_mock_objects.SATURATION_FUNCTION_SET_SCHEMA,
+        ),
+        (
+            "upsert_records", f"{API_VERSION_V2}/fluidmodel",
+            storage_mock_objects.FLUID_MODEL_RECORD,
+            storage_mock_objects.FLUID_MODEL_SCHEMA,
         ),
         (
             "upsert_records", f"{API_VERSION_V2}/masterdata",
@@ -545,6 +556,10 @@ async def test_post_samplesanalysis_success(
             storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
         ),
         (
+            "upsert_records", f"{API_VERSION_V2}/fluidmodel",
+            storage_mock_objects.FLUID_MODEL_RECORD,
+        ),
+        (
             "upsert_records", f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_RECORD,
         ),
@@ -616,6 +631,10 @@ async def test_post_record_no_id(
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
         (
+            "get_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.FLUID_MODEL_RECORD,
+            storage_mock_objects.TEST_FLUID_MODEL_ID,
+        ),
+        (
             "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_RECORD,
             storage_mock_objects.TEST_SAMPLE_ID,
         ),
@@ -676,6 +695,10 @@ async def test_get_record_success(
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
         (
+            "get_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.FLUID_MODEL_RECORD,
+            storage_mock_objects.TEST_FLUID_MODEL_ID,
+        ),
+        (
             "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_RECORD,
             storage_mock_objects.TEST_SAMPLE_ID,
         ),
@@ -733,6 +756,7 @@ async def test_get_record_version_success(
             "get_record_versions", f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
+        ("get_record_versions", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
         ("get_record_versions", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
 
     ],
@@ -784,6 +808,11 @@ async def test_get_record_versions_success(
             f"{API_VERSION_V2}/saturationfunctionset/{storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID}",
         ),
         (
+            "get_record",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/fluidmodel/{storage_mock_objects.TEST_FLUID_MODEL_ID}",
+        ),
+        (
             "get_record_versions", status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/samplesanalysesreport/{storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID}/versions",
         ),
@@ -794,6 +823,10 @@ async def test_get_record_versions_success(
         (
             "get_record_versions", status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/saturationfunctionset/{storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID}/versions",
+        ),
+        (
+            "get_record_versions", status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/fluidmodel/{storage_mock_objects.TEST_FLUID_MODEL_ID}/versions",
         ),
         (
             "get_record",
@@ -809,6 +842,11 @@ async def test_get_record_versions_success(
             "get_record",
             status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/saturationfunctionset/{storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID}/versions/1234",
+        ),
+        (
+            "get_record",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/fluidmodel/{storage_mock_objects.TEST_FLUID_MODEL_ID}/versions/1234",
         ),
         (
             "get_record",
@@ -852,6 +890,9 @@ async def test_get_record_auth_errors_from_storage(
         (f"{API_VERSION_V2}/saturationfunctionset/record_id"),
         (f"{API_VERSION_V2}/saturationfunctionset/record_id/versions"),
         (f"{API_VERSION_V2}/saturationfunctionset/record_id/versions/1234"),
+        (f"{API_VERSION_V2}/fluidmodel/record_id"),
+        (f"{API_VERSION_V2}/fluidmodel/record_id/versions"),
+        (f"{API_VERSION_V2}/fluidmodel/record_id/versions/1234"),
         (f"{API_VERSION_V2}/masterdata/record_id"),
         (f"{API_VERSION_V2}/masterdata/record_id/versions"),
         (f"{API_VERSION_V2}/masterdata/record_id/versions/1234"),
@@ -887,6 +928,10 @@ async def test_get_record_auth_errors(
         ),
         (
             "soft_delete_record", status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/fluidmodel/{storage_mock_objects.TEST_FLUID_MODEL_ID}",
+        ),
+        (
+            "soft_delete_record", status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/masterdata/{storage_mock_objects.TEST_SAMPLE_ID}",
         ),
     ],
@@ -909,6 +954,7 @@ async def test_delete_record_auth_errors_from_storage(
         (f"{API_VERSION_V2}/samplesanalysesreport/record_id"),
         (f"{API_VERSION_V2}/samplesanalysis/record_id"),
         (f"{API_VERSION_V2}/saturationfunctionset/record_id"),
+        (f"{API_VERSION_V2}/fluidmodel/record_id"),
         (f"{API_VERSION_V2}/masterdata/record_id"),
     ],
 )
@@ -940,6 +986,10 @@ async def test_delete_record_auth_errors(
         (
             "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
+        ),
+        (
+            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/fluidmodel",
+            storage_mock_objects.FLUID_MODEL_RECORD,
         ),
         (
             "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
@@ -994,6 +1044,7 @@ async def test_post_record_auth_errors_from_storage(
         (f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2),
         (f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.SAMPLESANALYSIS_RECORD_V2),
         (f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.SATURATION_FUNCTION_SET_RECORD),
+        (f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.FLUID_MODEL_RECORD),
         (
             f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_RECORD,
@@ -1038,6 +1089,7 @@ async def test_post_record_auth_errors(
     "endpoint,record_id", [
         (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2, TEST_WRONG_ID),
+        (storage_mock_objects.FLUID_MODEL_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.MASTER_DATA_ENDPOINT_PATH_V2, TEST_WRONG_ID),
     ],
 )
@@ -1057,6 +1109,7 @@ async def test_get_record_wrong_id_pattern(endpoint, record_id):
     "endpoint,manifest", [
         (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
         (storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
+        (storage_mock_objects.FLUID_MODEL_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
         (storage_mock_objects.MASTER_DATA_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
     ],
 )
@@ -1079,6 +1132,7 @@ async def test_post_record_wrong_kind(endpoint, manifest):
     "endpoint,record_id", [
         (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2, TEST_WRONG_ID),
+        (storage_mock_objects.FLUID_MODEL_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.MASTER_DATA_ENDPOINT_PATH_V2, TEST_WRONG_ID),
     ],
 )
@@ -1116,6 +1170,11 @@ async def test_delete_record_wrong_id_pattern(endpoint, record_id):
             f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.SATURATION_FUNCTION_SET_RECORD, "ResourceHomeRegionID",
             storage_mock_objects.SATURATION_FUNCTION_SET_SCHEMA,
+        ),
+        (
+            f"{API_VERSION_V2}/fluidmodel",
+            storage_mock_objects.FLUID_MODEL_RECORD, "ResourceHomeRegionID",
+            storage_mock_objects.FLUID_MODEL_SCHEMA,
         ),
         (
             f"{API_VERSION_V2}/masterdata",

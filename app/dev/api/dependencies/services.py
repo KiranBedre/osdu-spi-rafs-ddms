@@ -21,7 +21,7 @@ from app.api.dependencies.request import (
 )
 from app.core.config import get_app_settings
 from app.core.settings.app import AppSettings
-from app.dev.services import entitlements, partition
+from app.dev.services import partition
 from app.models.schemas.user import User
 from app.resources.common_headers import CORRELATION_ID
 
@@ -33,20 +33,6 @@ async def get_async_partition_service(
     correlation_id: str = Depends(get_correlation_id),
 ):
     return partition.PartitionService(
-        data_partition_id=data_partition_id,
-        settings=settings,
-        user=user,
-        extra_headers={CORRELATION_ID: correlation_id},
-    )
-
-
-async def get_async_entitlements_service(
-    data_partition_id: str = Depends(require_data_partition_id),
-    settings: AppSettings = Depends(get_app_settings),
-    user: User = Depends(require_authorized_user),
-    correlation_id: str = Depends(get_correlation_id),
-):
-    return entitlements.EntitlementsService(
         data_partition_id=data_partition_id,
         settings=settings,
         user=user,

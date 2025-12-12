@@ -15,9 +15,11 @@ from fastapi import Depends
 from loguru import logger
 
 from app.api.dependencies.request import require_data_partition_id
-from app.api.dependencies.services import get_async_search_service
+from app.api.dependencies.services import (
+    get_async_entitlements_service,
+    get_async_search_service,
+)
 from app.core.config import get_app_settings
-from app.dev.api.dependencies.services import get_async_entitlements_service
 from app.dev.core.helpers.redis_index import (
     SAMPLESANALYSIS_IX,
     get_redis_client,
@@ -26,19 +28,18 @@ from app.dev.core.helpers.redis_index import (
 from app.dev.search.redis_analysis_type_ids_fetcher import (
     RedisSamplesAnalysisTypeIdsFetcher,
 )
-from app.dev.services import entitlements
-from app.search.analysis_type_ids_fetcher import (
-    SamplesAnalysisTypeIdsFetcher,
+from app.search.ddms_dataset_ids_fetcher import (
+    DDMSDatasetIdsFetcher,
     SearchServiceSamplesAnalysisTypeIdsFetcher,
 )
-from app.services import search
+from app.services import entitlements, search
 
 
 async def get_analysis_type_ids_fetcher(
     search_service: search.SearchService = Depends(get_async_search_service),
     partition: str = Depends(require_data_partition_id),
     entitlements_service: entitlements.EntitlementsService = Depends(get_async_entitlements_service),
-) -> SamplesAnalysisTypeIdsFetcher:
+) -> DDMSDatasetIdsFetcher:
     redis_index_enable = get_app_settings().redis_index_enable
     if redis_index_enable and await is_index_initialized(SAMPLESANALYSIS_IX.format(partition=partition)):
         logger.info("Using redis index to fetch ids")

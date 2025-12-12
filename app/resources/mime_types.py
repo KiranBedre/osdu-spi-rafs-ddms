@@ -22,7 +22,7 @@ class MimeType(object):
     alternative_types: list = None
 
     def is_match(self, mime_type):
-        return mime_type == self.mime_type or mime_type in self.alternative_types
+        return mime_type == self.mime_type or (self.alternative_types and mime_type in self.alternative_types)
 
     def is_extension_match(self, extension):
         return extension == self.file_extension
