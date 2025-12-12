@@ -20,7 +20,6 @@ import pandas as pd
 import pandas._libs.json as pdujson  # noqa: WPS301, WPS436
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.responses import JSONResponse
-from fastapi_cache.decorator import cache
 from loguru import logger
 from starlette import status
 
@@ -40,9 +39,6 @@ from app.api.dependencies.validation import (
 )
 from app.api.routes.utils.api_description_helper import APIDescriptionHelper
 from app.core.config import get_app_settings
-from app.core.helpers.cache.coder import ResponseCoder
-from app.core.helpers.cache.key_builder import key_builder_using_token
-from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.dataframe.blob_parquet_loader import BlobParquetLoader
 from app.dataframe.filter_processor import DFFilterProcessor
 from app.dataframe.parquet_loader import DFPayload, ParquetLoader
@@ -94,7 +90,6 @@ class GenericSearchDataView(object):
         if kwargs:
             self.__dict__.update(kwargs)
 
-    @cache(expire=CACHE_DEFAULT_TTL, coder=ResponseCoder, key_builder=key_builder_using_token)
     async def get_search_data(  # noqa: WPS210
         self,
         request: Request,
@@ -202,7 +197,6 @@ class GenericSearchDataView(object):
             )
         return response
 
-    @cache(expire=CACHE_DEFAULT_TTL, coder=ResponseCoder, key_builder=key_builder_using_token)
     async def get_search(  # noqa: CCR001, WPS231, WPS210
         self,
         request: Request,

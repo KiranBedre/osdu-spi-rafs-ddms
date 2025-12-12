@@ -15,6 +15,7 @@
 from typing import Callable, List
 
 from fastapi import Depends, Request
+from fastapi_cache.decorator import cache
 from starlette import status
 
 from app.api.dependencies.request import get_content_schema_version
@@ -31,6 +32,9 @@ from app.api.routes.common.base_search import (
     PaginationParametersType,
 )
 from app.api.routes.utils.api_version import get_domain_from_url
+from app.core.helpers.cache.coder import ResponseCoder
+from app.core.helpers.cache.key_builder import key_builder_using_token
+from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.providers.dependencies.blob_storage import IBlobStorage
 from app.resources.filters import DataFrameFilterValidator
 from app.services import dataset, search
@@ -116,7 +120,11 @@ class DynamicGenericSearchView(GenericSearchDataView):
                 pagination_parameters=pagination_parameters,
             )
 
-        return search_endpoint
+        return cache(
+            expire=CACHE_DEFAULT_TTL,
+            coder=ResponseCoder,
+            key_builder=key_builder_using_token,
+        )(search_endpoint)
 
     def _register_dynamic_endpoints(self):
         for config in self._endpoints_config:
