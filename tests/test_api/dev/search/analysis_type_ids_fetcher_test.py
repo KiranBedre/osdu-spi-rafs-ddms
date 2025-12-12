@@ -22,7 +22,7 @@ from app.dev.search.redis_analysis_type_ids_fetcher import (
     RedisSamplesAnalysisTypeIdsFetcher,
 )
 from app.resources.paths import SAMPLESANALYSIS_TYPE_MAPPING
-from app.search.analysis_type_ids_fetcher import (
+from app.search.ddms_dataset_ids_fetcher import (
     SearchServiceSamplesAnalysisTypeIdsFetcher,
 )
 

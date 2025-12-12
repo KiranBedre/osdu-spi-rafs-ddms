@@ -1,0 +1,102 @@
+[
+  {
+    "ReservoirSimulationRockPhysicsID": "partition:work-product-component--ReservoirSimulationRockPhysicsModel:uuid:12345",
+    "Meta": [
+      {
+        "kind": "Unit",
+        "name": "psi",
+        "unitOfMeasureID": "osdu:reference-data--UnitOfMeasure:psi:",
+        "propertyNames": [
+          "Compressibility.ReferencePressure"
+        ]
+      }
+    ],
+    "Compressibility": {
+      "ReferencePressure": 3500,
+      "PoreVolumeCompressibilityAtReferencePressure": 0.00025
+    },
+    "ThermalModelDefinition": {
+      "ThermalConductivity": 2.5,
+      "HeatCapacity": 900
+    }
+  },
+  {
+    "ReservoirSimulationRockPhysicsID": "partition:work-product-component--ReservoirSimulationRockPhysicsModel:uuid:67890",
+    "Meta": [
+      {
+        "kind": "Unit",
+        "name": "psi",
+        "unitOfMeasureID": "osdu:reference-data--UnitOfMeasure:psi:",
+        "propertyNames": [
+          "Compressibility.Pressure[*]"
+        ]
+      }
+    ],
+    "Compressibility": {
+      "Pressure": [
+        3000,
+        3500,
+        4000
+      ],
+      "PoreVolumeCompressibility": [
+        0.00022,
+        0.00024,
+        0.00026
+      ],
+      "TransmissibilityCompressibility": [
+        0.00018,
+        0.00019,
+        0.0002
+      ],
+      "Y-DirectionTransmissibilityCompressibility": [
+        0.00017,
+        0.00018,
+        0.00019
+      ],
+      "Z-DirectionTransmissibilityCompressibility": [
+        0.00016,
+        0.00017,
+        0.00018
+      ],
+      "ReferencePressure": 3500
+    },
+    "ThermalModelDefinition": {
+      "ThermalConductivity": 2.8,
+      "HeatCapacity": 950
+    }
+  },
+  {
+    "ReservoirSimulationRockPhysicsID": "partition:work-product-component--ReservoirSimulationRockPhysicsModel:uuid:24680",
+    "Meta": [
+      {
+        "kind": "Unit",
+        "name": "psi",
+        "unitOfMeasureID": "osdu:reference-data--UnitOfMeasure:psi:",
+        "propertyNames": [
+          "Compressibility.Pressure[*]"
+        ]
+      }
+    ],
+    "Compressibility": {
+      "Pressure": [
+        3000,
+        3500,
+        4000
+      ],
+      "PoreVolumeMultiplier": [
+        1,
+        0.98,
+        0.96
+      ],
+      "TransmissibilityMultiplier": [
+        1,
+        0.97,
+        0.95
+      ]
+    },
+    "ThermalModelDefinition": {
+      "ThermalConductivity": 3,
+      "HeatCapacity": 1000
+    }
+  }
+]

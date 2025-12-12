@@ -62,7 +62,7 @@ In general:
 ["ColumnName1", "ColumnName2"]
 ```
 
-**_columns_filter_** valid columns are available only for top-level properties. For example, for the [NMR schema](../../app/models/data_schemas/jsonschema/api_v2/nmr_data_schema.json), the following properties are available when using **_columns_filter_**:
+**_columns_filter_** valid columns are available only for top-level properties. For example, for the [NMR schema](../../app/models/data_schemas/jsonschema/sample_analysis_api_v2/nmr_data_schema.json), the following properties are available when using **_columns_filter_**:
 
 ```json
 [

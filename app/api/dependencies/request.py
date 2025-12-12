@@ -13,7 +13,7 @@
 #  limitations under the License.
 
 import re
-from typing import List
+from typing import Final, List
 
 from fastapi import Header, HTTPException, Request
 from loguru import logger
@@ -23,6 +23,9 @@ from app.exceptions import exceptions
 from app.middleware.correlation_id_middleware import set_correlation_id
 from app.resources.common_headers import ACCEPT, CONTENT_TYPE, CORRELATION_ID
 from app.resources.mime_types import SupportedMimeTypes
+
+ACCEPT_HEADER: Final = "accept"
+SUPPORTED_MIME_TYPES: Final[tuple] = ("application/json", "*/*")
 
 
 async def get_data_partition_id(request: Request):
@@ -124,18 +127,39 @@ async def get_content_schema_version(request: Request) -> str:
     :return: schema version
     :rtype: str
     """
-    accept_header = request.headers[ACCEPT]
+    accept_header = request.headers.get(ACCEPT)
+
+    if not accept_header:
+        error_title = "Missing 'Accept' header."
+        example_detail = "Example: --header 'Accept: application/json;version=1.0.0'"
+        error_details = f"The 'Accept' header is required to specify the schema version. {example_detail}"
+        reason = f"{error_title} {error_details}"
+        raise exceptions.NotAcceptableException(detail=reason)
+
+    parts = [part.strip() for part in accept_header.lower().split(";")]
+    mime_type = parts[0]
+
+    if mime_type not in SUPPORTED_MIME_TYPES:
+        error_title = "Not Acceptable."
+        error_details = " ".join([
+            f"The requested media type '{mime_type}' is not supported.",
+            f"Supported types are: {SUPPORTED_MIME_TYPES}.",
+        ])
+        reason = f"{error_title} {error_details}"
+        raise exceptions.NotAcceptableException(detail=reason)
+
     accept_header = accept_header.lower().strip()
-    version_regex = r"version=(\d+\.\d+\.\d+)"
-    version = re.search(version_regex, accept_header)
-    try:
-        content_schema_version = version.groups()[0]
-    except AttributeError:
+    version_regex = r"version=(\d+\.\d+(?:\.\d+)?)"
+    version_match = re.search(version_regex, accept_header)
+
+    if not version_match:
         error_title = "No schema version specified or invalid schema format."
         example_detail = "Example: --header 'Accept: */*;version=1.0.0'"
         error_details = f"Check if the schema version is specified in the 'Accept' header. {example_detail}"
         reason = f"{error_title} {error_details}"
-        raise exceptions.InvalidHeaderException(detail=reason)
+        raise exceptions.NotAcceptableException(detail=reason)
+
+    content_schema_version = version_match.group(1)
     logger.debug(f"Schema version: {content_schema_version}")
     return content_schema_version
 

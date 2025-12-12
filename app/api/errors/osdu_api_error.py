@@ -19,6 +19,7 @@ from requests.exceptions import HTTPError
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from app.api.errors.human_readable_maps import transform_to_human_readable
 from app.exceptions.exceptions import OsduApiException
 from app.models.schemas.errors import OsduApiErrorResponse
 
@@ -37,7 +38,7 @@ def format_request_exc(exc: HTTPError) -> dict:
             reason=exc.response.reason,
             message=exc.response.text,
         ).dict()
-    return formatted_exc
+    return transform_to_human_readable(formatted_exc)
 
 
 async def osdu_api_http_error_handler(_: Request, exc: HTTPError) -> JSONResponse:
@@ -61,7 +62,7 @@ def format_exc(exc: HTTPStatusError) -> dict:
             reason=str(exc.response.content),
             message=exc.response.text,
         ).dict()
-    return formatted_exc
+    return transform_to_human_readable(formatted_exc)
 
 
 async def osdu_api_httpx_error_handler(_: Request, exc: HTTPStatusError) -> JSONResponse:

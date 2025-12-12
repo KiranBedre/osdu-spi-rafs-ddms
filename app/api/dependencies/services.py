@@ -25,7 +25,7 @@ from app.core.settings.app import AppSettings
 from app.models.schemas.user import User
 from app.providers.dependencies.blob_storage import get_blob_storage
 from app.resources.common_headers import CORRELATION_ID
-from app.services import dataset, schema, search, storage
+from app.services import dataset, entitlements, schema, search, storage
 
 
 async def get_async_dataset_service(
@@ -95,3 +95,17 @@ async def get_blob_storage_service(
             settings=settings,
             cloud_provider_config=cloud_provider_config,
         )
+
+
+async def get_async_entitlements_service(
+    data_partition_id: str = Depends(get_data_partition_id),
+    settings: AppSettings = Depends(get_app_settings),
+    user: User = Depends(require_authorized_user),
+    correlation_id: str = Depends(get_correlation_id),
+):
+    return entitlements.EntitlementsService(
+        data_partition_id=data_partition_id,
+        settings=settings,
+        user=user,
+        extra_headers={CORRELATION_ID: correlation_id},
+    )

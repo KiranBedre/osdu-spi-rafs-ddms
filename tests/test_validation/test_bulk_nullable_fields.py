@@ -25,10 +25,10 @@ import pandas as pd
 import pytest
 
 from app.bulk_data_validation.data_validation import DataValidator
-from app.models.data_schemas.api_v2.capillary_pressure_data_model_1_0_0 import (
+from app.models.data_schemas.data_schema import build_data_schema
+from app.models.data_schemas.sample_analysis_api_v2.capillary_pressure_data_model_1_0_0 import (
     CapillaryPressureModel100,
 )
-from app.models.data_schemas.data_schema import build_data_schema
 from tests.test_api.api_version import API_VERSION_V2
 from tests.test_api.test_routes.data.data_mock_objects import (
     build_mock_get_storage_service,

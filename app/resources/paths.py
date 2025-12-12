@@ -166,4 +166,6 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
     "mininggeotechlogging": ["Mining.Geotechlogging"],
 }
 
+SATURATION_FUNCTION_SET_STR = "saturationfunctionset"
+
 RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR = "reservoirsimulationrockphysicsmodel"

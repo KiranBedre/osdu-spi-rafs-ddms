@@ -25,11 +25,12 @@ from starlette import status
 
 from app.api.dependencies.services import (
     get_async_dataset_service,
+    get_async_entitlements_service,
     get_async_storage_service,
 )
 from app.api.routes.utils.query import find_osdu_ids_from_string
 from app.main import app
-from app.services import dataset, storage
+from app.services import dataset, entitlements, storage
 from tests.test_api.test_routes import dependencies
 from tests.test_api.test_routes.api_v2.atm_flash_compositional_analysis import (
     atmospheric_flash_mock_objects,
@@ -143,7 +144,7 @@ from tests.test_api.test_routes.api_v2.xrf import xrf_mock_objects
 from tests.test_api.test_routes.data import data_mock_objects
 from tests.test_api.test_routes.data.data_mock_objects import (
     INVALID_DATA_WITH_NAN,
-    ORIENT_SPLIT_400_PAYLOADS,
+    ORIENT_SPLIT_422_PAYLOADS,
     TEST_HEADERS_IMPROPER_SCHEMA_VERSION,
     TEST_HEADERS_JSON,
     TEST_HEADERS_NO_AUTH,
@@ -155,12 +156,25 @@ from tests.test_api.test_routes.data.data_mock_objects import (
     build_mock_get_storage_service,
 )
 from tests.test_api.test_routes.osdu.storage_mock_objects import (
+    PARTITION,
     BulkDatasetIdV2,
     TestContentPathsApiV2,
+)
+from tests.test_api.test_routes.reservoir_simulation_rock_physics_model import (
+    res_sim_rock_physics_mock_objects,
+)
+from tests.test_api.test_routes.saturation_function_set import (
+    saturation_function_set_mock_objects,
 )
 
 async_storage_record_service_mock = create_autospec(storage.StorageService, spec_set=True, instance=True)
 async_dataset_service_mock = create_autospec(dataset.DatasetService, spec_set=True, instance=True)
+async_entitlements_service_mock = create_autospec(entitlements.EntitlementsService, spec_set=True, instance=True)
+
+async_entitlements_service_mock.get_groups.return_value = {
+    "groups": [{"name": "test-group", "email": "test@example.com"}],
+    "desId": "test-user",
+}
 
 
 async def mock_get_async_dataset_service():
@@ -175,11 +189,16 @@ async def mock_get_async_storage_service():
     yield async_storage_record_service_mock
 
 
+async def mock_get_async_entitlements_service():
+    yield async_entitlements_service_mock
+
+
 @contextmanager
 def services_overrides():
     overrides = {
         get_async_storage_service: mock_get_async_storage_service,
         get_async_dataset_service: mock_get_async_dataset_service,
+        get_async_entitlements_service: mock_get_async_entitlements_service,
     }
     with dependencies.DependencyOverrider(app, overrides) as mock_dependencies:
         yield mock_dependencies
@@ -262,7 +281,8 @@ def post_overrides(record_data=None, test_dataset_record_id=data_mock_objects.TE
         (TestContentPathsApiV2.PDP, BulkDatasetIdV2.PDP),
         (TestContentPathsApiV2.STO, BulkDatasetIdV2.STO),
         (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, BulkDatasetIdV2.CRUSHED_ROCK_ANALYSIS),
-        (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, BulkDatasetIdV2.CRUSHED_ROCK_ANALYSIS),
+        (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, BulkDatasetIdV2.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL),
+        (TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL, BulkDatasetIdV2.SATURATION_FUNCTION_SET_MODEL),
     ],
 )
 @pytest.mark.asyncio
@@ -326,6 +346,8 @@ async def test_get_content_data_no_data(data_endpoint_path, dataset_id):
         (TestContentPathsApiV2.PDP, BulkDatasetIdV2.PDP),
         (TestContentPathsApiV2.STO, BulkDatasetIdV2.STO),
         (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, BulkDatasetIdV2.CRUSHED_ROCK_ANALYSIS),
+        (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, BulkDatasetIdV2.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL),
+        (TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL, BulkDatasetIdV2.SATURATION_FUNCTION_SET_MODEL),
     ],
 )
 @pytest.mark.asyncio
@@ -334,7 +356,7 @@ async def test_get_data_no_content_header(data_endpoint_path, dataset_id):
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.get(
                 f"{data_endpoint_path}/{dataset_id}",
-                headers=None,
+                headers={"data-partition-id": "opendes"},
             )
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -389,6 +411,8 @@ async def test_get_data_no_content_header(data_endpoint_path, dataset_id):
         (TestContentPathsApiV2.PDP, BulkDatasetIdV2.PDP),
         (TestContentPathsApiV2.STO, BulkDatasetIdV2.STO),
         (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, BulkDatasetIdV2.CRUSHED_ROCK_ANALYSIS),
+        (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, BulkDatasetIdV2.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL),
+        (TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL, BulkDatasetIdV2.SATURATION_FUNCTION_SET_MODEL),
     ],
 )
 @pytest.mark.asyncio
@@ -397,7 +421,7 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.get(
                 f"{data_endpoint_path}/{dataset_id}",
-                headers={"Content-Type": "wrong-type"},
+                headers={"Content-Type": "wrong-type", "data-partition-id": "opendes"},
             )
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -852,14 +876,24 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
             [build_get_test_data("x-parquet", crushed_rock_analysis_mock_objects.TEST_DATA)],
         ),
         (
-            TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS,
-            sto_mock_objects.TEST_DATASET_RECORD_ID,
+            TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+            res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID,
             "get_record",
             [
-                sto_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+                res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             ],
             "download_file",
-            [build_get_test_data("x-parquet", sto_mock_objects.TEST_DATA)],
+            [build_get_test_data("x-parquet", res_sim_rock_physics_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+            saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_function_set_mock_objects.TEST_DATA)],
         ),
     ],
 )
@@ -879,9 +913,10 @@ async def test_get_content_parquet_data(
                 f"{data_endpoint_path}/{dataset_id}",
                 headers=TEST_HEADERS_PARQUET,
             )
-    arrow_table = pq.read_table(pa.BufferReader(blobs[0]))
     assert response.status_code == status.HTTP_200_OK
-    assert pq.read_table(pa.BufferReader(response.content)).equals(arrow_table)
+    expected_df = pq.read_table(pa.BufferReader(blobs[0])).to_pandas()
+    actual_df = pq.read_table(pa.BufferReader(response.content)).to_pandas()
+    pd.testing.assert_frame_equal(expected_df, actual_df, check_like=True)
 
 
 @pytest.mark.parametrize(
@@ -2101,6 +2136,60 @@ async def test_get_content_parquet_data(
             [build_get_test_data("x-parquet", crushed_rock_analysis_mock_objects.TEST_DATA)],
             crushed_rock_analysis_mock_objects.TEST_AGGREGATED_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL}/{res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", res_sim_rock_physics_mock_objects.TRIMMED_TEST_DATA)],
+            res_sim_rock_physics_mock_objects.TRIMMED_TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL}/{res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID}",
+            res_sim_rock_physics_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", res_sim_rock_physics_mock_objects.TEST_DATA)],
+            res_sim_rock_physics_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL}/{res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID}",
+            res_sim_rock_physics_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", res_sim_rock_physics_mock_objects.TEST_DATA)],
+            res_sim_rock_physics_mock_objects.TEST_AGGREGATED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL}/{saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_function_set_mock_objects.TRIMMED_TEST_DATA)],
+            saturation_function_set_mock_objects.TRIMMED_TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL}/{saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID}",
+            saturation_function_set_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_function_set_mock_objects.TEST_DATA)],
+            saturation_function_set_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL}/{saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID}",
+            saturation_function_set_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_function_set_mock_objects.TEST_DATA)],
+            saturation_function_set_mock_objects.TEST_AGGREGATED_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -2482,6 +2571,22 @@ async def test_get_data_json_data(
             [build_get_test_data("x-parquet", crushed_rock_analysis_mock_objects.TEST_DATA)],
             crushed_rock_analysis_mock_objects.TEST_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL}/{res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", res_sim_rock_physics_mock_objects.TEST_DATA)],
+            res_sim_rock_physics_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL}/{saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_function_set_mock_objects.TEST_DATA)],
+            saturation_function_set_mock_objects.TEST_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -2501,11 +2606,11 @@ async def test_get_data_json_data_no_content_schema_version(
                 headers=TEST_HEADERS_WITHOUT_SCHEMA_VERSION,
             )
     expected_error = {
-        "code": status.HTTP_400_BAD_REQUEST,
+        "code": status.HTTP_406_NOT_ACCEPTABLE,
         "reason": "No schema version specified or invalid schema format. Check if the schema version is specified in the 'Accept' header. Example: --header 'Accept: */*;version=1.0.0'",
     }
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
     assert response.json() == expected_error
 
 
@@ -2871,6 +2976,22 @@ async def test_get_data_json_data_no_content_schema_version(
             [build_get_test_data("x-parquet", crushed_rock_analysis_mock_objects.TEST_DATA)],
             crushed_rock_analysis_mock_objects.TEST_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL}/{res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", res_sim_rock_physics_mock_objects.TEST_DATA)],
+            res_sim_rock_physics_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL}/{saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_function_set_mock_objects.TEST_DATA)],
+            saturation_function_set_mock_objects.TEST_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -2890,11 +3011,11 @@ async def test_get_data_json_data_improper_schema_version(
                 headers=TEST_HEADERS_IMPROPER_SCHEMA_VERSION,
             )
     expected_error = {
-        "code": status.HTTP_400_BAD_REQUEST,
+        "code": status.HTTP_406_NOT_ACCEPTABLE,
         "reason": "No schema version specified or invalid schema format. Check if the schema version is specified in the 'Accept' header. Example: --header 'Accept: */*;version=1.0.0'",
     }
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
     assert response.json() == expected_error
 
 
@@ -3252,6 +3373,22 @@ async def test_get_data_json_data_improper_schema_version(
             [build_get_test_data("x-parquet", crushed_rock_analysis_mock_objects.TEST_DATA)],
             crushed_rock_analysis_mock_objects.TEST_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL}/{res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", res_sim_rock_physics_mock_objects.TEST_DATA)],
+            res_sim_rock_physics_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL}/{saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [saturation_function_set_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_function_set_mock_objects.TEST_DATA)],
+            saturation_function_set_mock_objects.TEST_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -3597,6 +3734,20 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             crushed_rock_analysis_mock_objects.TEST_DATASET_RECORD_ID,
             crushed_rock_analysis_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+            res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            res_sim_rock_physics_mock_objects.TEST_DATA,
+            res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID,
+            res_sim_rock_physics_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+            saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            saturation_function_set_mock_objects.TEST_DATA,
+            saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID,
+            saturation_function_set_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -3933,6 +4084,20 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             crushed_rock_analysis_mock_objects.TEST_DATASET_RECORD_ID,
             crushed_rock_analysis_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+            res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            res_sim_rock_physics_mock_objects.TEST_DATA,
+            res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID,
+            res_sim_rock_physics_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+            saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            saturation_function_set_mock_objects.TEST_DATA,
+            saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID,
+            saturation_function_set_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -4182,6 +4347,16 @@ async def test_post_data_json_no_ddmsdatasets_field(
             crushed_rock_analysis_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             crushed_rock_analysis_mock_objects.TEST_DATASET_RECORD_ID,
         ),
+        (
+            TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+            res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+            saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -4194,7 +4369,7 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
                 content=b"",
             )
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 @pytest.mark.parametrize(
@@ -4514,6 +4689,20 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             crushed_rock_analysis_mock_objects.TEST_DATA,
             crushed_rock_analysis_mock_objects.TEST_DATASET_RECORD_ID,
             crushed_rock_analysis_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+            res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            res_sim_rock_physics_mock_objects.TRIMMED_TEST_DATA,
+            res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID,
+            res_sim_rock_physics_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+            saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            saturation_function_set_mock_objects.TRIMMED_TEST_DATA,
+            saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID,
+            saturation_function_set_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
     ],
 )
@@ -4853,6 +5042,20 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             crushed_rock_analysis_mock_objects.TEST_DATASET_RECORD_ID,
             crushed_rock_analysis_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+            res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            res_sim_rock_physics_mock_objects.TEST_DATA,
+            res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID,
+            res_sim_rock_physics_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+            saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            saturation_function_set_mock_objects.TEST_DATA,
+            saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID,
+            saturation_function_set_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -4915,6 +5118,8 @@ async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data,
         (TestContentPathsApiV2.PDP, pdp_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.STO, sto_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, crushed_rock_analysis_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
+        (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, res_sim_rock_physics_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
+        (TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL, saturation_function_set_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
     ],
 )
 @pytest.mark.asyncio
@@ -5163,6 +5368,16 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             crushed_rock_analysis_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             crushed_rock_analysis_mock_objects.EXPECTED_ERROR_REASON,
         ),
+        (
+            TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+            res_sim_rock_physics_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
+            res_sim_rock_physics_mock_objects.EXPECTED_ERROR_REASON,
+        ),
+        (
+            TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+            saturation_function_set_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
+            saturation_function_set_mock_objects.EXPECTED_ERROR_REASON,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -5227,6 +5442,8 @@ async def test_post_invalid_df_error(data_endpoint_path, incorrect_dataframe_dat
         f"{TestContentPathsApiV2.PDP}/{pdp_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.STO}/{sto_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS}/{crushed_rock_analysis_mock_objects.TEST_DATASET_RECORD_ID}",
+        f"{TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL}/{res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID}",
+        f"{TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL}/{saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID}",
     ],
 )
 @pytest.mark.asyncio
@@ -5287,6 +5504,8 @@ async def test_get_403(data_endpoint_path):
         TestContentPathsApiV2.PDP,
         TestContentPathsApiV2.STO,
         TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS,
+        TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+        TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
     ],
 )
 @pytest.mark.asyncio
@@ -5460,6 +5679,8 @@ async def test_post_integrity_error(data_endpoint_path, integrity_error_datafram
         TestContentPathsApiV2.PDP,
         TestContentPathsApiV2.STO,
         TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS,
+        TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+        TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
     ],
 )
 async def test_invalid_data_with_nan(path):
@@ -5481,51 +5702,51 @@ async def test_invalid_data_with_nan(path):
 @pytest.mark.parametrize(
     "path,payloads",
     [
-        (TestContentPathsApiV2.RCA, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.CCE, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.DIFF_LIB, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.TRANSPORT_TEST, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.COMPOSITIONAL_ANALYSIS, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.ATMOSPHERIC_FLASH, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.MSS, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.SWELLING, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.CVD, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.WATER_ANALYSIS, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.INTERFACIAL_TENSION, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.VLE, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.MCM, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.SLIMTUBE, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.EXTRACTION, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.FRACTIONATION, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.RELATIVE_PERMEABILITY, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.ROCK_COMPRESSIBILITY, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.NMR, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.MULTIPLE_SALINITY, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.GCMS_ALKANES, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.GCMS_AROMATICS, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.GCMS_RATIOS, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.GAS_CHROMATOGRAPHY, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.GAS_COMPOSITION, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.ISOTOPE_ANALYSIS, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.BULK_PYROLYSIS, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.CORE_GAMMA, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.MINING_GEOTECH_LOGGING, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.UNIAXIAL_TEST, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.GCMSMS_ANALYSIS, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.CEC_CONTENT, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.ELECTRICAL_PROPERTIES, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.TRIAXIAL_TEST, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.CAP_PRESSURE, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.WETTABILITY_INDEX, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.TEC, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.EDS_MAPPING, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.XRF, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.TENSILE_STRENGTH, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.VITRINITE_REFLECTANCE, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.XRD, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.PDP, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.STO, ORIENT_SPLIT_400_PAYLOADS),
-        (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, ORIENT_SPLIT_400_PAYLOADS),
+        (TestContentPathsApiV2.RCA, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.CCE, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.DIFF_LIB, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.TRANSPORT_TEST, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.COMPOSITIONAL_ANALYSIS, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.ATMOSPHERIC_FLASH, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.MSS, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.SWELLING, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.CVD, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.WATER_ANALYSIS, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.INTERFACIAL_TENSION, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.VLE, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.MCM, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.SLIMTUBE, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.EXTRACTION, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.FRACTIONATION, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.RELATIVE_PERMEABILITY, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.ROCK_COMPRESSIBILITY, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.NMR, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.MULTIPLE_SALINITY, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.GCMS_ALKANES, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.GCMS_AROMATICS, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.GCMS_RATIOS, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.GAS_CHROMATOGRAPHY, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.GAS_COMPOSITION, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.ISOTOPE_ANALYSIS, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.BULK_PYROLYSIS, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.CORE_GAMMA, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.MINING_GEOTECH_LOGGING, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.UNIAXIAL_TEST, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.GCMSMS_ANALYSIS, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.CEC_CONTENT, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.ELECTRICAL_PROPERTIES, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.TRIAXIAL_TEST, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.CAP_PRESSURE, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.WETTABILITY_INDEX, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.TEC, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.EDS_MAPPING, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.XRF, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.TENSILE_STRENGTH, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.VITRINITE_REFLECTANCE, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.XRD, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.PDP, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.STO, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, ORIENT_SPLIT_422_PAYLOADS),
     ],
 )
 async def test_invalid_data_json_payload(path, payloads):
@@ -5538,8 +5759,8 @@ async def test_invalid_data_json_payload(path, payloads):
                     content=json.dumps(payload),
                 )
 
-        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         body = response.json()
-
+        print(body)
         assert ["code", "reason"] == list(body.keys())
         assert body["reason"].startswith("Data error:")

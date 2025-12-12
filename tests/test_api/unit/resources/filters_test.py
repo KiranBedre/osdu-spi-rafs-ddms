@@ -89,7 +89,7 @@ def test_valid_rows_filter_invalid_format():
     validator = DataFrameFilterValidator(MockModel, raw_rows_filter="Field1,eq")
     with pytest.raises(FilterValidationError) as exc_info:
         validator.valid_rows_filter
-    assert str(exc_info.value) == "Bad rows_filter expression. Correct form 'ColumnName[.FieldName],operator,value'"
+    assert str(exc_info.value) == "Bad rows_filter expression. Correct format: 'Column[.Field],operator,value'"
 
 
 @pytest.mark.parametrize("aggregation_func", ["mean", "count", "max", "min", "sum", "describe"])
@@ -112,14 +112,14 @@ def test_valid_columns_aggregation_invalid_format():
     validator = DataFrameFilterValidator(MockModel, raw_columns_aggregation="Field1")
     with pytest.raises(FilterValidationError) as exc_info:
         validator.valid_columns_aggregation
-    assert str(exc_info.value) == "Bad aggregation expression. Correct form 'ColumnName[.FieldName],operator'"
+    assert str(exc_info.value) == "Bad aggregation expression. Correct form 'Column[.Field],operator'"
 
 
 def test_valid_columns_aggregation_invalid_operator():
     validator = DataFrameFilterValidator(MockModel, raw_columns_aggregation="Field1,average")
     with pytest.raises(FilterValidationError) as exc_info:
         validator.valid_columns_aggregation
-    assert re.match(r"Invalid aggregation operator not in: {.+}", str(exc_info.value))
+    assert re.match(r"Invalid aggregation operator 'average'\. Allowed: \[.+\]", str(exc_info.value))
 
 
 def test_invalid_aggregatiom_dotted_colums():
@@ -129,8 +129,8 @@ def test_invalid_aggregatiom_dotted_colums():
 
     with pytest.raises(FilterValidationError) as exc_info:
         nested_aggregation_validator.valid_columns_aggregation
-    assert str(exc_info.value) == "Wrong Column or Field name syntax: correct form: {ColumnName.FieldName}"
+    assert str(exc_info.value) == "Field '' does not exist in column 'Field3'. Available fields: ['nested_field']"
 
     with pytest.raises(FilterValidationError) as exc_info:
         nested_aggregation_validator.valid_rows_filter
-    assert str(exc_info.value) == "Wrong Column or Field name syntax: correct form: {ColumnName.FieldName}"
+    assert str(exc_info.value) == "Field '' does not exist in column 'Field3'. Available fields: ['nested_field']"

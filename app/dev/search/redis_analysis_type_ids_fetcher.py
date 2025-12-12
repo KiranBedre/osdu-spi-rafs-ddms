@@ -21,12 +21,12 @@ from redis.commands.search.query import Query as RedisQuery
 
 from app.api.routes.utils.search import get_valid_ids_from_ddms_datasets
 from app.dev.core.helpers.redis_index import SAMPLESANALYSIS_IX
-from app.dev.services import entitlements
 from app.resources.paths import SAMPLESANALYSIS_TYPE_MAPPING
-from app.search.analysis_type_ids_fetcher import SamplesAnalysisTypeIdsFetcher
+from app.search.ddms_dataset_ids_fetcher import DDMSDatasetIdsFetcher
+from app.services import entitlements
 
 
-class RedisSamplesAnalysisTypeIdsFetcher(SamplesAnalysisTypeIdsFetcher):
+class RedisSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
 
     def __init__(self, redis_client: Redis, entitlements_service: entitlements.EntitlementsService):
         self._redis_client = redis_client

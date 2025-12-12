@@ -1,0 +1,11 @@
+from app.models.data_schemas.version import ContentSchemaVersion
+from app.models.data_schemas.reservoir_simulation_rock_physics_v2.reservoir_simulation_rock_physics_model_data_model_1_0_0 import ReservoirSimulationRockPhysicsModelModel100
+from app.resources.paths import RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR
+
+RESERVOIR_SIMULATION_ROCK_PHYSICS_MODELS = {
+    ContentSchemaVersion.V_1_0_0: ReservoirSimulationRockPhysicsModelModel100,
+}
+
+MAP_TO_RSRP_MODELS_API_V2 = {
+    RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR: RESERVOIR_SIMULATION_ROCK_PHYSICS_MODELS
+}
