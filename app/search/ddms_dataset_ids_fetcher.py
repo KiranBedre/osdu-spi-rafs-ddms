@@ -24,21 +24,45 @@ from app.resources.paths import SAMPLESANALYSIS_TYPE_MAPPING
 from app.services import search
 
 
-class SamplesAnalysisTypeIdsFetcher(ABC):
+class DDMSDatasetIdsFetcher(ABC):
 
     @abstractmethod
     async def get_ids(
         self,
         data_partition_id: str,
-        analysis_type: str,
+        content_type: str,
         target_schema_version: str,
         query_date_range: Tuple[date, date],
         wks_parameters: Optional[dict] = None,
-    ):
+    ) -> List[Tuple[str, str]]:
         raise NotImplementedError()
 
 
-class SearchServiceSamplesAnalysisTypeIdsFetcher(SamplesAnalysisTypeIdsFetcher):
+def build_result_ids(  # noqa: CCR001
+    result_records: list,
+    target_schema_version: str,
+    domain: str,
+    content_type: str,
+) -> List[Tuple[str, str]]:
+    """Build a list of tuples dataset_id, samples_analysis_id."""
+
+    result_ids = []
+    for record in result_records:
+        if ddms_datasets := record.get("data", {}).get("DDMSDatasets"):  # noqa: WPS332
+            logger.debug(f"ddms_datasets: {ddms_datasets}")
+            result_ids.extend(
+                get_valid_ids_from_ddms_datasets(
+                    ddms_datasets=ddms_datasets,
+                    analysis_family=domain,
+                    analysis_type=content_type,
+                    target_schema_version=target_schema_version,
+                ),
+            )
+    logger.debug(f"Result_ids: {result_ids}")
+    return result_ids
+
+
+class SearchServiceSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
 
     def __init__(self, search_service: search.SearchService):
         self._search_service = search_service
@@ -50,7 +74,7 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(SamplesAnalysisTypeIdsFetcher):
         target_schema_version: str,
         query_date_range: Tuple[date, date],
         wks_parameters: Optional[dict] = None,
-    ):
+    ) -> List[Tuple[str, str]]:
         """Performs a query to search service to build a list of tuples
         dataset_id, samples_analysis_id."""
         query = self._build_sampleanalysistype_query(
@@ -75,7 +99,12 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(SamplesAnalysisTypeIdsFetcher):
                 break
             result_records.extend(records)
 
-        return self._build_result_ids(result_records, target_schema_version, analysis_type)
+        return build_result_ids(
+            result_records,
+            target_schema_version,
+            "samplesanalysis",
+            analysis_type,
+        )
 
     def _build_sampleanalysistype_query(
         self,
@@ -110,26 +139,3 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(SamplesAnalysisTypeIdsFetcher):
         query = " AND ".join(query_parts)
         logger.debug(f"Query for search service: {query}")
         return query
-
-    def _build_result_ids(  # noqa: CCR001
-        self,
-        result_records: list,
-        target_schema_version: str,
-        analysis_type: str,
-    ) -> List[Tuple[str, str]]:
-        """Build a list of tuples dataset_id, samples_analysis_id."""
-
-        result_ids = []
-        for record in result_records:
-            if ddms_datasets := record.get("data", {}).get("DDMSDatasets"):  # noqa: WPS332
-                logger.debug(f"ddms_datasets: {ddms_datasets}")
-                result_ids.extend(
-                    get_valid_ids_from_ddms_datasets(
-                        ddms_datasets=ddms_datasets,
-                        analysis_family="samplesanalysis",
-                        analysis_type=analysis_type,
-                        target_schema_version=target_schema_version,
-                    ),
-                )
-        logger.debug(f"Result_ids: {result_ids}")
-        return result_ids

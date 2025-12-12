@@ -16,8 +16,16 @@ import json
 import os
 from typing import NamedTuple
 
+from app.models.data_schemas.base import (
+    ALL_PATHS_TO_DATA_MODEL,
+    SAMPLES_ANALYSIS,
+)
 from app.models.schemas.osdu_storage import Acl, Legal, OsduStorageRecord
-from app.resources.paths import CommonRelativePathsV2
+from app.resources.paths import (
+    RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR,
+    SATURATION_FUNCTION_SET_STR,
+    CommonRelativePathsV2,
+)
 from tests.test_api.api_version import API_VERSION_V2
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -62,6 +70,8 @@ SAMPLESANALYSIS_TYPE = "work-product-component--SamplesAnalysis"
 SAMPLESANALYSIS_ID = "samplesanalysis_test"
 SATURATION_FUNCTION_SET_TYPE = "work-product-component--SaturationFunctionSet"
 SATURATION_FUNCTION_SET_ID = "saturation_function_set_test_id"
+FLUID_MODEL_TYPE = "work-product-component--FluidModel"
+FLUID_MODEL_ID = "fluid_model_test_id"
 FILE_GENERIC_TYPE = "dataset--File.Generic"
 TEST_DATASET_UID = "1"
 
@@ -85,6 +95,8 @@ TEST_SAMPLESANALYSIS_ID = f"{PARTITION}:{SAMPLESANALYSIS_TYPE}:{SAMPLESANALYSIS_
 TEST_SAMPLESANALYSIS_KIND_V2 = f"{SCHEMA_AUTHORITY}:wks:{SAMPLESANALYSIS_TYPE}:{KindVersion.V_1_0_0}"
 TEST_SATURATION_FUNCTION_SET_ID = f"{PARTITION}:{SATURATION_FUNCTION_SET_TYPE}:{SATURATION_FUNCTION_SET_ID}"
 TEST_SATURATION_FUNCTION_SET_KIND = f"{SCHEMA_AUTHORITY}:wks:{SATURATION_FUNCTION_SET_TYPE}:{KindVersion.V_1_0_0}"
+TEST_FLUID_MODEL_ID = f"{PARTITION}:{FLUID_MODEL_TYPE}:{FLUID_MODEL_ID}"
+TEST_FLUID_MODEL_KIND = f"{SCHEMA_AUTHORITY}:wks:{FLUID_MODEL_TYPE}:{KindVersion.V_1_0_0}"
 TEST_ACL = Acl(viewers=["viewers@domain.com"], owners=["owners@domain.com"])
 TEST_LEGAL = Legal(legaltags=["legaltag"], otherRelevantDataCountries=["US"], status="compliant")
 TEST_WRONG_ID = "partition:entity-type:id"
@@ -295,6 +307,33 @@ SATURATION_FUNCTION_SET_RECORD = OsduStorageRecord(
 
 SAMPLESANALYSIS_RECORD_WITHOUT_PARENT_V2 = copy.deepcopy(SAMPLESANALYSIS_RECORD_V2)
 
+FLUID_MODEL_RECORD = OsduStorageRecord(
+    id=TEST_FLUID_MODEL_ID,
+    kind=TEST_FLUID_MODEL_KIND,
+    acl=TEST_ACL,
+    legal=TEST_LEGAL,
+    data={
+        "FluidModelTypeID": "namespace:reference-data--FluidModelType:BlackOil:",
+        "BasisOfModelling": {
+            "InputDataCollectionID": "namespace:work-product-component--PersistedCollection:f3e451d1-9d49-559f-93d8-2e36722016fb:",
+            "ModelPropertyFormulationMethods": [
+                {
+                    "ModelPropertyTypeID": "namespace:reference-data--FluidModelPropertyType:Density:",
+                    "ModelPropertyFormulationMethodID": "namespace:reference-data--FluidModelPropertyFormulationMethod:PengRobinson:",
+                },
+            ],
+            "ModellingApplicationsUsed": [
+                "PVTsim Nova 5.0",
+            ],
+            "IntendedWorkflowUsageIDs": [
+                "namespace:reference-data--WorkflowUsageType:ReservoirSimulation:",
+            ],
+        },
+        "ParentModelID": "namespace:work-product-component--FluidModel:parent-model-id:",
+        "DatePublished": "2020-02-13T09:13:15.55Z",
+    },
+)
+
 
 def build_storage_service_response_200(
     record_count: int = 1,
@@ -339,6 +378,7 @@ RESERVOIR_SIMULATION_ROCK_PHYSICS_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VE
 SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/samplesanalysesreport"
 SAMPLESANALYSIS_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/samplesanalysis"
 SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/saturationfunctionset"
+FLUID_MODEL_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/fluidmodel"
 MASTER_DATA_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/masterdata"
 
 # data endpoints v2
@@ -346,6 +386,11 @@ BASE_V2_PATH = f"api/os-rafs-ddms/{API_VERSION_V2}"
 
 SAMPLESANALYSIS_ENDPOINT_PATH = f"{BASE_V2_PATH}/samplesanalysis"
 BASE_DATA_V2_PATH = f"{SAMPLESANALYSIS_ENDPOINT_PATH}/{TEST_SAMPLESANALYSIS_ID}"
+
+RES_SIM_ROCK_PHYSICS_ENDPOINT_PATH = f"{BASE_V2_PATH}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}"
+RES_SIM_ROCK_PHYSICS_DATA_PATH = f"{RES_SIM_ROCK_PHYSICS_ENDPOINT_PATH}/{TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID}/data"
+SATURATION_FUNCTION_SET_ENDPOINT_PATH = f"{BASE_V2_PATH}/{SATURATION_FUNCTION_SET_STR}"
+SATURATION_FUNCTION_SET_DATA_PATH = f"{SATURATION_FUNCTION_SET_ENDPOINT_PATH}/{TEST_SATURATION_FUNCTION_SET_ID}/data"
 
 common_relative_paths_v2 = CommonRelativePathsV2()
 
@@ -396,6 +441,8 @@ class TestContentPathsApiV2:
     PDP = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.PDP}"
     STO = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.STO}"
     CRUSHED_ROCK_ANALYSIS = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.CRUSHED_ROCK_ANALYSIS}"
+    RES_SIM_ROCK_PHYSICS_MODEL = RES_SIM_ROCK_PHYSICS_DATA_PATH
+    SATURATION_FUNCTION_SET_MODEL = SATURATION_FUNCTION_SET_DATA_PATH
 
 
 class BulkDatasetIdV2(NamedTuple):
@@ -444,6 +491,8 @@ class BulkDatasetIdV2(NamedTuple):
     PDP = f"{PARTITION}:{FILE_GENERIC_TYPE}:pdp-{TEST_DATASET_UID}"
     STO = f"{PARTITION}:{FILE_GENERIC_TYPE}:stocktankoilanalysisreports-{TEST_DATASET_UID}"
     CRUSHED_ROCK_ANALYSIS = f"{PARTITION}:{FILE_GENERIC_TYPE}:crushedrockanalysis-{TEST_DATASET_UID}"
+    RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}-{TEST_DATASET_UID}"
+    SATURATION_FUNCTION_SET_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:{SATURATION_FUNCTION_SET_STR}-{TEST_DATASET_UID}"
 
 
 with open(f"{dir_path}/schemas/wpc_definitions.json") as fp:
@@ -465,6 +514,10 @@ with open(f"{dir_path}/schemas/saturation_function_set.json") as fp:
     SATURATION_FUNCTION_SET_SCHEMA = json.load(fp)
     SATURATION_FUNCTION_SET_SCHEMA["definitions"] = WPC_DEFINITIONS
 
+with open(f"{dir_path}/schemas/fluid_model.json") as fp:
+    FLUID_MODEL_SCHEMA = json.load(fp)
+    FLUID_MODEL_SCHEMA["definitions"] = WPC_DEFINITIONS
+
 with open(f"{dir_path}/schemas/md_definitions.json") as fp:
     MD_DEFINITIONS = json.load(fp)
 
@@ -483,3 +536,11 @@ with open(f"{dir_path}/schemas/sample_chain_of_custody_event.json") as fp:
 with open(f"{dir_path}/schemas/sample_container.json") as fp:
     SAMPLE_CONTAINER_SCHEMA = json.load(fp)
     SAMPLE_CONTAINER_SCHEMA["definitions"] = MD_DEFINITIONS
+
+PREFIX_TO_STRIP = f"v2/{SAMPLES_ANALYSIS}/"
+
+VALID_ANALYSIS_TYPES_V1_0_0 = [
+    path.replace(PREFIX_TO_STRIP, "")
+    for path, versions in ALL_PATHS_TO_DATA_MODEL.items()
+    if path.startswith(PREFIX_TO_STRIP) and "1.0.0" in versions
+]

@@ -258,6 +258,37 @@ class BaseDataView(object):
 
         return response
 
+    def _handle_validation_exception(self, v_exc: Exception) -> None:
+        """Parses validation exception and raises a user-friendly error."""
+        error_msg = str(v_exc)
+
+        if "JSONDecodeError" in error_msg or "Expecting value" in error_msg:
+            reason = "Invalid JSON format. Please check syntax."
+            logger.debug(f"Raw validation error: {error_msg}")
+            raise exceptions.UnprocessableContentException(detail=reason)
+
+        if "validation error" in error_msg and "OrientSplit" in error_msg:
+            required_keys = ["columns", "index", "data"]
+            missing_fields = [
+                f"'{key}'" for key in required_keys
+                if f"{key}\n  field required" in error_msg
+            ]
+
+            if missing_fields:
+                fields_str = ", ".join(missing_fields)
+                reason = f"Data error: missing required fields: {fields_str}."
+            else:
+                reason = (
+                    "Data error: JSON must follow 'split' orientation with 'columns', 'index', and 'data'."
+                )
+
+            logger.debug(f"Raw validation error: {error_msg}")
+            raise exceptions.UnprocessableContentException(detail=reason)
+
+        reason = f"Data error: {v_exc}"
+        logger.debug(f"Raw validation error: {error_msg}")
+        raise exceptions.UnprocessableContentException(detail=reason)
+
     @with_gc_collect
     async def _get_validated_payload(
         self,
@@ -301,9 +332,7 @@ class BaseDataView(object):
                 df = pd.read_json(io.StringIO(await get_validated_bulk_data_json(request)), orient="split")
 
         except (ValueError, pyarrow.lib.ArrowException) as v_exc:
-            reason = f"Data error: {v_exc}"
-            logger.debug(reason)
-            raise exceptions.InvalidDatasetException(detail=reason)
+            self._handle_validation_exception(v_exc)
 
         logger.info(f"Data has been read from {mime_type} format")
 

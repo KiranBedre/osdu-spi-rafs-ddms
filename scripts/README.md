@@ -72,7 +72,7 @@ The source data example should be in pandas orient="records" format. Hint: just 
 
 **AnalysisType Model Class Name**
 
-The class name of the pydantic model to use for validation. Can be found in [app/models/data_schemas/api_v2/base.py](../app/models/data_schemas/api_v2/base.py)
+The class name of the pydantic model to use for validation. Can be found in [app/models/data_schemas/sample_analysis_api_v2/base.py](../app/models/data_schemas/sample_analysis_api_v2/base.py)
 
 **Example run:**
 

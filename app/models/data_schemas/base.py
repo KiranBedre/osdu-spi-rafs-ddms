@@ -12,13 +12,26 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from app.models.data_schemas.api_v2.base import PATH_TO_DATA_MODEL_VERSIONS_API_V2
+from app.models.data_schemas.sample_analysis_api_v2.base import PATH_TO_DATA_MODEL_VERSIONS_API_V2
+from app.models.data_schemas.reservoir_simulation_rock_physics_v2.base import MAP_TO_RSRP_MODELS_API_V2
+from app.resources.paths import RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR
+from app.models.data_schemas.saturation_function_set_api_v2.base import MAP_TO_SFS_MODELS_API_V2
+from app.resources.paths import SATURATION_FUNCTION_SET_STR
 
-PATHS_TO_DATA_MODEL = {
-    "v2": PATH_TO_DATA_MODEL_VERSIONS_API_V2,
-    "dev": PATH_TO_DATA_MODEL_VERSIONS_API_V2,
+SAMPLES_ANALYSIS = "samplesanalysis"
+
+
+MAPS_TO_DATA_MODEL = {
+    "v2": {
+        SAMPLES_ANALYSIS: PATH_TO_DATA_MODEL_VERSIONS_API_V2,
+        RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR: MAP_TO_RSRP_MODELS_API_V2,
+        SATURATION_FUNCTION_SET_STR: MAP_TO_SFS_MODELS_API_V2,
+    },
+    "dev": {
+        SAMPLES_ANALYSIS: PATH_TO_DATA_MODEL_VERSIONS_API_V2,
+    },
 }
 
 ALL_PATHS_TO_DATA_MODEL = PATH_TO_DATA_MODEL_VERSIONS_API_V2
 
-ENDPOINT_PATTERNS = ("/data/{analysistype}", "/{analysistype}/")
+CONTENT_PATTERNS = ("/data/{analysistype}", "{analysistype}")

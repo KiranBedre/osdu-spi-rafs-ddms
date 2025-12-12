@@ -112,7 +112,7 @@ async def validate_multiple_nested_filters(
         ])
     except FilterValidationError as exc:
         logger.error(f"Query parameters are invalid: {exc}")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
 
     logger.debug("Query parameters are valid.")
     return df_filter
