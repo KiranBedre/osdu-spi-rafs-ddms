@@ -39,10 +39,11 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
             "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
         },
     )
-
+    base_path = custom_openapi_schema["paths"]
     # overrides
+    base_path = custom_openapi_schema["paths"]
     content_post_v2_route = f"{settings.openapi_prefix}/v2/samplesanalysis/{{record_id}}/data/{{analysis_type}}"
-    custom_openapi_schema["paths"][content_post_v2_route]["post"]["requestBody"] = {
+    base_path[content_post_v2_route]["post"]["requestBody"] = {
         "content": {
             "application/json": {
                 "schema": OrientSplit.schema(),
@@ -50,10 +51,19 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
             },
         },
     }
+    content_post_v2_route = f"{settings.openapi_prefix}/v2/saturationfunctionset/{{record_id}}/data"
+    base_path[content_post_v2_route]["post"]["requestBody"] = {
+        "content": {
+            "application/json": {
+                "schema": OrientSplit.schema(),
+                "example": load_data_example("saturation_function_set_post_content_example.json"),
+            },
+        },
+    }
     sampleanalysis_record_post_v2_route = f"{settings.openapi_prefix}/v2/samplesanalysis"
-    request_body = custom_openapi_schema["paths"][sampleanalysis_record_post_v2_route]["post"]["requestBody"]
+    request_body = base_path[sampleanalysis_record_post_v2_route]["post"]["requestBody"]
     samples_analysis_schema = request_body["content"]["application/json"]["schema"]
-    custom_openapi_schema["paths"][sampleanalysis_record_post_v2_route]["post"]["requestBody"] = {
+    base_path[sampleanalysis_record_post_v2_route]["post"]["requestBody"] = {
         "content": {
             "application/json": {
                 "schema": samples_analysis_schema,
@@ -62,7 +72,7 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
         },
     }
     masterdata_record_post_v2_route = f"{settings.openapi_prefix}/v2/masterdata"
-    custom_openapi_schema["paths"][masterdata_record_post_v2_route]["post"]["requestBody"] = {
+    base_path[masterdata_record_post_v2_route]["post"]["requestBody"] = {
         "content": {
             "application/json": {
                 "schema": {
@@ -72,6 +82,16 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
                     "items": OsduStorageRecord.schema(),
                 },
                 "example": load_data_example("master_data.json"),
+            },
+        },
+    }
+    rsrpm = "reservoirsimulationrockphysicsmodel"
+    res_sim_content_post_v2_route = f"{settings.openapi_prefix}/v2/{rsrpm}/{{record_id}}/data"
+    base_path[res_sim_content_post_v2_route]["post"]["requestBody"] = {
+        "content": {
+            "application/json": {
+                "schema": OrientSplit.schema(),
+                "example": load_data_example("reservoir_simulation_rock_physics_content_model.json"),
             },
         },
     }

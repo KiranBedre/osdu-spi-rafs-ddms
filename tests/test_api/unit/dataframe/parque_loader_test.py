@@ -25,7 +25,9 @@ from httpx import AsyncClient
 from app.dataframe.filter_processor import DFFilterProcessor
 from app.dataframe.parquet_filter import DataFrameFilterValidator
 from app.dataframe.parquet_loader import ParquetLoader
-from app.models.data_schemas.api_v2.base import RoutineCoreAnalysisModel100
+from app.models.data_schemas.sample_analysis_api_v2.base import (
+    RoutineCoreAnalysisModel100,
+)
 
 ORIENT_SPLIT_TEST = {
     "columns": [

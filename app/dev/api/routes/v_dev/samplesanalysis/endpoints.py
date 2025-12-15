@@ -42,7 +42,7 @@ from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.dataframe.blob_parquet_loader import BlobParquetLoader
 from app.dataframe.parquet_loader import DFPayload, ParquetLoader
 from app.dev.api.dependencies.search import (
-    SamplesAnalysisTypeIdsFetcher,
+    DDMSDatasetIdsFetcher,
     get_analysis_type_ids_fetcher,
 )
 from app.dev.api.dependencies.validation import (
@@ -104,7 +104,7 @@ class SamplesAnalysisSearchDataView(object):
         content_schema_version: str = Depends(get_content_schema_version),
         pagination_parameters: Tuple[int, int] = Depends(get_search_data_pagination_parameters),
         wks_parameters: Optional[dict] = Depends(get_search_wks_parameters),
-        analysis_type_ids_fetcher: SamplesAnalysisTypeIdsFetcher = Depends(get_analysis_type_ids_fetcher),
+        analysis_type_ids_fetcher: DDMSDatasetIdsFetcher = Depends(get_analysis_type_ids_fetcher),
     ) -> Response:
         """Search Data Endpoint.
 
@@ -198,7 +198,7 @@ class SamplesAnalysisSearchDataView(object):
         content_schema_version: str = Depends(get_content_schema_version),
         pagination_parameters: Tuple[int, int] = Depends(get_search_pagination_parameters),
         wks_parameters: Optional[dict] = Depends(get_search_wks_parameters),
-        analysis_type_ids_fetcher: SamplesAnalysisTypeIdsFetcher = Depends(get_analysis_type_ids_fetcher),
+        analysis_type_ids_fetcher: DDMSDatasetIdsFetcher = Depends(get_analysis_type_ids_fetcher),
     ) -> JSONResponse:
         """Search Endpoint.
 

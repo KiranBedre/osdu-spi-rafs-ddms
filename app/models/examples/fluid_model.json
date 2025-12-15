@@ -1,0 +1,81 @@
+[
+    {
+        "id": "namespace:work-product-component--FluidModel:4c633952-dff6-5eb3-883e-3cbe77810204",
+        "kind": "osdu:wks:work-product-component--FluidModel:1.0.0",
+        "version": 1562066009929332,
+        "acl": {
+            "owners": [
+                "someone@company.com"
+            ],
+            "viewers": [
+                "someone@company.com"
+            ]
+        },
+        "legal": {
+            "legaltags": [
+                "Example legaltags"
+            ],
+            "otherRelevantDataCountries": [
+                "US"
+            ],
+            "status": "compliant"
+        },
+        "tags": {
+            "NameOfKey": "String value"
+        },
+        "createTime": "2020-12-16T11:46:20.163Z",
+        "createUser": "some-user@some-company-cloud.com",
+        "modifyTime": "2020-12-16T11:52:24.477Z",
+        "modifyUser": "some-user@some-company-cloud.com",
+        "ancestry": {
+            "parents": []
+        },
+        "meta": [],
+        "data": {
+            "FluidModelTypeID": "namespace:reference-data--FluidModelType:BlackOil:",
+            "BasisOfModelling": {
+                "InputDataCollectionID": "namespace:work-product-component--PersistedCollection:f3e451d1-9d49-559f-93d8-2e36722016fb:",
+                "ModelPropertyFormulationMethods": [
+                    {
+                        "ModelPropertyTypeID": "namespace:reference-data--FluidModelPropertyType:Density:",
+                        "ModelPropertyFormulationMethodID": "namespace:reference-data--FluidModelPropertyFormulationMethod:PengRobinson:"
+                    }
+                ],
+                "ModellingApplicationsUsed": [
+                    "PVTsim Nova 5.0"
+                ],
+                "IntendedWorkflowUsageIDs": [
+                    "namespace:reference-data--WorkflowUsageType:ReservoirSimulation:"
+                ],
+                "IsOptimizedForEnhancedRecoveryStudies": false,
+                "IsModelPvtOptimized": true,
+                "IsModelViscosityOptimized": true,
+                "IsCompositionLumped": true,
+                "ComponentCount": 8
+            },
+            "ParentModelID": "namespace:work-product-component--FluidModel:parent-model-id:",
+            "DatePublished": "2020-02-13T09:13:15.55Z",
+            "ModellingContacts": [
+                {
+                    "EmailAddress": "pvt-analyst@company.com",
+                    "Name": "PVT Analyst"
+                }
+            ],
+            "ModelAreaOfInterestIDs": [
+                "namespace:master-data--Reservoir:reservoir-123:"
+            ],
+            "IsApplicableForThermalSimulation": false,
+            "FluidModelSaturationTypeID": "namespace:reference-data--FluidModelSaturationType:BubblePoint:",
+            "HasVariableDepthFluidProperties": false,
+            "Remarks": [
+                {
+                    "RemarkSequenceNumber": 1,
+                    "Remark": "Black oil model for reservoir simulation",
+                    "RemarkSource": "PVT Lab",
+                    "RemarkDate": "2020-02-13"
+                }
+            ],
+            "ExtensionProperties": {}
+        }
+    }
+]

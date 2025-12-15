@@ -13,5 +13,10 @@
 #  limitations under the License.
 
 def get_api_version_from_url(url: str) -> str:
-    version_position = 3  # api/rafs/<version>/<entity>/etc.
+    version_position = 3  # api/rafs/<version>/<domain>/etc.
     return url.split("/")[version_position]
+
+
+def get_domain_from_url(url: str) -> str:
+    domain_position = 4  # api/rafs/<version>/<domain>/etc.
+    return url.split("/")[domain_position]
