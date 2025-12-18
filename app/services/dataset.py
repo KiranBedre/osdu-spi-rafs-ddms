@@ -16,7 +16,6 @@ import asyncio
 import sys
 from typing import List, Optional, Tuple
 
-import httpx
 from fastapi_cache.decorator import cache
 from loguru import logger
 from starlette import status
@@ -48,7 +47,7 @@ class DatasetService(IDatasetService):
             bearer_token=user.access_token,
             extra_headers=extra_headers,
         )
-        self.blob_loader: Optional[IBlobLoader] = get_blob_loader(settings) if settings.use_blob_storage else None
+        self.blob_loader: Optional[IBlobLoader] = get_blob_loader(settings)
         self.name = "DatasetService"
 
     async def download_file(self, dataset_id: str) -> Optional[bytes]:
@@ -67,9 +66,6 @@ class DatasetService(IDatasetService):
             return None
 
         signed_url = retrieval_instruction["datasets"][0]["retrievalProperties"]["signedUrl"]
-
-        if self.blob_loader is None:
-            return await self._download_via_http(signed_url, dataset_id)
 
         blob = await self.blob_loader.download_blob(signed_url)
         logger.debug(f"{self.name}: blob has been downloaded for: {dataset_id}")
@@ -95,30 +91,7 @@ class DatasetService(IDatasetService):
         signed_url = storage_instruction["storageLocation"]["signedUrl"]
         file_source = storage_instruction["storageLocation"]["fileSource"]
 
-        if self.blob_loader is None:
-            blob_msg = f"{self.name}: Blob storage is disabled. Using HTTP client to upload file to dataset service for: {dataset_id}"  # noqa: E501
-            logger.debug(blob_msg)
-            # When blob storage is disabled, use httpx to upload to the signed URL
-            try:
-                async with httpx.AsyncClient() as client:
-                    response = await client.put(signed_url, content=blob_file)
-                    response.raise_for_status()
-                    logger.debug(
-                        f"{self.name}: blob has been uploaded via dataset service for: {dataset_id}",
-                    )
-            except httpx.HTTPStatusError as exc:
-                status_code = exc.response.status_code
-                logger.error(
-                    f"{self.name}: HTTP error uploading file for {dataset_id}: {status_code}",
-                )
-                raise
-            except httpx.RequestError as exc:
-                logger.error(
-                    f"{self.name}: Request error uploading file for {dataset_id}: {exc}",
-                )
-                raise
-        else:
-            await self.blob_loader.upload_blob(signed_url, blob_file)
+        await self.blob_loader.upload_blob(signed_url, blob_file)
 
         record_list = [
             create_default_dataset_record(
@@ -168,31 +141,6 @@ class DatasetService(IDatasetService):
         for task in tasks:
             signed_urls.extend(task.result())
         return signed_urls
-
-    async def _download_via_http(self, signed_url: str, dataset_id: str) -> Optional[bytes]:
-        """Download file via HTTP client when blob storage is disabled."""
-        blob_msg = f"{self.name}: Blob storage is disabled. Using HTTP client to download file from dataset service for: {dataset_id}"  # noqa: E501
-        logger.debug(blob_msg)
-        try:
-            async with httpx.AsyncClient() as client:
-                response = await client.get(signed_url)
-                response.raise_for_status()
-                blob = await response.aread()
-                logger.debug(
-                    f"{self.name}: blob has been downloaded via dataset service for: {dataset_id}",
-                )
-                return blob
-        except httpx.HTTPStatusError as exc:
-            status_code = exc.response.status_code
-            logger.error(
-                f"{self.name}: HTTP error downloading file for {dataset_id}: {status_code}",
-            )
-            return None
-        except httpx.RequestError as exc:
-            logger.error(
-                f"{self.name}: Request error downloading file for {dataset_id}: {exc}",
-            )
-            return None
 
     async def _request_signed_urls(self, dataset_ids: List[str]) -> List[Tuple[str, str]]:
         """Performs the actual dataset request to fetch signed urls.
