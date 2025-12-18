@@ -62,7 +62,7 @@ configuration:
     REDIS_PASSWORD: redispass
     REDIS_INDEX_ENABLE: "True"
     AZ_KEYVAULT_URL: "https://{{ .Values.azure.keyvault.name }}.vault.azure.net/"
-    USE_BLOB_STORAGE: "True"
+    USE_BLOB_STORAGE: "False"
 
 
   # About 800m of consumption with 4 uvloop workers and integration test run
