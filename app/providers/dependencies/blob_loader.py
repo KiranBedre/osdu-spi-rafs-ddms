@@ -29,21 +29,24 @@ class IBlobLoader(ABC):
 
 
 def get_blob_loader(settings: AppSettings) -> IBlobLoader:
+    blob_loader = None
     match settings.cloud_provider:
         case "azure":
             from app.providers.dependencies.az.blob_loader import (
                 AzureBlobLoader,
             )
-            return AzureBlobLoader()
+            blob_loader = AzureBlobLoader()
         case "aws":
             from app.providers.dependencies.aws.blob_loader import (
                 AWSBlobLoader,
             )
-            return AWSBlobLoader()
+            blob_loader = AWSBlobLoader()
         case "gc":
             from app.providers.dependencies.gc.blob_loader import (
                 GoogleBlobLoader,
             )
-            return GoogleBlobLoader()
+            blob_loader = GoogleBlobLoader()
         case _:
-            raise NotImplementedError()
+            from app.providers.dependencies.ci.blob_loader import CIBlobLoader
+            blob_loader = CIBlobLoader()
+    return blob_loader
