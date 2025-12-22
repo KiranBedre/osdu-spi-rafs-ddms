@@ -322,11 +322,9 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         self,
         request: Request,
         record_id: str,
-        content_type: str,
         content_id: str,
         dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
         storage_service: storage.StorageService = Depends(get_async_storage_service),
-        blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
         df_filter: DataFrameFilterValidator = Depends(validate_filters_for_content_type),
         content_schema_version: str = Depends(get_content_schema_version),
     ) -> Response:
@@ -336,16 +334,12 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :type request: Request
         :param record_id: record id,
         :type record_id: str
-        :param content_type: content schema type
-        :type content_type: str
         :param content_id: content identifier (dataset id or blob uuid),
         :type content_id: str
         :param dataset_service: dataset service
         :type dataset_service: dataset.DatasetService
         :param storage_service: storage service
         :type storage_service: storage.StorageService
-        :param blob_storage_service: blob storage service
-        :type blob_storage_service: IBlobService
         :param df_filter: df filter validator
         :type df_filter: DataFrameFilterValidator
         :param content_schema_version: the version used for content
@@ -354,16 +348,14 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :return: dataset data
         :rtype: Response
         """
-        return await self.get_data_v2(
-            request=request,
-            record_id=record_id,
-            analysis_type=content_type,
-            content_id=content_id,
-            dataset_service=dataset_service,
-            storage_service=storage_service,
-            blob_storage_service=blob_storage_service,
-            df_filter=df_filter,
-            content_schema_version=content_schema_version,
+        return await self._get_data(
+            request,
+            record_id,
+            content_id,
+            dataset_service,
+            storage_service,
+            df_filter,
+            content_schema_version,
         )
 
     async def post_data_multiple_content_type(
@@ -426,7 +418,6 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         content_id: str,
         dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
         storage_service: storage.StorageService = Depends(get_async_storage_service),
-        blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
         df_filter: DataFrameFilterValidator = Depends(validate_filters_for_domain_inferred_model),
         content_schema_version: str = Depends(get_content_schema_version),
     ) -> Response:
@@ -442,8 +433,6 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :type dataset_service: dataset.DatasetService
         :param storage_service: storage service
         :type storage_service: storage.StorageService
-        :param blob_storage_service: blob storage service
-        :type blob_storage_service: IBlobService
         :param df_filter: df filter validator
         :type df_filter: DataFrameFilterValidator
         :param content_schema_version: the version used for content
@@ -452,16 +441,14 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :return: dataset data
         :rtype: Response
         """
-        return await self.get_data_v2(
-            request=request,
-            record_id=record_id,
-            analysis_type=self._single_content_type,
-            content_id=content_id,
-            dataset_service=dataset_service,
-            storage_service=storage_service,
-            blob_storage_service=blob_storage_service,
-            df_filter=df_filter,
-            content_schema_version=content_schema_version,
+        return await self._get_data(
+            request,
+            record_id,
+            content_id,
+            dataset_service,
+            storage_service,
+            df_filter,
+            content_schema_version,
         )
 
     async def post_data_single_content_type(
