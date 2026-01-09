@@ -21,11 +21,6 @@ gc-containerize-gcr:
       --build-arg commit_branch=$CI_COMMIT_BRANCH
       --build-arg user_id=65532
 
-gc-osdutest:
-  rules:
-    - exists:
-        - never/existing/file.txt
-
 gc-acceptance-test-python:
   extends:
     - .gc-variables
@@ -51,11 +46,6 @@ gc-acceptance-test-python:
       when: never
     - if: '$GC == "1" && $GC_INT_TEST_TYPE == "python"'
       when: on_success
-
-gc-dev2-osdutest:
-  rules:
-    - exists:
-        - never/existing/file.txt
 
 gc-dev2-test-python:
   script:
