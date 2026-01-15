@@ -1028,7 +1028,7 @@
               "type": "string",
               "title": "Columns Aggregation"
             },
-            "example": "PropertyX[.PropertyXFieldA],avg",
+            "example": "PropertyX[.PropertyXFieldA],mean",
             "name": "columns_aggregation",
             "in": "query"
           },
@@ -1285,7 +1285,7 @@
               "type": "string",
               "title": "Columns Aggregation"
             },
-            "example": "PropertyX[.PropertyXFieldA],avg",
+            "example": "PropertyX[.PropertyXFieldA],mean",
             "name": "columns_aggregation",
             "in": "query"
           },
@@ -1397,7 +1397,7 @@
               "type": "string",
               "title": "Columns Aggregation"
             },
-            "example": "PropertyX[.PropertyXFieldA],avg",
+            "example": "PropertyX[.PropertyXFieldA],mean",
             "name": "columns_aggregation",
             "in": "query"
           },
