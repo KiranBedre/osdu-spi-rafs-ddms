@@ -4356,6 +4356,75 @@
 								}
 							],
 							"description": "TEC_Example_Anonymized.xlsx"
+						},
+						{
+							"name": "Negative",
+							"item": [
+								{
+									"name": "01 -  Extra fields in acl/legal",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 422\", function () {",
+													"    pm.expect(pm.response.code).to.eql(422);",
+													"});",
+													"",
+													"pm.test(\"Missing required fields in request body\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.reason).to.equal(\"Unprocessable entity.\");",
+													"    pm.expect(jsonData.errors).to.be.an(\"array\").with.length(2);",
+													"    pm.expect(jsonData.errors).to.include.members([",
+													"        \"extraAcl extra fields not permitted\",",
+													"        \"extraLegal extra fields not permitted\"",
+													"    ]);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{access_token}}",
+												"type": "text"
+											},
+											{
+												"key": "data-partition-id",
+												"value": "{{data-partition-id}}",
+												"type": "text"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "[\n    {\n        \"kind\": \"{{authority}}:wks:work-product-component--SamplesAnalysesReport:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ],\n            \"extraAcl\": \"extraAclValue\"\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"status\": \"compliant\",\n            \"extraLegal\": \"extraLegalValue\"\n        },\n        \"tags\": {\n            \"NameOfKey\": \"String value\"\n        },\n        \"meta\": [],\n        \"data\": {\n            \"DocumentTypeID\": \"{{data-partition-id}}:reference-data--DocumentType:SampleAnalysisReport:\",\n            \"NumberOfPages\": 45,\n            \"SubTitle\": \"Advanced Core Analysis Study\",\n            \"DocumentSubject\": \"SCAL Results Report (Final)\",\n            \"DatePublished\": \"2020-12-16T11:46:20.163Z\",\n            \"DateModified\": \"2020-12-16T11:46:20.163Z\",\n            \"DocumentLanguage\": \"English\",\n            \"SampleIDs\": [\n                \"{{SampleID_Sample_200}}:\"\n            ],\n            \"ReportSampleIdentifiers\": [\n                \"45H\"\n            ],\n            \"SampleAnalysisTypeIDs\": [\n                \"{{data-partition-id}}:reference-data--SampleAnalysisType:CapillaryPressure.Centrifuge:\"\n            ],\n            \"SamplesAnalysisCategoryTagIDs\": [\n                \"{{data-partition-id}}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:\"\n            ],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"Test was successfully conducted\",\n                    \"RemarkSequenceNumber\": 1,\n                    \"RemarkSource\": \"Lab\"\n                }\n            ],\n            \"LaboratoryIDs\": [\n                \"{{data-partition-id}}:master-data--Organisation:GenericOrganisation_100:\"\n            ],\n            \"LaboratoryNames\": [\n                \"Lab1\"\n            ]\n        }\n    }\n]"
+										},
+										"url": {
+											"raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysesreport",
+											"protocol": "https",
+											"host": [
+												"{{RAFS_DDMS_HOST}}"
+											],
+											"path": [
+												"v2",
+												"samplesanalysesreport"
+											]
+										}
+									},
+									"response": []
+								}
+							]
 						}
 					]
 				},
@@ -4846,7 +4915,7 @@
 									"response": []
 								},
 								{
-									"name": "04 - Add data",
+									"name": "04a - Add data",
 									"event": [
 										{
 											"listen": "test",
@@ -5260,7 +5329,7 @@
 									"response": []
 								},
 								{
-									"name": "03 - Add data",
+									"name": "03a - Add data",
 									"event": [
 										{
 											"listen": "test",
@@ -5613,7 +5682,7 @@
 									"response": []
 								},
 								{
-									"name": "03 - Add data",
+									"name": "03a - Add data",
 									"event": [
 										{
 											"listen": "test",
@@ -6209,7 +6278,7 @@
 									"response": []
 								},
 								{
-									"name": "03 - Add data",
+									"name": "03a - Add data",
 									"event": [
 										{
 											"listen": "test",
@@ -10018,7 +10087,7 @@
 									"response": []
 								},
 								{
-									"name": "03 - Add data",
+									"name": "03a - Add data",
 									"event": [
 										{
 											"listen": "test",
@@ -11222,7 +11291,7 @@
 									"response": []
 								},
 								{
-									"name": "04 - Add data",
+									"name": "04a - Add data",
 									"event": [
 										{
 											"listen": "test",
@@ -19391,6 +19460,83 @@
 							]
 						},
 						{
+							"name": "Negative",
+							"item": [
+								{
+									"name": "01 -  Extra fields in acl/legal",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 422\", function () {",
+													"    pm.expect(pm.response.code).to.eql(422);",
+													"});",
+													"",
+													"pm.test(\"Missing required fields in request body\", function () {",
+													"    var jsonData = pm.response.json();",
+													"    pm.expect(jsonData.reason).to.equal(\"Unprocessable entity.\");",
+													"    pm.expect(jsonData.errors).to.be.an(\"array\").with.length(2);",
+													"    pm.expect(jsonData.errors).to.include.members([",
+													"        \"extraAcl extra fields not permitted\",",
+													"        \"extraLegal extra fields not permitted\"",
+													"    ]);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "Bearer {{access_token}}"
+											},
+											{
+												"key": "data-partition-id",
+												"value": "{{data-partition-id}}"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "[\n    {\n        \"kind\": \"{{authority}}:wks:work-product-component--SamplesAnalysis:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ],\n            \"extraAcl\": \"extraAclValue\"\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"status\": \"compliant\",\n            \"extraLegal\": \"extraLegalValue\"\n        },\n        \"tags\": {\n            \"NameOfKey\": \"String value\"\n        },\n        \"data\": {\n            \"SampleIDs\": [\n                \"{{data-partition-id}}:master-data--Sample:{{RAFSDMSRunId}}:\"\n            ],\n            \"ReportSampleIdentifiers\": [\n                \"Core1\"\n            ],\n            \"AnalysisDate\": \"2020-04-01\",\n            \"LaboratoryIDs\": [\n                \"{{data-partition-id}}:master-data--Organisation:GenericOrganisation_100:\"\n            ],\n            \"LaboratoryNames\": [\n                \"TestLab\"\n            ],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"NNE_Boggess_17H_2020USHO-P031_7873_0-8017_5ftCD_CoreGR.LAS, full log, Provided via Marcellus Shale Energy and Environment Laboratory\",\n                    \"RemarkSequenceNumber\": 1,\n                    \"RemarkSource\": \"RAFSDDMS\",\n                    \"RemarkDate\": \"2024-01-04\"\n                }\n            ],\n            \"DatePublished\": \"2020-04-01\",\n             \"ParentSamplesAnalysesReports\": [\n                {\n                    \"ParentSamplesAnalysesReportID\": \"{{sar_mining_geotech_logging_record_id}}:\"\n                }\n            ],\n            \"SampleAnalysisTypeIDs\": [\n                \"{{data-partition-id}}:reference-data--SampleAnalysisType:Mining.Geotechlogging:\"\n            ],\n            \"SamplesAnalysisCategoryTagIDs\": [\n                \"{{data-partition-id}}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:\"\n            ],\n            \"DDMSDatasets\": [],\n            \"Parameters\": []\n        }\n    }\n]"
+										},
+										"url": {
+											"raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis",
+											"protocol": "https",
+											"host": [
+												"{{RAFS_DDMS_HOST}}"
+											],
+											"path": [
+												"v2",
+												"samplesanalysis"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
 							"name": "GET All Analysis Types",
 							"request": {
 								"method": "GET",
@@ -20431,7 +20577,7 @@
 									"response": []
 								},
 								{
-									"name": "08a - Get record data",
+									"name": "08g - Get record data",
 									"event": [
 										{
 											"listen": "test",
@@ -24056,38 +24202,19 @@
 													"listen": "test",
 													"script": {
 														"exec": [
-															"pm.test(\"400 error: Failed to read request\", () => {",
-															"    pm.response.to.have.status(400);",
-															"",
-															"    const json = pm.response.json();",
-															"",
-															"    // Validate top-level fields",
-															"    pm.expect(json).to.have.property(\"code\", 400);",
-															"    pm.expect(json).to.have.property(\"reason\");",
-															"    pm.expect(json).to.have.property(\"message\");",
-															"",
-															"    // reason must be null",
-															"    pm.expect(json.reason).to.be.null;",
-															"",
-															"    // message must be a JSON string",
-															"    pm.expect(json.message).to.be.a(\"string\");",
-															"",
-															"    // Parse nested message JSON",
-															"    let nested;",
-															"    try {",
-															"        nested = JSON.parse(json.message);",
-															"    } catch (e) {",
-															"        pm.expect.fail(\"Message field is not valid JSON\");",
-															"    }",
-															"",
-															"    // Validate nested structure",
-															"    pm.expect(nested).to.have.property(\"type\", \"about:blank\");",
-															"    pm.expect(nested).to.have.property(\"title\", \"Bad Request\");",
-															"    pm.expect(nested).to.have.property(\"status\", 400);",
-															"    pm.expect(nested).to.have.property(\"detail\", \"Failed to read request\");",
-															"    pm.expect(nested).to.have.property(\"instance\", \"/api/storage/v2/records\");",
+															"pm.test(\"Status code is 422\", function () {",
+															"    pm.expect(pm.response.code).to.eql(422);",
 															"});",
-															""
+															"",
+															"pm.test(\"Missing required fields in request body\", function () {",
+															"    var jsonData = pm.response.json();",
+															"    pm.expect(jsonData.reason).to.equal(\"Unprocessable entity.\");",
+															"    pm.expect(jsonData.errors).to.be.an(\"array\").with.length(2);",
+															"    pm.expect(jsonData.errors).to.include.members([",
+															"        \"extraAcl extra fields not permitted\",",
+															"        \"extraLegal extra fields not permitted\"",
+															"    ]);",
+															"});"
 														],
 														"type": "text/javascript",
 														"packages": {},
@@ -24116,7 +24243,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "[\n    {\n        \"id\": \"{{data-partition-id}}:work-product-component--ReservoirSimulationRockPhysicsModel:{{rsrpRunId}}\",\n        \"kind\": \"{{authority}}:wks:work-product-component--ReservoirSimulationRockPhysicsModel:1.0.0\",\n        \"data\": {\n            \"Name\": \"Rock compaction 1\"\n        },\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ],\n            \"ExtraData\": \"ExtraData1\"\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"ExtraData\": \"ExtraData2\"\n        }\n    }\n]",
+													"raw": "[\n    {\n        \"id\": \"{{data-partition-id}}:work-product-component--ReservoirSimulationRockPhysicsModel:{{rsrpRunId}}\",\n        \"kind\": \"{{authority}}:wks:work-product-component--ReservoirSimulationRockPhysicsModel:1.0.0\",\n        \"data\": {\n            \"Name\": \"Rock compaction 1\"\n        },\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ],\n            \"extraAcl\": \"ExtraAclValue\"\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"extraLegal\": \"ExtraLegalValue\"\n        }\n    }\n]",
 													"options": {
 														"raw": {
 															"language": "json"
@@ -26188,7 +26315,7 @@
 											"response": []
 										},
 										{
-											"name": "11 - (?) Mandatory field Compressibility",
+											"name": "11 - Mandatory field Compressibility",
 											"event": [
 												{
 													"listen": "test",
@@ -26198,10 +26325,42 @@
 															"    pm.expect(pm.response.code).to.equal(422);\r",
 															"});\r",
 															"\r",
-															"pm.test(\"Error reason contains 'Data validation failed'\", function () {\r",
+															"pm.test(\"Top-level error structure is valid\", function () {\r",
 															"    const json = pm.response.json();\r",
-															"    pm.expect(json).to.have.property(\"reason\");\r",
-															"    pm.expect(json.reason).to.include(\"Data validation failed\");\r",
+															"\r",
+															"    pm.expect(json).to.have.property(\"code\", 422);\r",
+															"    pm.expect(json).to.have.property(\"reason\").that.contains(\"Data validation failed.\");\r",
+															"    pm.expect(json).to.have.property(\"errors\");\r",
+															"    pm.expect(json.errors).to.have.property(\"Invalid type\").that.is.an(\"array\");\r",
+															"});\r",
+															"\r",
+															"pm.test(\"'Invalid type' errors contain 3 entries\", function () {\r",
+															"    const invalid = pm.response.json().errors[\"Invalid type\"];\r",
+															"    pm.expect(invalid.length).to.equal(3);\r",
+															"});\r",
+															"\r",
+															"pm.test(\"Each error item contains expected keys\", function () {\r",
+															"    const invalid = pm.response.json().errors[\"Invalid type\"];\r",
+															"\r",
+															"    const keys = invalid.map(o => Object.keys(o)[0]);\r",
+															"\r",
+															"    const expected = [\r",
+															"        \"ReservoirSimulationRockPhysicsID\",\r",
+															"        \"Meta\",\r",
+															"        \"ThermalModelDefinition\"\r",
+															"    ];\r",
+															"\r",
+															"    pm.expect(keys.sort()).to.eql(expected.sort());\r",
+															"});\r",
+															"\r",
+															"\r",
+															"pm.test(\"Error values contain expected content fragments\", function () {\r",
+															"    const errorText = JSON.stringify(pm.response.json());\r",
+															"\r",
+															"    pm.expect(errorText).to.include(\"ReservoirSimulationRockPhysicsID\");\r",
+															"    pm.expect(errorText).to.include(\"PoreVolumeCompressibilityAtReferencePressure\");\r",
+															"    pm.expect(errorText).to.include(\"ThermalConductivity\");\r",
+															"    pm.expect(errorText).to.include(\"HeatCapacity\");\r",
 															"});\r",
 															""
 														],
@@ -26382,7 +26541,7 @@
 											"response": []
 										},
 										{
-											"name": "13 - Add data VTP and ThermalModelDefinition wrong type",
+											"name": "13 - Wrong value type VTP and ThermalModelDefinition",
 											"event": [
 												{
 													"listen": "test",
@@ -26479,7 +26638,7 @@
 											"response": []
 										},
 										{
-											"name": "14 - Add data Volume Multiplier wrong type",
+											"name": "14 - Wrong value type Volume Multiplier",
 											"event": [
 												{
 													"listen": "test",
@@ -26577,7 +26736,7 @@
 											"response": []
 										},
 										{
-											"name": "15 - Add data Correlation Compressibility and Meta wrong type",
+											"name": "15 - Wrong value type Correlation Compressibility and Meta",
 											"event": [
 												{
 													"listen": "test",
@@ -31230,7 +31389,7 @@
 									"response": []
 								},
 								{
-									"name": "01 - Create new version of the record",
+									"name": "02 - Create new version of the record",
 									"event": [
 										{
 											"listen": "test",
@@ -31314,7 +31473,7 @@
 									"response": []
 								},
 								{
-									"name": "02 - Get record",
+									"name": "03 - Get record",
 									"event": [
 										{
 											"listen": "test",
@@ -31413,7 +31572,7 @@
 									"response": []
 								},
 								{
-									"name": "03 - Get versions",
+									"name": "04 - Get versions",
 									"event": [
 										{
 											"listen": "test",
@@ -31478,7 +31637,7 @@
 									"response": []
 								},
 								{
-									"name": "04 - Get concrete version",
+									"name": "05 - Get concrete version",
 									"event": [
 										{
 											"listen": "test",
@@ -31582,7 +31741,7 @@
 									"response": []
 								},
 								{
-									"name": "05 - Get content schema",
+									"name": "06 - Get content schema",
 									"event": [
 										{
 											"listen": "test",
@@ -31700,7 +31859,7 @@
 									"response": []
 								},
 								{
-									"name": "06 - Add data",
+									"name": "07a - Add data",
 									"event": [
 										{
 											"listen": "test",
@@ -31808,7 +31967,7 @@
 									"response": []
 								},
 								{
-									"name": "07 - Get record data",
+									"name": "08a - Get record data",
 									"event": [
 										{
 											"listen": "test",
@@ -31933,7 +32092,7 @@
 									"response": []
 								},
 								{
-									"name": "08 - Get record data filtered by column",
+									"name": "09 - Get record data filtered by column",
 									"event": [
 										{
 											"listen": "test",
@@ -32050,7 +32209,7 @@
 									"response": []
 								},
 								{
-									"name": "09a - Get record data filtered in by row",
+									"name": "10a - Get record data filtered in by row",
 									"event": [
 										{
 											"listen": "test",
@@ -32140,7 +32299,7 @@
 									"response": []
 								},
 								{
-									"name": "09b - Get record data filtered out  by row",
+									"name": "10b - Get record data filtered out  by row",
 									"event": [
 										{
 											"listen": "test",
@@ -32230,7 +32389,7 @@
 									"response": []
 								},
 								{
-									"name": "10 - Get record data aggregated",
+									"name": "11 - Get record data aggregated",
 									"event": [
 										{
 											"listen": "test",
@@ -32335,7 +32494,7 @@
 									"response": []
 								},
 								{
-									"name": "11a - Search records filtered in by row",
+									"name": "12a - Search records filtered in by row",
 									"event": [
 										{
 											"listen": "test",
@@ -32455,7 +32614,7 @@
 									"response": []
 								},
 								{
-									"name": "11b - Search records filtered out by row",
+									"name": "12b - Search records filtered out by row",
 									"event": [
 										{
 											"listen": "test",
@@ -32518,7 +32677,7 @@
 									"response": []
 								},
 								{
-									"name": "12a - Search records filtered in by start date",
+									"name": "13a - Search records filtered in by start date",
 									"event": [
 										{
 											"listen": "test",
@@ -32601,7 +32760,7 @@
 									"response": []
 								},
 								{
-									"name": "12b - Search records filtered out by start date",
+									"name": "13b - Search records filtered out by start date",
 									"event": [
 										{
 											"listen": "test",
@@ -32683,7 +32842,7 @@
 									"response": []
 								},
 								{
-									"name": "13a - Search records filtered in by end date",
+									"name": "14a - Search records filtered in by end date",
 									"event": [
 										{
 											"listen": "test",
@@ -32765,7 +32924,7 @@
 									"response": []
 								},
 								{
-									"name": "13b - Search records filtered out by end date",
+									"name": "14b - Search records filtered out by end date",
 									"event": [
 										{
 											"listen": "test",
@@ -32848,7 +33007,7 @@
 									"response": []
 								},
 								{
-									"name": "14 - Search records filtered out by page limit",
+									"name": "15 - Search records filtered out by page limit",
 									"event": [
 										{
 											"listen": "test",
@@ -32931,7 +33090,7 @@
 									"response": []
 								},
 								{
-									"name": "15 - Search data filtered by columns",
+									"name": "16 - Search data filtered by columns",
 									"event": [
 										{
 											"listen": "test",
@@ -33076,7 +33235,7 @@
 									"response": []
 								},
 								{
-									"name": "16a - Search data filtered in by row",
+									"name": "17a - Search data filtered in by row",
 									"event": [
 										{
 											"listen": "test",
@@ -33209,7 +33368,7 @@
 									"response": []
 								},
 								{
-									"name": "16b - Search data filtered out by row",
+									"name": "17b - Search data filtered out by row",
 									"event": [
 										{
 											"listen": "test",
@@ -33280,7 +33439,7 @@
 									"response": []
 								},
 								{
-									"name": "17 - Search data aggregated",
+									"name": "18 - Search data aggregated",
 									"event": [
 										{
 											"listen": "test",
@@ -33393,7 +33552,7 @@
 									"response": []
 								},
 								{
-									"name": "18a - Search data filtered in by start date",
+									"name": "19a - Search data filtered in by start date",
 									"event": [
 										{
 											"listen": "test",
@@ -33494,7 +33653,7 @@
 									"response": []
 								},
 								{
-									"name": "18b - Search data filtered out by start date",
+									"name": "19b - Search data filtered out by start date",
 									"event": [
 										{
 											"listen": "test",
@@ -33580,7 +33739,7 @@
 									"response": []
 								},
 								{
-									"name": "19a - Search data filtered in by end date",
+									"name": "20a - Search data filtered in by end date",
 									"event": [
 										{
 											"listen": "test",
@@ -33679,7 +33838,7 @@
 									"response": []
 								},
 								{
-									"name": "19b - Search data filtered out by end date",
+									"name": "20b - Search data filtered out by end date",
 									"event": [
 										{
 											"listen": "test",
@@ -33768,7 +33927,7 @@
 									"response": []
 								},
 								{
-									"name": "20 - Search data filtered out by page limit",
+									"name": "21 - Search data filtered out by page limit",
 									"event": [
 										{
 											"listen": "test",
@@ -33853,7 +34012,7 @@
 									"response": []
 								},
 								{
-									"name": "21 - Delete record",
+									"name": "22 - Delete record",
 									"event": [
 										{
 											"listen": "test",
@@ -33909,7 +34068,7 @@
 									"response": []
 								},
 								{
-									"name": "22 - Delete deleted record",
+									"name": "23 - Delete deleted record",
 									"event": [
 										{
 											"listen": "test",
@@ -33970,7 +34129,7 @@
 									"response": []
 								},
 								{
-									"name": "23 - Get deleted record",
+									"name": "24 - Get deleted record",
 									"event": [
 										{
 											"listen": "test",
@@ -34032,7 +34191,7 @@
 									"response": []
 								},
 								{
-									"name": "24 - Get concrete version of the deleted record",
+									"name": "25 - Get concrete version of the deleted record",
 									"event": [
 										{
 											"listen": "test",
@@ -34097,7 +34256,7 @@
 									"response": []
 								},
 								{
-									"name": "25 (Storage service bug) - Get versions of the deleted record",
+									"name": "26 (Storage service bug) - Get versions of the deleted record",
 									"event": [
 										{
 											"listen": "test",
@@ -34154,7 +34313,7 @@
 									"response": []
 								},
 								{
-									"name": "26 - Get deleted record data",
+									"name": "27 - Get deleted record data",
 									"event": [
 										{
 											"listen": "test",
@@ -35284,38 +35443,19 @@
 													"listen": "test",
 													"script": {
 														"exec": [
-															"pm.test(\"400 error: Failed to read request\", () => {",
-															"    pm.response.to.have.status(400);",
-															"",
-															"    const json = pm.response.json();",
-															"",
-															"    // Validate top-level fields",
-															"    pm.expect(json).to.have.property(\"code\", 400);",
-															"    pm.expect(json).to.have.property(\"reason\");",
-															"    pm.expect(json).to.have.property(\"message\");",
-															"",
-															"    // reason must be null",
-															"    pm.expect(json.reason).to.be.null;",
-															"",
-															"    // message must be a JSON string",
-															"    pm.expect(json.message).to.be.a(\"string\");",
-															"",
-															"    // Parse nested message JSON",
-															"    let nested;",
-															"    try {",
-															"        nested = JSON.parse(json.message);",
-															"    } catch (e) {",
-															"        pm.expect.fail(\"Message field is not valid JSON\");",
-															"    }",
-															"",
-															"    // Validate nested structure",
-															"    pm.expect(nested).to.have.property(\"type\", \"about:blank\");",
-															"    pm.expect(nested).to.have.property(\"title\", \"Bad Request\");",
-															"    pm.expect(nested).to.have.property(\"status\", 400);",
-															"    pm.expect(nested).to.have.property(\"detail\", \"Failed to read request\");",
-															"    pm.expect(nested).to.have.property(\"instance\", \"/api/storage/v2/records\");",
+															"pm.test(\"Status code is 422\", function () {",
+															"    pm.expect(pm.response.code).to.eql(422);",
 															"});",
-															""
+															"",
+															"pm.test(\"Missing required fields in request body\", function () {",
+															"    var jsonData = pm.response.json();",
+															"    pm.expect(jsonData.reason).to.equal(\"Unprocessable entity.\");",
+															"    pm.expect(jsonData.errors).to.be.an(\"array\").with.length(2);",
+															"    pm.expect(jsonData.errors).to.include.members([",
+															"        \"extraAcl extra fields not permitted\",",
+															"        \"extraLegal extra fields not permitted\"",
+															"    ]);",
+															"});"
 														],
 														"type": "text/javascript",
 														"packages": {},
@@ -43966,38 +44106,19 @@
 													"listen": "test",
 													"script": {
 														"exec": [
-															"pm.test(\"400 error: Failed to read request\", () => {",
-															"    pm.response.to.have.status(400);",
-															"",
-															"    const json = pm.response.json();",
-															"",
-															"    // Validate top-level fields",
-															"    pm.expect(json).to.have.property(\"code\", 400);",
-															"    pm.expect(json).to.have.property(\"reason\");",
-															"    pm.expect(json).to.have.property(\"message\");",
-															"",
-															"    // reason must be null",
-															"    pm.expect(json.reason).to.be.null;",
-															"",
-															"    // message must be a JSON string",
-															"    pm.expect(json.message).to.be.a(\"string\");",
-															"",
-															"    // Parse nested message JSON",
-															"    let nested;",
-															"    try {",
-															"        nested = JSON.parse(json.message);",
-															"    } catch (e) {",
-															"        pm.expect.fail(\"Message field is not valid JSON\");",
-															"    }",
-															"",
-															"    // Validate nested structure",
-															"    pm.expect(nested).to.have.property(\"type\", \"about:blank\");",
-															"    pm.expect(nested).to.have.property(\"title\", \"Bad Request\");",
-															"    pm.expect(nested).to.have.property(\"status\", 400);",
-															"    pm.expect(nested).to.have.property(\"detail\", \"Failed to read request\");",
-															"    pm.expect(nested).to.have.property(\"instance\", \"/api/storage/v2/records\");",
+															"pm.test(\"Status code is 422\", function () {",
+															"    pm.expect(pm.response.code).to.eql(422);",
 															"});",
-															""
+															"",
+															"pm.test(\"Missing required fields in request body\", function () {",
+															"    var jsonData = pm.response.json();",
+															"    pm.expect(jsonData.reason).to.equal(\"Unprocessable entity.\");",
+															"    pm.expect(jsonData.errors).to.be.an(\"array\").with.length(2);",
+															"    pm.expect(jsonData.errors).to.include.members([",
+															"        \"extraAcl extra fields not permitted\",",
+															"        \"extraLegal extra fields not permitted\"",
+															"    ]);",
+															"});"
 														],
 														"type": "text/javascript",
 														"packages": {},
