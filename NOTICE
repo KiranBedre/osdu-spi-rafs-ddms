@@ -31,7 +31,7 @@ The following software have components provided under the terms of this license:
 - numpy (from https://pypi.org/project/numpy/)
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
-- prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python)
+- prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python, https://pypi.org/project/prometheus-client/)
 - propcache (from https://github.com/aio-libs/propcache)
 - pyarrow (from https://arrow.apache.org/, https://pypi.org/project/pyarrow/, https://pypi.org/project/pyarrow/17.0.0/)
 - python-dateutil (from <https://github.com/dateutil/dateutil>, https://github.com/dateutil/dateutil)
@@ -50,7 +50,7 @@ The following software have components provided under the terms of this license:
 - numpy (from https://pypi.org/project/numpy/)
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
-- prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python)
+- prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python, https://pypi.org/project/prometheus-client/)
 - wrapt (from <https://github.com/GrahamDumpleton/wrapt>, https://github.com/GrahamDumpleton/wrapt)
 
 ========================================================================
