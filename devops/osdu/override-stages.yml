@@ -14,3 +14,10 @@ compile-and-unit-test:
 
 sonarqube-scan-python:
   tags: ["osdu-medium"]
+
+.ultimate-scanner-config:
+  variables:
+    SECURE_LOG_LEVEL: "debug"
+    SECRET_DETECTION_EXCLUDED_PATHS: >
+      "devops/azure/qa/Postman Collection/Collection/**",
+      "devops/core-plus/qa/Postman Collection/Collection/**"
