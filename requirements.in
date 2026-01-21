@@ -14,16 +14,16 @@ jsonschema==4.21.1
 idna==3.10.0
 loguru==0.7.2
 pandas==2.2.0
-pandera==0.18.0
+pandera==0.25.0
 prometheus-fastapi-instrumentator==6.1.0
 pyarrow==14.0.2
 pydantic[dotenv]==1.10.13
 requests[security]==2.32.4
-setuptools==78.1.1
+setuptools==80.10.1
 tenacity==8.2.3
 uvicorn==0.23.2
 urllib3==2.6.3
 # azure deps
-azure-storage-blob==12.19.0
+azure-storage-blob==12.23.0
 azure-keyvault==4.2.0
 azure-identity==1.19.0
