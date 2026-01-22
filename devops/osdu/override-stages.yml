@@ -15,23 +15,24 @@ compile-and-unit-test:
 sonarqube-scan-python:
   tags: ["osdu-medium"]
 
-.ultimate-scanner-config:
-  needs:
-  - job: compile-and-unit-test
-    optional: true
-  variables:
-    SECRET_DETECTION_EXCLUDED_PATHS: devops/azure/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json,devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json
+# .ultimate-scanner-config:
+#   needs:
+#   - job: compile-and-unit-test
+#     optional: true
 
-secret_detection:
-  rules:
-    - if: $SECRET_DETECTION_DISABLED == 'true' || $SECRET_DETECTION_DISABLED == '1'
-      when: never
-    - if: $CI_MERGE_REQUEST_ID
-      variables:
-        SECURE_LOG_LEVEL: debug
-    - if: $CI_COMMIT_BRANCH && $CI_MERGE_REQUEST_ID == null
-      variables:
-        SECURE_LOG_LEVEL: info
-    - if: $CI_COMMIT_TAG
-      variables:
-        SECURE_LOG_LEVEL: info
+# secret_detection:
+#   rules:
+#     - if: $SECRET_DETECTION_DISABLED == 'true' || $SECRET_DETECTION_DISABLED == '1'
+#       when: never
+#     - if: $CI_MERGE_REQUEST_ID
+#       variables:
+#         SECURE_LOG_LEVEL: debug
+#         SECRET_DETECTION_EXCLUDED_PATHS: devops/azure/qa/Postman Collection/Collection/**,devops/core-plus/qa/Postman Collection/Collection/**
+#     - if: $CI_COMMIT_BRANCH && $CI_MERGE_REQUEST_ID == null
+#       variables:
+#         SECURE_LOG_LEVEL: info
+#         SECRET_DETECTION_EXCLUDED_PATHS: devops/azure/qa/Postman Collection/Collection/**,devops/core-plus/qa/Postman Collection/Collection/**
+#     - if: $CI_COMMIT_TAG
+#       variables:
+#         SECURE_LOG_LEVEL: info
+#         SECRET_DETECTION_EXCLUDED_PATHS: devops/azure/qa/Postman Collection/Collection/**,devops/core-plus/qa/Postman Collection/Collection/**
