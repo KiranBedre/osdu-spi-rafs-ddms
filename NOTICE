@@ -69,7 +69,7 @@ The following software have components provided under the terms of this license:
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 - prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
 - pyarrow (from https://arrow.apache.org/, https://pypi.org/project/pyarrow/, https://pypi.org/project/pyarrow/17.0.0/)
-- pycparser (from <https://github.com/eliben/pycparser>, https://github.com/eliben/pycparser)
+- pycparser (from <https://github.com/eliben/pycparser>, https://github.com/eliben/pycparser, https://pypi.org/project/pycparser/)
 - python-dateutil (from <https://github.com/dateutil/dateutil>, https://github.com/dateutil/dateutil)
 - python-dotenv (from <https://github.com/theskumar/python-dotenv>, https://github.com/theskumar/python-dotenv, https://pypi.org/project/python-dotenv/)
 - sniffio (from https://github.com/python-trio/sniffio, https://pypi.org/project/sniffio/, https://pypi.org/project/sniffio/1.3.1/)
