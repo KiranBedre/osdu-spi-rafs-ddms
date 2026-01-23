@@ -15,25 +15,11 @@ compile-and-unit-test:
 sonarqube-scan-python:
   tags: ["osdu-medium"]
 
-.ultimate-scanner-config:
-  needs:
-  - job: compile-and-unit-test
-    optional: true
-
 secret_detection:
   rules:
     - if: $SECRET_DETECTION_DISABLED == 'true' || $SECRET_DETECTION_DISABLED == '1'
       when: never
-    - if: $CI_MERGE_REQUEST_ID
-      variables:
-        SECURE_LOG_LEVEL: debug
-        # Postman collections are huge JSONs, secrets are managed via environments, not stored here
-        SECRET_DETECTION_EXCLUDED_PATHS: "**/*.postman_collection.json"
-    - if: $CI_COMMIT_BRANCH && $CI_MERGE_REQUEST_ID == null
-      variables:
-        SECURE_LOG_LEVEL: info
-        SECRET_DETECTION_EXCLUDED_PATHS: "**/*.postman_collection.json"
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH || $CI_COMMIT_TAG
       variables:
         SECURE_LOG_LEVEL: info
         SECRET_DETECTION_EXCLUDED_PATHS: "**/*.postman_collection.json"
