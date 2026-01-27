@@ -63,6 +63,8 @@ def create_referenced_records(api, helper, tests_data):
     for reference_id in storage_dependencies:
         if "reference-data" in reference_id:  # Don't override reference-data values
             continue
+        # Purge existing record to avoid version conflicts with stale data
+        api.storage.purge_record(reference_id)
         record_to_store = copy.deepcopy(osdu_generic_record)
         record_to_store["id"] = reference_id
         record_type = reference_id.split(":")[1]
