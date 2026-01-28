@@ -93,14 +93,6 @@
 # This job is for running the Postman collection for the RAFS DDMS API 
 # against the OSDU Community Implementation (CI) environment.
 # --------------------------------------------------------------------------------
-cimpl-postman-test:
-  extends: .cimpl_newman_rafs_tests
-  variables:
-    ENVIRONMENT: "./devops/core-plus/qa/Postman Collection/Environment/OSDU_CI.postman_environment.json"
-    COLLECTION_JSON: "./devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
-    REPORT_HTML: "report-newman.html"
-  allow_failure: true
-
 cimpl-acceptance-test-postman:
   extends: .cimpl_newman_rafs_tests
   stage: acceptance
