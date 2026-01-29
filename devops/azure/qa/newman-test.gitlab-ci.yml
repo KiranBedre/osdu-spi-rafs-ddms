@@ -94,6 +94,6 @@ azure-postman-test:
   extends: .newman_rafs_tests
   variables:
     ENVIRONMENT: "./devops/azure/qa/Postman Collection/Environment/OSDU_AZURE_GLAB.postman_environment.json"
-    COLLECTION_JSON: "./devops/azure/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
+    COLLECTION_JSON: "./devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
     REPORT_HTML: "report-newman.html"
   allow_failure: true
