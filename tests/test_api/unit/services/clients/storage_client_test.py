@@ -14,6 +14,7 @@
 
 from http import HTTPStatus
 from unittest.mock import Mock, patch
+from urllib.parse import quote
 
 import pytest
 from httpx import AsyncClient
@@ -29,6 +30,9 @@ DATA_PARTITION_ID = "partition"
 TOKEN_STR = "test_token"
 TEST_CORRELATION_ID = "test_id"
 TEST_RECORD_ID = "partition:entity-type--EntityName:id"
+TEST_RECORD_ID_ENCODED = quote(TEST_RECORD_ID, safe='')
+TEST_RECORD_ID_SPECIAL = "opendes:master-data--Sample:7%2F12-A-7%20D_Sample_249"
+TEST_RECORD_ID_SPECIAL_ENCODED = quote(TEST_RECORD_ID_SPECIAL, safe='')
 TEST_RESPONSE = {"result_key": "result_value"}
 TEST_VERSION = 1
 TEST_RECORD = {"id": "test", "data": {"key": "value"}}
@@ -63,7 +67,7 @@ class TestStorageServiceApiClient:
         # Verify that the expected headers were set and the expected response was returned
         self.common_get_post_success_assertions(api_client, response)
         httpx_client.assert_called_once_with(
-            f"{StorageServicePaths.RECORDS}/{TEST_RECORD_ID}",
+            f"{StorageServicePaths.RECORDS}/{TEST_RECORD_ID_ENCODED}",
             headers=api_client.headers,
         )
 
@@ -81,7 +85,7 @@ class TestStorageServiceApiClient:
         # Verify that the expected headers were set and the expected response was returned
         self.common_get_post_success_assertions(api_client, response)
         httpx_client.assert_called_once_with(
-            f"{StorageServicePaths.RECORDS}/{TEST_RECORD_ID}/{TEST_VERSION}",
+            f"{StorageServicePaths.RECORDS}/{TEST_RECORD_ID_ENCODED}/{TEST_VERSION}",
             headers=api_client.headers,
         )
 
@@ -99,7 +103,7 @@ class TestStorageServiceApiClient:
         # Verify that the expected headers were set and the expected response was returned
         self.common_get_post_success_assertions(api_client, response)
         httpx_client.assert_called_once_with(
-            f"{StorageServicePaths.RECORDS}/versions/{TEST_RECORD_ID}",
+            f"{StorageServicePaths.RECORDS}/versions/{TEST_RECORD_ID_ENCODED}",
             headers=api_client.headers,
         )
 
@@ -117,7 +121,7 @@ class TestStorageServiceApiClient:
         # Verify that the expected headers were set and the expected response was returned
         self.common_delete_success_assertions(api_client, response)
         httpx_client.assert_called_once_with(
-            f"{StorageServicePaths.RECORDS}/{TEST_RECORD_ID}:delete",
+            f"{StorageServicePaths.RECORDS}/{TEST_RECORD_ID_ENCODED}:delete",
             headers=api_client.headers,
         )
 
@@ -135,7 +139,7 @@ class TestStorageServiceApiClient:
         # Verify that the expected headers were set and the expected response was returned
         self.common_delete_success_assertions(api_client, response)
         httpx_client.assert_called_once_with(
-            f"{StorageServicePaths.RECORDS}/{TEST_RECORD_ID}",
+            f"{StorageServicePaths.RECORDS}/{TEST_RECORD_ID_ENCODED}",
             headers=api_client.headers,
         )
 
@@ -172,5 +176,27 @@ class TestStorageServiceApiClient:
         self.common_get_post_success_assertions(api_client, response)
         httpx_client.assert_called_once_with(
             f"{StorageServicePaths.QUERY}", json={"records": [TEST_RECORD_ID]},
+            headers=api_client.headers,
+        )
+
+    @pytest.mark.asyncio
+    async def test_get_latest_record_with_special_characters(self):
+        """Test that record IDs with special characters are properly URL-encoded.
+
+        Record IDs like 'opendes:master-data--Sample:7%2F12-A-7%20D_Sample_249'
+        must be URL-encoded to prevent 424 errors from Storage service.
+        """
+        with patch.object(AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+            api_client = StorageServiceApiClient(
+                base_url=BASE_URL,
+                data_partition_id=DATA_PARTITION_ID,
+                bearer_token=TOKEN_STR,
+                extra_headers={common_headers.CORRELATION_ID: TEST_CORRELATION_ID},
+            )
+            response = await api_client.get_latest_record(TEST_RECORD_ID_SPECIAL)
+
+        self.common_get_post_success_assertions(api_client, response)
+        httpx_client.assert_called_once_with(
+            f"{StorageServicePaths.RECORDS}/{TEST_RECORD_ID_SPECIAL_ENCODED}",
             headers=api_client.headers,
         )

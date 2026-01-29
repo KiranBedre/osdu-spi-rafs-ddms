@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from typing import List, NamedTuple
+from urllib.parse import quote
 
 import httpx
 from loguru import logger
@@ -80,10 +81,12 @@ class StorageServiceApiClient(object):
         :return: record
         :rtype: dict
         """
+        encoded_id = self._encode_record_id(record_id)
         async with httpx.AsyncClient(
             base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
-            response = await client.get(f"{StorageServicePaths.RECORDS}/{record_id}", headers=self.headers)
+            url = f"{StorageServicePaths.RECORDS}/{encoded_id}"
+            response = await client.get(url, headers=self.headers)
             logger.debug(f"{self.name}: get latest version of record response: {response}")
             response.raise_for_status()
             return response.json()
@@ -98,10 +101,12 @@ class StorageServiceApiClient(object):
         :return: versioned record
         :rtype: dict
         """
+        encoded_id = self._encode_record_id(record_id)
         async with httpx.AsyncClient(
             base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
-            response = await client.get(f"{StorageServicePaths.RECORDS}/{record_id}/{version}", headers=self.headers)
+            url = f"{StorageServicePaths.RECORDS}/{encoded_id}/{version}"
+            response = await client.get(url, headers=self.headers)
             logger.debug(f"{self.name}: get specific record response: {response}")
             response.raise_for_status()
             return response.json()
@@ -114,10 +119,12 @@ class StorageServiceApiClient(object):
         :return: record versions
         :rtype: dict
         """
+        encoded_id = self._encode_record_id(record_id)
         async with httpx.AsyncClient(
             base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
-            response = await client.get(f"{StorageServicePaths.RECORDS}/versions/{record_id}", headers=self.headers)
+            url = f"{StorageServicePaths.RECORDS}/versions/{encoded_id}"
+            response = await client.get(url, headers=self.headers)
             logger.debug(f"{self.name}: get record versions response: {response}")
             response.raise_for_status()
             return response.json()
@@ -128,10 +135,12 @@ class StorageServiceApiClient(object):
         :param record_id: record id
         :type record_id: str
         """
+        encoded_id = self._encode_record_id(record_id)
         async with httpx.AsyncClient(
             base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
-            response = await client.post(f"{StorageServicePaths.RECORDS}/{record_id}:delete", headers=self.headers)
+            url = f"{StorageServicePaths.RECORDS}/{encoded_id}:delete"
+            response = await client.post(url, headers=self.headers)
             logger.debug(f"{self.name}: soft delete record response: {response}")
             response.raise_for_status()
 
@@ -143,10 +152,12 @@ class StorageServiceApiClient(object):
         :return: deleted record id
         :rtype: dict
         """
+        encoded_id = self._encode_record_id(record_id)
         async with httpx.AsyncClient(
             base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
         ) as client:
-            response = await client.delete(f"{StorageServicePaths.RECORDS}/{record_id}", headers=self.headers)
+            url = f"{StorageServicePaths.RECORDS}/{encoded_id}"
+            response = await client.delete(url, headers=self.headers)
             logger.debug(f"{self.name}: delete record response: {response}")
             response.raise_for_status()
 
@@ -168,6 +179,16 @@ class StorageServiceApiClient(object):
             logger.debug(f"{self.name}: query records response: {response}")
             response.raise_for_status()
             return response.json()
+
+    def _encode_record_id(self, record_id: str) -> str:
+        """URL-encode record ID for use in URL paths.
+
+        :param record_id: record id
+        :type record_id: str
+        :return: URL-encoded record id
+        :rtype: str
+        """
+        return quote(record_id, safe="")
 
     def _transport(self, retries: int = DEFAULT_RETRIES, **kwargs) -> httpx.AsyncHTTPTransport:
         """Create a new transport object.
