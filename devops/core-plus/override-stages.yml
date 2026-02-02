@@ -82,11 +82,6 @@ cimpl-containerize-gitlab:
     # - docker tag $REDIS_REPO:$REDIS_VERSION $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_REDIS_NAME:$REDIS_VERSION
     # - docker push $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_REDIS_NAME:$REDIS_VERSION
     - wait
-  rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^test-cimpl-release/'
-      when: on_success
-    - if: "$CIMPL == '1'"
-      when: on_success
 
 cimpl-cronjob-containerize-gitlab:
   extends:
@@ -146,7 +141,7 @@ cimpl-deploy:
       --set global.RAFS_URI=$CIMPL_TENANT.$CIMPL_DOMAIN
       --set data.serviceAccountName=$CIMPL_SERVICE
       --set data.cronJobClientId=integration-tester
-      --set data.cronJobClientSecret=$CIMPL_TEMP_OPENID_PROVIDER_CLIENT_SECRET
+      --set data.cronJobClientSecret=$CIMPL_OPENID_PROVIDER_CLIENT_SECRET
       --set data.logLevel=INFO
       --set data.bucketPrefix="refi"
       --set data.groupId=$GROUP_ID
@@ -158,14 +153,6 @@ cimpl-deploy:
       $CIMPL_HELM_SETS
       $CIMPL_HELM_TIMEOUT
     - !reference [.cimpl_verify_deploy, script]
-  rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^release/ || $CI_COMMIT_TAG || $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - if: $CI_COMMIT_REF_NAME =~ /^trusted-/ || $CIMPL == "1"
-      when: on_success
-    - if: $CI_COMMIT_REF_NAME == "main"
-      when: on_success
-    - when: never
 
 cimpl-test-python:
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
@@ -195,15 +182,6 @@ cimpl-test-python:
         --bearer-token "${ACCESS_TOKEN}" \
         --partition "${PARTITION}" \
         --cloud-provider "gc"
-  rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^release/ || $CI_COMMIT_TAG || $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - if: $CI_COMMIT_REF_NAME =~ /^trusted-/ || $CIMPL == "1"
-      when: on_success
-    - if: $CI_COMMIT_REF_NAME == "main"
-      when: on_success
-    - when: never
-
 
 #dev2 jobs
 
@@ -216,6 +194,7 @@ cimpl-dev2-deploy:
   stage: deploy
   needs:
     - "cimpl-containerize-gitlab"
+    - "cimpl-cronjob-containerize-gitlab"
     - "cimpl-helm-charts-release-gitlab"
   retry: 1
   script:
@@ -249,11 +228,6 @@ cimpl-dev2-deploy:
       $CIMPL_HELM_SETS
       $CIMPL_HELM_TIMEOUT
     - !reference [.cimpl_verify_deploy, script]
-  rules:
-    - if: "$CI_COMMIT_BRANCH =~ /^test-cimpl-release/"
-      when: on_success
-    - if: '$CIMPL == "1" && $CI_COMMIT_TAG'
-      when: on_success
 
 cimpl-dev2-test-python:
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
@@ -283,11 +257,6 @@ cimpl-dev2-test-python:
         --bearer-token "${ACCESS_TOKEN}" \
         --partition "${PARTITION}" \
         --cloud-provider "gc"
-  rules:
-    - if: '$CIMPL_INT_TEST_TYPE == "python" && $CI_COMMIT_BRANCH =~ /^test-cimpl-release/'
-      when: on_success
-    - if: '$CIMPL_INT_TEST_TYPE == "python" && $CIMPL == "1" && $CI_COMMIT_TAG'
-      when: on_success
 
 cimpl-helm-charts-release-gitlab:
   stage: containerize
@@ -310,64 +279,3 @@ cimpl-helm-charts-release-gitlab:
     - !reference [.cimpl_define_version, script]
     - helm package $CIMPL_HELM_DEPLOYMENT_DIR -u --version $VERSION --app-version $APP_VERSION
     - helm push $CIMPL_HELM_PACKAGE_NAME-$VERSION.tgz oci://$CI_REGISTRY_IMAGE/cimpl-helm
-  rules:
-    - if: "$CI_COMMIT_BRANCH =~ /^test-cimpl-release/"
-      when: on_success
-    - if: "$CI_COMMIT_TAG"
-      when: on_success
-
-#@@@VERSION="$RELEASE_VERSION.0.0.1-release"; need to change
-#if [[ -z $CI_COMMIT_TAG ]] && [[ $CI_COMMIT_BRANCH =~ ^test-cimpl-release-.*$ ]]; need to change
-#remove RELEASE_VERSION in release block
-.cimpl_define_version:
-  script:
-    - >
-      if [[ -z $CI_COMMIT_TAG ]] && [[ $CI_COMMIT_BRANCH =~ ^test-cimpl-release-.*$ ]];
-      then
-        VERSION="0.0.1-release.test.cimpl";     
-
-      elif [[ "$CI_COMMIT_TAG" != "" ]];
-      then
-        VERSION=$(echo $CI_COMMIT_TAG | sed "s/^v//");
-      else
-        VERSION="0.0.0-invalid";
-      fi
-    - echo $VERSION
-
-
-#if echo $CI_COMMIT_REF_NAME | grep -Eq "^test-cimpl-release-.*$"; need to change
-
-.cimpl_set_image_name:
-  script:
-    - > 
-      if echo $CI_COMMIT_REF_NAME | grep -Eq "^test-cimpl-release-.*";  
-      then
-        export CIMPL_IMAGE_NAME=$CIMPL_IMAGE_NAME-release;
-        export CIMPL_IMAGE_BOOTSTRAP_NAME=$CIMPL_IMAGE_BOOTSTRAP_NAME-release;
-      fi
-    - >
-      if [[ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]];
-      then
-        export CIMPL_IMAGE_NAME=$CIMPL_IMAGE_NAME-master;
-        export CIMPL_IMAGE_BOOTSTRAP_NAME=$CIMPL_IMAGE_BOOTSTRAP_NAME-master;
-      fi
-    - >
-      if [[ "$CI_COMMIT_TAG" != "" ]];
-      then
-        IMAGE_TAG="$CI_COMMIT_TAG";
-        EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$CI_COMMIT_TAG";
-        EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_TAG";
-      elif [[ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]];
-      then
-        IMAGE_TAG="$CI_COMMIT_SHORT_SHA";
-        CIMPL_HELM_TAG="latest"
-        EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:latest";
-        EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:latest";
-      else
-        IMAGE_TAG="$CI_COMMIT_SHORT_SHA";
-        CIMPL_HELM_TAG="cimpl$CI_COMMIT_SHORT_SHA"
-        EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$CI_COMMIT_SHORT_SHA";
-        EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_SHORT_SHA";
-      fi
-    - echo $CIMPL_IMAGE_NAME
-    - echo $CIMPL_IMAGE_BOOTSTRAP_NAME
