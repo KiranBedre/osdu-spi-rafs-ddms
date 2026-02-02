@@ -52,7 +52,6 @@ include:
 
   # CI provider
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: cimpl-temp-scripts
     file: "cloud-providers/cimpl-global.yml"
 
   # OVERRIDE STAGES
