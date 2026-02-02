@@ -14,6 +14,7 @@ variables:
   AWS_DEPLOY_TARGET: TF
   AWS_SERVICE_NAMESPACE_SUFFIX: rafs-ddms
   AWS_EKS_DEPLOYMENT_NAME: os-rafs-ddms
+  CIMPL: 1
 
 include:
   
@@ -52,7 +53,8 @@ include:
 
   # CI provider
   - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/cimpl-global.yml"  
+    ref: cimpl-temp-scripts
+    file: "cloud-providers/cimpl-global.yml"
 
   # OVERRIDE STAGES
 

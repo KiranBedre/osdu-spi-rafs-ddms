@@ -43,7 +43,7 @@ variables:
     - |
       echo "🔐 Requesting access token from Keycloak..."
       ACCESS_TOKEN=$(curl --fail-with-body -s -L -X POST \
-        "https://keycloak.dev1.osdu-cimpl.opengroup.org/realms/osdu/protocol/openid-connect/token" \
+        "https://keycloak.$CIMPL_DOMAIN/realms/osdu/protocol/openid-connect/token" \
         -H "Content-Type: application/x-www-form-urlencoded" \
         -d "client_id=${TEST_EPAM_OPENID_PROVIDER_CLIENT_ID}" \
         -d "client_secret=${CIMPL_TEST_EPAM_OPENID_PROVIDER_CLIENT_SECRET}" \
@@ -140,8 +140,8 @@ cimpl-deploy:
       --set global.dataPartitionId=osdu
       --set global.RAFS_URI=$CIMPL_TENANT.$CIMPL_DOMAIN
       --set data.serviceAccountName=$CIMPL_SERVICE
-      --set data.cronJobClientId=$TEST_EPAM_OPENID_PROVIDER_CLIENT_ID
-      --set data.cronJobClientSecret=$CIMPL_TEST_EPAM_OPENID_PROVIDER_CLIENT_SECRET
+      --set data.cronJobClientId=integration-tester
+      --set data.cronJobClientSecret=$CIMPL_TEMP_OPENID_PROVIDER_CLIENT_SECRET
       --set data.logLevel=INFO
       --set data.bucketPrefix="refi"
       --set data.groupId=$GROUP_ID
