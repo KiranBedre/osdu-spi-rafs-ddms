@@ -140,8 +140,8 @@ cimpl-deploy:
       --set global.dataPartitionId=osdu
       --set global.RAFS_URI=$CIMPL_TENANT.$CIMPL_DOMAIN
       --set data.serviceAccountName=$CIMPL_SERVICE
-      --set data.cronJobClientId=integration-tester
-      --set data.cronJobClientSecret=$CIMPL_OPENID_PROVIDER_CLIENT_SECRET
+      --set data.cronJobClientId=$CIMPL_CLIENT_ID
+      --set data.cronJobClientSecret=$CIMPL_CLIENT_SECRET
       --set data.logLevel=INFO
       --set data.bucketPrefix="refi"
       --set data.groupId=$GROUP_ID
@@ -186,17 +186,10 @@ cimpl-test-python:
 #dev2 jobs
 
 cimpl-dev2-deploy:
-  environment:
-    name: cimpl_dev2
-  extends: .cimpl-dev2-variables
-  tags: ["osdu-small"]
-  image: ${CI_REGISTRY}/osdu/platform/deployment-and-operations/base-containers-cimpl/origin-cli/origin-cli:latest
-  stage: deploy
   needs:
     - "cimpl-containerize-gitlab"
     - "cimpl-cronjob-containerize-gitlab"
     - "cimpl-helm-charts-release-gitlab"
-  retry: 1
   script:
     - !reference [.cimpl_obtain_credentials, script]
     - !reference [.cimpl_set_image_name, script]
@@ -215,8 +208,8 @@ cimpl-dev2-deploy:
       --set global.dataPartitionId=osdu
       --set global.RAFS_URI=$CIMPL_TENANT.$CIMPL_DOMAIN
       --set data.serviceAccountName=$CIMPL_SERVICE
-      --set data.cronJobClientId=integration-tester
-      --set data.cronJobClientSecret=$CIMPL_DEV2_OPENID_PROVIDER_CLIENT_SECRET
+      --set data.cronJobClientId=$CIMPL_CLIENT_ID
+      --set data.cronJobClientSecret=$CIMPL_CLIENT_SECRET
       --set data.logLevel=INFO
       --set data.bucketPrefix="refi"
       --set data.groupId=$GROUP_ID
