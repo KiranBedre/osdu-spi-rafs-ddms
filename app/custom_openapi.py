@@ -21,6 +21,46 @@ from app.models.schemas.pandas_dataframe import OrientSplit
 from app.resources.load_model_example import load_data_example
 
 
+def _copy_definitions_to_root(schema: dict, openapi_schema: dict) -> None:
+    """Copy nested definitions to OpenAPI root for Swagger UI $ref resolution.
+
+    Swagger UI looks for $ref: #/definitions/X at document root.
+    Keeps original definitions in schema for jsonschema validation.
+    """
+    nested_definitions = schema.get("definitions", {})
+    if nested_definitions:
+        openapi_schema.setdefault("definitions", {})
+        openapi_schema["definitions"].update(nested_definitions)
+
+
+def _set_request_body(path_item: dict, schema: dict, example_file: str) -> None:
+    """Set request body for a POST endpoint."""
+    path_item["post"]["requestBody"] = {
+        "content": {
+            "application/json": {
+                "schema": schema,
+                "example": load_data_example(example_file),
+            },
+        },
+    }
+
+
+def _get_parameter_sort_key(openapi_param: dict) -> tuple:
+    """Get sort key for parameter ordering: required first, then by location."""
+    location_order = {"path": 0, "header": 1, "query": 2, "cookie": 3}
+    is_optional = 0 if openapi_param.get("required") else 1
+    location_rank = location_order.get(openapi_param.get("in", ""), 9)
+    return (is_optional, location_rank, openapi_param.get("name", ""))
+
+
+def _sort_parameters(openapi_schema: dict) -> None:
+    """Sort parameters: required first, then by location (path, header, query)."""
+    for path_item in openapi_schema.get("paths", {}).values():
+        for operation in path_item.values():
+            if isinstance(operation, dict) and "parameters" in operation:
+                operation["parameters"].sort(key=_get_parameter_sort_key)
+
+
 def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
     """Override openapi with custom values.
 
@@ -39,61 +79,47 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
             "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
         },
     )
-    base_path = custom_openapi_schema["paths"]
-    # overrides
-    base_path = custom_openapi_schema["paths"]
-    content_post_v2_route = f"{settings.openapi_prefix}/v2/samplesanalysis/{{record_id}}/data/{{analysis_type}}"
-    base_path[content_post_v2_route]["post"]["requestBody"] = {
-        "content": {
-            "application/json": {
-                "schema": OrientSplit.schema(),
-                "example": load_data_example("multiple_salinity.json"),
-            },
-        },
-    }
-    content_post_v2_route = f"{settings.openapi_prefix}/v2/saturationfunctionset/{{record_id}}/data"
-    base_path[content_post_v2_route]["post"]["requestBody"] = {
-        "content": {
-            "application/json": {
-                "schema": OrientSplit.schema(),
-                "example": load_data_example("saturation_function_set_post_content_example.json"),
-            },
-        },
-    }
-    sampleanalysis_record_post_v2_route = f"{settings.openapi_prefix}/v2/samplesanalysis"
-    request_body = base_path[sampleanalysis_record_post_v2_route]["post"]["requestBody"]
-    samples_analysis_schema = request_body["content"]["application/json"]["schema"]
-    base_path[sampleanalysis_record_post_v2_route]["post"]["requestBody"] = {
-        "content": {
-            "application/json": {
-                "schema": samples_analysis_schema,
-                "example": load_data_example("samples_analysis_v2.json"),
-            },
-        },
-    }
-    masterdata_record_post_v2_route = f"{settings.openapi_prefix}/v2/masterdata"
-    base_path[masterdata_record_post_v2_route]["post"]["requestBody"] = {
-        "content": {
-            "application/json": {
-                "schema": {
-                    "title": "MasterDataRecords",
-                    "description": "Master Data records payload",
-                    "type": "array",
-                    "items": OsduStorageRecord.schema(),
-                },
-                "example": load_data_example("master_data.json"),
-            },
-        },
-    }
-    rsrpm = "reservoirsimulationrockphysicsmodel"
-    res_sim_content_post_v2_route = f"{settings.openapi_prefix}/v2/{rsrpm}/{{record_id}}/data"
-    base_path[res_sim_content_post_v2_route]["post"]["requestBody"] = {
-        "content": {
-            "application/json": {
-                "schema": OrientSplit.schema(),
-                "example": load_data_example("reservoir_simulation_rock_physics_content_model.json"),
-            },
-        },
-    }
-
+    _apply_request_body_overrides(custom_openapi_schema, settings)
+    _sort_parameters(custom_openapi_schema)
     return custom_openapi_schema
+
+
+def _apply_request_body_overrides(openapi_schema: dict, settings: AppSettings) -> None:
+    """Apply custom request body overrides to OpenAPI schema."""
+    paths = openapi_schema["paths"]
+    prefix = settings.openapi_prefix
+
+    # SamplesAnalysis data POST
+    path_item = paths[f"{prefix}/v2/samplesanalysis/{{record_id}}/data/{{analysis_type}}"]
+    _set_request_body(path_item, OrientSplit.schema(), "multiple_salinity.json")
+
+    # SaturationFunctionSet data POST
+    path_item = paths[f"{prefix}/v2/saturationfunctionset/{{record_id}}/data"]
+    _set_request_body(path_item, OrientSplit.schema(), "saturation_function_set_post_content_example.json")
+
+    # SamplesAnalysis record POST - preserve existing schema, add example
+    path_item = paths[f"{prefix}/v2/samplesanalysis"]
+    post_content = path_item["post"]["requestBody"]["content"]
+    existing_schema = post_content["application/json"]["schema"]
+    _set_request_body(path_item, existing_schema, "samples_analysis_v2.json")
+
+    # MasterData record POST - fix $ref resolution
+    _apply_masterdata_override(paths, prefix, openapi_schema)
+
+    # ReservoirSimulationRockPhysicsModel data POST
+    path_item = paths[f"{prefix}/v2/reservoirsimulationrockphysicsmodel/{{record_id}}/data"]
+    _set_request_body(path_item, OrientSplit.schema(), "reservoir_simulation_rock_physics_content_model.json")
+
+
+def _apply_masterdata_override(paths: dict, prefix: str, openapi_schema: dict) -> None:
+    """Apply masterdata POST override with proper schema resolution."""
+    route = f"{prefix}/v2/masterdata"
+    osdu_record_schema = OsduStorageRecord.schema()
+    _copy_definitions_to_root(osdu_record_schema, openapi_schema)
+    array_schema = {
+        "title": "MasterDataRecords",
+        "description": "Master Data records payload",
+        "type": "array",
+        "items": osdu_record_schema,
+    }
+    _set_request_body(paths[route], array_schema, "master_data.json")
