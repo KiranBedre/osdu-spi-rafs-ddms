@@ -4,7 +4,7 @@
 
 The project is undergoing a phased migration to a unified CI environment (CI env), where build, containerization, Helm packaging, testing, and deployment are handled centrally through GitLab CI.
 
-Detailed documentation for the new CI/CD structure is available here [READMY.md](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/tree/main/devops/core-plus/README.md?ref_type=heads)
+Detailed documentation for the new CI/CD structure is available here [README.md](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/tree/main/devops/core-plus/README.md?ref_type=heads)
 
 ## Introduction
 

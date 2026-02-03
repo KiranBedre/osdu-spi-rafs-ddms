@@ -342,6 +342,102 @@
                         "packages": {},
                         "requests": {}
                       }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "// ---- 1. Helper: substitute {{var}} placeholders from Postman scopes ----\r",
+                          "function substitutePostmanVariables(str) {\r",
+                          "    return str.replace(/{{\\s*([^}]+?)\\s*}}/g, function (match, varName) {\r",
+                          "        let value;\r",
+                          "\r",
+                          "        // Try environment\r",
+                          "        value = pm.environment.get(varName);\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try collection\r",
+                          "            value = pm.collectionVariables.get(varName);\r",
+                          "        }\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try globals\r",
+                          "            value = pm.globals.get(varName);\r",
+                          "        }\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try generic variables (covers data / local, etc.)\r",
+                          "            value = pm.variables.get(varName);\r",
+                          "        }\r",
+                          "\r",
+                          "        return (value !== undefined && value !== null) ? String(value) : match;\r",
+                          "    });\r",
+                          "}\r",
+                          "\r",
+                          "// ---- 2. Get and substitute the body that was used for this request ----\r",
+                          "let rawBody = pm.request.body.raw;\r",
+                          "console.log(\"Original body (with placeholders):\", rawBody);\r",
+                          "\r",
+                          "rawBody = substitutePostmanVariables(rawBody);\r",
+                          "console.log(\"Body after manual substitution:\", rawBody);\r",
+                          "\r",
+                          "let records;\r",
+                          "try {\r",
+                          "    records = JSON.parse(rawBody);\r",
+                          "} catch (e) {\r",
+                          "    console.error(\"Invalid JSON after substitution:\", e);\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "if (!Array.isArray(records)) {\r",
+                          "    console.error(\"Main request body is not an array of records\");\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "// ---- 3. Prepare DELETE request pieces ----\r",
+                          "const host = pm.variables.get(\"HOSTNAME\");\r",
+                          "const baseUrl = `https://${host}/api/storage/v2/records`;\r",
+                          "\r",
+                          "const commonHeaders = {\r",
+                          "    'Authorization': 'Bearer ' + pm.environment.get('access_token'),\r",
+                          "    'data-partition-id': pm.environment.get('data-partition-id'),\r",
+                          "    'Content-Type': 'application/json'\r",
+                          "};\r",
+                          "\r",
+                          "// ---- 4. DELETE each record sequentially using its substituted id ----\r",
+                          "(function runDelete(index) {\r",
+                          "    if (index >= records.length) {\r",
+                          "        console.log(\"Finished deleting all records.\");\r",
+                          "        return;\r",
+                          "    }\r",
+                          "\r",
+                          "    const id = records[index].id;\r",
+                          "    if (!id) {\r",
+                          "        console.warn(`Record at index ${index} has no id; skipping DELETE.`);\r",
+                          "        return runDelete(index + 1);\r",
+                          "    }\r",
+                          "\r",
+                          "    const delUrl = `${baseUrl}/${encodeURIComponent(id)}`;\r",
+                          "    console.log(`DELETE URL for index ${index}: ${delUrl}`);\r",
+                          "\r",
+                          "    pm.sendRequest(\r",
+                          "        {\r",
+                          "            url: delUrl,\r",
+                          "            method: 'DELETE',\r",
+                          "            header: commonHeaders\r",
+                          "        },\r",
+                          "        function (err, res) {\r",
+                          "            if (err) {\r",
+                          "                console.error(`Error during DELETE for id=${id}:`, err);\r",
+                          "            } else {\r",
+                          "                console.log(`DELETE status ${res.code} for id=${id}`);\r",
+                          "            }\r",
+                          "            runDelete(index + 1);\r",
+                          "        }\r",
+                          "    );\r",
+                          "})(0);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
                     }
                   ],
                   "protocolProfileBehavior": {
@@ -408,6 +504,102 @@
                           "var parts = jsonData.recordIds[0].split(\":\");\r",
                           "var record_id = parts.slice(0, 3).join(\":\");\r",
                           "pm.addRecordToCleanUp(pm, record_id)"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "// ---- 1. Helper: substitute {{var}} placeholders from Postman scopes ----\r",
+                          "function substitutePostmanVariables(str) {\r",
+                          "    return str.replace(/{{\\s*([^}]+?)\\s*}}/g, function (match, varName) {\r",
+                          "        let value;\r",
+                          "\r",
+                          "        // Try environment\r",
+                          "        value = pm.environment.get(varName);\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try collection\r",
+                          "            value = pm.collectionVariables.get(varName);\r",
+                          "        }\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try globals\r",
+                          "            value = pm.globals.get(varName);\r",
+                          "        }\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try generic variables (covers data / local, etc.)\r",
+                          "            value = pm.variables.get(varName);\r",
+                          "        }\r",
+                          "\r",
+                          "        return (value !== undefined && value !== null) ? String(value) : match;\r",
+                          "    });\r",
+                          "}\r",
+                          "\r",
+                          "// ---- 2. Get and substitute the body that was used for this request ----\r",
+                          "let rawBody = pm.request.body.raw;\r",
+                          "console.log(\"Original body (with placeholders):\", rawBody);\r",
+                          "\r",
+                          "rawBody = substitutePostmanVariables(rawBody);\r",
+                          "console.log(\"Body after manual substitution:\", rawBody);\r",
+                          "\r",
+                          "let records;\r",
+                          "try {\r",
+                          "    records = JSON.parse(rawBody);\r",
+                          "} catch (e) {\r",
+                          "    console.error(\"Invalid JSON after substitution:\", e);\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "if (!Array.isArray(records)) {\r",
+                          "    console.error(\"Main request body is not an array of records\");\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "// ---- 3. Prepare DELETE request pieces ----\r",
+                          "const host = pm.variables.get(\"HOSTNAME\");\r",
+                          "const baseUrl = `https://${host}/api/storage/v2/records`;\r",
+                          "\r",
+                          "const commonHeaders = {\r",
+                          "    'Authorization': 'Bearer ' + pm.environment.get('access_token'),\r",
+                          "    'data-partition-id': pm.environment.get('data-partition-id'),\r",
+                          "    'Content-Type': 'application/json'\r",
+                          "};\r",
+                          "\r",
+                          "// ---- 4. DELETE each record sequentially using its substituted id ----\r",
+                          "(function runDelete(index) {\r",
+                          "    if (index >= records.length) {\r",
+                          "        console.log(\"Finished deleting all records.\");\r",
+                          "        return;\r",
+                          "    }\r",
+                          "\r",
+                          "    const id = records[index].id;\r",
+                          "    if (!id) {\r",
+                          "        console.warn(`Record at index ${index} has no id; skipping DELETE.`);\r",
+                          "        return runDelete(index + 1);\r",
+                          "    }\r",
+                          "\r",
+                          "    const delUrl = `${baseUrl}/${encodeURIComponent(id)}`;\r",
+                          "    console.log(`DELETE URL for index ${index}: ${delUrl}`);\r",
+                          "\r",
+                          "    pm.sendRequest(\r",
+                          "        {\r",
+                          "            url: delUrl,\r",
+                          "            method: 'DELETE',\r",
+                          "            header: commonHeaders\r",
+                          "        },\r",
+                          "        function (err, res) {\r",
+                          "            if (err) {\r",
+                          "                console.error(`Error during DELETE for id=${id}:`, err);\r",
+                          "            } else {\r",
+                          "                console.log(`DELETE status ${res.code} for id=${id}`);\r",
+                          "            }\r",
+                          "            runDelete(index + 1);\r",
+                          "        }\r",
+                          "    );\r",
+                          "})(0);"
                         ],
                         "type": "text/javascript",
                         "packages": {},
@@ -484,6 +676,102 @@
                         "packages": {},
                         "requests": {}
                       }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "// ---- 1. Helper: substitute {{var}} placeholders from Postman scopes ----\r",
+                          "function substitutePostmanVariables(str) {\r",
+                          "    return str.replace(/{{\\s*([^}]+?)\\s*}}/g, function (match, varName) {\r",
+                          "        let value;\r",
+                          "\r",
+                          "        // Try environment\r",
+                          "        value = pm.environment.get(varName);\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try collection\r",
+                          "            value = pm.collectionVariables.get(varName);\r",
+                          "        }\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try globals\r",
+                          "            value = pm.globals.get(varName);\r",
+                          "        }\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try generic variables (covers data / local, etc.)\r",
+                          "            value = pm.variables.get(varName);\r",
+                          "        }\r",
+                          "\r",
+                          "        return (value !== undefined && value !== null) ? String(value) : match;\r",
+                          "    });\r",
+                          "}\r",
+                          "\r",
+                          "// ---- 2. Get and substitute the body that was used for this request ----\r",
+                          "let rawBody = pm.request.body.raw;\r",
+                          "console.log(\"Original body (with placeholders):\", rawBody);\r",
+                          "\r",
+                          "rawBody = substitutePostmanVariables(rawBody);\r",
+                          "console.log(\"Body after manual substitution:\", rawBody);\r",
+                          "\r",
+                          "let records;\r",
+                          "try {\r",
+                          "    records = JSON.parse(rawBody);\r",
+                          "} catch (e) {\r",
+                          "    console.error(\"Invalid JSON after substitution:\", e);\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "if (!Array.isArray(records)) {\r",
+                          "    console.error(\"Main request body is not an array of records\");\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "// ---- 3. Prepare DELETE request pieces ----\r",
+                          "const host = pm.variables.get(\"HOSTNAME\");\r",
+                          "const baseUrl = `https://${host}/api/storage/v2/records`;\r",
+                          "\r",
+                          "const commonHeaders = {\r",
+                          "    'Authorization': 'Bearer ' + pm.environment.get('access_token'),\r",
+                          "    'data-partition-id': pm.environment.get('data-partition-id'),\r",
+                          "    'Content-Type': 'application/json'\r",
+                          "};\r",
+                          "\r",
+                          "// ---- 4. DELETE each record sequentially using its substituted id ----\r",
+                          "(function runDelete(index) {\r",
+                          "    if (index >= records.length) {\r",
+                          "        console.log(\"Finished deleting all records.\");\r",
+                          "        return;\r",
+                          "    }\r",
+                          "\r",
+                          "    const id = records[index].id;\r",
+                          "    if (!id) {\r",
+                          "        console.warn(`Record at index ${index} has no id; skipping DELETE.`);\r",
+                          "        return runDelete(index + 1);\r",
+                          "    }\r",
+                          "\r",
+                          "    const delUrl = `${baseUrl}/${encodeURIComponent(id)}`;\r",
+                          "    console.log(`DELETE URL for index ${index}: ${delUrl}`);\r",
+                          "\r",
+                          "    pm.sendRequest(\r",
+                          "        {\r",
+                          "            url: delUrl,\r",
+                          "            method: 'DELETE',\r",
+                          "            header: commonHeaders\r",
+                          "        },\r",
+                          "        function (err, res) {\r",
+                          "            if (err) {\r",
+                          "                console.error(`Error during DELETE for id=${id}:`, err);\r",
+                          "            } else {\r",
+                          "                console.log(`DELETE status ${res.code} for id=${id}`);\r",
+                          "            }\r",
+                          "            runDelete(index + 1);\r",
+                          "        }\r",
+                          "    );\r",
+                          "})(0);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
                     }
                   ],
                   "protocolProfileBehavior": {
@@ -550,6 +838,102 @@
                           "var parts = jsonData.recordIds[0].split(\":\");\r",
                           "var record_id = parts.slice(0, 3).join(\":\");\r",
                           "pm.addRecordToCleanUp(pm, record_id)"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "// ---- 1. Helper: substitute {{var}} placeholders from Postman scopes ----\r",
+                          "function substitutePostmanVariables(str) {\r",
+                          "    return str.replace(/{{\\s*([^}]+?)\\s*}}/g, function (match, varName) {\r",
+                          "        let value;\r",
+                          "\r",
+                          "        // Try environment\r",
+                          "        value = pm.environment.get(varName);\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try collection\r",
+                          "            value = pm.collectionVariables.get(varName);\r",
+                          "        }\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try globals\r",
+                          "            value = pm.globals.get(varName);\r",
+                          "        }\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try generic variables (covers data / local, etc.)\r",
+                          "            value = pm.variables.get(varName);\r",
+                          "        }\r",
+                          "\r",
+                          "        return (value !== undefined && value !== null) ? String(value) : match;\r",
+                          "    });\r",
+                          "}\r",
+                          "\r",
+                          "// ---- 2. Get and substitute the body that was used for this request ----\r",
+                          "let rawBody = pm.request.body.raw;\r",
+                          "console.log(\"Original body (with placeholders):\", rawBody);\r",
+                          "\r",
+                          "rawBody = substitutePostmanVariables(rawBody);\r",
+                          "console.log(\"Body after manual substitution:\", rawBody);\r",
+                          "\r",
+                          "let records;\r",
+                          "try {\r",
+                          "    records = JSON.parse(rawBody);\r",
+                          "} catch (e) {\r",
+                          "    console.error(\"Invalid JSON after substitution:\", e);\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "if (!Array.isArray(records)) {\r",
+                          "    console.error(\"Main request body is not an array of records\");\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "// ---- 3. Prepare DELETE request pieces ----\r",
+                          "const host = pm.variables.get(\"HOSTNAME\");\r",
+                          "const baseUrl = `https://${host}/api/storage/v2/records`;\r",
+                          "\r",
+                          "const commonHeaders = {\r",
+                          "    'Authorization': 'Bearer ' + pm.environment.get('access_token'),\r",
+                          "    'data-partition-id': pm.environment.get('data-partition-id'),\r",
+                          "    'Content-Type': 'application/json'\r",
+                          "};\r",
+                          "\r",
+                          "// ---- 4. DELETE each record sequentially using its substituted id ----\r",
+                          "(function runDelete(index) {\r",
+                          "    if (index >= records.length) {\r",
+                          "        console.log(\"Finished deleting all records.\");\r",
+                          "        return;\r",
+                          "    }\r",
+                          "\r",
+                          "    const id = records[index].id;\r",
+                          "    if (!id) {\r",
+                          "        console.warn(`Record at index ${index} has no id; skipping DELETE.`);\r",
+                          "        return runDelete(index + 1);\r",
+                          "    }\r",
+                          "\r",
+                          "    const delUrl = `${baseUrl}/${encodeURIComponent(id)}`;\r",
+                          "    console.log(`DELETE URL for index ${index}: ${delUrl}`);\r",
+                          "\r",
+                          "    pm.sendRequest(\r",
+                          "        {\r",
+                          "            url: delUrl,\r",
+                          "            method: 'DELETE',\r",
+                          "            header: commonHeaders\r",
+                          "        },\r",
+                          "        function (err, res) {\r",
+                          "            if (err) {\r",
+                          "                console.error(`Error during DELETE for id=${id}:`, err);\r",
+                          "            } else {\r",
+                          "                console.log(`DELETE status ${res.code} for id=${id}`);\r",
+                          "            }\r",
+                          "            runDelete(index + 1);\r",
+                          "        }\r",
+                          "    );\r",
+                          "})(0);"
                         ],
                         "type": "text/javascript",
                         "packages": {},
@@ -622,7 +1006,105 @@
                           "var record_id = parts.slice(0, 3).join(\":\");",
                           "pm.addRecordToCleanUp(pm, record_id)"
                         ],
-                        "type": "text/javascript"
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    },
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "// ---- 1. Helper: substitute {{var}} placeholders from Postman scopes ----\r",
+                          "function substitutePostmanVariables(str) {\r",
+                          "    return str.replace(/{{\\s*([^}]+?)\\s*}}/g, function (match, varName) {\r",
+                          "        let value;\r",
+                          "\r",
+                          "        // Try environment\r",
+                          "        value = pm.environment.get(varName);\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try collection\r",
+                          "            value = pm.collectionVariables.get(varName);\r",
+                          "        }\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try globals\r",
+                          "            value = pm.globals.get(varName);\r",
+                          "        }\r",
+                          "        if (value === undefined || value === null) {\r",
+                          "            // Try generic variables (covers data / local, etc.)\r",
+                          "            value = pm.variables.get(varName);\r",
+                          "        }\r",
+                          "\r",
+                          "        return (value !== undefined && value !== null) ? String(value) : match;\r",
+                          "    });\r",
+                          "}\r",
+                          "\r",
+                          "// ---- 2. Get and substitute the body that was used for this request ----\r",
+                          "let rawBody = pm.request.body.raw;\r",
+                          "console.log(\"Original body (with placeholders):\", rawBody);\r",
+                          "\r",
+                          "rawBody = substitutePostmanVariables(rawBody);\r",
+                          "console.log(\"Body after manual substitution:\", rawBody);\r",
+                          "\r",
+                          "let records;\r",
+                          "try {\r",
+                          "    records = JSON.parse(rawBody);\r",
+                          "} catch (e) {\r",
+                          "    console.error(\"Invalid JSON after substitution:\", e);\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "if (!Array.isArray(records)) {\r",
+                          "    console.error(\"Main request body is not an array of records\");\r",
+                          "    return;\r",
+                          "}\r",
+                          "\r",
+                          "// ---- 3. Prepare DELETE request pieces ----\r",
+                          "const host = pm.variables.get(\"HOSTNAME\");\r",
+                          "const baseUrl = `https://${host}/api/storage/v2/records`;\r",
+                          "\r",
+                          "const commonHeaders = {\r",
+                          "    'Authorization': 'Bearer ' + pm.environment.get('access_token'),\r",
+                          "    'data-partition-id': pm.environment.get('data-partition-id'),\r",
+                          "    'Content-Type': 'application/json'\r",
+                          "};\r",
+                          "\r",
+                          "// ---- 4. DELETE each record sequentially using its substituted id ----\r",
+                          "(function runDelete(index) {\r",
+                          "    if (index >= records.length) {\r",
+                          "        console.log(\"Finished deleting all records.\");\r",
+                          "        return;\r",
+                          "    }\r",
+                          "\r",
+                          "    const id = records[index].id;\r",
+                          "    if (!id) {\r",
+                          "        console.warn(`Record at index ${index} has no id; skipping DELETE.`);\r",
+                          "        return runDelete(index + 1);\r",
+                          "    }\r",
+                          "\r",
+                          "    const delUrl = `${baseUrl}/${encodeURIComponent(id)}`;\r",
+                          "    console.log(`DELETE URL for index ${index}: ${delUrl}`);\r",
+                          "\r",
+                          "    pm.sendRequest(\r",
+                          "        {\r",
+                          "            url: delUrl,\r",
+                          "            method: 'DELETE',\r",
+                          "            header: commonHeaders\r",
+                          "        },\r",
+                          "        function (err, res) {\r",
+                          "            if (err) {\r",
+                          "                console.error(`Error during DELETE for id=${id}:`, err);\r",
+                          "            } else {\r",
+                          "                console.log(`DELETE status ${res.code} for id=${id}`);\r",
+                          "            }\r",
+                          "            runDelete(index + 1);\r",
+                          "        }\r",
+                          "    );\r",
+                          "})(0);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
                       }
                     }
                   ],
@@ -11435,7 +11917,7 @@
                           "",
                           "var parts = response.split(\":\");",
                           "var record_id = parts.slice(0, 3).join(\":\");",
-                          "pm.setCollectionVar(pm, \"xrd_record_id\", record_id);",
+                          "pm.collectionVariables.set(\"xrd_record_id\", record_id);",
                           "pm.addRecordToCleanUp(pm, record_id);"
                         ],
                         "type": "text/javascript",
@@ -19860,7 +20342,6 @@
                               "const xrd_record_id = `${dp}:work-product-component--SamplesAnalysis:${runId}`;",
                               "const encoded_xrd_record_id = encodeURIComponent(xrd_record_id);",
                               "",
-                              "pm.collectionVariables.set(\"xrd_record_id\", xrd_record_id);",
                               "pm.collectionVariables.set(\"encoded_xrd_record_id\", encoded_xrd_record_id);"
                             ],
                             "type": "text/javascript",
@@ -19990,7 +20471,7 @@
                               "var latestVersion = versions[versions.length - 1];",
                               "",
                               "// Set the latest version as an environment variable",
-                              "pm.environment.set(\"xrd_record_version\", latestVersion);"
+                              "pm.environment.set(\"spec_char_xrd_record_version\", latestVersion);"
                             ],
                             "type": "text/javascript",
                             "packages": {},
@@ -20070,7 +20551,7 @@
                           }
                         ],
                         "url": {
-                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{encoded_xrd_record_id}}/versions/{{xrd_record_version}}",
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{encoded_xrd_record_id}}/versions/{{spec_char_xrd_record_version}}",
                           "protocol": "https",
                           "host": [
                             "{{RAFS_DDMS_HOST}}"
@@ -20080,7 +20561,7 @@
                             "samplesanalysis",
                             "{{encoded_xrd_record_id}}",
                             "versions",
-                            "{{xrd_record_version}}"
+                            "{{spec_char_xrd_record_version}}"
                           ]
                         }
                       },
@@ -20127,8 +20608,8 @@
                               "    }",
                               "",
                               "    if (datasetUuid) {",
-                              "        console.info(\"Setting xrd_dataset_id:\", datasetUuid);",
-                              "        pm.collectionVariables.set(\"xrd_dataset_id\", datasetUuid);",
+                              "        console.info(\"Setting spec_char_xrd_dataset_id:\", datasetUuid);",
+                              "        pm.collectionVariables.set(\"spec_char_xrd_dataset_id\", datasetUuid);",
                               "    } else {",
                               "        console.error(\"datasetUuid is undefined or null — check ddms_urn format!\");",
                               "    }",
@@ -20229,7 +20710,7 @@
                           }
                         ],
                         "url": {
-                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{encoded_xrd_record_id}}/data/xrd/{{xrd_dataset_id}}",
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{encoded_xrd_record_id}}/data/xrd/{{spec_char_xrd_dataset_id}}",
                           "protocol": "https",
                           "host": [
                             "{{RAFS_DDMS_HOST}}"
@@ -20240,7 +20721,7 @@
                             "{{encoded_xrd_record_id}}",
                             "data",
                             "xrd",
-                            "{{xrd_dataset_id}}"
+                            "{{spec_char_xrd_dataset_id}}"
                           ]
                         }
                       },
@@ -20297,6 +20778,429 @@
                             "v2",
                             "samplesanalysis",
                             "{{encoded_xrd_record_id}}"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "704 - no data-partition-id in headers",
+                  "item": [
+                    {
+                      "name": "01 - Create record without data-partition-id in headers",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"400 error: missing data-partition-id\", function () {",
+                              "    pm.response.to.have.status(400);",
+                              "",
+                              "    const json = pm.response.json();",
+                              "",
+                              "    pm.expect(json.code).to.equal(400);",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        },
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "const rand = _.random(100000, 99999999);\r",
+                              "const xrdRunId = \"7%2F12-A-7%20D_\" + rand;\r",
+                              "\r",
+                              "pm.environment.set(\"xrdRunId\", xrdRunId);"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "[\n    {\n        \"id\": \"{{data-partition-id}}:work-product-component--SamplesAnalysis:{{xrdRunId}}\",\n        \"kind\": \"{{authority}}:wks:work-product-component--SamplesAnalysis:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ]\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"status\": \"compliant\"\n        },\n        \"tags\": {\n            \"NameOfKey\": \"String value\"\n        },\n        \"data\": {\n            \"SampleIDs\": [\n                \"{{SampleID_Sample_200}}:\"\n            ],\n            \"ReportSampleIdentifiers\": [\n                \"88Y\"\n            ],\n            \"AnalysisDate\": \"2022-12-16\",\n            \"LaboratoryIDs\": [\n                \"{{data-partition-id}}:master-data--Organisation:GenericOrganisation_100:\"\n            ],\n            \"LaboratoryNames\": [\n                \"TestLab\"\n            ],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"Test was successfully conducted\",\n                    \"RemarkSequenceNumber\": 1,\n                    \"RemarkSource\": \"Lab\",\n                    \"RemarkDate\": \"2023-10-23\"\n                }\n            ],\n            \"DatePublished\": \"2022-12-16\",\n            \"ParentSamplesAnalysesReports\": [\n                {\n                    \"ParentSamplesAnalysesReportID\": \"{{sar_record_id}}:\"\n                }\n            ],\n            \"SampleAnalysisTypeIDs\": [\n                \"{{data-partition-id}}:reference-data--SampleAnalysisType:Mineralogy.XRD:\"\n            ],\n            \"SamplesAnalysisCategoryTagIDs\": [\n                \"{{data-partition-id}}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:\"\n            ],\n            \"AvailableSampleAnalysisProperties\": [],\n            \"DDMSDatasets\": [],\n            \"Parameters\": []\n        }\n    }\n]"
+                        },
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "02 - Get record without data-partition-id in headers",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"400 error: missing data-partition-id\", function () {",
+                              "    pm.response.to.have.status(400);",
+                              "",
+                              "    const json = pm.response.json();",
+                              "",
+                              "    pm.expect(json.code).to.equal(400);",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{xrd_record_id}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{xrd_record_id}}"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "03 - Get versions without data-partition-id in headers",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"400 error: missing data-partition-id\", function () {",
+                              "    pm.response.to.have.status(400);",
+                              "",
+                              "    const json = pm.response.json();",
+                              "",
+                              "    pm.expect(json.code).to.equal(400);",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{xrd_record_id}}/versions",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{xrd_record_id}}",
+                            "versions"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "04 - Get concrete version without data-partition-id in headers",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"400 error: missing data-partition-id\", function () {",
+                              "    pm.response.to.have.status(400);",
+                              "",
+                              "    const json = pm.response.json();",
+                              "",
+                              "    pm.expect(json.code).to.equal(400);",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{xrd_record_id}}/versions/{{xrd_record_version}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{xrd_record_id}}",
+                            "versions",
+                            "{{xrd_record_version}}"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "05 - Add data without data-partition-id in headers",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"400 error: missing data-partition-id\", function () {",
+                              "    pm.response.to.have.status(400);",
+                              "",
+                              "    const json = pm.response.json();",
+                              "",
+                              "    pm.expect(json.code).to.equal(400);",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*;version={{rafsddms-content-schema-version}}"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"columns\": [\n        \"SamplesAnalysisID\",\n        \"SampleID\",\n        \"Meta\",\n        \"QuartzCrystallinityIndex\",\n        \"MineralContent\"\n    ],\n    \"index\": [\n        0\n    ],\n    \"data\": [\n        [\n            \"{{xrd_record_id}}:\",\n            \"{{SampleID_Sample_200}}:\",\n            [\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"euclid\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:Euc:\",\n                    \"propertyNames\": [\n                        \"QuartzCrystallinityIndex\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"percent\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:%25:\",\n                    \"propertyNames\": [\n                        \"MineralContent[*].WeightPercent\",\n                        \"MineralContent[*].VolumePercent\"\n                    ]\n                }\n            ],\n            1.23,\n            [\n                {\n                    \"MineralID\": \"{{data-partition-id}}:reference-data--Minerals:actinolite:\",\n                    \"WeightPercent\": 1.23,\n                    \"VolumePercent\": 1.23\n                }\n            ]\n        ]\n    ]\n}"
+                        },
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{xrd_record_id}}/data/xrd",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{xrd_record_id}}",
+                            "data",
+                            "xrd"
+                          ]
+                        },
+                        "description": "Possible reference data types:  \nWholeOilGasChromatographyCompounds  \nSaturateGasChromatographyCompounds  \nAromaticGasChromatographyCompounds  \nGasolineGasChromatographyCompounds  \nPyrolysisGasChromatographyCompounds"
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "06 - Get record data without data-partition-id in headers",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"400 error: missing data-partition-id\", function () {",
+                              "    pm.response.to.have.status(400);",
+                              "",
+                              "    const json = pm.response.json();",
+                              "",
+                              "    pm.expect(json.code).to.equal(400);",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Cache-Control",
+                            "value": "no-store",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*;version={{rafsddms-content-schema-version}}",
+                            "type": "text"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{xrd_record_id}}/data/xrd/{{xrd_dataset_id}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{xrd_record_id}}",
+                            "data",
+                            "xrd",
+                            "{{xrd_dataset_id}}"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "07 - Delete record without data-partition-id in headers",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"400 error: missing data-partition-id\", function () {",
+                              "    pm.response.to.have.status(400);",
+                              "",
+                              "    const json = pm.response.json();",
+                              "",
+                              "    pm.expect(json.code).to.equal(400);",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
+                              "});"
+                            ],
+                            "type": "text/javascript",
+                            "packages": {},
+                            "requests": {}
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "DELETE",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Cache-Control",
+                            "value": "no-store",
+                            "type": "text"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{xrd_record_id}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{xrd_record_id}}"
                           ]
                         }
                       },
@@ -24315,7 +25219,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -25217,7 +26123,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -25411,7 +26319,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -25603,7 +26513,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -26081,7 +26993,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -26550,7 +27464,9 @@
                               "    const json = pm.response.json();\r",
                               "\r",
                               "    pm.expect(json.code).to.equal(400);\r",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");\r",
+                              "    \r",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);\r",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");\r",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -28044,7 +28960,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -29224,7 +30142,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -30501,7 +31421,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -31987,7 +32909,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -36150,7 +37074,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -37105,7 +38031,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -37299,7 +38227,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -37491,7 +38421,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -37954,7 +38886,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -38413,7 +39347,9 @@
                               "    const json = pm.response.json();\r",
                               "\r",
                               "    pm.expect(json.code).to.equal(400);\r",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");\r",
+                              "    \r",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);\r",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");\r",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -39877,7 +40813,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -40869,7 +41807,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -42008,7 +42948,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -43579,7 +44521,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -45447,7 +46391,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -46413,7 +47359,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -46607,7 +47555,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -46799,7 +47749,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -47139,7 +48091,9 @@
                               "    const json = pm.response.json();",
                               "",
                               "    pm.expect(json.code).to.equal(400);",
-                              "    pm.expect(json.reason).to.equal(\"No data-partition-id in headers\");",
+                              "    ",
+                              "    pm.expect(json.errors).to.be.an(\"array\").with.length(1);",
+                              "    pm.expect(json.errors).to.include(\"No data-partition-id in headers\");",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -47559,42 +48513,42 @@
     {
       "key": "rafsddms-schema-authority",
       "value": "rafsddms"
-	},
-	{
+	  },
+	  {
       "key": "schema-authority",
       "value": "osdu"
-	},
-	{
+	  },
+	  {
       "key": "RCA_DatasetAPI_filename",
       "value": "./devops/core-plus/qa/Postman Collection/resources/KKS 1 1 RCA RAW DATA Corelab Final Approved.xlsx"
-	},
-	{
+	  },
+	  {
       "key": "PVT_DatasetAPI_filename",
       "value": "./devops/core-plus/qa/Postman Collection/resources/206_12a-5_DST_archive.pdf"
-	},
-	{
+	  },
+	  {
       "key": "Geochem_DatasetAPI_filename",
       "value": "./devops/core-plus/qa/Postman Collection/resources/206_12a-_5_rep_GEOL_CHEM_267794802.pdf"
-	},
-	{
+	  },
+	  {
       "key": "RCA_parquet_data_filename",
       "value": "/"
-	},
-	{
+	  },
+	  {
       "key": "rafsddms-content-schema-version",
       "value": "1.0.0"
-	},
-	{
+	  },
+	  {
       "key": "content-schema-analysistype",
       "value": "routinecoreanalysis"
-	},
-	{
+	  },
+	  {
       "key": "pvt-content-schema-version",
       "value": "1.0.0"
-	},
-	{
+	  },
+	  {
       "key": "workflow_name_manifest",
       "value": "Osdu_ingest"
-	}
+	  }
   ]
 }

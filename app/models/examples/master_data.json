@@ -1,4 +1,5 @@
-{
+[
+  {
     "id": "namespace:master-data--Sample:Sample_200",
     "kind": "osdu:wks:master-data--Sample:2.0.0",
     "acl": {
@@ -367,3 +368,4 @@
       "ExtensionProperties": {}
     }
   }
+]
