@@ -100,7 +100,7 @@ data:
   cronjobEnabled: true
   cronJobSchedule: "0 * * * *"  # Daily each hour
   cronJobstartingDeadlineSeconds: 600 # 10 min - it should be less than cronjob period
-  oauthTokenUrl: "https://keycloak.$CIMPL_DOMAIN/realms/osdu/protocol/openid-connect/token"
+#  oauthTokenUrl: "https://keycloak.$CIMPL_DOMAIN/realms/osdu/protocol/openid-connect/token"
   oauthScope: "openid profile offline_access email"
   cronJobClientId: ""
   cronJobClientSecret: ""
