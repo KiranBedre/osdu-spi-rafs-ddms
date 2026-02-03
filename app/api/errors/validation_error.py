@@ -23,33 +23,71 @@ from fastapi.openapi.utils import (
 from pydantic import ValidationError
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from starlette.status import HTTP_422_UNPROCESSABLE_CONTENT
+from starlette.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_422_UNPROCESSABLE_CONTENT,
+)
 
 from app.models.schemas.errors import ValidationErrorResponse
+
+
+def _format_single_error(error: dict) -> str:
+    """Format a single validation error into a human-readable message."""
+    error_loc = error.get("loc", [])
+    error_field = error_loc[-1] if error_loc else "unknown"
+    error_type = error_loc[0] if error_loc else None
+
+    if error_field == "record_id":
+        pattern = error["ctx"]["pattern"]
+        entity = pattern.split(":")[1]
+        return f'{entity} ID is not provided in expected OSDU pattern "{pattern}"'
+    if error_type == "header" and error["msg"] == "field required":
+        return f"No {error_field} in headers"
+    return f'{error_field} {error["msg"]}'
 
 
 def format_errors(errors: list) -> list:
     formatted_errors = []
     for error in errors:
-        error_field = error["loc"][-1]
-        if error_field == "record_id":
-            pattern = error["ctx"]["pattern"]
-            entity = pattern.split(":")[1]
-            error_message = f'{entity} ID is not provided in expected OSDU pattern "{pattern}"'
-        else:
-            error_message = f'{error_field} {error["msg"]}'
-        formatted_errors.append(error_message)
+        error_message = _format_single_error(error)
+        if error_message not in formatted_errors:
+            formatted_errors.append(error_message)
     return formatted_errors
+
+
+def _is_header_error(errors: list) -> bool:
+    """Check if all errors are for missing headers.
+
+    Headers are request metadata, not entity body, so missing headers
+    should return 400 Bad Request instead of 422 per RFC 4918.
+    """
+    return all(
+        error.get("loc") and error["loc"][0] == "header"
+        for error in errors
+    )
 
 
 async def http422_error_handler(
     _: Request,
     exc: Union[RequestValidationError, ValidationError],
 ) -> JSONResponse:
+    errors = exc.errors()
+
+    # Return 400 for missing headers (RFC 4918: headers are request metadata)
+    if _is_header_error(errors):
+        return JSONResponse(
+            ValidationErrorResponse.construct(
+                code=HTTP_400_BAD_REQUEST,
+                reason="Bad request.",
+                errors=format_errors(errors),
+            ).dict(),
+            status_code=HTTP_400_BAD_REQUEST,
+        )
+
     return JSONResponse(
         ValidationErrorResponse.construct(
             reason="Unprocessable entity.",
-            errors=format_errors(exc.errors()),
+            errors=format_errors(errors),
         ).dict(),
         status_code=HTTP_422_UNPROCESSABLE_CONTENT,
     )

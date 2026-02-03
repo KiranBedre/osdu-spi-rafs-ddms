@@ -28,22 +28,8 @@ ACCEPT_HEADER: Final = "accept"
 SUPPORTED_MIME_TYPES: Final[tuple] = ("application/json", "*/*")
 
 
-async def get_data_partition_id(request: Request):
-    # @TODO review is required.
-    # could be replaced by require_data_partition_id
-    data_partition_id = request.headers.get("data-partition-id")
-    if not data_partition_id:
-        reason = "No data-partition-id in headers"
-        logger.debug(reason)
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=reason,
-        )
-    return data_partition_id
-
-
 def require_data_partition_id(
-    data_partition_id=Header(
+    data_partition_id: str = Header(
         title="data-partition-id",
         openapi_examples={
             "example": {
@@ -53,6 +39,12 @@ def require_data_partition_id(
         description="Specifies the proper data partition id",
     ),
 ):
+    """Validate data-partition-id header with Swagger visibility.
+
+    Note: Missing header validation returns 400 (not 422) via the custom
+    exception handler in validation_error.py, since headers are request
+    metadata, not entity body per RFC 4918.
+    """
     return data_partition_id
 
 
