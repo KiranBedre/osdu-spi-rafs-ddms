@@ -2122,7 +2122,8 @@
                           ""
                         ],
                         "type": "text/javascript",
-                        "packages": {}
+                        "packages": {},
+                        "requests": {}
                       }
                     },
                     {
@@ -2134,7 +2135,8 @@
                           "pm.collectionVariables.set(\"RAFSTestWellboreRecordID\", dataPartition + \":master-data--Wellbore:KKS1\");"
                         ],
                         "type": "text/javascript",
-                        "packages": {}
+                        "packages": {},
+                        "requests": {}
                       }
                     }
                   ],
@@ -2159,7 +2161,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "[{\r\n    \"data\": {\r\n        \"Code\": \"Geotechlogging\",\r\n        \"CommitDate\": \"2023-10-06T07:08:51+00:00\",\r\n        \"Description\": \"Gamma Ray measured on a specimen, usually core. In some cases it can be measured on non-core rock samples.\",\r\n        \"Name\": \"Geotech logging\",\r\n        \"Source\": \"Workbook ReferenceValues/Authoring/SampleAnalysisSubFamily.1.0.0.xlsx; commit SHA 91dcba4b.\"\r\n    },\r\n    \"meta\": null,\r\n    \"modifyUser\": \"5d60b04c-b580-4de7-addc-290afe76af93\",\r\n    \"modifyTime\": \"2024-04-22T17:44:09.440Z\",\r\n    \"id\": \"{{data-partition-id}}:reference-data--SampleAnalysisSubFamily:Geotechlogging\",\r\n    \"version\": 1713807848229413,\r\n    \"kind\": \"osdu:wks:reference-data--SampleAnalysisSubFamily:1.0.0\",\r\n    \"acl\": {\r\n        \"viewers\": [\r\n            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n        ],\r\n        \"owners\": [\r\n            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n        ]\r\n    },\r\n    \"legal\": {\r\n        \"legaltags\": [\r\n            \"{{LtagName}}\"\r\n        ],\r\n        \"otherRelevantDataCountries\": [\r\n            \"US\"\r\n        ],\r\n        \"status\": \"compliant\"\r\n    },\r\n    \"createUser\": \"preshipping@azureglobal1.onmicrosoft.com\",\r\n    \"createTime\": \"2023-10-31T21:29:12.244Z\"\r\n}]"
+                      "raw": "[{\r\n    \"data\": {\r\n        \"Code\": \"Geotechlogging\",\r\n        \"CommitDate\": \"2023-10-06T07:08:51+00:00\",\r\n        \"Description\": \"Gamma Ray measured on a specimen, usually core. In some cases it can be measured on non-core rock samples.\",\r\n        \"Name\": \"Geotech logging\",\r\n        \"Source\": \"Workbook ReferenceValues/Authoring/SampleAnalysisSubFamily.1.0.0.xlsx; commit SHA 91dcba4b.\"\r\n    },\r\n    \"meta\": null,\r\n    \"modifyUser\": \"5d60b04c-b580-4de7-addc-290afe76af93\",\r\n    \"modifyTime\": \"2024-04-22T17:44:09.440Z\",\r\n    \"id\": \"{{data-partition-id}}:reference-data--SampleAnalysisSubFamily:Geotechlogging\",\r\n    \"version\": 1713807848229413,\r\n    \"kind\": \"{{data-partition-id}}:wks:reference-data--SampleAnalysisSubFamily:1.0.0\",\r\n    \"acl\": {\r\n        \"viewers\": [\r\n            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n        ],\r\n        \"owners\": [\r\n            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n        ]\r\n    },\r\n    \"legal\": {\r\n        \"legaltags\": [\r\n            \"{{LtagName}}\"\r\n        ],\r\n        \"otherRelevantDataCountries\": [\r\n            \"US\"\r\n        ],\r\n        \"status\": \"compliant\"\r\n    },\r\n    \"createUser\": \"preshipping@azureglobal1.onmicrosoft.com\",\r\n    \"createTime\": \"2023-10-31T21:29:12.244Z\"\r\n}]"
                     },
                     "url": {
                       "raw": "https://{{STORAGE_HOST}}/records",
@@ -2196,7 +2198,8 @@
                           ""
                         ],
                         "type": "text/javascript",
-                        "packages": {}
+                        "packages": {},
+                        "requests": {}
                       }
                     },
                     {
@@ -2208,7 +2211,8 @@
                           "pm.collectionVariables.set(\"RAFSTestWellboreRecordID\", dataPartition + \":master-data--Wellbore:KKS1\");"
                         ],
                         "type": "text/javascript",
-                        "packages": {}
+                        "packages": {},
+                        "requests": {}
                       }
                     }
                   ],
@@ -2233,7 +2237,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "[{\r\n    \"data\": {\r\n        \"Code\": \"Mining\",\r\n        \"CommitDate\": \"2023-10-06T07:08:51+00:00\",\r\n        \"Description\": \"Measurements of gamma radioactivity on a rock specimen.\",\r\n        \"Name\": \"Mining\",\r\n        \"Source\": \"Workbook ReferenceValues/Authoring/SampleAnalysisFamily.1.0.0.xlsx; commit SHA 91dcba4b.\"\r\n    },\r\n    \"meta\": null,\r\n    \"modifyUser\": \"5d60b04c-b580-4de7-addc-290afe76af93\",\r\n    \"modifyTime\": \"2024-04-22T17:45:40.851Z\",\r\n    \"id\": \"{{data-partition-id}}:reference-data--SampleAnalysisFamily:Mining\",\r\n    \"version\": 1713807940035204,\r\n    \"kind\": \"osdu:wks:reference-data--SampleAnalysisFamily:1.0.0\",\r\n    \"acl\": {\r\n        \"viewers\": [\r\n            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n        ],\r\n        \"owners\": [\r\n            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n        ]\r\n    },\r\n    \"legal\": {\r\n        \"legaltags\": [\r\n            \"{{LtagName}}\"\r\n        ],\r\n        \"otherRelevantDataCountries\": [\r\n            \"US\"\r\n        ],\r\n        \"status\": \"compliant\"\r\n    },\r\n    \"createUser\": \"preshipping@azureglobal1.onmicrosoft.com\",\r\n    \"createTime\": \"2023-10-31T21:29:08.876Z\"\r\n}]"
+                      "raw": "[{\r\n    \"data\": {\r\n        \"Code\": \"Mining\",\r\n        \"CommitDate\": \"2023-10-06T07:08:51+00:00\",\r\n        \"Description\": \"Measurements of gamma radioactivity on a rock specimen.\",\r\n        \"Name\": \"Mining\",\r\n        \"Source\": \"Workbook ReferenceValues/Authoring/SampleAnalysisFamily.1.0.0.xlsx; commit SHA 91dcba4b.\"\r\n    },\r\n    \"meta\": null,\r\n    \"modifyUser\": \"5d60b04c-b580-4de7-addc-290afe76af93\",\r\n    \"modifyTime\": \"2024-04-22T17:45:40.851Z\",\r\n    \"id\": \"{{data-partition-id}}:reference-data--SampleAnalysisFamily:Mining\",\r\n    \"version\": 1713807940035204,\r\n    \"kind\": \"{{data-partition-id}}:wks:reference-data--SampleAnalysisFamily:1.0.0\",\r\n    \"acl\": {\r\n        \"viewers\": [\r\n            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n        ],\r\n        \"owners\": [\r\n            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n        ]\r\n    },\r\n    \"legal\": {\r\n        \"legaltags\": [\r\n            \"{{LtagName}}\"\r\n        ],\r\n        \"otherRelevantDataCountries\": [\r\n            \"US\"\r\n        ],\r\n        \"status\": \"compliant\"\r\n    },\r\n    \"createUser\": \"preshipping@azureglobal1.onmicrosoft.com\",\r\n    \"createTime\": \"2023-10-31T21:29:08.876Z\"\r\n}]"
                     },
                     "url": {
                       "raw": "https://{{STORAGE_HOST}}/records",
@@ -2270,7 +2274,8 @@
                           ""
                         ],
                         "type": "text/javascript",
-                        "packages": {}
+                        "packages": {},
+                        "requests": {}
                       }
                     },
                     {
@@ -2282,7 +2287,8 @@
                           "pm.collectionVariables.set(\"RAFSTestWellboreRecordID\", dataPartition + \":master-data--Wellbore:KKS1\");"
                         ],
                         "type": "text/javascript",
-                        "packages": {}
+                        "packages": {},
+                        "requests": {}
                       }
                     }
                   ],
@@ -2307,7 +2313,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "[{\r\n    \"data\": {\r\n        \"Code\": \"Mining.Geotechlogging\",\r\n        \"CommitDate\": \"2023-11-24T16:45:22+00:00\",\r\n        \"Description\": \"Gamma Ray measured on a specimen, usually core. In some cases it can be measured on non-core rock samples.\",\r\n        \"FamilyID\": \"{{data-partition-id}}:reference-data--SampleAnalysisFamily:GammaRay:\",\r\n        \"Name\": \"Mining, Geotech logging\",\r\n        \"Source\": \"\",\r\n        \"SubFamilyID\": \"{{data-partition-id}}:reference-data--SampleAnalysisSubFamily:Geotechlogging:\"\r\n    },\r\n    \"meta\": null,\r\n    \"modifyUser\": \"preshipping@azureglobal1.onmicrosoft.com\",\r\n    \"modifyTime\": \"2024-02-01T18:48:24.333Z\",\r\n    \"id\": \"{{data-partition-id}}:reference-data--SampleAnalysisType:Mining.Geotechlogging\",\r\n    \"kind\": \"osdu:wks:reference-data--SampleAnalysisType:1.0.0\",\r\n    \"acl\": {\r\n        \"viewers\": [\r\n            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n        ],\r\n        \"owners\": [\r\n            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n        ]\r\n    },\r\n    \"legal\": {\r\n        \"legaltags\": [\r\n            \"{{LtagName}}\"\r\n        ],\r\n        \"otherRelevantDataCountries\": [\r\n            \"US\"\r\n        ],\r\n        \"status\": \"compliant\"\r\n    }\r\n    \r\n\r\n  }]"
+                      "raw": "[{\r\n    \"data\": {\r\n        \"Code\": \"Mining.Geotechlogging\",\r\n        \"CommitDate\": \"2023-11-24T16:45:22+00:00\",\r\n        \"Description\": \"Gamma Ray measured on a specimen, usually core. In some cases it can be measured on non-core rock samples.\",\r\n        \"FamilyID\": \"{{data-partition-id}}:reference-data--SampleAnalysisFamily:GammaRay:\",\r\n        \"Name\": \"Mining, Geotech logging\",\r\n        \"Source\": \"\",\r\n        \"SubFamilyID\": \"{{data-partition-id}}:reference-data--SampleAnalysisSubFamily:Geotechlogging:\"\r\n    },\r\n    \"meta\": null,\r\n    \"modifyUser\": \"preshipping@azureglobal1.onmicrosoft.com\",\r\n    \"modifyTime\": \"2024-02-01T18:48:24.333Z\",\r\n    \"id\": \"{{data-partition-id}}:reference-data--SampleAnalysisType:Mining.Geotechlogging\",\r\n    \"kind\": \"{{data-partition-id}}:wks:reference-data--SampleAnalysisType:1.0.0\",\r\n    \"acl\": {\r\n        \"viewers\": [\r\n            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n        ],\r\n        \"owners\": [\r\n            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n        ]\r\n    },\r\n    \"legal\": {\r\n        \"legaltags\": [\r\n            \"{{LtagName}}\"\r\n        ],\r\n        \"otherRelevantDataCountries\": [\r\n            \"US\"\r\n        ],\r\n        \"status\": \"compliant\"\r\n    }\r\n    \r\n\r\n  }]"
                     },
                     "url": {
                       "raw": "https://{{STORAGE_HOST}}/records",
@@ -11921,7 +11927,8 @@
                           "pm.addRecordToCleanUp(pm, record_id);"
                         ],
                         "type": "text/javascript",
-                        "packages": {}
+                        "packages": {},
+                        "requests": {}
                       }
                     }
                   ],
@@ -20842,7 +20849,7 @@
                         ],
                         "body": {
                           "mode": "raw",
-                          "raw": "[\n    {\n        \"id\": \"{{data-partition-id}}:work-product-component--SamplesAnalysis:{{xrdRunId}}\",\n        \"kind\": \"{{authority}}:wks:work-product-component--SamplesAnalysis:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ]\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"status\": \"compliant\"\n        },\n        \"tags\": {\n            \"NameOfKey\": \"String value\"\n        },\n        \"data\": {\n            \"SampleIDs\": [\n                \"{{SampleID_Sample_200}}:\"\n            ],\n            \"ReportSampleIdentifiers\": [\n                \"88Y\"\n            ],\n            \"AnalysisDate\": \"2022-12-16\",\n            \"LaboratoryIDs\": [\n                \"{{data-partition-id}}:master-data--Organisation:GenericOrganisation_100:\"\n            ],\n            \"LaboratoryNames\": [\n                \"TestLab\"\n            ],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"Test was successfully conducted\",\n                    \"RemarkSequenceNumber\": 1,\n                    \"RemarkSource\": \"Lab\",\n                    \"RemarkDate\": \"2023-10-23\"\n                }\n            ],\n            \"DatePublished\": \"2022-12-16\",\n            \"ParentSamplesAnalysesReports\": [\n                {\n                    \"ParentSamplesAnalysesReportID\": \"{{sar_record_id}}:\"\n                }\n            ],\n            \"SampleAnalysisTypeIDs\": [\n                \"{{data-partition-id}}:reference-data--SampleAnalysisType:Mineralogy.XRD:\"\n            ],\n            \"SamplesAnalysisCategoryTagIDs\": [\n                \"{{data-partition-id}}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:\"\n            ],\n            \"AvailableSampleAnalysisProperties\": [],\n            \"DDMSDatasets\": [],\n            \"Parameters\": []\n        }\n    }\n]"
+                          "raw": "[\n    {\n        \"kind\": \"{{authority}}:wks:work-product-component--SamplesAnalysis:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ]\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"status\": \"compliant\"\n        },\n        \"tags\": {\n            \"NameOfKey\": \"String value\"\n        },\n        \"data\": {\n            \"SampleIDs\": [\n                \"{{SampleID_Sample_200}}:\"\n            ],\n            \"ReportSampleIdentifiers\": [\n                \"88Y\"\n            ],\n            \"AnalysisDate\": \"2022-12-16\",\n            \"LaboratoryIDs\": [\n                \"{{data-partition-id}}:master-data--Organisation:GenericOrganisation_100:\"\n            ],\n            \"LaboratoryNames\": [\n                \"TestLab\"\n            ],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"Test was successfully conducted\",\n                    \"RemarkSequenceNumber\": 1,\n                    \"RemarkSource\": \"Lab\",\n                    \"RemarkDate\": \"2023-10-23\"\n                }\n            ],\n            \"DatePublished\": \"2022-12-16\",\n            \"ParentSamplesAnalysesReports\": [\n                {\n                    \"ParentSamplesAnalysesReportID\": \"{{sar_record_id}}:\"\n                }\n            ],\n            \"SampleAnalysisTypeIDs\": [\n                \"{{data-partition-id}}:reference-data--SampleAnalysisType:Mineralogy.XRD:\"\n            ],\n            \"SamplesAnalysisCategoryTagIDs\": [\n                \"{{data-partition-id}}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:\"\n            ],\n            \"AvailableSampleAnalysisProperties\": [],\n            \"DDMSDatasets\": [],\n            \"Parameters\": []\n        }\n    }\n]"
                         },
                         "url": {
                           "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis",
@@ -22689,6 +22696,7 @@
                           "",
                           "pm.test(\"Validate structure and values of Rock Physics Model\", function () {",
                           "    const json = pm.response.json();",
+                          "    const partitiond_id = pm.variables.get(\"data-partition-id\");",
                           "",
                           "    // ---------- Top-level structure ----------",
                           "    pm.expect(json).to.have.property(\"columns\").that.is.an(\"array\");",
@@ -22725,13 +22733,13 @@
                           "    // First meta item",
                           "    pm.expect(meta[0]).to.have.property(\"kind\", \"Unit\");",
                           "    pm.expect(meta[0]).to.have.property(\"name\", \"bar\");",
-                          "    pm.expect(meta[0]).to.have.property(\"unitOfMeasureID\", \"osdu:reference-data--UnitOfMeasure:bar:\");",
+                          "    pm.expect(meta[0]).to.have.property(\"unitOfMeasureID\", partitiond_id + \":reference-data--UnitOfMeasure:bar:\");",
                           "    pm.expect(meta[0].propertyNames).to.eql([\"Compressibility.ReferencePressure\"]);",
                           "",
                           "    // Second meta item",
                           "    pm.expect(meta[1]).to.have.property(\"kind\", \"Unit\");",
                           "    pm.expect(meta[1]).to.have.property(\"name\", \"1/bar\");",
-                          "    pm.expect(meta[1]).to.have.property(\"unitOfMeasureID\", \"osdu:reference-data--UnitOfMeasure:1%2Fbar:\");",
+                          "    pm.expect(meta[1]).to.have.property(\"unitOfMeasureID\", partitiond_id + \":reference-data--UnitOfMeasure:1%2Fbar:\");",
                           "    pm.expect(meta[1].propertyNames).to.eql([",
                           "        \"Compressibility.PoreVolumeCompressibilityAtReferencePressure\"",
                           "    ]);",
@@ -22822,6 +22830,7 @@
                           "",
                           "pm.test(\"Validate structure and values of Rock Physics Model\", function () {",
                           "    const json = pm.response.json();",
+                          "    const partitiond_id = pm.variables.get(\"data-partition-id\");",
                           "",
                           "    // ---------- Top-level structure ----------",
                           "    pm.expect(json).to.have.property(\"columns\").that.is.an(\"array\");",
@@ -22858,13 +22867,13 @@
                           "    // First meta item",
                           "    pm.expect(meta[0]).to.have.property(\"kind\", \"Unit\");",
                           "    pm.expect(meta[0]).to.have.property(\"name\", \"bar\");",
-                          "    pm.expect(meta[0]).to.have.property(\"unitOfMeasureID\", \"osdu:reference-data--UnitOfMeasure:bar:\");",
+                          "    pm.expect(meta[0]).to.have.property(\"unitOfMeasureID\", partitiond_id + \":reference-data--UnitOfMeasure:bar:\");",
                           "    pm.expect(meta[0].propertyNames).to.eql([\"Compressibility.ReferencePressure\"]);",
                           "",
                           "    // Second meta item",
                           "    pm.expect(meta[1]).to.have.property(\"kind\", \"Unit\");",
                           "    pm.expect(meta[1]).to.have.property(\"name\", \"1/bar\");",
-                          "    pm.expect(meta[1]).to.have.property(\"unitOfMeasureID\", \"osdu:reference-data--UnitOfMeasure:1%2Fbar:\");",
+                          "    pm.expect(meta[1]).to.have.property(\"unitOfMeasureID\", partitiond_id + \":reference-data--UnitOfMeasure:1%2Fbar:\");",
                           "    pm.expect(meta[1].propertyNames).to.eql([",
                           "        \"Compressibility.PoreVolumeCompressibilityAtReferencePressure\"",
                           "    ]);",
@@ -25587,6 +25596,7 @@
                               "    pm.response.to.have.status(422);",
                               "",
                               "    const json = pm.response.json();",
+                              "    const partitiond_id = pm.variables.get(\"data-partition-id\");",
                               "",
                               "    pm.expect(json).to.have.property(\"code\", 422);",
                               "    pm.expect(json).to.have.property(\"reason\");",
@@ -25605,7 +25615,7 @@
                               "",
                               "    pm.expect(errorMessage).to.include(\"does not match\");",
                               "",
-                              "    pm.expect(errorMessage).to.include(\"'osdu:wrong:format'\");",
+                              "    pm.expect(errorMessage).to.include(partitiond_id + \":wrong:format'\");",
                               "});",
                               ""
                             ],
@@ -25910,15 +25920,15 @@
                               "    pm.expect(json).to.have.property(\"reason\");",
                               "",
                               "    const reason = json.reason;",
-                              "    const dp = pm.collectionVariables.get(\"data-partition-id\") || pm.environment.get(\"data-partition-id\");",
+                              "    const authority = pm.collectionVariables.get(\"authority\") || pm.environment.get(\"authority\");",
                               "",
                               "    pm.expect(reason).to.include(\"not supported\");",
                               "",
-                              "    pm.expect(reason).to.include(`${dp}:wks:work-product-component--ReservoirSimulationRockPhysics:1.0.0`);",
+                              "    pm.expect(reason).to.include(`${authority}:wks:work-product-component--ReservoirSimulationRockPhysics:1.0.0`);",
                               "",
                               "    pm.expect(reason).to.include(\"Supported kinds for this endpoint\");",
                               "",
-                              "    pm.expect(reason).to.include(`${dp}:wks:work-product-component--ReservoirSimulationRockPhysicsModel:1.0.0`);",
+                              "    pm.expect(reason).to.include(`${authority}:wks:work-product-component--ReservoirSimulationRockPhysicsModel:1.0.0`);",
                               "});",
                               ""
                             ],
