@@ -43,10 +43,10 @@ variables:
     - |
       echo "🔐 Requesting access token from Keycloak..."
       ACCESS_TOKEN=$(curl --fail-with-body -s -L -X POST \
-        "https://keycloak.dev1.osdu-cimpl.opengroup.org/realms/osdu/protocol/openid-connect/token" \
+        "https://keycloak.$CIMPL_DOMAIN/realms/osdu/protocol/openid-connect/token" \
         -H "Content-Type: application/x-www-form-urlencoded" \
-        -d "client_id=${TEST_EPAM_OPENID_PROVIDER_CLIENT_ID}" \
-        -d "client_secret=${CIMPL_TEST_EPAM_OPENID_PROVIDER_CLIENT_SECRET}" \
+        -d "client_id=${CIMPL_CLIENT_ID}" \
+        -d "client_secret=${CIMPL_CLIENT_SECRET}" \
         -d "grant_type=client_credentials" \
         -d "scope=openid profile offline_access email" | jq -r .access_token)
       if [[ -z "$ACCESS_TOKEN" || "$ACCESS_TOKEN" == "null" ]]; then
@@ -140,8 +140,8 @@ cimpl-deploy:
       --set global.dataPartitionId=osdu
       --set global.RAFS_URI=$CIMPL_TENANT.$CIMPL_DOMAIN
       --set data.serviceAccountName=$CIMPL_SERVICE
-      --set data.cronJobClientId=$TEST_EPAM_OPENID_PROVIDER_CLIENT_ID
-      --set data.cronJobClientSecret=$CIMPL_TEST_EPAM_OPENID_PROVIDER_CLIENT_SECRET
+      --set data.cronJobClientId=$CIMPL_CLIENT_ID
+      --set data.cronJobClientSecret=$CIMPL_CLIENT_SECRET
       --set data.logLevel=INFO
       --set data.bucketPrefix="refi"
       --set data.groupId=$GROUP_ID
@@ -153,14 +153,6 @@ cimpl-deploy:
       $CIMPL_HELM_SETS
       $CIMPL_HELM_TIMEOUT
     - !reference [.cimpl_verify_deploy, script]
-  rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^release/ || $CI_COMMIT_TAG || $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - if: $CI_COMMIT_REF_NAME =~ /^trusted-/ && $CIMPL == "1"
-      when: on_success
-    - if: $CI_COMMIT_REF_NAME == "main"
-      when: on_success
-    - when: never
 
 cimpl-test-python:
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
@@ -190,11 +182,93 @@ cimpl-test-python:
         --bearer-token "${ACCESS_TOKEN}" \
         --partition "${PARTITION}" \
         --cloud-provider "gc"
-  rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^release/ || $CI_COMMIT_TAG || $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: never
-    - if: $CI_COMMIT_REF_NAME =~ /^trusted-/ && $CIMPL == "1"
-      when: on_success
-    - if: $CI_COMMIT_REF_NAME == "main"
-      when: on_success
-    - when: never
+
+#dev2 jobs
+
+cimpl-dev2-deploy:
+  needs:
+    - "cimpl-containerize-gitlab"
+    - "cimpl-cronjob-containerize-gitlab"
+    - "cimpl-helm-charts-release-gitlab"
+  script:
+    - !reference [.cimpl_obtain_credentials, script]
+    - !reference [.cimpl_set_image_name, script]
+    - !reference [.cimpl_define_version, script]
+    - !reference [.cimpl_common_config, script]
+    - >
+      helm upgrade $CIMPL_SERVICE-deploy oci://$CI_REGISTRY_IMAGE/cimpl-helm/$CIMPL_HELM_PACKAGE_NAME
+      --version $VERSION
+      --install
+      --create-namespace
+      --namespace=$CIMPL_HELM_NAMESPACE
+      --wait
+      --history-max=3
+      --set global.onPremEnabled=true
+      --set global.domain=$CIMPL_DOMAIN
+      --set global.dataPartitionId=osdu
+      --set global.RAFS_URI=$CIMPL_TENANT.$CIMPL_DOMAIN
+      --set data.serviceAccountName=$CIMPL_SERVICE
+      --set data.cronJobClientId=$CIMPL_CLIENT_ID
+      --set data.cronJobClientSecret=$CIMPL_CLIENT_SECRET
+      --set data.logLevel=INFO
+      --set data.bucketPrefix="refi"
+      --set data.groupId=$GROUP_ID
+      --set data.sharedTenantName=$CIMPL_TENANT
+      --set data.googleCloudProject=$CIMPL_PROJECT
+      --set data.bucketName=$CIMPL_POLICY_BUCKET
+      --set data.subscriberPrivateKeyId=$CIMPL_SUBSCRIBER_PRIVATE_KEY_ID
+      --set rosa=true
+      $CIMPL_HELM_SETS
+      $CIMPL_HELM_TIMEOUT
+    - !reference [.cimpl_verify_deploy, script]
+
+cimpl-dev2-test-python:
+  image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
+  variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    PARTITION: $CIMPL_TENANT
+    SERVICE_HOST_STORAGE: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/storage/v2
+    SERVICE_HOST_LEGAL: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/legal/v1
+    RAFS_USE_BLOB_STORAGE: "False"
+  extends:
+    - .cimpl-dev2-variables
+    - .cimpl_python_test_report
+  before_script:
+    - apt update -qqq -y && apt install -qqq -y curl jq &> /dev/null
+    - !reference [.get_cimpl_access_token, script]
+  script:
+    - |
+      echo "🚀 Running integration tests against ${CIMPL_TENANT}.${CIMPL_DOMAIN}"
+      time pytest -n 3 \
+        --junitxml=integration_tests_report.xml \
+        --cov=app \
+        --cov-report=xml:coverage.xml \
+        --cov-report=term \
+        ./tests/integration/tests \
+        --ddms-base-url "https://${CIMPL_TENANT}.${CIMPL_DOMAIN}" \
+        --url-prefix "${URL_PREFIX}" \
+        --bearer-token "${ACCESS_TOKEN}" \
+        --partition "${PARTITION}" \
+        --cloud-provider "gc"
+
+cimpl-helm-charts-release-gitlab:
+  stage: containerize
+  tags: ["osdu-small"]
+  needs: ["cimpl-containerize-gitlab"]
+  image:
+    name: alpine/helm:3.11.2
+    entrypoint: [""]
+  before_script:
+    - helm registry login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    # set & substitute service images in helm chart
+    - !reference [.cimpl_set_image_name, script]
+    - !reference [.cimpl_substitute_service_images_in_helm, script]
+    # set & substitute cronjob image in helm chart
+    - CIMPL_IMAGE_NAME="$CIMPL_IMAGE_CRONJOB_NAME"
+    - !reference [.cimpl_set_image_name, script]
+    - !reference [.cimpl_substitute_cronjob_image_in_helm, script]
+    - cat $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml | grep -i image
+  script:
+    - !reference [.cimpl_define_version, script]
+    - helm package $CIMPL_HELM_DEPLOYMENT_DIR -u --version $VERSION --app-version $APP_VERSION
+    - helm push $CIMPL_HELM_PACKAGE_NAME-$VERSION.tgz oci://$CI_REGISTRY_IMAGE/cimpl-helm

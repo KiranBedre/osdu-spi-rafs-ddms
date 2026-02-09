@@ -39,7 +39,7 @@ spec:
               imagePullPolicy: {{ .Values.data.imagePullPolicy | quote }}
               env:
                 - name: OAUTH_TOKEN_URL
-                  value: {{ .Values.data.oauthTokenUrl | quote }}
+                  value: {{ .Values.data.oauthTokenUrl | default (printf "https://keycloak.%s/realms/osdu/protocol/openid-connect/token" .Values.global.domain) }}
                 - name: CLIENT_ID
                   value: {{ .Values.data.cronJobClientId | quote }}
                 - name: CLIENT_SECRET
