@@ -51,7 +51,7 @@ The following software have components provided under the terms of this license:
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 - prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python, https://pypi.org/project/prometheus-client/)
-- wrapt (from <https://github.com/GrahamDumpleton/wrapt>, https://github.com/GrahamDumpleton/wrapt)
+- wrapt (from <https://github.com/GrahamDumpleton/wrapt>, https://github.com/GrahamDumpleton/wrapt, https://pypi.org/project/wrapt/)
 
 ========================================================================
 BSD-3-Clause
