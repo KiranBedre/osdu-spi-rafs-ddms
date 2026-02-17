@@ -32,7 +32,7 @@ from app.exceptions.exceptions import (
     UnprocessableContentException,
 )
 from app.providers.dependencies.az.storage_account_info import (
-    STORAGE_ACCOUNT_NAME,
+    STORAGE_ACCOUNT_BLOB_ENDPOINT,
 )
 from app.providers.dependencies.blob_storage import (
     Blob,
@@ -54,8 +54,7 @@ ALL_AZURE_CORE_ERRORS = (
 class AzureBlobStorage(IBlobStorage):
 
     def __init__(self, storage_partition_info: StoragePartitionInfo):
-        account_name = storage_partition_info.storage_account_info[STORAGE_ACCOUNT_NAME]
-        self._account_url = f"https://{account_name}.blob.core.windows.net/"
+        self._account_url = storage_partition_info.storage_account_info[STORAGE_ACCOUNT_BLOB_ENDPOINT]
         self._container_name = storage_partition_info.storage_account_info["container_name"]
         self._credential = DefaultAzureCredential()
 
