@@ -12,14 +12,17 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import hashlib
+from typing import Callable, Optional
+
 from async_lru import alru_cache
 from azure.identity.aio import DefaultAzureCredential
 from azure.keyvault.secrets.aio import SecretClient
+from fastapi_cache import FastAPICache
 from fastapi_cache.decorator import cache
 from pydantic import BaseSettings
 
 from app.core.config import AppSettings
-from app.core.helpers.cache.key_builder import key_builder_for_service_methods
 from app.core.helpers.cache.settings import (
     STORAGE_ACCOUNT_INFO_CACHE_DEFAULT_TTL,
 )
@@ -27,7 +30,30 @@ from app.services.osdu_clients.partition_client import (
     PartitionServiceApiClient,
 )
 
-STORAGE_ACCOUNT_NAME = "storage-account-name"
+STORAGE_ACCOUNT_BLOB_ENDPOINT = "storage-account-blob-endpoint"
+
+
+def storage_account_key_builder(
+    func: Callable,
+    namespace: Optional[str] = "",
+    request=None,
+    response=None,
+    args: Optional[tuple] = None,
+    kwargs: Optional[dict] = None,
+) -> str:
+    """Custom key builder that includes data_partition_id from instance."""
+    func_meta = f"{func.__module__}:{func.__name__}"
+    prefix = f"{FastAPICache.get_prefix()}:{namespace}"
+
+    # Extract partition_id from self (args[0])
+    partition_id = ""
+    if args:
+        partition_id = getattr(args[0], "_data_partition_id", "")
+
+    cache_meta = f"partition:{partition_id}"
+    hash_key = hashlib.sha256(f"{func_meta}:{cache_meta}".encode()).hexdigest()
+
+    return f"{prefix}:{hash_key}"
 
 
 class AzureStorageAccountInfo(object):
@@ -51,7 +77,7 @@ class AzureStorageAccountInfo(object):
         await self._credential.close()
 
     @alru_cache
-    @cache(expire=STORAGE_ACCOUNT_INFO_CACHE_DEFAULT_TTL, key_builder=key_builder_for_service_methods)
+    @cache(expire=STORAGE_ACCOUNT_INFO_CACHE_DEFAULT_TTL, key_builder=storage_account_key_builder)
     async def get_info(self) -> dict:
 
         if self._cloud_provider_config.az_use_partition_service:
@@ -66,15 +92,15 @@ class AzureStorageAccountInfo(object):
                 partition_info = await partition_client.get_partition_info(self._data_partition_id)
         else:
             partition_info = {
-                STORAGE_ACCOUNT_NAME: {
-                    "value": f"{self._data_partition_id}-storage",
+                STORAGE_ACCOUNT_BLOB_ENDPOINT: {
+                    "value": f"{self._data_partition_id}-{STORAGE_ACCOUNT_BLOB_ENDPOINT}",
                 },
             }
 
         async with SecretClient(self._cloud_provider_config.az_keyvault_url, self._credential) as kv_client:
-            account_name = await kv_client.get_secret(partition_info[STORAGE_ACCOUNT_NAME]["value"])
+            blob_endpoint = await kv_client.get_secret(partition_info[STORAGE_ACCOUNT_BLOB_ENDPOINT]["value"])
 
         return {
-            STORAGE_ACCOUNT_NAME: account_name.value,
             "container_name": self._cloud_provider_config.az_container_name,
+            STORAGE_ACCOUNT_BLOB_ENDPOINT: blob_endpoint.value,
         }
