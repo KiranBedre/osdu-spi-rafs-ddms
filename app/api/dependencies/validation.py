@@ -16,7 +16,7 @@ import asyncio
 import copy
 import json
 from datetime import date, datetime
-from typing import Iterable, List, Optional, Set, Tuple, TypeVar
+from typing import Iterable, List, Literal, Optional, Set, Tuple, TypeVar
 
 from fastapi import Depends, HTTPException, Query, Request
 from loguru import logger
@@ -76,6 +76,22 @@ ColumnsAggregation = Query(
         },
     },
 )
+OrientType = Literal["split", "records"]
+OrientQuery = Query(
+    default="split",
+    description="JSON output format: 'split' returns {columns, index, data}, 'records' returns [{field: value}, ...]",
+)
+
+
+def get_orient(orient: OrientType = OrientQuery) -> str:
+    """Get orient query parameter (validated by Literal type).
+
+    :param orient: the orient query parameter value ('split' or 'records')
+    :type orient: OrientType
+    :return: validated orient value
+    :rtype: str
+    """
+    return orient
 
 
 def get_id(id_data):  # noqa: CCR001
@@ -536,46 +552,74 @@ async def validate_filters_for_domain_inferred_model(
     return await validate_filters(model, columns_filter, rows_filter, columns_aggregation)
 
 
-async def get_validated_bulk_data_json(request: Request) -> str:
-    """Validates incoming json bulk data in orient=split format.
+def _validate_records_format(parsed: list) -> str:
+    """Validate records-format JSON (list of dicts).
+
+    :param parsed: parsed JSON list
+    :type parsed: list
+    :raises UnprocessableContentException: if format is invalid
+    :return: validated JSON string
+    :rtype: str
+    """
+    if not parsed:
+        raise UnprocessableContentException(detail="Data error: empty records array")
+    if not all(isinstance(record, dict) for record in parsed):
+        raise UnprocessableContentException(
+            detail="Invalid request: body must be a JSON object (dictionary), not a list.",
+        )
+    if not any(record for record in parsed):
+        raise UnprocessableContentException(detail="Data error: records have no fields (empty objects)")
+    return json.dumps(parsed)
+
+
+async def get_validated_bulk_data_json(request: Request) -> Tuple[str, str]:
+    """Validates incoming json bulk data in split or records format.
+
+    Accepts two JSON formats:
+    - records: [{field: value}, ...] (array of objects)
+    - split: {columns: [...], index: [...], data: [...]}
+
+    Returns the validated JSON string and its orient for pd.read_json.
 
     :param request: the incoming request object
     :type request: Request
-    :raises UnprocessableContentException: if data and index are inconsistent
-    :raises ValidationError: if orientsplit frame can't be build from
+    :raises UnprocessableContentException: if data format is invalid
+    :raises ValidationError: if orientsplit frame can't be built from
         request body
-    :return: validated json data
-    :rtype: str
+    :return: validated json data and orient type
+    :rtype: Tuple[str, str]
     """
     body = await request.body()
-    bulk_data = OrientSplit.parse_obj(json.loads(body.decode("utf-8")))
+    parsed = json.loads(body.decode("utf-8"))
+
+    if isinstance(parsed, list):
+        split_keys = {"columns", "index", "data"}
+        if any(isinstance(el, dict) and split_keys.issubset(el) for el in parsed):
+            raise UnprocessableContentException(
+                detail="Data error: split format must be a JSON object, not wrapped in an array. Remove the outer [] brackets.",  # noqa: E501, WPS326
+            )
+        return _validate_records_format(parsed), "records"
+
+    bulk_data = OrientSplit.parse_obj(parsed)
 
     index_length = len(bulk_data.index)
     data_length = len(bulk_data.data)
     if index_length != data_length:
-        detail = f"Data error: 'index' lenght: {index_length} != 'data' lenght: {data_length}"
+        detail = f"Data error: 'index' length: {index_length} != 'data' length: {data_length}"
         raise UnprocessableContentException(detail=detail)
-    return bulk_data.json()
+    return bulk_data.json(), "split"
 
 
 async def get_search_data_pagination_parameters(
-    page_limit: Optional[int] = Query(
+    page_limit: int = Query(
         default=100,
-        openapi_examples={
-            "example": {
-                "value": 100,
-            },
-        },
+        description="Maximum number of results to return per page",
         gt=0,
         le=100,
     ),
-    offset: Optional[int] = Query(
+    offset: int = Query(
         default=0,
-        openapi_examples={
-            "example": {
-                "value": 100,
-            },
-        },
+        description="Number of results to skip before returning data",
         ge=0,
     ),
     indexed_start_date: Optional[str] = Query(
@@ -613,23 +657,15 @@ async def get_search_data_pagination_parameters(
 
 
 async def get_search_pagination_parameters(
-    page_limit: Optional[int] = Query(
+    page_limit: int = Query(
         default=1000,
-        openapi_examples={
-            "example": {
-                "value": 1000,
-            },
-        },
+        description="Maximum number of results to return per page",
         gt=0,
         le=1000,
     ),
-    offset: Optional[int] = Query(
+    offset: int = Query(
         default=0,
-        openapi_examples={
-            "example": {
-                "value": 100,
-            },
-        },
+        description="Number of results to skip before returning data",
         ge=0,
     ),
     indexed_start_date: Optional[date] = Query(

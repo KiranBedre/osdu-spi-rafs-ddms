@@ -61,6 +61,7 @@ class SamplesAnalysis(APIResource, APIClient):
         analysis_type: SamplesAnalysisTypes,
         schema_version_header: Optional[dict] = ACCEPT_HEADERS.format(version=SCHEMA_VERSION),
         json: bool = True,
+        orient: Optional[str] = None,
         **kwargs,
     ) -> dict:
         """
@@ -69,20 +70,21 @@ class SamplesAnalysis(APIResource, APIClient):
         :param dataset_id: created dataset id
         :param schema_version_header: version of the dataset schema
         :param json: is response json or not
+        :param orient: JSON output format ('split' or 'records')
         :return: measurements data
         """
         if schema_version_header:
             headers = defaultdict(dict, kwargs.get("headers", {}))
             headers.update({"Accept": schema_version_header})
             kwargs["headers"] = headers
-        response = self.get(
-            path=SamplesAnalysisPaths.GET_DATA.format(
-                record_id=record_id,
-                analysis_type=analysis_type,
-                dataset_id=dataset_id,
-            ),
-            **kwargs,
+        path = SamplesAnalysisPaths.GET_DATA.format(
+            record_id=record_id,
+            analysis_type=analysis_type,
+            dataset_id=dataset_id,
         )
+        if orient:
+            path = f"{path}?orient={orient}"
+        response = self.get(path=path, **kwargs)
         return response.json() if json else response
 
     def get_analysis_types(self, **kwargs) -> dict:

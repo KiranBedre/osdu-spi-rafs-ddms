@@ -127,6 +127,7 @@ async def get_parquet_data(
     blob_storage_service: IBlobStorage,
     storage_service: StorageService,
     df_filter: DataFrameFilterValidator,
+    orient: str = "split",
 ) -> Response:
     """Get parquet data.
 
@@ -142,12 +143,16 @@ async def get_parquet_data(
     :type storage_service: StorageService
     :param df_filter: df filter validator
     :type df_filter: DataFrameFilterValidator
+    :param orient: JSON output format ('split' or 'records')
+    :type orient: str
     :return: parquet data in proper format
     :rtype: Response
     """
     record_id, version = get_id_version(record_id)
     record = await storage_service.get_record(record_id, version)
     mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
+    # Aggregation results only make sense in split format (index holds the function name)
+    orient = "split" if df_filter.valid_columns_aggregation else orient
 
     object_name = blob_metadata.object_name
     ddms_datasets = record["data"].get("DDMSDatasets", [])
@@ -175,7 +180,7 @@ async def get_parquet_data(
             response = Response(content=df.to_parquet(), media_type=SupportedMimeTypes.PARQUET.mime_type)
         else:
             response = Response(
-                content=df.to_json(orient="split"),
+                content=df.to_json(orient=orient),
                 media_type=SupportedMimeTypes.JSON.mime_type,
             )
         del df

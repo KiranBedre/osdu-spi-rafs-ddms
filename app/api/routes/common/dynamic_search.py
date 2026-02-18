@@ -25,6 +25,7 @@ from app.api.dependencies.services import (
     get_blob_storage_service,
 )
 from app.api.dependencies.validation import (
+    get_orient,
     get_search_data_pagination_parameters,
 )
 from app.api.routes.common.base_search import (
@@ -71,7 +72,8 @@ def get_search_data_description_template(entity_name: str) -> str:
         "Use the `Accept` request header to specify content schema version",
         "(example header `Accept: application/json;version=1.0.0` is supported).<br><br>",
         "Use the `Content-Type` request header to specify payload and response",
-        "formats (`application/json` and `application/parquet` are supported).",
+        "formats (`application/json` and `application/parquet` are supported).<br><br>",
+        "Use the `orient` query parameter to select the JSON output format (`split` or `records`).",
     ])
 
 
@@ -94,31 +96,52 @@ class DynamicGenericSearchView(GenericSearchDataView):
     def _build_dynamic_endpoint(self, method_name: str, extractor: Callable, filter_dep):
 
         parent_method = getattr(self, method_name)
+        uses_orient = method_name == "get_search_data"
 
-        async def search_endpoint(  # noqa: WPS430
-            request: Request,
-
-            # dynamic filter dependency
-            df_filter: DataFrameFilterValidator = Depends(filter_dep),
-
-            content_schema_version: str = Depends(get_content_schema_version),
-            pagination_parameters: PaginationParametersType = Depends(get_search_data_pagination_parameters),
-            dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
-            blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
-            search_service: search.SearchService = Depends(get_async_search_service),
-        ):
-            dynamic_param = self._inject_param(request, extractor)
-
-            return await parent_method(
-                request=request,
-                analysis_type=dynamic_param,   # name must match parent signature
-                dataset_service=dataset_service,
-                blob_storage_service=blob_storage_service,
-                search_service=search_service,
-                df_filter=df_filter,
-                content_schema_version=content_schema_version,
-                pagination_parameters=pagination_parameters,
-            )
+        if uses_orient:
+            async def search_endpoint(  # noqa: WPS430
+                request: Request,
+                df_filter: DataFrameFilterValidator = Depends(filter_dep),
+                content_schema_version: str = Depends(get_content_schema_version),
+                pagination_parameters: PaginationParametersType = Depends(get_search_data_pagination_parameters),
+                dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
+                blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
+                search_service: search.SearchService = Depends(get_async_search_service),
+                orient: str = Depends(get_orient),
+            ):
+                dynamic_param = self._inject_param(request, extractor)
+                return await parent_method(
+                    request=request,
+                    analysis_type=dynamic_param,
+                    dataset_service=dataset_service,
+                    blob_storage_service=blob_storage_service,
+                    search_service=search_service,
+                    df_filter=df_filter,
+                    content_schema_version=content_schema_version,
+                    pagination_parameters=pagination_parameters,
+                    orient=orient,
+                )
+        else:
+            async def search_endpoint(  # noqa: WPS430, WPS440
+                request: Request,
+                df_filter: DataFrameFilterValidator = Depends(filter_dep),
+                content_schema_version: str = Depends(get_content_schema_version),
+                pagination_parameters: PaginationParametersType = Depends(get_search_data_pagination_parameters),
+                dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
+                blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
+                search_service: search.SearchService = Depends(get_async_search_service),
+            ):
+                dynamic_param = self._inject_param(request, extractor)
+                return await parent_method(
+                    request=request,
+                    analysis_type=dynamic_param,
+                    dataset_service=dataset_service,
+                    blob_storage_service=blob_storage_service,
+                    search_service=search_service,
+                    df_filter=df_filter,
+                    content_schema_version=content_schema_version,
+                    pagination_parameters=pagination_parameters,
+                )
 
         return cache(
             expire=CACHE_DEFAULT_TTL,
