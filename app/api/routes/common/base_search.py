@@ -33,6 +33,7 @@ from app.api.dependencies.services import (
     get_blob_storage_service,
 )
 from app.api.dependencies.validation import (
+    get_orient,
     get_search_data_pagination_parameters,
     get_search_pagination_parameters,
     validate_filters,
@@ -67,6 +68,7 @@ class GenericSearchDataView(object):
                 (example header `Accept: */*;version=1.0.0` is supported).<br><br>\
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
                 query parameters can be used to manage data in response. <br><br>\
+            Use the `orient` query parameter to select the JSON output format (`split` or `records`).<br><br>\
             Use `offset`, `page_limit` query parameters to control response data size. \
                 The `page_limit` and `total_size (found in response)` refers to the number of parquet files read.",
         )
@@ -90,7 +92,7 @@ class GenericSearchDataView(object):
         if kwargs:
             self.__dict__.update(kwargs)
 
-    async def get_search_data(  # noqa: WPS210
+    async def get_search_data(  # noqa: CCR001, WPS210, WPS211, WPS231
         self,
         request: Request,
         analysis_type: str,
@@ -100,6 +102,7 @@ class GenericSearchDataView(object):
         df_filter: DataFrameFilterValidator = Depends(validate_filters),
         content_schema_version: str = Depends(get_content_schema_version),
         pagination_parameters: PaginationParametersType = Depends(get_search_data_pagination_parameters),
+        orient: str = Depends(get_orient),
     ) -> Response:
         """Search Data Endpoint.
 
@@ -139,6 +142,8 @@ class GenericSearchDataView(object):
         mime_type = SupportedMimeTypes.find_by_mime_type(
             request.headers.get("content-type", SupportedMimeTypes.JSON.mime_type),
         )
+        # Aggregation results only make sense in split format (index holds the function name)
+        orient = "split" if df_filter.valid_columns_aggregation else orient
         offset, page_limit, indexed_start_date, indexed_end_date = pagination_parameters
         query_date_range = (indexed_start_date, indexed_end_date)
 
@@ -184,7 +189,14 @@ class GenericSearchDataView(object):
                 media_type=SupportedMimeTypes.PARQUET.mime_type,
             )
         else:
-            content_response = result_df.to_dict(orient="split") if result_df.any else json.dumps({})
+            if result_df.any:
+                output_df = result_df
+                # For records format, include index as column if it has meaningful labels
+                if orient == "records" and not isinstance(result_df.index, pd.RangeIndex):
+                    output_df = result_df.reset_index()
+                content_response = output_df.to_dict(orient=orient)
+            else:
+                content_response = json.dumps({})
             dict_response = {
                 "result": content_response,
                 "offset": offset,

@@ -27925,7 +27925,7 @@
                               "pm.test(\"Missing required field SaturationFunctionSetID in request body\", function () {\r",
                               "    var jsonData = pm.response.json();\r",
                               "    pm.expect(jsonData.code).to.equal(422);\r",
-                              "    pm.expect(jsonData.reason).to.equal(\"Data error: missing required fields: 'columns', 'index', 'data'.\");\r",
+                              "    pm.expect(jsonData.reason).to.equal(\"Data error: missing required fields: 'columns', 'index', 'data'. For records format, wrap the data in an array [{...}, ...].\");\r",
                               "});"
                             ],
                             "type": "text/javascript",
@@ -39885,7 +39885,7 @@
                               "pm.test(\"Missing required field SaturationFunctionSetID in request body\", function () {\r",
                               "    var jsonData = pm.response.json();\r",
                               "    pm.expect(jsonData.code).to.equal(422);\r",
-                              "    pm.expect(jsonData.reason).to.equal(\"Data error: missing required fields: 'columns', 'index', 'data'.\");\r",
+                              "    pm.expect(jsonData.reason).to.equal(\"Data error: missing required fields: 'columns', 'index', 'data'. For records format, wrap the data in an array [{...}, ...].\");\r",
                               "});"
                             ],
                             "type": "text/javascript",

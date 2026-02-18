@@ -34,6 +34,7 @@ from app.api.dependencies.validation import (
     get_data_model,
     get_data_model_for_content_type,
     get_data_model_inferred_from_domain,
+    get_orient,
     validate_filters,
     validate_filters_for_content_type,
     validate_filters_for_domain_inferred_model,
@@ -85,7 +86,8 @@ class BaseDataViewV2(BaseDataView):
             Use the `Accept` request header to specify content schema version \
                 (example header `Accept: */*;version=1.0.0` is supported).<br><br>\
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
-                query parameters can be used to manage data in response.",
+                query parameters can be used to manage data in response.<br><br>\
+            Use the `orient` query parameter to select the JSON output format (`split` or `records`).",
         )
         dataset_regex = r"([\w\-\.]+:dataset--File.Generic:[\w\-\d\.]+:?[\w\-\.\:\%]*)"
         uuid_regex = r"([\d\w]+-[\d\w]+-[\d\w]+-[\d\w]+-[\d\w]+)"
@@ -95,7 +97,7 @@ class BaseDataViewV2(BaseDataView):
             self.__dict__.update(kwargs)
 
     @cache(expire=CACHE_DEFAULT_TTL, coder=ResponseCoder, key_builder=key_builder_using_token)
-    async def get_data_v2(
+    async def get_data_v2(  # noqa: CFQ002, WPS211
         self,
         request: Request,
         record_id: str,
@@ -106,6 +108,7 @@ class BaseDataViewV2(BaseDataView):
         blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
         df_filter: DataFrameFilterValidator = Depends(validate_filters),
         content_schema_version: str = Depends(get_content_schema_version),
+        orient: str = Depends(get_orient),
     ) -> Response:
         """Get record data.
 
@@ -128,6 +131,8 @@ class BaseDataViewV2(BaseDataView):
         :param content_schema_version: the version used for content
             schema validation
         :type content_schema_version: str
+        :param orient: JSON output format ('split' or 'records')
+        :type orient: str
         :return: dataset data
         :rtype: Response
         """
@@ -149,6 +154,7 @@ class BaseDataViewV2(BaseDataView):
                 blob_storage_service=blob_storage_service,
                 storage_service=storage_service,
                 df_filter=df_filter,
+                orient=orient,
             )
         else:
             response = await self._get_data(
@@ -159,6 +165,7 @@ class BaseDataViewV2(BaseDataView):
                 storage_service,
                 df_filter,
                 content_schema_version,
+                orient,
             )
         return response
 
@@ -327,6 +334,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         storage_service: storage.StorageService = Depends(get_async_storage_service),
         df_filter: DataFrameFilterValidator = Depends(validate_filters_for_content_type),
         content_schema_version: str = Depends(get_content_schema_version),
+        orient: str = Depends(get_orient),
     ) -> Response:
         """Get record data.
 
@@ -345,6 +353,8 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :param content_schema_version: the version used for content
             schema validation
         :type content_schema_version: str
+        :param orient: JSON output format ('split' or 'records')
+        :type orient: str
         :return: dataset data
         :rtype: Response
         """
@@ -356,6 +366,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             storage_service,
             df_filter,
             content_schema_version,
+            orient,
         )
 
     async def post_data_multiple_content_type(
@@ -420,6 +431,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         storage_service: storage.StorageService = Depends(get_async_storage_service),
         df_filter: DataFrameFilterValidator = Depends(validate_filters_for_domain_inferred_model),
         content_schema_version: str = Depends(get_content_schema_version),
+        orient: str = Depends(get_orient),
     ) -> Response:
         """Get record data.
 
@@ -438,6 +450,8 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :param content_schema_version: the version used for content
             schema validation
         :type content_schema_version: str
+        :param orient: JSON output format ('split' or 'records')
+        :type orient: str
         :return: dataset data
         :rtype: Response
         """
@@ -449,6 +463,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             storage_service,
             df_filter,
             content_schema_version,
+            orient,
         )
 
     async def post_data_single_content_type(

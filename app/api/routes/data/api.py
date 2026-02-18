@@ -63,6 +63,17 @@ from app.resources.mime_types import SupportedMimeTypes
 from app.services import dataset, storage
 
 
+def _normalize_nan_to_none(df: pd.DataFrame) -> None:
+    """Replace NaN with None in object columns.
+
+    pd.read_json(orient='records') produces NaN for missing fields,
+    while orient='split' produces None. Normalizing to None prevents
+    the bulk_mode NaN filter from masking real validation errors.
+    """
+    obj_cols = df.select_dtypes(include=["object"]).columns
+    df[obj_cols] = df[obj_cols].where(df[obj_cols].notna(), None)
+
+
 class BaseDataView(object):
     def __init__(
         self,
@@ -92,7 +103,8 @@ class BaseDataView(object):
             Use the `Accept` request header to specify content schema version \
                 (example header `Accept: */*;version=1.0.0` is supported).<br><br>\
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
-                query parameters can be used to manage data in response.",
+                query parameters can be used to manage data in response.<br><br>\
+            Use the `orient` query parameter to select the JSON output format (`split` or `records`).",
         )
         self.description_template_get_source = APIDescriptionHelper.append_joined_roles(
             "Get the source report file for a given `{record_type}` object by record id.<br><br>\
@@ -202,6 +214,7 @@ class BaseDataView(object):
         storage_service: storage.StorageService = Depends(get_async_storage_service),
         df_filter: DataFrameFilterValidator = Depends(validate_filters),
         content_schema_version: str = Depends(get_content_schema_version),
+        orient: str = "split",
     ) -> Response:
         """Get record data.
 
@@ -217,11 +230,15 @@ class BaseDataView(object):
         :type storage_service: storage.StorageService
         :param df_filter: df filter validator
         :type df_filter: DataFrameFilterValidator
+        :param orient: JSON output format ('split' or 'records')
+        :type orient: str
         :return: dataset data
         :rtype: Response
         """
         record = await storage_service.get_record(record_id)
         mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
+        # Aggregation results only make sense in split format (index holds the function name)
+        orient = "split" if df_filter.valid_columns_aggregation else orient
 
         dataset_id, _ = get_id_version(dataset_id)
         ddms_datasets = record["data"].get("DDMSDatasets", [])
@@ -246,7 +263,7 @@ class BaseDataView(object):
                 response = Response(content=df.to_parquet(), media_type=SupportedMimeTypes.PARQUET.mime_type)
             else:
                 response = Response(
-                    content=df.to_json(orient="split"),
+                    content=df.to_json(orient=orient),
                     media_type=SupportedMimeTypes.JSON.mime_type,
                 )
             del df
@@ -276,11 +293,9 @@ class BaseDataView(object):
 
             if missing_fields:
                 fields_str = ", ".join(missing_fields)
-                reason = f"Data error: missing required fields: {fields_str}."
+                reason = "Data error: missing required fields: {0}. For records format, wrap the data in an array [{{...}}, ...].".format(fields_str)  # noqa: E501, WPS326
             else:
-                reason = (
-                    "Data error: JSON must follow 'split' orientation with 'columns', 'index', and 'data'."
-                )
+                reason = "Data error: invalid 'split' format. Expected 'columns' (list of strings), 'index' (list of integers), and 'data' (list of arrays). For records format, use an array of objects [{{...}}, ...]."  # noqa: E501, WPS326
 
             logger.debug(f"Raw validation error: {error_msg}")
             raise exceptions.UnprocessableContentException(detail=reason)
@@ -329,7 +344,9 @@ class BaseDataView(object):
                 # TODO remove when migration to pyarrow validation is done
                 df = pd.read_json(io.StringIO(df.to_json(orient="split")), orient="split")
             else:
-                df = pd.read_json(io.StringIO(await get_validated_bulk_data_json(request)), orient="split")
+                validated_json, orient = await get_validated_bulk_data_json(request)
+                df = pd.read_json(io.StringIO(validated_json), orient=orient)
+                _normalize_nan_to_none(df)
 
         except (ValueError, pyarrow.lib.ArrowException) as v_exc:
             self._handle_validation_exception(v_exc)
