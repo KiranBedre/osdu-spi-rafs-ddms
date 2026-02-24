@@ -17,9 +17,9 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from app.exceptions.exceptions import UnprocessableContentException
-from app.providers.dependencies.az.blob_storage import (
-    STORAGE_ACCOUNT_NAME,
-    AzureBlobStorage,
+from app.providers.dependencies.az.blob_storage import AzureBlobStorage
+from app.providers.dependencies.az.storage_account_info import (
+    STORAGE_ACCOUNT_BLOB_ENDPOINT,
 )
 from app.providers.dependencies.blob_storage import (
     Blob,
@@ -43,8 +43,8 @@ def blob_metadata():
 @pytest.fixture
 def storage_partition_info():
     storage_account = {
-        STORAGE_ACCOUNT_NAME: "accountname",
         "container_name": "test_container",
+        STORAGE_ACCOUNT_BLOB_ENDPOINT: "https://accountname.blob.core.windows.net/",
     }
     return StoragePartitionInfo(
         data_partition_id="dp1",
