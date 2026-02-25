@@ -107,3 +107,52 @@ INCORRECT_SCHEMA_TEST_DATA = {
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
 INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting VaporLiquidEquilibriumTestSteps
 EXPECTED_ERROR_REASON = "Data error: 24 columns passed, passed data had 23 columns"
+
+# V2.0.0 mock objects
+TEST_SCHEMA_VERSION_V2 = "2.0.0"
+TEST_DDMS_URN_WITH_VERSION_V2 = f"{TEST_DDMS_URN}/{TEST_SCHEMA_VERSION_V2}"
+RECORD_DATA_WITH_SCHEMA_VERSION_V2 = {
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+        "data": {
+            "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION_V2],
+        },
+    },
+}
+with open(f"{dir_path}/vle_orient_split_v2.json") as fp:
+    TEST_DATA_V2 = json.load(fp)
+
+TEST_AGGREGATED_DATA_V2 = {
+    "columns": [
+        "TestNumber",
+    ],
+    "index": [
+        "count",
+    ],
+    "data": [
+        [
+            1,
+        ],
+    ],
+}
+
+TEST_FILTERED_DATA_V2 = {
+    "columns": [
+        "SamplesAnalysisID",
+        "TestNumber",
+        "SampleID",
+    ],
+    "index": [
+        0,
+    ],
+    "data": [
+        [
+            "opendes:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+            "test_number",
+            "opendes:master-data--Sample:fluid_sample_test:",
+        ],
+    ],
+}
+
+INCORRECT_DATAFRAME_TEST_DATA_V2 = copy.deepcopy(TEST_DATA_V2)
+INCORRECT_DATAFRAME_TEST_DATA_V2["data"][0].pop()
+EXPECTED_ERROR_REASON_V2 = "Data error: 27 columns passed, passed data had 26 columns"
