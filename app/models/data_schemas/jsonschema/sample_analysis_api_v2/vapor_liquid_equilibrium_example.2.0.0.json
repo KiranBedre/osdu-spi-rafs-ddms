@@ -1,0 +1,150 @@
+[
+  {
+    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+    "SampleID": "opendes:master-data--Sample:fluid_sample_test:",
+    "Meta": [
+      {
+        "kind": "Unit",
+        "name": "degree Fahrenheit",
+        "persistableReference": "",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:degF:",
+        "propertyNames": [
+          "TestTemperature",
+          "MixturePsatTestTemperature"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "pound-force per square inch",
+        "persistableReference": "",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:psi:",
+        "propertyNames": [
+          "TestPressure"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "cubic metre per cubic metre",
+        "persistableReference": "",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:m3%2Fm3:",
+        "propertyNames": [
+          "MixtureGOR",
+          "MixtureRelativeVolume"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "cubic foot",
+        "persistableReference": "",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:ft3:",
+        "propertyNames": [
+          "MixtureVolume",
+          "VaporPhaseVolume",
+          "LiquidPhaseVolume"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "poise",
+        "persistableReference": "",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:P:",
+        "propertyNames": [
+          "VaporPhaseViscosity",
+          "LiquidPhaseViscosity"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "pound-mass per cubic foot",
+        "persistableReference": "",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:lbm%2Fft3:",
+        "propertyNames": [
+          "VaporPhaseDensity",
+          "LiquidPhaseDensity"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "percent [molar basis]",
+        "persistableReference": "",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:%25%5Bmolar%5D:",
+        "propertyNames": [
+          "VaporComposition[*].MoleFraction",
+          "LiquidComposition[*].MoleFraction"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "percent [mass basis]",
+        "persistableReference": "",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:%25%5Bmass%5D:",
+        "propertyNames": [
+          "VaporComposition[*].MassFraction",
+          "LiquidComposition[*].MassFraction"
+        ]
+      }
+    ],
+    "TestNumber": "test_number",
+    "TestTemperature": 12345.6,
+    "TestPressure": 12345.6,
+    "GasToFluidMoleFraction": 12345.6,
+    "GasToFluidMolePercent": 12345.6,
+    "GasToTotalMoleFraction": 12345.6,
+    "GasToTotalMolePercent": 12345.6,
+    "MixtureGOR": 12345.6,
+    "MixturePsatTestTemperature": 12345.6,
+    "MixtureVolume": 12345.6,
+    "MixtureRelativeVolume": 12345.6,
+    "InjectedGas": [
+      {
+        "ComponentNameID": "namespace:reference-data--SampleOrganicCompositionComponent:O2:",
+        "RelativeMoleWeight": 12345.6,
+        "MolecularWeight": 12345.6,
+        "MolePercent": 12345.6,
+        "MassPercent": 12345.6,
+        "VolumePercent": 12345.6,
+        "SpecificGravity": 12345.6
+      }
+    ],
+    "VaporPhaseVolume": 12345.6,
+    "VaporPhaseViscosity": 12345.6,
+    "VaporPhaseDensity": 12345.6,
+    "VaporComposition": [
+      {
+        "ComponentNameID": "namespace:reference-data--SampleOrganicCompositionComponent:O2:",
+        "MoleFraction": 12345.6,
+        "MassFraction": 12345.6,
+        "Remarks": [
+          {
+                "RemarkSequenceNumber": 1,
+                "Remark": "Remark",
+                "RemarkSource": "Remark Source",
+                "RemarkDate": "2025-01-01"
+          }
+        ]
+      }
+    ],
+    "VaporTransportTestReferenceID": "Example Vapor Transport Test Reference ID",
+    "VaporPhaseAtmosphericFlashTestReferenceID": "namespace:work-product-component--SamplesAnalysisID:SamplesAnalysisID-911bb71f-06ab-4deb-8e68-b8c9229dc76b:",
+    "LiquidPhaseViscosity": 12345.6,
+    "LiquidPhaseVolume": 12345.6,
+    "LiquidPhaseDensity": 12345.6,
+    "LiquidTransportTestReferenceID": "Example Liquid Transport Test Reference ID",
+    "LiquidComposition": [
+      {
+        "ComponentNameID": "namespace:reference-data--SampleOrganicCompositionComponent:O2:",
+        "MoleFraction": 12345.6,
+        "MassFraction": 12345.6,
+        "Remarks": [
+          {
+                "RemarkSequenceNumber": 1,
+                "Remark": "Remark",
+                "RemarkSource": "Remark Source",
+                "RemarkDate": "2025-01-01"
+          }
+        ]
+      }
+    ],
+    "LiquidPhaseAtmosphericFlashTestReferenceID": "namespace:work-product-component--SamplesAnalysisID:SamplesAnalysisID-911bb71f-06ab-4deb-8e68-b8c9229dc76b:"
+  }
+]

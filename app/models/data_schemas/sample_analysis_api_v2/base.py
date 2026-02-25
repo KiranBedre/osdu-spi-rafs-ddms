@@ -25,6 +25,7 @@ from app.models.data_schemas.sample_analysis_api_v2.constant_volume_depletion_da
 from app.models.data_schemas.sample_analysis_api_v2.water_analysis_data_model_1_0_0 import WaterAnalysisModel100
 from app.models.data_schemas.sample_analysis_api_v2.interfacial_tension_data_model_1_0_0 import InterfacialTensionModel100
 from app.models.data_schemas.sample_analysis_api_v2.vapor_liquid_equilibrium_data_model_1_0_0 import VaporLiquidEquilibriumModel100
+from app.models.data_schemas.sample_analysis_api_v2.vapor_liquid_equilibrium_data_model_2_0_0 import VaporLiquidEquilibriumModel200
 from app.models.data_schemas.sample_analysis_api_v2.multiple_contact_miscibility_data_model_1_0_0 import MultipleContactMiscibilityModel100
 from app.models.data_schemas.sample_analysis_api_v2.slimtube_data_model_1_0_0 import SlimtubeModel100
 from app.models.data_schemas.sample_analysis_api_v2.extraction_data_model_1_0_0 import ExtractionModel100
@@ -94,6 +95,7 @@ INTERFACIAL_TENSION_MODELS = {
 }
 VLE_MODELS = {
     ContentSchemaVersion.V_1_0_0: VaporLiquidEquilibriumModel100,
+    ContentSchemaVersion.V_2_0_0: VaporLiquidEquilibriumModel200,
 }
 MCM_MODELS = {
     ContentSchemaVersion.V_1_0_0: MultipleContactMiscibilityModel100,

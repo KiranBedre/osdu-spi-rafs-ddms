@@ -234,6 +234,22 @@ def post_overrides(record_data=None, test_dataset_record_id=data_mock_objects.TE
         yield mock_dependencies
 
 
+def _version_from_urn(urn):
+    """Extract schema version from DDMSDatasets URN (last segment if semver-like)."""
+    last = urn.rsplit("/", 1)[-1]
+    if len(last.split(".")) == 3 and all(p.isdigit() for p in last.split(".")):
+        return last
+    return "1.0.0"
+
+
+def _headers_json(version="1.0.0"):
+    return {**TEST_HEADERS_JSON, "Accept": f"*/*;version={version}"}
+
+
+def _headers_parquet(version="1.0.0"):
+    return {**TEST_HEADERS_PARQUET, "Accept": f"*/*;version={version}"}
+
+
 @pytest.mark.parametrize(
     "data_endpoint_path,dataset_id", [
         (TestContentPathsApiV2.RCA, BulkDatasetIdV2.RCA),
@@ -554,6 +570,16 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
             ],
             "download_file",
             [build_get_test_data("x-parquet", vle_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.VLE,
+            vle_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                vle_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", vle_mock_objects.TEST_DATA_V2)],
         ),
         (
             TestContentPathsApiV2.MCM,
@@ -907,11 +933,12 @@ async def test_get_content_parquet_data(
     blobs,
     with_patched_services_success,
 ):
+    version = _version_from_urn(osdu_records[0]["data"]["DDMSDatasets"][0])
     with services_overrides():
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.get(
                 f"{data_endpoint_path}/{dataset_id}",
-                headers=TEST_HEADERS_PARQUET,
+                headers=_headers_parquet(version),
             )
     assert response.status_code == status.HTTP_200_OK
     expected_df = pq.read_table(pa.BufferReader(blobs[0])).to_pandas()
@@ -1028,6 +1055,15 @@ async def test_get_content_parquet_data(
             "download_file",
             [build_get_test_data("x-parquet", vle_mock_objects.TEST_DATA)],
             vle_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.VLE}/{vle_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [vle_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", vle_mock_objects.TEST_DATA_V2)],
+            vle_mock_objects.TEST_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.MCM}/{mcm_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -1381,6 +1417,15 @@ async def test_get_content_parquet_data(
             vle_mock_objects.TEST_AGGREGATED_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.VLE}/{vle_mock_objects.TEST_DATASET_RECORD_ID}",
+            vle_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [vle_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", vle_mock_objects.TEST_DATA_V2)],
+            vle_mock_objects.TEST_AGGREGATED_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.MCM}/{mcm_mock_objects.TEST_DATASET_RECORD_ID}",
             mcm_mock_objects.TEST_PARAMS_AGGREGATION,
             "get_record",
@@ -1730,6 +1775,15 @@ async def test_get_content_parquet_data(
             "download_file",
             [build_get_test_data("x-parquet", vle_mock_objects.TEST_DATA)],
             vle_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.VLE}/{vle_mock_objects.TEST_DATASET_RECORD_ID}",
+            vle_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [vle_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", vle_mock_objects.TEST_DATA_V2)],
+            vle_mock_objects.TEST_FILTERED_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.MCM}/{mcm_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -2203,11 +2257,12 @@ async def test_get_data_json_data(
     returned_data,
     with_patched_services_success,
 ):
+    version = _version_from_urn(osdu_records[0]["data"]["DDMSDatasets"][0])
     with services_overrides():
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.get(
                 data_endpoint_path,
-                headers=TEST_HEADERS_JSON,
+                headers=_headers_json(version),
                 params=params,
             )
 
@@ -3504,6 +3559,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             vle_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.VLE,
+            vle_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            vle_mock_objects.TEST_DATA_V2,
+            vle_mock_objects.TEST_DATASET_RECORD_ID,
+            vle_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
+        ),
+        (
             TestContentPathsApiV2.MCM,
             mcm_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             mcm_mock_objects.TEST_DATA,
@@ -3752,11 +3814,12 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
 )
 @pytest.mark.asyncio
 async def test_post_data_json(data_endpoint_path, record_data, test_data, test_dataset_record_id, test_ddms_urn):
+    version = _version_from_urn(record_data["data"]["DDMSDatasets"][0])
     with post_overrides(record_data, test_dataset_record_id, test_data):
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.post(
                 data_endpoint_path,
-                headers=TEST_HEADERS_JSON,
+                headers=_headers_json(version),
                 content=json.dumps(test_data),
             )
 
@@ -3852,6 +3915,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             vle_mock_objects.TEST_DATA,
             vle_mock_objects.TEST_DATASET_RECORD_ID,
             vle_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.VLE,
+            vle_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            vle_mock_objects.TEST_DATA_V2,
+            vle_mock_objects.TEST_DATASET_RECORD_ID,
+            vle_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.MCM,
@@ -4104,12 +4174,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
 async def test_post_data_json_no_ddmsdatasets_field(
         data_endpoint_path, record_data, test_data, test_dataset_record_id, test_ddms_urn,
 ):
+    version = _version_from_urn(test_ddms_urn)
     del record_data["data"]["DDMSDatasets"]
     with post_overrides(record_data, test_dataset_record_id, test_data):
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.post(
                 data_endpoint_path,
-                headers=TEST_HEADERS_JSON,
+                headers=_headers_json(version),
                 content=json.dumps(test_data),
             )
 
@@ -4180,6 +4251,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
         (
             TestContentPathsApiV2.VLE,
             vle_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            vle_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.VLE,
+            vle_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             vle_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
@@ -4361,11 +4437,12 @@ async def test_post_data_json_no_ddmsdatasets_field(
 )
 @pytest.mark.asyncio
 async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dataset_record_id):
+    version = _version_from_urn(record_data["data"]["DDMSDatasets"][0])
     with post_overrides(record_data, test_dataset_record_id):
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.post(
                 data_endpoint_path,
-                headers=TEST_HEADERS_PARQUET,
+                headers=_headers_parquet(version),
                 content=b"",
             )
 
@@ -4458,6 +4535,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             vle_mock_objects.TEST_DATA,
             vle_mock_objects.TEST_DATASET_RECORD_ID,
             vle_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.VLE,
+            vle_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            vle_mock_objects.TEST_DATA_V2,
+            vle_mock_objects.TEST_DATASET_RECORD_ID,
+            vle_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.MCM,
@@ -4708,13 +4792,14 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
 )
 @pytest.mark.asyncio
 async def test_post_data_parquet(data_endpoint_path, record_data, test_data, test_dataset_record_id, test_ddms_urn):
+    version = _version_from_urn(record_data["data"]["DDMSDatasets"][0])
     dataframe = pd.DataFrame(test_data["data"], columns=test_data["columns"])
 
     with post_overrides(record_data, test_dataset_record_id, dataframe):
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.post(
                 data_endpoint_path,
-                headers=TEST_HEADERS_PARQUET,
+                headers=_headers_parquet(version),
                 content=dataframe.to_parquet(),
             )
 
@@ -4810,6 +4895,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             vle_mock_objects.TEST_DATA,
             vle_mock_objects.TEST_DATASET_RECORD_ID,
             vle_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.VLE,
+            vle_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            vle_mock_objects.TEST_DATA_V2,
+            vle_mock_objects.TEST_DATASET_RECORD_ID,
+            vle_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.MCM,
@@ -5060,11 +5152,12 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
 )
 @pytest.mark.asyncio
 async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data, test_dataset_record_id, test_ddms_urn):
+    version = _version_from_urn(record_data["data"]["DDMSDatasets"][0])
     with post_overrides(record_data, test_dataset_record_id, test_data):
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.post(
                 data_endpoint_path,
-                headers=TEST_HEADERS_JSON,
+                headers=_headers_json(version),
                 content=json.dumps(test_data),
             )
             body = response.json()
