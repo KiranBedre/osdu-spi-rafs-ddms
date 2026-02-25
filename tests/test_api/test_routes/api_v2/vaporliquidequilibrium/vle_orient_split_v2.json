@@ -39,7 +39,6 @@
         {
           "kind":"Unit",
           "name":"degree Fahrenheit",
-          "persistableReference":"",
           "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:degF:",
           "propertyNames":[
             "TestTemperature",
@@ -49,7 +48,6 @@
         {
           "kind":"Unit",
           "name":"pound-force per square inch",
-          "persistableReference":"",
           "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:psi:",
           "propertyNames":[
             "TestPressure"
@@ -58,7 +56,6 @@
         {
           "kind":"Unit",
           "name":"cubic metre per cubic metre",
-          "persistableReference":"",
           "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:m3%2Fm3:",
           "propertyNames":[
             "MixtureGOR",
@@ -68,7 +65,6 @@
         {
           "kind":"Unit",
           "name":"cubic foot",
-          "persistableReference":"",
           "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:ft3:",
           "propertyNames":[
             "MixtureVolume",
@@ -79,7 +75,6 @@
         {
           "kind":"Unit",
           "name":"poise",
-          "persistableReference":"",
           "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:P:",
           "propertyNames":[
             "VaporPhaseViscosity",
@@ -89,7 +84,6 @@
         {
           "kind":"Unit",
           "name":"pound-mass per cubic foot",
-          "persistableReference":"",
           "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:lbm%2Fft3:",
           "propertyNames":[
             "VaporPhaseDensity",
@@ -99,7 +93,6 @@
         {
           "kind":"Unit",
           "name":"percent [molar basis]",
-          "persistableReference":"",
           "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:%25%5Bmolar%5D:",
           "propertyNames":[
             "VaporComposition[*].MoleFraction",
@@ -109,7 +102,6 @@
         {
           "kind":"Unit",
           "name":"percent [mass basis]",
-          "persistableReference":"",
           "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:%25%5Bmass%5D:",
           "propertyNames":[
             "VaporComposition[*].MassFraction",
