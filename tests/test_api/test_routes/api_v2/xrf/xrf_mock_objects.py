@@ -119,3 +119,63 @@ INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
 INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting ElementalComposition in index row 0
 TEST_DATA_COLUMNS = len(TEST_DATA["data"][0])
 EXPECTED_ERROR_REASON = f"Data error: {TEST_DATA_COLUMNS} columns passed, passed data had {TEST_DATA_COLUMNS - 1} columns"
+
+# V2 constants
+TEST_SCHEMA_VERSION_V2 = "2.0.0"
+TEST_DDMS_URN_WITH_VERSION_V2 = f"urn://rafs-v2/xrfdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION_V2}"
+RECORD_DATA_WITH_SCHEMA_VERSION_V2 = {
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+        "data": {
+            "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION_V2],
+        },
+    },
+}
+
+with open(f"{dir_path}/xrf_orient_split_v2.json") as fp:
+    TEST_DATA_V2 = json.load(fp)
+
+TEST_AGGREGATED_DATA_V2 = {
+    "columns": [
+        "SampleID",
+    ],
+    "index": [
+        "count",
+    ],
+    "data": [
+        [
+            1,
+        ],
+    ],
+}
+
+TEST_FILTERED_DATA_V2 = {
+    "columns": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "ElementalComposition",
+    ],
+    "index": [
+        0,
+    ],
+    "data": [
+        [
+            "opendes:work-product-component--SamplesAnalysis:XRF_WPC:",
+            "opendes:master-data--Sample:XRF_Sample:",
+            [
+                {
+                    "ElementID": "opendes:reference-data--Elements:Cr:",
+                    "Content": 1.23,
+                },
+                {
+                    "ElementID": "opendes:reference-data--Elements:Th:",
+                    "Content": 1.23,
+                },
+            ],
+        ],
+    ],
+}
+
+INCORRECT_DATAFRAME_TEST_DATA_V2 = copy.deepcopy(TEST_DATA_V2)
+INCORRECT_DATAFRAME_TEST_DATA_V2["data"][0].pop()
+TEST_DATA_COLUMNS_V2 = len(TEST_DATA_V2["data"][0])
+EXPECTED_ERROR_REASON_V2 = f"Data error: {TEST_DATA_COLUMNS_V2} columns passed, passed data had {TEST_DATA_COLUMNS_V2 - 1} columns"

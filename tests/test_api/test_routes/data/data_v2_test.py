@@ -852,6 +852,16 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
             [build_get_test_data("x-parquet", xrf_mock_objects.TEST_DATA)],
         ),
         (
+            TestContentPathsApiV2.XRF,
+            xrf_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                xrf_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", xrf_mock_objects.TEST_DATA_V2)],
+        ),
+        (
             TestContentPathsApiV2.TENSILE_STRENGTH,
             tensile_strength_mock_objects.TEST_DATASET_RECORD_ID,
             "get_record",
@@ -1309,6 +1319,15 @@ async def test_get_content_parquet_data(
             xrf_mock_objects.TEST_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.XRF}/{xrf_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [xrf_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", xrf_mock_objects.TEST_DATA_V2)],
+            xrf_mock_objects.TEST_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.RCA}/{rca_mock_objects.TEST_DATASET_RECORD_ID}",
             rca_mock_objects.TEST_PARAMS_AGGREGATION,
             "get_record",
@@ -1669,6 +1688,15 @@ async def test_get_content_parquet_data(
             xrf_mock_objects.TEST_AGGREGATED_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.XRF}/{xrf_mock_objects.TEST_DATASET_RECORD_ID}",
+            xrf_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [xrf_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", xrf_mock_objects.TEST_DATA_V2)],
+            xrf_mock_objects.TEST_AGGREGATED_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.RCA}/{rca_mock_objects.TEST_DATASET_RECORD_ID}",
             rca_mock_objects.TEST_PARAMS_FILTERS,
             "get_record",
@@ -2027,6 +2055,15 @@ async def test_get_content_parquet_data(
             "download_file",
             [build_get_test_data("x-parquet", xrf_mock_objects.TEST_DATA)],
             xrf_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.XRF}/{xrf_mock_objects.TEST_DATASET_RECORD_ID}",
+            xrf_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [xrf_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", xrf_mock_objects.TEST_DATA_V2)],
+            xrf_mock_objects.TEST_FILTERED_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.TENSILE_STRENGTH}/{tensile_strength_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -3755,6 +3792,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             xrf_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.XRF,
+            xrf_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            xrf_mock_objects.TEST_DATA_V2,
+            xrf_mock_objects.TEST_DATASET_RECORD_ID,
+            xrf_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
+        ),
+        (
             TestContentPathsApiV2.TENSILE_STRENGTH,
             tensile_strength_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             tensile_strength_mock_objects.TEST_DATA,
@@ -4113,6 +4157,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             xrf_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.XRF,
+            xrf_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            xrf_mock_objects.TEST_DATA_V2,
+            xrf_mock_objects.TEST_DATASET_RECORD_ID,
+            xrf_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
+        ),
+        (
             TestContentPathsApiV2.TENSILE_STRENGTH,
             tensile_strength_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             tensile_strength_mock_objects.TEST_DATA,
@@ -4391,6 +4442,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
         (
             TestContentPathsApiV2.XRF,
             xrf_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            xrf_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.XRF,
+            xrf_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             xrf_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
@@ -4731,6 +4787,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             xrf_mock_objects.TEST_DATA,
             xrf_mock_objects.TEST_DATASET_RECORD_ID,
             xrf_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.XRF,
+            xrf_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            xrf_mock_objects.TEST_DATA_V2,
+            xrf_mock_objects.TEST_DATASET_RECORD_ID,
+            xrf_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.TENSILE_STRENGTH,
@@ -5091,6 +5154,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             xrf_mock_objects.TEST_DATA,
             xrf_mock_objects.TEST_DATASET_RECORD_ID,
             xrf_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.XRF,
+            xrf_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            xrf_mock_objects.TEST_DATA_V2,
+            xrf_mock_objects.TEST_DATASET_RECORD_ID,
+            xrf_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.TENSILE_STRENGTH,
