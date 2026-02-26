@@ -28,6 +28,7 @@ from app.models.data_schemas.sample_analysis_api_v2.vapor_liquid_equilibrium_dat
 from app.models.data_schemas.sample_analysis_api_v2.vapor_liquid_equilibrium_data_model_2_0_0 import VaporLiquidEquilibriumModel200
 from app.models.data_schemas.sample_analysis_api_v2.multiple_contact_miscibility_data_model_1_0_0 import MultipleContactMiscibilityModel100
 from app.models.data_schemas.sample_analysis_api_v2.slimtube_data_model_1_0_0 import SlimtubeModel100
+from app.models.data_schemas.sample_analysis_api_v2.slimtube_data_model_2_0_0 import SlimtubeModel200
 from app.models.data_schemas.sample_analysis_api_v2.extraction_data_model_1_0_0 import ExtractionModel100
 from app.models.data_schemas.sample_analysis_api_v2.fractionation_data_model_1_0_0 import FractionationModel100
 from app.models.data_schemas.sample_analysis_api_v2.relative_permeability_data_model_1_0_0 import RelativePermeabilityModel100
@@ -102,6 +103,7 @@ MCM_MODELS = {
 }
 SLIMTUBE_MODELS = {
     ContentSchemaVersion.V_1_0_0: SlimtubeModel100,
+    ContentSchemaVersion.V_2_0_0: SlimtubeModel200,
 }
 EXTRACTION_MODELS = {
     ContentSchemaVersion.V_1_0_0: ExtractionModel100,
