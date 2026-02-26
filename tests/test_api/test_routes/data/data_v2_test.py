@@ -602,6 +602,16 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
             [build_get_test_data("x-parquet", slimtube_mock_objects.TEST_DATA)],
         ),
         (
+            TestContentPathsApiV2.SLIMTUBE,
+            slimtube_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                slimtube_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", slimtube_mock_objects.TEST_DATA_V2)],
+        ),
+        (
             TestContentPathsApiV2.EXTRACTION,
             extraction_mock_objects.TEST_DATASET_RECORD_ID,
             "get_record",
@@ -1084,6 +1094,15 @@ async def test_get_content_parquet_data(
             slimtube_mock_objects.TEST_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.SLIMTUBE}/{slimtube_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [slimtube_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", slimtube_mock_objects.TEST_DATA_V2)],
+            slimtube_mock_objects.TEST_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.EXTRACTION}/{extraction_mock_objects.TEST_DATASET_RECORD_ID}",
             None,
             "get_record",
@@ -1444,6 +1463,15 @@ async def test_get_content_parquet_data(
             slimtube_mock_objects.TEST_AGGREGATED_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.SLIMTUBE}/{slimtube_mock_objects.TEST_DATASET_RECORD_ID}",
+            slimtube_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [slimtube_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", slimtube_mock_objects.TEST_DATA_V2)],
+            slimtube_mock_objects.TEST_AGGREGATED_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.EXTRACTION}/{extraction_mock_objects.TEST_DATASET_RECORD_ID}",
             extraction_mock_objects.TEST_PARAMS_AGGREGATION,
             "get_record",
@@ -1802,6 +1830,15 @@ async def test_get_content_parquet_data(
             "download_file",
             [build_get_test_data("x-parquet", slimtube_mock_objects.TEST_DATA)],
             slimtube_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.SLIMTUBE}/{slimtube_mock_objects.TEST_DATASET_RECORD_ID}",
+            slimtube_mock_objects.TEST_PARAMS_FILTERS_V2,
+            "get_record",
+            [slimtube_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", slimtube_mock_objects.TEST_DATA_V2)],
+            slimtube_mock_objects.TEST_FILTERED_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.EXTRACTION}/{extraction_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -3580,6 +3617,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             slimtube_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.SLIMTUBE,
+            slimtube_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            slimtube_mock_objects.TEST_DATA_V2,
+            slimtube_mock_objects.TEST_DATASET_RECORD_ID,
+            slimtube_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
+        ),
+        (
             TestContentPathsApiV2.EXTRACTION,
             extraction_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             extraction_mock_objects.TEST_DATA,
@@ -3936,6 +3980,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             slimtube_mock_objects.TEST_DATA,
             slimtube_mock_objects.TEST_DATASET_RECORD_ID,
             slimtube_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.SLIMTUBE,
+            slimtube_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            slimtube_mock_objects.TEST_DATA_V2,
+            slimtube_mock_objects.TEST_DATASET_RECORD_ID,
+            slimtube_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.EXTRACTION,
@@ -4558,6 +4609,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             slimtube_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.SLIMTUBE,
+            slimtube_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            slimtube_mock_objects.TEST_DATA_V2,
+            slimtube_mock_objects.TEST_DATASET_RECORD_ID,
+            slimtube_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
+        ),
+        (
             TestContentPathsApiV2.EXTRACTION,
             extraction_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             extraction_mock_objects.TEST_DATA,
@@ -4916,6 +4974,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             slimtube_mock_objects.TEST_DATA,
             slimtube_mock_objects.TEST_DATASET_RECORD_ID,
             slimtube_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.SLIMTUBE,
+            slimtube_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            slimtube_mock_objects.TEST_DATA_V2,
+            slimtube_mock_objects.TEST_DATASET_RECORD_ID,
+            slimtube_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.EXTRACTION,
