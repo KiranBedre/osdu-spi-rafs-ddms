@@ -82,7 +82,7 @@ NEW-tests:
   extends: .newman_rafs_tests
   variables:
     #Leave as is
-    ENVIRONMENT: "./tests/qa/Postman Collection/Environment/OSDU_AZURE_GLAB.postman_environment.json"
+    ENVIRONMENT: "./tests/qa/Postman Collection/Environment/OSDU_AZURE_ENV.postman_environment.json"
     #Should be configured
     COLLECTION_JSON: "./tests/qa/Postman Collection/Collection/NEW_COLLECTION_NAME.postman_collection.json"
     #Can be changed
@@ -110,7 +110,7 @@ If you want to test the RAFS-DDMS service on an existing OSDU instance (e.g., GL
   ```bash
   # Path to the Postman collection and Postman environment files used for testing
   COLLECTION_JSON="./rafs-ddms-services/devops/azure/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
-  ENVIRONMENT="./rafs-ddms-services/devops/azure/qa/Postman Collection/Environment/OSDU_AZURE_GLAB.postman_environment.json"
+  ENVIRONMENT="./rafs-ddms-services/devops/azure/qa/Postman Collection/Environment/OSDU_AZURE_ENV.postman_environment.json"
   ```
 
 - The resulting HTML report will be saved to:
@@ -131,7 +131,7 @@ If you want to test the RAFS-DDMS service on an existing OSDU instance (e.g., GL
 
   # Run tests locally
   COLLECTION_JSON="./rafs-ddms-services/devops/azure/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
-  ENVIRONMENT="./rafs-ddms-services/devops/azure/qa/Postman Collection/Environment/OSDU_AZURE_GLAB.postman_environment.json"
+  ENVIRONMENT="./rafs-ddms-services/devops/azure/qa/Postman Collection/Environment/OSDU_AZURE_ENV.postman_environment.json"
   REPORT_HTML: "report-newman.html"
   newman run "$COLLECTION_JSON" \
   -e "$ENVIRONMENT" \
