@@ -52,6 +52,7 @@ from app.models.data_schemas.sample_analysis_api_v2.wettability_index_data_model
 from app.models.data_schemas.sample_analysis_api_v2.tec_data_model_1_0_0 import TecModel100
 from app.models.data_schemas.sample_analysis_api_v2.eds_mapping_data_model_1_0_0 import EdsMappingModel100
 from app.models.data_schemas.sample_analysis_api_v2.xrf_data_model_1_0_0 import XrfModel100
+from app.models.data_schemas.sample_analysis_api_v2.xrf_data_model_2_0_0 import XrfModel200
 from app.models.data_schemas.sample_analysis_api_v2.capillary_pressure_data_model_1_0_0 import CapillaryPressureModel100
 from app.models.data_schemas.sample_analysis_api_v2.stock_tank_oil_analysis_data_model_1_0_0 import StockTankOilAnalysisModel100
 from app.models.data_schemas.sample_analysis_api_v2.tensile_strength_data_model_1_0_0 import TensileStrengthModel100
@@ -176,7 +177,8 @@ EDS_MAPPING_MODELS = {
     ContentSchemaVersion.V_1_0_0: EdsMappingModel100
 }
 XRF_MODELS = {
-    ContentSchemaVersion.V_1_0_0: XrfModel100
+    ContentSchemaVersion.V_1_0_0: XrfModel100,
+    ContentSchemaVersion.V_2_0_0: XrfModel200,
 }
 TENSILE_STRENGTH_MODELS = {
     ContentSchemaVersion.V_1_0_0: TensileStrengthModel100
