@@ -882,6 +882,16 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
             [build_get_test_data("x-parquet", xrd_mock_objects.TEST_DATA)],
         ),
         (
+            TestContentPathsApiV2.XRD,
+            xrd_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", xrd_mock_objects.TEST_DATA_V2)],
+        ),
+        (
             TestContentPathsApiV2.PDP,
             pdp_mock_objects.TEST_DATASET_RECORD_ID,
             "get_record",
@@ -2093,6 +2103,15 @@ async def test_get_content_parquet_data(
         ),
         (
             f"{TestContentPathsApiV2.XRD}/{xrd_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", xrd_mock_objects.TEST_DATA_V2)],
+            xrd_mock_objects.TEST_DATA_V2,
+        ),
+        (
+            f"{TestContentPathsApiV2.XRD}/{xrd_mock_objects.TEST_DATASET_RECORD_ID}",
             xrd_mock_objects.TEST_PARAMS_FILTERS,
             "get_record",
             [xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
@@ -2102,12 +2121,30 @@ async def test_get_content_parquet_data(
         ),
         (
             f"{TestContentPathsApiV2.XRD}/{xrd_mock_objects.TEST_DATASET_RECORD_ID}",
+            xrd_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", xrd_mock_objects.TEST_DATA_V2)],
+            xrd_mock_objects.TEST_FILTERED_DATA_V2,
+        ),
+        (
+            f"{TestContentPathsApiV2.XRD}/{xrd_mock_objects.TEST_DATASET_RECORD_ID}",
             xrd_mock_objects.TEST_PARAMS_AGGREGATION,
             "get_record",
             [xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
             "download_file",
             [build_get_test_data("x-parquet", xrd_mock_objects.TEST_DATA)],
             xrd_mock_objects.TEST_AGGREGATED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.XRD}/{xrd_mock_objects.TEST_DATASET_RECORD_ID}",
+            xrd_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", xrd_mock_objects.TEST_DATA_V2)],
+            xrd_mock_objects.TEST_AGGREGATED_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.PDP}/{pdp_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -3776,6 +3813,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             xrd_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.XRD,
+            xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            xrd_mock_objects.TEST_DATA_V2,
+            xrd_mock_objects.TEST_DATASET_RECORD_ID,
+            xrd_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
+        ),
+        (
             TestContentPathsApiV2.PDP,
             pdp_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             pdp_mock_objects.TEST_DATA,
@@ -4134,6 +4178,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             xrd_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.XRD,
+            xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            xrd_mock_objects.TEST_DATA_V2,
+            xrd_mock_objects.TEST_DATASET_RECORD_ID,
+            xrd_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
+        ),
+        (
             TestContentPathsApiV2.PDP,
             pdp_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             pdp_mock_objects.TEST_DATA,
@@ -4406,6 +4457,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
         (
             TestContentPathsApiV2.XRD,
             xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            xrd_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.XRD,
+            xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             xrd_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
@@ -4752,6 +4808,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             xrd_mock_objects.TEST_DATA,
             xrd_mock_objects.TEST_DATASET_RECORD_ID,
             xrd_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.XRD,
+            xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            xrd_mock_objects.TEST_DATA_V2,
+            xrd_mock_objects.TEST_DATASET_RECORD_ID,
+            xrd_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.PDP,
@@ -5112,6 +5175,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             xrd_mock_objects.TEST_DATA,
             xrd_mock_objects.TEST_DATASET_RECORD_ID,
             xrd_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.XRD,
+            xrd_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            xrd_mock_objects.TEST_DATA_V2,
+            xrd_mock_objects.TEST_DATASET_RECORD_ID,
+            xrd_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.PDP,

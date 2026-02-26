@@ -1,0 +1,58 @@
+[
+  {
+    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:XRD_SamplesAnalysis:",
+    "SampleID": "opendes:master-data--Sample:XRD_Sample:",
+    "Meta": [
+      {
+        "kind": "Unit",
+        "name": "euclidean",
+
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:Euc:",
+        "propertyNames": [
+          "QuartzCrystallinityIndex"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "kilogram per kilogram",
+
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:kg%2Fkg:",
+        "propertyNames": [
+          "MineralContent[*].WeightPercent",
+          "TotalClay",
+          "TotalPhyllosilicates"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "cubic metre per cubic metre",
+
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:m3%2Fm3:",
+        "propertyNames": [
+          "MineralContent[*].VolumePercent"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "micrometre",
+
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:um:",
+        "propertyNames": [
+          "ClayFractionCutoff"
+        ]
+      }
+    ],
+    "QuartzCrystallinityIndex": 1.23,
+    "MineralContent": [
+      {
+        "MineralID": "opendes:reference-data--Minerals:actinolite:",
+        "WeightPercent": 1.23,
+        "VolumePercent": 1.23
+      }
+    ],
+    "IsClayFraction": true,
+    "ClayFractionCutoff": 2.0,
+    "TotalClay": 0.45,
+    "TotalPhyllosilicates": 0.55
+  }
+]

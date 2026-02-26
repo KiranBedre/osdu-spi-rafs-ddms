@@ -56,6 +56,7 @@ from app.models.data_schemas.sample_analysis_api_v2.stock_tank_oil_analysis_data
 from app.models.data_schemas.sample_analysis_api_v2.tensile_strength_data_model_1_0_0 import TensileStrengthModel100
 from app.models.data_schemas.sample_analysis_api_v2.vitrinite_reflectance_data_model_1_0_0 import VitriniteReflectanceModel100
 from app.models.data_schemas.sample_analysis_api_v2.xrd_data_model_1_0_0 import XrdModel100
+from app.models.data_schemas.sample_analysis_api_v2.xrd_data_model_2_0_0 import XrdModel200
 from app.models.data_schemas.sample_analysis_api_v2.pdp_data_model_1_0_0 import PdpModel100
 from app.models.data_schemas.sample_analysis_api_v2.crushed_rock_analysis_data_model_1_0_0 import CrushedRockAnalysisModel100
 from app.models.data_schemas.sample_analysis_api_v2.mining_geotech_logging_data_model_1_0_0 import MiningGeotechLoggingModel100
@@ -183,6 +184,7 @@ VITRINITE_REFLECTANCE_MODELS = {
 }
 XRD_MODELS = {
     ContentSchemaVersion.V_1_0_0: XrdModel100,
+    ContentSchemaVersion.V_2_0_0: XrdModel200,
 }
 PDP_MODELS = {
     ContentSchemaVersion.V_1_0_0: PdpModel100,
