@@ -199,8 +199,8 @@ azure-publish:
   variables:
     DST_REGISTRY: "msosdu"
     SHA_IMAGE: ${CI_PROJECT_NAME}-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
-    SHA_CRONJOB_IMAGE: ${CI_PROJECT_NAME}-cronjob:${CI_COMMIT_SHA}
-    SHA_REDIS_IMAGE: ${CI_PROJECT_NAME}-redis:${CI_COMMIT_SHA}
+    SHA_CRONJOB_IMAGE: ${CI_PROJECT_NAME}-cronjob-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
+    SHA_REDIS_IMAGE: ${CI_PROJECT_NAME}-redis-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHA}
   script:
     - crane copy ${AZURE_REGISTRY}.azurecr.io/$SHA_IMAGE ${DST_REGISTRY}.azurecr.io/${REL_IMG_NAME}:${AZ_VER}
     - crane copy ${AZURE_REGISTRY}.azurecr.io/$SHA_CRONJOB_IMAGE ${DST_REGISTRY}.azurecr.io/${REL_IMG_NAME}-cronjob:${AZ_VER}
