@@ -39,6 +39,9 @@ from tests.test_api.test_routes.api_v2.atm_flash_compositional_analysis import (
 from tests.test_api.test_routes.api_v2.bulk_pyrolysis import (
     bulk_pyrolysis_mock_objects,
 )
+from tests.test_api.test_routes.api_v2.capillary_suction_time import (
+    capillary_suction_time_mock_objects,
+)
 from tests.test_api.test_routes.api_v2.cappressure import (
     cappressure_mock_objects,
 )
@@ -822,6 +825,16 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
             [build_get_test_data("x-parquet", cappressure_mock_objects.TEST_DATA)],
         ),
         (
+            TestContentPathsApiV2.CAP_SUCTION_TIME,
+            capillary_suction_time_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                capillary_suction_time_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", capillary_suction_time_mock_objects.TEST_DATA)],
+        ),
+        (
             TestContentPathsApiV2.WETTABILITY_INDEX,
             wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
             "get_record",
@@ -1310,6 +1323,15 @@ async def test_get_content_parquet_data(
             "download_file",
             [build_get_test_data("x-parquet", cappressure_mock_objects.TEST_DATA)],
             cappressure_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.CAP_SUCTION_TIME}/{capillary_suction_time_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [capillary_suction_time_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", capillary_suction_time_mock_objects.TEST_DATA)],
+            capillary_suction_time_mock_objects.TEST_DATA,
         ),
         (
             f"{TestContentPathsApiV2.WETTABILITY_INDEX}/{wettability_index_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -3845,6 +3867,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.CAP_SUCTION_TIME,
+            capillary_suction_time_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            capillary_suction_time_mock_objects.TEST_DATA,
+            capillary_suction_time_mock_objects.TEST_DATASET_RECORD_ID,
+            capillary_suction_time_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
             TestContentPathsApiV2.WETTABILITY_INDEX,
             wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             wettability_index_mock_objects.TEST_DATA,
@@ -4222,6 +4251,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             cappressure_mock_objects.TEST_DATA,
             cappressure_mock_objects.TEST_DATASET_RECORD_ID,
             cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.CAP_SUCTION_TIME,
+            capillary_suction_time_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            capillary_suction_time_mock_objects.TEST_DATA,
+            capillary_suction_time_mock_objects.TEST_DATASET_RECORD_ID,
+            capillary_suction_time_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
             TestContentPathsApiV2.WETTABILITY_INDEX,
@@ -4875,6 +4911,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.CAP_SUCTION_TIME,
+            capillary_suction_time_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            capillary_suction_time_mock_objects.TEST_DATA,
+            capillary_suction_time_mock_objects.TEST_DATASET_RECORD_ID,
+            capillary_suction_time_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
             TestContentPathsApiV2.WETTABILITY_INDEX,
             wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             wettability_index_mock_objects.TEST_DATA,
@@ -5256,6 +5299,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.CAP_SUCTION_TIME,
+            capillary_suction_time_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            capillary_suction_time_mock_objects.TEST_DATA,
+            capillary_suction_time_mock_objects.TEST_DATASET_RECORD_ID,
+            capillary_suction_time_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
             TestContentPathsApiV2.WETTABILITY_INDEX,
             wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             wettability_index_mock_objects.TEST_DATA,
@@ -5406,6 +5456,7 @@ async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data,
         (TestContentPathsApiV2.ELECTRICAL_PROPERTIES, electricalproperties_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.TRIAXIAL_TEST, triaxial_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.CAP_PRESSURE, cappressure_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
+        (TestContentPathsApiV2.CAP_SUCTION_TIME, capillary_suction_time_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.WETTABILITY_INDEX, wettability_index_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.TEC, tec_data_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.EDS_MAPPING, eds_mapping_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
@@ -5615,6 +5666,11 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             TestContentPathsApiV2.CAP_PRESSURE,
             cappressure_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             cappressure_mock_objects.EXPECTED_ERROR_REASON,
+        ),
+        (
+            TestContentPathsApiV2.CAP_SUCTION_TIME,
+            capillary_suction_time_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
+            capillary_suction_time_mock_objects.EXPECTED_ERROR_REASON,
         ),
         (
             TestContentPathsApiV2.WETTABILITY_INDEX,

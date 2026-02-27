@@ -54,6 +54,7 @@ from app.models.data_schemas.sample_analysis_api_v2.eds_mapping_data_model_1_0_0
 from app.models.data_schemas.sample_analysis_api_v2.xrf_data_model_1_0_0 import XrfModel100
 from app.models.data_schemas.sample_analysis_api_v2.xrf_data_model_2_0_0 import XrfModel200
 from app.models.data_schemas.sample_analysis_api_v2.capillary_pressure_data_model_1_0_0 import CapillaryPressureModel100
+from app.models.data_schemas.sample_analysis_api_v2.capillary_suction_time_data_model_1_0_0 import CapillarySuctionTimeModel100
 from app.models.data_schemas.sample_analysis_api_v2.stock_tank_oil_analysis_data_model_1_0_0 import StockTankOilAnalysisModel100
 from app.models.data_schemas.sample_analysis_api_v2.tensile_strength_data_model_1_0_0 import TensileStrengthModel100
 from app.models.data_schemas.sample_analysis_api_v2.vitrinite_reflectance_data_model_1_0_0 import VitriniteReflectanceModel100
@@ -167,6 +168,9 @@ TRIAXIAL_TEST_MODELS = {
 CAP_PRESSURE_MODELS = {
     ContentSchemaVersion.V_1_0_0: CapillaryPressureModel100
 }
+CAP_SUCTION_TIME_MODELS = {
+    ContentSchemaVersion.V_1_0_0: CapillarySuctionTimeModel100
+}
 WETTABILITY_INDEX_MODELS = {
     ContentSchemaVersion.V_1_0_0: WettabilityIndexModel100
 }
@@ -239,6 +243,7 @@ PATH_TO_DATA_MODEL_VERSIONS_API_V2 = {
     common_relative_paths_api_v2.CEC_CONTENT: CEC_CONTENT_MODELS,
     common_relative_paths_api_v2.TRIAXIAL_TEST: TRIAXIAL_TEST_MODELS,
     common_relative_paths_api_v2.CAP_PRESSURE: CAP_PRESSURE_MODELS,
+    common_relative_paths_api_v2.CAP_SUCTION_TIME: CAP_SUCTION_TIME_MODELS,
     common_relative_paths_api_v2.WETTABILITY_INDEX: WETTABILITY_INDEX_MODELS,
     common_relative_paths_api_v2.TEC: TEC_MODELS,
     common_relative_paths_api_v2.EDS_MAPPING: EDS_MAPPING_MODELS,

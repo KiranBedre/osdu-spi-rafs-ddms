@@ -51,6 +51,7 @@ class CommonRelativePathsV2(NamedTuple):
     CEC_CONTENT: str = "/data/cec"
     TRIAXIAL_TEST: str = "/data/triaxial"
     CAP_PRESSURE: str = "/data/capillarypressure"
+    CAP_SUCTION_TIME: str = "/data/capillarysuctiontime"
     WETTABILITY_INDEX: str = "/data/wettabilityindex"
     TEC: str = "/data/tec"
     EDS_MAPPING: str = "/data/edsmapping"
@@ -147,6 +148,9 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
         "CapillaryPressure.PorousPlate",
         "CapillaryPressure.DigitalRockModelling",
         "CapillaryPressure",
+    ],
+    "capillarysuctiontime": [
+        "BasicRockProperties.CapillarySuctionTime",
     ],
     "wettabilityindex": [
         "Wettability.AmottHarvey",
