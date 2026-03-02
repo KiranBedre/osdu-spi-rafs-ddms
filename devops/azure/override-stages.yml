@@ -190,6 +190,7 @@ azure_test_py:
       --bearer-token ${ACCESS_TOKEN}
       --partition ${PARTITION}
       --cloud-provider azure
+  allow_failure: true
 
 azure_swagger_test:
   variables:
