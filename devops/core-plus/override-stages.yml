@@ -166,12 +166,16 @@ cimpl-test-python:
     - .cimpl-variables
     - .cimpl_python_test_report
   before_script:
-    - apt update -qqq -y && apt install -qqq -y curl jq &> /dev/null
+    - apt-get update -qq
+    - apt-get install -qq -y curl jq default-jre-headless nodejs npm
+    - export JAVA_HOME="$(dirname "$(dirname "$(readlink -f "$(command -v java)")")")"
+    - export PATH="$JAVA_HOME/bin:$PATH"
+    - npm install -g allure-commandline
     - !reference [.get_cimpl_access_token, script]
   script:
     - |
       echo "🚀 Running integration tests against ${CIMPL_TENANT}.${CIMPL_DOMAIN}"
-      time pytest -n 3 \
+      time pytest -n auto --alluredir=allure-results --dist=loadscope \
         --junitxml=integration_tests_report.xml \
         --cov=app \
         --cov-report=xml:coverage.xml \
@@ -182,6 +186,13 @@ cimpl-test-python:
         --bearer-token "${ACCESS_TOKEN}" \
         --partition "${PARTITION}" \
         --cloud-provider "gc"
+  after_script:
+    - allure generate allure-results --clean -o allure-report
+  artifacts:
+    paths:
+      - allure-report
+    when: always
+    expire_in: 1 week
 
 #dev2 jobs
 

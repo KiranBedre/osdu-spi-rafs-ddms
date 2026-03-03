@@ -1,0 +1,55 @@
+{
+    "kind": "{schema_authority}:wks:work-product-component--SaturationFunctionSet:{schema_version}",
+    "acl": {
+        "viewers": [
+            "{acl_viewers}"
+        ],
+        "owners": [
+            "{acl_owners}"
+        ]
+    },
+    "legal": {
+        "legaltags": [
+            "{legal_tag}"
+        ],
+        "otherRelevantDataCountries": [
+            "US"
+        ],
+        "status": "compliant"
+    },
+    "data": {
+        "Name": "Saturation function integration test",
+        "Description": "Sample saturation functions used for integration testing",
+        "Source": "Integration Fixture",
+        "SaturationFunctions": [
+            {
+                "FunctionName": "Relative permeability functions (SGFN, SWFN, SOF3)",
+                "FunctionUsageTypeID": "{data_partition_id}:reference-data--SaturationFunctionUsageType:Drainage:",
+                "DatePublished": "2010-09-09",
+                "HasRelativePermeability": true,
+                "HasCapillaryPressure": true,
+                "ModellingContacts": [
+                    {
+                        "Name": "Integration User"
+                    }
+                ],
+                "ModelAreaOfInterestIDs": [],
+                "BasisOfModelling": {}
+            }
+        ],
+        "Remarks": [
+            {
+                "RemarkSequenceNumber": 1,
+                "Remark": "Derived from Volve reference dataset",
+                "RemarkSource": "Integration Fixture",
+                "RemarkDate": "2010-03-24"
+            },
+            {
+                "RemarkSequenceNumber": 2,
+                "Remark": "Used only for automated testing purposes",
+                "RemarkSource": "Integration Fixture",
+                "RemarkDate": "2010-09-08"
+            }
+        ]
+    }
+}

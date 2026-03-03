@@ -13,6 +13,8 @@ pytest-dependency==0.5.1
 pytest-env==0.6.2
 pytest-mock==3.10.0
 pytest-xdist==3.0.2
+jsonpointer>=2.4
+allure-pytest>=2.13.2
 
 # dependencies for checks
 # NOT USED BY RAFS-DDMS but for code quality checks

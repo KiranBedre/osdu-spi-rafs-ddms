@@ -94,7 +94,7 @@ def create_referenced_records(api, helper, tests_data):
         api.storage.purge_record(reference_id)
 
 
-@pytest.fixture
+@pytest.fixture(scope="package")
 def create_record(api, helper, tests_data):
     """Fixture to create any record with a random unique id and delete it after
     test."""
@@ -128,7 +128,7 @@ def create_record(api, helper, tests_data):
         logger.info(f"Creating a record with ID {record_data['id']}")
         created_record = getattr(api, _api_path).post_record([record_data])
         while True:
-            logger.info(f"Check until record is created and registered")
+            logger.info("Check until record is created and registered")
             try:
                 getattr(api, _api_path).get_record(record_data["id"])
             except AssertionError:

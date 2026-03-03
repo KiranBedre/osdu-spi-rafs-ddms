@@ -16,6 +16,7 @@ import copy
 
 import pytest
 
+from app.resources.common_headers import CONTENT_TYPE
 from tests.integration.config import (
     CONFIG,
     DataFiles,
@@ -49,7 +50,11 @@ def test_validate_file_data_content(
 
     measurements_json = api.sample_analysis.get_measurements(record_data["id"], content_id, analysis_type)
     measurements_parquet = api.sample_analysis.get_measurements(
-        record_data["id"], content_id, analysis_type, json=False, content_type="application/x-parquet",
+        record_data["id"],
+        content_id,
+        analysis_type,
+        json=False,
+        headers={CONTENT_TYPE: "application/x-parquet"}
     ).content
 
     helper.compare_responses(measurements_json, measurements_parquet)

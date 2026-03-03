@@ -1,4 +1,19 @@
-from typing import Optional
+#  Copyright 2026 ExxonMobil Technology and Engineering Company
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+from typing import Union
+
+import requests
 
 from client.api_client import APIClient
 
@@ -18,62 +33,62 @@ class APIResource(APIClient):
         super().__init__(host, version, url_prefix, data_partition, token)
         self.resource_path = resource_path
 
-    def post_record(self, body: list, **kwargs) -> dict:
+    def post_record(self, body: list, raw: bool = False, **kwargs) -> Union[dict, requests.Response]:
         """
         :param body: record data
-        :return: created record
+        :param raw: if True return requests.Response; otherwise return parsed JSON dict
+        :param kwargs: Additional keyword arguments.
+        :return: created record (dict) or Response
         """
-        return self.post(path=self.resource_path.POST, json=body, **kwargs).json()
+        response = self.post(path=self.resource_path.POST, json=body, **kwargs)
+        return response if raw else response.json()
 
-    def get_record(
-        self,
-        record_id: str,
-        version: Optional[str] = None,
-        **kwargs,
-    ) -> dict:
+    def get_record(self, record_id: str, raw: bool = False, **kwargs) -> Union[dict, requests.Response]:
         """
         :param record_id: record id
-        :param version: version
-        :return: record data
+        :param raw: if True return requests.Response; otherwise return parsed JSON dict
+        :param kwargs: Additional keyword arguments.
+        :return: record data (dict) or Response
         """
-        params_dict = {"version": version}
-        return self.get(
-            path=self.resource_path.GET.format(record_id=record_id),
-            params=params_dict,
-            **kwargs,
-        ).json()
+        response = self.get(path=self.resource_path.GET.format(record_id=record_id), **kwargs)
+        return response if raw else response.json()
 
-    def get_record_versions(self, record_id: str, **kwargs) -> dict:
+    def get_record_versions(self, record_id: str, raw: bool = False, **kwargs) -> Union[dict, requests.Response]:
         """Get the versions of a record.
 
-        :param record_id: The ID of the record to retrieve the versions
-            for.
+        :param record_id: The ID of the record to retrieve the versions for.
+        :param raw: if True return requests.Response; otherwise return parsed JSON dict
         :param kwargs: Additional keyword arguments.
-        :return: The versions of the record.
+        :return: The versions of the record (dict) or Response
         """
-        return self.get(
-            path=self.resource_path.GET_VERSIONS.format(record_id=record_id), **kwargs,
-        ).json()
+        response = self.get(path=self.resource_path.GET_VERSIONS.format(record_id=record_id), **kwargs)
+        return response if raw else response.json()
 
-    def get_record_version(self, record_id: str, version: int, **kwargs) -> dict:
+    def get_record_version(
+        self,
+        record_id: str,
+        version: int,
+        raw: bool = False,
+        **kwargs,
+    ) -> Union[dict, requests.Response]:
         """Get a specific version of a record.
 
         :param record_id: The ID of the record to retrieve.
         :param version: The version number of the record to retrieve.
+        :param raw: if True return requests.Response; otherwise return parsed JSON dict
         :param kwargs: Additional keyword arguments.
-        :return: Requested record version.
+        :return: Requested record version (dict) or Response
         """
-        return self.get(
-            path=self.resource_path.GET_VERSION.format(record_id=record_id, version=version), **kwargs,
-        ).json()
+        response = self.get(path=self.resource_path.GET_VERSION.format(record_id=record_id, version=version), **kwargs)
+        return response if raw else response.json()
 
-    def soft_delete_record(self, record_id: str, **kwargs) -> None:
+    def soft_delete_record(self, record_id: str, raw: bool = False, **kwargs) -> Union[None, requests.Response]:
         """Soft delete a record.
 
         :param record_id: The ID of the record to delete.
+        :param raw: if True return requests.Response
         :param kwargs: Additional keyword arguments.
-        :return: None
+        :return: None or Response
         """
-        self.delete(
-            path=self.resource_path.DELETE.format(record_id=record_id), **kwargs,
-        )
+        response = self.delete(path=self.resource_path.DELETE.format(record_id=record_id), **kwargs)
+        return response if raw else None
