@@ -501,7 +501,7 @@
       "type": "number",
       "title": "Relative Permeability Crossover",
       "description": "The relative permeability value of a crossover point in a relative permeability x saturation analysis graph.",
-      "x-osdu-frame-of-reference": "UOM:permeability rock"
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
     },
     "EndFaceSaturationCrossover": {
       "type": "number",
