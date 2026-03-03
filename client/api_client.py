@@ -21,7 +21,13 @@ import requests
 from loguru import logger
 from starlette import status
 
-from app.resources.common_headers import CORRELATION_ID, DATA_PARTITION_ID
+from app.resources.common_headers import (
+    AUTHORIZATION,
+    CACHE_CONTROL,
+    CONTENT_TYPE,
+    CORRELATION_ID,
+    DATA_PARTITION_ID,
+)
 from client.api.settings import ApiClientSettings
 
 
@@ -64,20 +70,21 @@ class APIClient(object):
 
     def _build_headers(self, kwargs):
         headers = {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json",
+            AUTHORIZATION: f"Bearer {self.token}",
+            CONTENT_TYPE: "application/json",
             DATA_PARTITION_ID: self.data_partition,
-            "Cache-Control": "no-store",
+            CACHE_CONTROL: "no-store",
             CORRELATION_ID: f"rafs-ddms-autotest-{uuid.uuid4()}",
         }
 
         extra_headers = kwargs.pop("headers", None)
         if extra_headers:
-            headers.update(extra_headers)
-
-        content_type_override = kwargs.pop("content_type", None)
-        if content_type_override:
-            headers["Content-Type"] = content_type_override
+            # Remove headers set to None, merge others
+            for header_name, header_value in extra_headers.items():
+                if header_value is not None:
+                    headers[header_name] = header_value
+                else:
+                    headers.pop(header_name, None)
 
         return headers
 
@@ -97,7 +104,14 @@ class APIClient(object):
         response_headers = f"\n[ERROR] Response HEADERS:\n{headers_str}"
         raise AssertionError(f"{response_error}{response_body}{response_url}{response_headers}")
 
-    def _base_request(self, path: str, method: str, allowed_codes: List[int], **kwargs) -> requests.Response:
+    def _base_request(
+        self,
+        path: str,
+        method: str,
+        allowed_codes: List[int],
+        headers: dict = None,
+        **kwargs,
+    ) -> requests.Response:
         """Universal API request sending :param method: api method type
         (get,post, etc.)
 
@@ -107,11 +121,13 @@ class APIClient(object):
         :type method: str
         :param allowed_codes: expected status codes
         :type allowed_codes: List[int]
+        :param headers: pre-built headers dict (optional, will build if not provided)
         :raises APIException: API Exception
         :return: response
         :rtype: requests.Response
         """
-        headers = self._build_headers(kwargs)
+        if headers is None:
+            headers = self._build_headers(kwargs)
 
         request = getattr(requests, method)
 

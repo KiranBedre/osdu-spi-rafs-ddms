@@ -317,7 +317,7 @@ docker-compose down
 * Run via Terminal:
 
     ```bash
-    pytest -n auto tests/integration/tests --ddms-base-url {DDMS_BASE_URL} --url-prefix {URL_PREFIX} --partition {PARTITION} --bearer-token {TOKEN} --cloud-provider {CLOUD_PROVIDER} --domain {DOMAIN}
+    pytest -n auto --dist=loadscope tests/integration/tests --ddms-base-url {DDMS_BASE_URL} --url-prefix {URL_PREFIX} --partition {PARTITION} --bearer-token {TOKEN} --cloud-provider {CLOUD_PROVIDER} --domain {DOMAIN}
     ```
 
 * Run/Debug via PyCharm:
