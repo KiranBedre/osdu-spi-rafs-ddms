@@ -1,0 +1,357 @@
+{
+    "title": "SaturationFunctionSetModel100",
+    "type": "object",
+    "properties": {
+        "SaturationFunctionSetID": {
+            "title": "Saturation Function Set ID",
+            "description": "A reference back to the work product component SaturationFunctionSet record, to which the content belongs.",
+            "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SaturationFunctionSet:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "Meta": {
+            "title": "Meta",
+            "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/Meta"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta1"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta2"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta3"
+                    }
+                ]
+            }
+        },
+        "RelativePermeabilityFunctions": {
+            "title": "Relative Permeability Functions",
+            "description": "Set of relative permeability values as a function of saturation in two-, or three-phase systems for drainage and/or imbibition processes.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/RelativePermeabilityFunction"
+            }
+        },
+        "CapillaryPressureFunctions": {
+            "title": "Capillary Pressure Functions",
+            "description": "Set of capillary pressure values as function of saturation in two-, or three-phase systems for drainage and/or imbibition processes.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/CapillaryPressureFunction"
+            }
+        }
+    },
+    "required": [
+        "SaturationFunctionSetID"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "Meta": {
+            "title": "Meta",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "UOM Reference Kind",
+                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                    "default": "Unit",
+                    "const": "Unit",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "UOM Unit Symbol",
+                    "description": "The unit symbol or name of the unit.",
+                    "example": "ft[US]",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "UOM Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+                    "type": "string"
+                },
+                "unitOfMeasureID": {
+                    "title": "Unitofmeasureid",
+                    "description": "SRN to unit of measure reference.",
+                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "UOM Property Names",
+                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "HorizontalDeflection.EastWest",
+                        "HorizontalDeflection.NorthSouth"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "Meta1": {
+            "title": "Meta1",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "CRS Reference Kind",
+                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                    "default": "CRS",
+                    "const": "CRS",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "CRS Name",
+                    "description": "The name of the CRS.",
+                    "example": "WGS 84 / UTM zone 15N",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "CRS Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
+                    "type": "string"
+                },
+                "coordinateReferenceSystemID": {
+                    "title": "Coordinatereferencesystemid",
+                    "description": "SRN to CRS reference.",
+                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "CRS Property Names",
+                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "KickOffPosition.X",
+                        "KickOffPosition.Y"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "Meta2": {
+            "title": "Meta2",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "DateTime Reference Kind",
+                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                    "default": "DateTime",
+                    "const": "DateTime",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "DateTime Name",
+                    "description": "The name of the DateTime format and reference.",
+                    "example": "UTC",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "DateTime Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "DateTime Property Names",
+                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Acquisition.StartTime",
+                        "Acquisition.EndTime"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "Meta3": {
+            "title": "Meta3",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "AzimuthReference Reference Kind",
+                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                    "default": "AzimuthReference",
+                    "const": "AzimuthReference",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "AzimuthReference Name",
+                    "description": "The name of the CRS or the symbol/name of the unit.",
+                    "example": "TrueNorth",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "AzimuthReference Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "AzimuthReference Property Names",
+                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Bearing"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "PhaseRelativePermeabilityFunction": {
+            "title": "PhaseRelativePermeabilityFunction",
+            "type": "object",
+            "properties": {
+                "Saturation": {
+                    "title": "Saturation",
+                    "description": "Saturation values for which the relative permeabilities are tabulated.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "RelativePermeability": {
+                    "title": "Relative Permeability",
+                    "description": "Relative permeability values of the fluid phase at the corresponding saturation values. ",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "PhaseRelativePermeabilityFluidID": {
+                    "title": "Phase Relative Permeability Fluid ID",
+                    "description": "Identifies the fluid phase that the relative permeability characterizes.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-RockModelRelativePermeabilityPhase:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "PhaseSaturationFluidID": {
+                    "title": "Phase Saturation Fluid ID",
+                    "description": "Identifies the fluid phase that is being used for the saturation.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidModelPropertyPhase:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "PhaseRelativePermeabilityFluidID",
+                "PhaseSaturationFluidID"
+            ],
+            "additionalProperties": false
+        },
+        "RelativePermeabilityFunction": {
+            "title": "RelativePermeabilityFunction",
+            "type": "object",
+            "properties": {
+                "FunctionUsageTypeID": {
+                    "title": "Function Usage Type ID",
+                    "description": "Identifies the type of usage for which the function is designed (such as imbibition, drainage, etc)",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationFunctionUsageType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "PhaseRelativePermeabilityFunctions": {
+                    "title": "Phase Relative Permeability Functions",
+                    "description": "Set of relative permeability functions of fluid phases present in the reservoir as a function of a saturation.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PhaseRelativePermeabilityFunction"
+                    }
+                }
+            },
+            "required": [
+                "FunctionUsageTypeID",
+                "PhaseRelativePermeabilityFunctions"
+            ],
+            "additionalProperties": false
+        },
+        "PhaseCapillaryPressureFunction": {
+            "title": "PhaseCapillaryPressureFunction",
+            "type": "object",
+            "properties": {
+                "Saturation": {
+                    "title": "Saturation",
+                    "description": "Saturation values for which the capillary pressures are tabulated.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CapillaryPressure": {
+                    "title": "Capillary Pressure",
+                    "description": "Capillary Pressure values of the fluid phase at the corresponding saturation values.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "PhaseCapillaryPressureFluidID": {
+                    "title": "Phase Capillary Pressure Fluid ID",
+                    "description": "Identifies the fluid phase that refers to the capillary pressure.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-RockModelCapillaryPressurePhase:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "PhaseSaturationFluidID": {
+                    "title": "Phase Saturation Fluid ID",
+                    "description": "Identifies the fluid phase that is being used for the saturation.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidModelPropertyPhase:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "PhaseCapillaryPressureFluidID",
+                "PhaseSaturationFluidID"
+            ],
+            "additionalProperties": false
+        },
+        "CapillaryPressureFunction": {
+            "title": "CapillaryPressureFunction",
+            "type": "object",
+            "properties": {
+                "FunctionUsageTypeID": {
+                    "title": "Function Usage Type ID",
+                    "description": "Identifies the type of usage for which the function is designed (such as imbibition, drainage, etc).",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationFunctionUsageType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "PhaseCapillaryPressureFunctions": {
+                    "title": "Phase Capillary Pressure Functions",
+                    "description": "Set of capillary pressure functions of fluid phases present in the reservoir as a function of a saturation.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PhaseCapillaryPressureFunction"
+                    }
+                }
+            },
+            "required": [
+                "FunctionUsageTypeID",
+                "PhaseCapillaryPressureFunctions"
+            ],
+            "additionalProperties": false
+        }
+    }
+}

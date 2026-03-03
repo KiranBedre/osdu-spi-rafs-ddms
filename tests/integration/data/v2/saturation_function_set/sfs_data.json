@@ -1,0 +1,77 @@
+{
+    "columns": [
+        "SaturationFunctionSetID",
+        "Meta",
+        "RelativePermeabilityFunctions",
+        "CapillaryPressureFunctions"
+    ],
+    "index": [
+        0
+    ],
+    "data": [
+        [
+            "{data_partition_id}:work-product-component--SaturationFunctionSet:{record_id}:",
+            [
+                {
+                    "kind": "Unit",
+                    "name": "volume per volume",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:0.1%20L%2Fbbl:",
+                    "propertyNames": [
+                        "RelativePermeabilityFunctions.PhaseRelativePermeabilityFunctions.Saturation",
+                        "CapillaryPressureFunctions.PhaseCapillaryPressureFunctions.Saturation"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "area per area",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:m2%2Fm2:",
+                    "propertyNames": [
+                        "RelativePermeabilityFunctions.PhaseRelativePermeabilityFunctions.RelativePermeability"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "pressure",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:psi:",
+                    "propertyNames": [
+                        "CapillaryPressureFunctions.PhaseCapillaryPressureFunctions.CapillaryPressure"
+                    ]
+                }
+            ],
+            [
+                {
+                    "FunctionUsageTypeID": "{data_partition_id}:reference-data--SaturationFunctionUsageType:Imbibition:",
+                    "PhaseRelativePermeabilityFunctions": [
+                        {
+                            "Saturation": [
+                                0.35
+                            ],
+                            "RelativePermeability": [
+                                0.62
+                            ],
+                            "PhaseRelativePermeabilityFluidID": "{data_partition_id}:reference-data--RockModelRelativePermeabilityPhase:OilInWater:",
+                            "PhaseSaturationFluidID": "{data_partition_id}:reference-data--FluidModelPropertyPhase:Oil:"
+                        }
+                    ]
+                }
+            ],
+            [
+                {
+                    "FunctionUsageTypeID": "{data_partition_id}:reference-data--SaturationFunctionUsageType:Imbibition:",
+                    "PhaseCapillaryPressureFunctions": [
+                        {
+                            "Saturation": [
+                                0.32
+                            ],
+                            "CapillaryPressure": [
+                                250.0
+                            ],
+                            "PhaseCapillaryPressureFluidID": "{data_partition_id}:reference-data--RockModelCapillaryPressurePhase:OilWater:",
+                            "PhaseSaturationFluidID": "{data_partition_id}:reference-data--FluidModelPropertyPhase:Water:"
+                        }
+                    ]
+                }
+            ]
+        ]
+    ]
+}

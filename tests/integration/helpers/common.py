@@ -17,16 +17,27 @@ import json
 import os
 import secrets
 import string
+import time
 from io import BytesIO
 
 import pandas
 from deepdiff import DeepDiff
+from jsonpointer import JsonPointerException, resolve_pointer, set_pointer
+from loguru import logger
 
 from app.api.routes.utils.query import find_osdu_ids_from_string
 from tests.integration.config import DataTypes
 
+COMPARE_RESPONSES_EXCLUDE_PATHS = (
+    "root['id']",
+    "root['version']",
+    "root['createUser']",
+    "root['createTime']",
+    "root['modifyUser']",
+    "root['modifyTime']",
+)
 
-class CommonHelper(object):
+class CommonHelper():
     """Methods to work with all test."""
 
     def __init__(self, api):
@@ -42,7 +53,7 @@ class CommonHelper(object):
     def generate_random_record_id(length: int = 10) -> str:
         """Generates a random sequence for record_id with a specified
         length."""
-        characters = string.ascii_letters + string.digits  # Include both uppercase and lowercase letters, as well as digits
+        characters = string.ascii_letters + string.digits  # Include uppercase and lowercase letters, as well as digits
         random_id = f"autotest_{''.join(secrets.choice(characters) for _ in range(length))}"
         return random_id
 
@@ -60,8 +71,7 @@ class CommonHelper(object):
         rafs_use_blob_storage = os.getenv("RAFS_USE_BLOB_STORAGE")
         if rafs_use_blob_storage and rafs_use_blob_storage == "True":
             return ddms_urn.split("/")[-1]
-        else:
-            return ddms_urn.split("/")[-2]
+        return ddms_urn.split("/")[-2]
 
     @staticmethod
     def parse_full_record_id(record_urn: str) -> dict:
@@ -107,16 +117,133 @@ class CommonHelper(object):
         if content_type == "parquet":
             df = pandas.read_parquet(BytesIO(body))
             return json.loads(df.to_json(orient="split"))
+
+        raise ValueError(f"Unsupported content type: {content_type}")
+
+    def compare_responses(self, json_body: dict, response_body, response_type="parquet"):
+        """
+        Compares request body to actual response (both JSON or Parquet), ignoring dynamic fields.
+
+        :param json_body: The actual response body (dict).
+        :param response_body: The expected response body (dict for JSON, bytes for Parquet).
+        :param response_type: Type of expected response ('json' or 'parquet').
+        """
+        if response_type == "parquet":
+            response_data = self.load_parquet_data(response_body, content_type="parquet")
+        elif response_type == "json":
+            response_data = response_body
         else:
-            raise ValueError(f"Unsupported content type: {content_type}")
+            raise ValueError(f"Unsupported expected_type: {response_type}")
 
-    def compare_responses(self, json_body: dict, parquet_body: bytes):
-        """Compares actual response to expected response (both JSON or
-        Parquet), ignoring dynamic fields."""
-
-        parquet_data = self.load_parquet_data(parquet_body, content_type="parquet")
-
-        diff = DeepDiff(json_body, parquet_data, ignore_order=True, significant_digits=6)
+        diff = DeepDiff(
+            json_body,
+            response_data,
+            ignore_order=True,
+            significant_digits=6,
+            exclude_paths=COMPARE_RESPONSES_EXCLUDE_PATHS,
+        )
 
         if diff:
             assert False, f"Responses do not match!\n{diff.to_json(indent=2)}\n"
+
+    def delete_by_path(self, json_body: dict, path: str) -> None:
+        """
+        Delete key/element addressed by JSON Pointer.
+        :param json_body: json body (dict).
+        :param path: path to field.
+        """
+        parent_path, _, last = path.rpartition("/")
+        parent_path = parent_path or ""  # root
+        try:
+            parent = resolve_pointer(json_body, parent_path)
+        except JsonPointerException:
+            return  # if parent path doesn't exist
+
+        if isinstance(parent, dict):
+            parent.pop(last, None)
+        elif isinstance(parent, list):
+            try:
+                idx = int(last)
+            except ValueError as exc:
+                raise ValueError(f"List index must be int in pointer: {path}: {exc}") from exc
+            if 0 <= idx < len(parent):
+                parent.pop(idx)
+
+    def set_by_path(self, json_body: dict, path: str, value) -> None:
+        """
+        Set value addressed by JSON Pointer.
+        :param json_body: json body (dict).
+        :param path: path to field.
+        """
+        try:
+            set_pointer(json_body, path, value)
+        except JsonPointerException as exc:
+            raise AssertionError(f"Invalid JSON pointer '{path}': {exc}") from exc
+
+    def wait_for_search_record(self, search_func, record_id: str, max_attempts: int = 30,  interval: int = 5) -> dict:
+        """
+        Polls the search function until the specified record_id appears in the results or times out.
+        :param search_func: Function with no arguments that returns a search response dict (must have 'result' list)
+        :param record_id: Full record ID to look for
+        :param max_attempts: Maximum attempts number to wait
+        :param poll_interval: Delay between retries in seconds
+        :return: The last search response containing the record
+        :raises AssertionError: If the record is not found within the timeout
+        """
+        last_response: dict | None = None
+
+        for attempt in range(max_attempts):
+            last_response = search_func()
+            results = last_response.get("result", [])
+            if any(record_id in entry for entry in results):
+                logger.info(f"Record '{record_id}' found in search results.")
+                return last_response
+
+            logger.info(
+                f"Record '{record_id}' not found yet; retrying in {interval}s (Attempt {attempt + 1}/{max_attempts})")
+            if attempt < max_attempts - 1:
+                time.sleep(interval)
+
+        raise AssertionError(
+            f"Record '{record_id}' not found in search results within {max_attempts*interval}s. "
+            f"Last response: {last_response}"
+        )
+
+    def wait_for_search_data(self, search_func, record_id: str, max_attempts: int = 30,  interval: int = 5) -> dict:
+        """
+        Polls the search function until the specified record_id appears in the results or times out.
+        :param search_func: Function with no arguments that returns a search response dict (must have 'result' list)
+        :param record_id: Full record ID to look for
+        :param max_attempts: Maximum attempts number to wait
+        :param poll_interval: Delay between retries in seconds
+        :return: The last search response containing the record
+        :raises AssertionError: If the record is not found within the timeout
+        """
+        last_response: dict | None = None
+
+        for attempt in range(max_attempts):
+            last_response = search_func()
+            result = last_response.get("result", {})
+            columns = result.get("columns", [])
+            data = result.get("data", [])
+
+            try:
+                column_idx = columns.index("SaturationFunctionSetID")
+            except ValueError:
+                logger.warning(
+                    f"Column SaturationFunctionSetID' not found yet (attempt {attempt + 1}/{max_attempts}).")
+            else:
+                for row in data:
+                    if row[column_idx] == f"{record_id}:":
+                        logger.info(f"Record '{record_id}' found in search results.")
+                        return last_response
+
+            logger.info(
+                f"Record '{record_id}' not found; retrying in {interval}s (attempt {attempt + 1,}/{max_attempts}).")
+            if attempt < max_attempts - 1:
+                time.sleep(interval)
+
+        raise AssertionError(
+            f"Record '{record_id}' not found in search results within {max_attempts * interval}s. "
+            f"Last response: {last_response}"
+        )
