@@ -25,6 +25,7 @@ from pyarrow import parquet as pq
 
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.dataframe.filter_processor import FilterProcessor
+from app.exceptions.exceptions import UnprocessableContentException
 
 RETRIES = 3
 
@@ -61,6 +62,26 @@ class ParquetLoader(object):
             ]
             return await asyncio.gather(*tasks)
 
+    def _handle_filter_error(
+        self,
+        err: Exception,
+        dataset_id: str,
+    ) -> DFPayload:
+        """Handle filter application errors, returning an empty DFPayload."""
+        if isinstance(err, ValueError):
+            message = "invalid filter value"
+        elif isinstance(err, KeyError):
+            message = "unknown filter field"
+        elif isinstance(err, RuntimeError):
+            message = "filter execution failure"
+        elif isinstance(err, UnprocessableContentException):
+            message = "unprocessable content"
+        else:
+            raise err
+
+        logger.warning(f"Omitted due to {message}. Dataset ID = {dataset_id}, error: {err}")
+        return DFPayload(dataset_id, pd.DataFrame(), None)
+
     async def _read_parquet_from_url(  # noqa: WPS234
         self,
         dataset_id: str,
@@ -75,7 +96,10 @@ class ParquetLoader(object):
                 read_content = await response.aread()
                 if df_filter_processor:
                     df_filter_processor = df_filter_processor.get_filters_without_aggregation()
-                    df = df_filter_processor.apply_filters_from_bytes(read_content)
+                    try:
+                        df = df_filter_processor.apply_filters_from_bytes(read_content)
+                    except (ValueError, KeyError, RuntimeError, UnprocessableContentException) as err:
+                        return self._handle_filter_error(err, dataset_id)
                 else:
                     df = pq.read_table(pa.BufferReader(read_content)).to_pandas()
                 error_msg = None

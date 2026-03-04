@@ -58,6 +58,25 @@ class BlobParquetLoader(object):
         ]
         return await asyncio.gather(*tasks)
 
+    def _handle_filter_error(
+        self,
+        err: Exception,
+        blob_id: str,
+        object_name: str,
+    ) -> DFPayload:
+        """Handle filter application errors, returning an empty DFPayload."""
+        if isinstance(err, ValueError):
+            message = "invalid filter value"
+        elif isinstance(err, KeyError):
+            message = "unknown filter field"
+        elif isinstance(err, RuntimeError):
+            message = "filter execution failure"
+        else:
+            raise err
+
+        logger.warning(f"Omitted due to {message}. Blob ID = {blob_id}, error: {err}")
+        return DFPayload(object_name, pd.DataFrame(), None)
+
     async def _read_parquet(  # noqa: WPS234
         self,
         blob_id: str,
@@ -77,7 +96,10 @@ class BlobParquetLoader(object):
             blob = await blob_storage_service.get_blob(blob_metadata=blob_metadata)
             if df_filter_processor:
                 df_filter_processor = df_filter_processor.get_filters_without_aggregation()
-                df = df_filter_processor.apply_filters_from_bytes(blob.blob_data)
+                try:
+                    df = df_filter_processor.apply_filters_from_bytes(blob.blob_data)
+                except (ValueError, KeyError, RuntimeError) as err:
+                    return self._handle_filter_error(err, blob_id, blob_metadata.object_name)
             else:
                 df = pq.read_table(pa.BufferReader(blob.blob_data)).to_pandas()
             error_msg = None
