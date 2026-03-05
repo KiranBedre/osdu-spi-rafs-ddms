@@ -63,16 +63,19 @@ class CommonRelativePathsV2(NamedTuple):
     STO: str = "/data/stocktankoilanalysis"
     CRUSHED_ROCK_ANALYSIS: str = "/data/crushedrockanalysis"
     MINING_GEOTECH_LOGGING: str = "/data/mininggeotechlogging"
+    PROPPANT_EMBEDMENT: str = "/data/proppantembed"
 
 
 class CommonRelativePathsDev(CommonRelativePathsV2):
     pass
 
 
-COMMON_RELATIVE_PATHS = MappingProxyType({
-    "v2": CommonRelativePathsV2,
-    "dev": CommonRelativePathsDev,
-})
+COMMON_RELATIVE_PATHS = MappingProxyType(
+    {
+        "v2": CommonRelativePathsV2,
+        "dev": CommonRelativePathsDev,
+    },
+)
 
 
 SAMPLESANALYSIS_TYPE_MAPPING = {
@@ -168,6 +171,7 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
     "stocktankoilanalysis": ["PVT.StockTankOilCharacterization"],
     "crushedrockanalysis": ["BasicRockProperties.CrushedRockAnalysis"],
     "mininggeotechlogging": ["Mining.Geotechlogging"],
+    "proppantembed": ["Geomechanics.ProppantEmbedmentTest"],
 }
 
 SATURATION_FUNCTION_SET_STR = "saturationfunctionset"

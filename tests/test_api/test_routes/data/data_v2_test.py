@@ -109,6 +109,9 @@ from tests.test_api.test_routes.api_v2.multistageseparator import (
 )
 from tests.test_api.test_routes.api_v2.nmr import nmr_mock_objects
 from tests.test_api.test_routes.api_v2.pdp import pdp_mock_objects
+from tests.test_api.test_routes.api_v2.proppant_embedment import (
+    proppant_embedment_mock_objects,
+)
 from tests.test_api.test_routes.api_v2.relative_permeability import (
     relative_permeability_mock_objects,
 )
@@ -226,7 +229,9 @@ def with_patched_services_success(storage_method, osdu_records, dataset_method, 
 
 
 @contextmanager
-def post_overrides(record_data=None, test_dataset_record_id=data_mock_objects.TEST_DATASET_RECORD_ID, data_payload=None):
+def post_overrides(
+    record_data=None, test_dataset_record_id=data_mock_objects.TEST_DATASET_RECORD_ID, data_payload=None
+):
     mock_get_storage_service = build_mock_get_storage_service(record_data, data_payload)
     mock_get_dataset_service = build_mock_get_dataset_service(test_dataset_record_id=test_dataset_record_id)
     overrides = {
@@ -254,7 +259,8 @@ def _headers_parquet(version="1.0.0"):
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path,dataset_id", [
+    "data_endpoint_path,dataset_id",
+    [
         (TestContentPathsApiV2.RCA, BulkDatasetIdV2.RCA),
         (TestContentPathsApiV2.CCE, BulkDatasetIdV2.CCE),
         (TestContentPathsApiV2.DIFF_LIB, BulkDatasetIdV2.DIFF_LIB),
@@ -289,6 +295,7 @@ def _headers_parquet(version="1.0.0"):
         (TestContentPathsApiV2.CEC_CONTENT, BulkDatasetIdV2.CEC_CONTENT),
         (TestContentPathsApiV2.ELECTRICAL_PROPERTIES, BulkDatasetIdV2.ELECTRICAL_PROPERTIES),
         (TestContentPathsApiV2.TRIAXIAL_TEST, BulkDatasetIdV2.TRIAXIAL_TEST),
+        (TestContentPathsApiV2.PROPPANT_EMBEDMENT, BulkDatasetIdV2.PROPPANT_EMBEDMENT),
         (TestContentPathsApiV2.CAP_PRESSURE, BulkDatasetIdV2.CAP_PRESSURE),
         (TestContentPathsApiV2.WETTABILITY_INDEX, BulkDatasetIdV2.WETTABILITY_INDEX),
         (TestContentPathsApiV2.TEC, BulkDatasetIdV2.TEC),
@@ -319,7 +326,8 @@ async def test_get_content_data_no_data(data_endpoint_path, dataset_id):
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path,dataset_id", [
+    "data_endpoint_path,dataset_id",
+    [
         (TestContentPathsApiV2.RCA, BulkDatasetIdV2.RCA),
         (TestContentPathsApiV2.CCE, BulkDatasetIdV2.CCE),
         (TestContentPathsApiV2.DIFF_LIB, BulkDatasetIdV2.DIFF_LIB),
@@ -354,6 +362,7 @@ async def test_get_content_data_no_data(data_endpoint_path, dataset_id):
         (TestContentPathsApiV2.CEC_CONTENT, BulkDatasetIdV2.CEC_CONTENT),
         (TestContentPathsApiV2.ELECTRICAL_PROPERTIES, BulkDatasetIdV2.ELECTRICAL_PROPERTIES),
         (TestContentPathsApiV2.TRIAXIAL_TEST, BulkDatasetIdV2.TRIAXIAL_TEST),
+        (TestContentPathsApiV2.PROPPANT_EMBEDMENT, BulkDatasetIdV2.PROPPANT_EMBEDMENT),
         (TestContentPathsApiV2.CAP_PRESSURE, BulkDatasetIdV2.CAP_PRESSURE),
         (TestContentPathsApiV2.WETTABILITY_INDEX, BulkDatasetIdV2.WETTABILITY_INDEX),
         (TestContentPathsApiV2.TEC, BulkDatasetIdV2.TEC),
@@ -384,7 +393,8 @@ async def test_get_data_no_content_header(data_endpoint_path, dataset_id):
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path,dataset_id", [
+    "data_endpoint_path,dataset_id",
+    [
         (TestContentPathsApiV2.RCA, BulkDatasetIdV2.RCA),
         (TestContentPathsApiV2.CCE, BulkDatasetIdV2.CCE),
         (TestContentPathsApiV2.DIFF_LIB, BulkDatasetIdV2.DIFF_LIB),
@@ -419,6 +429,7 @@ async def test_get_data_no_content_header(data_endpoint_path, dataset_id):
         (TestContentPathsApiV2.CEC_CONTENT, BulkDatasetIdV2.CEC_CONTENT),
         (TestContentPathsApiV2.ELECTRICAL_PROPERTIES, BulkDatasetIdV2.ELECTRICAL_PROPERTIES),
         (TestContentPathsApiV2.TRIAXIAL_TEST, BulkDatasetIdV2.TRIAXIAL_TEST),
+        (TestContentPathsApiV2.PROPPANT_EMBEDMENT, BulkDatasetIdV2.PROPPANT_EMBEDMENT),
         (TestContentPathsApiV2.CAP_PRESSURE, BulkDatasetIdV2.CAP_PRESSURE),
         (TestContentPathsApiV2.WETTABILITY_INDEX, BulkDatasetIdV2.WETTABILITY_INDEX),
         (TestContentPathsApiV2.TEC, BulkDatasetIdV2.TEC),
@@ -815,6 +826,16 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
             [build_get_test_data("x-parquet", triaxial_mock_objects.TEST_DATA)],
         ),
         (
+            TestContentPathsApiV2.PROPPANT_EMBEDMENT,
+            proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                proppant_embedment_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", proppant_embedment_mock_objects.TEST_DATA)],
+        ),
+        (
             TestContentPathsApiV2.CAP_PRESSURE,
             cappressure_mock_objects.TEST_DATASET_RECORD_ID,
             "get_record",
@@ -990,7 +1011,8 @@ async def test_get_content_parquet_data(
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path,params,storage_method,osdu_records,dataset_method,blobs,returned_data", [
+    "data_endpoint_path,params,storage_method,osdu_records,dataset_method,blobs,returned_data",
+    [
         (
             f"{TestContentPathsApiV2.RCA}/{rca_mock_objects.TEST_DATASET_RECORD_ID}",
             None,
@@ -1314,6 +1336,15 @@ async def test_get_content_parquet_data(
             "download_file",
             [build_get_test_data("x-parquet", triaxial_mock_objects.TEST_DATA)],
             triaxial_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.PROPPANT_EMBEDMENT}/{proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [proppant_embedment_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", proppant_embedment_mock_objects.TEST_DATA)],
+            proppant_embedment_mock_objects.TEST_DATA,
         ),
         (
             f"{TestContentPathsApiV2.CAP_PRESSURE}/{cappressure_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -1703,6 +1734,15 @@ async def test_get_content_parquet_data(
             triaxial_mock_objects.TEST_AGGREGATED_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.PROPPANT_EMBEDMENT}/{proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID}",
+            proppant_embedment_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [proppant_embedment_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", proppant_embedment_mock_objects.TEST_DATA)],
+            proppant_embedment_mock_objects.TEST_AGGREGATED_DATA,
+        ),
+        (
             f"{TestContentPathsApiV2.CAP_PRESSURE}/{cappressure_mock_objects.TEST_DATASET_RECORD_ID}",
             cappressure_mock_objects.TEST_PARAMS_AGGREGATION,
             "get_record",
@@ -2081,6 +2121,15 @@ async def test_get_content_parquet_data(
             triaxial_mock_objects.TEST_FILTERED_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.PROPPANT_EMBEDMENT}/{proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID}",
+            proppant_embedment_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [proppant_embedment_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", proppant_embedment_mock_objects.TEST_DATA)],
+            proppant_embedment_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
             f"{TestContentPathsApiV2.CAP_PRESSURE}/{cappressure_mock_objects.TEST_DATASET_RECORD_ID}",
             cappressure_mock_objects.TEST_PARAMS_FILTERS,
             "get_record",
@@ -2406,7 +2455,8 @@ async def test_get_data_json_data(
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path,storage_method,osdu_records,dataset_method,blobs,returned_data", [
+    "data_endpoint_path,storage_method,osdu_records,dataset_method,blobs,returned_data",
+    [
         (
             f"{TestContentPathsApiV2.RCA}/{rca_mock_objects.TEST_DATASET_RECORD_ID}",
             "get_record",
@@ -2678,6 +2728,14 @@ async def test_get_data_json_data(
             "download_file",
             [build_get_test_data("x-parquet", triaxial_mock_objects.TEST_DATA)],
             triaxial_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.PROPPANT_EMBEDMENT}/{proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [proppant_embedment_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", proppant_embedment_mock_objects.TEST_DATA)],
+            proppant_embedment_mock_objects.TEST_DATA,
         ),
         (
             f"{TestContentPathsApiV2.CAP_PRESSURE}/{cappressure_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -2803,7 +2861,8 @@ async def test_get_data_json_data_no_content_schema_version(
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path,storage_method,osdu_records,dataset_method,blobs,returned_data", [
+    "data_endpoint_path,storage_method,osdu_records,dataset_method,blobs,returned_data",
+    [
         (
             f"{TestContentPathsApiV2.RCA}/{rca_mock_objects.TEST_DATASET_RECORD_ID}",
             "get_record",
@@ -3075,6 +3134,14 @@ async def test_get_data_json_data_no_content_schema_version(
             "download_file",
             [build_get_test_data("x-parquet", triaxial_mock_objects.TEST_DATA)],
             triaxial_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.PROPPANT_EMBEDMENT}/{proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [proppant_embedment_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", proppant_embedment_mock_objects.TEST_DATA)],
+            proppant_embedment_mock_objects.TEST_DATA,
         ),
         (
             f"{TestContentPathsApiV2.CAP_PRESSURE}/{cappressure_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -3208,7 +3275,8 @@ async def test_get_data_json_data_improper_schema_version(
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path,storage_method,osdu_records,dataset_method,blobs,returned_data", [
+    "data_endpoint_path,storage_method,osdu_records,dataset_method,blobs,returned_data",
+    [
         (
             f"{TestContentPathsApiV2.RCA}/{rca_mock_objects.TEST_DATASET_RECORD_ID}",
             "get_record",
@@ -3480,6 +3548,14 @@ async def test_get_data_json_data_improper_schema_version(
             "download_file",
             [build_get_test_data("x-parquet", triaxial_mock_objects.TEST_DATA)],
             triaxial_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.PROPPANT_EMBEDMENT}/{proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [proppant_embedment_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", proppant_embedment_mock_objects.TEST_DATA)],
+            proppant_embedment_mock_objects.TEST_DATA,
         ),
         (
             f"{TestContentPathsApiV2.CAP_PRESSURE}/{cappressure_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -3858,6 +3934,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             triaxial_mock_objects.TEST_DATA,
             triaxial_mock_objects.TEST_DATASET_RECORD_ID,
             triaxial_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.PROPPANT_EMBEDMENT,
+            proppant_embedment_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            proppant_embedment_mock_objects.TEST_DATA,
+            proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID,
+            proppant_embedment_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
             TestContentPathsApiV2.CAP_PRESSURE,
@@ -4246,6 +4329,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             triaxial_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.PROPPANT_EMBEDMENT,
+            proppant_embedment_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            proppant_embedment_mock_objects.TEST_DATA,
+            proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID,
+            proppant_embedment_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
             TestContentPathsApiV2.CAP_PRESSURE,
             cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             cappressure_mock_objects.TEST_DATA,
@@ -4361,7 +4451,11 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
 )
 @pytest.mark.asyncio
 async def test_post_data_json_no_ddmsdatasets_field(
-        data_endpoint_path, record_data, test_data, test_dataset_record_id, test_ddms_urn,
+    data_endpoint_path,
+    record_data,
+    test_data,
+    test_dataset_record_id,
+    test_ddms_urn,
 ):
     version = _version_from_urn(test_ddms_urn)
     del record_data["data"]["DDMSDatasets"]
@@ -4556,6 +4650,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
             TestContentPathsApiV2.TRIAXIAL_TEST,
             triaxial_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             triaxial_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.PROPPANT_EMBEDMENT,
+            proppant_embedment_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
             TestContentPathsApiV2.CAP_PRESSURE,
@@ -4902,6 +5001,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             triaxial_mock_objects.TEST_DATA,
             triaxial_mock_objects.TEST_DATASET_RECORD_ID,
             triaxial_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.PROPPANT_EMBEDMENT,
+            proppant_embedment_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            proppant_embedment_mock_objects.TEST_DATA,
+            proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID,
+            proppant_embedment_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
             TestContentPathsApiV2.CAP_PRESSURE,
@@ -5292,6 +5398,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             triaxial_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.PROPPANT_EMBEDMENT,
+            proppant_embedment_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            proppant_embedment_mock_objects.TEST_DATA,
+            proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID,
+            proppant_embedment_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
             TestContentPathsApiV2.CAP_PRESSURE,
             cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             cappressure_mock_objects.TEST_DATA,
@@ -5420,7 +5533,8 @@ async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data,
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path, incorrect_schema_test_data", [
+    "data_endpoint_path, incorrect_schema_test_data",
+    [
         (TestContentPathsApiV2.RCA, rca_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.CCE, cce_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.DIFF_LIB, diff_lib_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
@@ -5455,6 +5569,7 @@ async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data,
         (TestContentPathsApiV2.CEC_CONTENT, cec_content_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.ELECTRICAL_PROPERTIES, electricalproperties_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.TRIAXIAL_TEST, triaxial_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
+        (TestContentPathsApiV2.PROPPANT_EMBEDMENT, proppant_embedment_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.CAP_PRESSURE, cappressure_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.CAP_SUCTION_TIME, capillary_suction_time_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.WETTABILITY_INDEX, wettability_index_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
@@ -5467,8 +5582,14 @@ async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data,
         (TestContentPathsApiV2.PDP, pdp_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.STO, sto_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, crushed_rock_analysis_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
-        (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, res_sim_rock_physics_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
-        (TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL, saturation_function_set_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
+        (
+            TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+            res_sim_rock_physics_mock_objects.INCORRECT_SCHEMA_TEST_DATA,
+        ),
+        (
+            TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+            saturation_function_set_mock_objects.INCORRECT_SCHEMA_TEST_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -5491,7 +5612,8 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path,incorrect_dataframe_data,error_reason", [
+    "data_endpoint_path,incorrect_dataframe_data,error_reason",
+    [
         (
             TestContentPathsApiV2.RCA,
             rca_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
@@ -5663,6 +5785,11 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             triaxial_mock_objects.EXPECTED_ERROR_REASON,
         ),
         (
+            TestContentPathsApiV2.PROPPANT_EMBEDMENT,
+            proppant_embedment_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
+            proppant_embedment_mock_objects.EXPECTED_ERROR_REASON,
+        ),
+        (
             TestContentPathsApiV2.CAP_PRESSURE,
             cappressure_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             cappressure_mock_objects.EXPECTED_ERROR_REASON,
@@ -5750,7 +5877,8 @@ async def test_post_invalid_df_error(data_endpoint_path, incorrect_dataframe_dat
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path", [
+    "data_endpoint_path",
+    [
         f"{TestContentPathsApiV2.RCA}/{rca_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.CCE}/{cce_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.DIFF_LIB}/{diff_lib_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -5785,6 +5913,7 @@ async def test_post_invalid_df_error(data_endpoint_path, incorrect_dataframe_dat
         f"{TestContentPathsApiV2.CEC_CONTENT}/{cec_content_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.ELECTRICAL_PROPERTIES}/{electricalproperties_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.TRIAXIAL_TEST}/{triaxial_mock_objects.TEST_DATASET_RECORD_ID}",
+        f"{TestContentPathsApiV2.PROPPANT_EMBEDMENT}/{proppant_embedment_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.CAP_PRESSURE}/{cappressure_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.WETTABILITY_INDEX}/{wettability_index_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.TEC}/{tec_data_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -5812,7 +5941,8 @@ async def test_get_403(data_endpoint_path):
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path", [
+    "data_endpoint_path",
+    [
         TestContentPathsApiV2.RCA,
         TestContentPathsApiV2.CCE,
         TestContentPathsApiV2.DIFF_LIB,
@@ -5847,6 +5977,7 @@ async def test_get_403(data_endpoint_path):
         TestContentPathsApiV2.CEC_CONTENT,
         TestContentPathsApiV2.ELECTRICAL_PROPERTIES,
         TestContentPathsApiV2.TRIAXIAL_TEST,
+        TestContentPathsApiV2.PROPPANT_EMBEDMENT,
         TestContentPathsApiV2.CAP_PRESSURE,
         TestContentPathsApiV2.WETTABILITY_INDEX,
         TestContentPathsApiV2.TEC,
@@ -5874,101 +6005,140 @@ async def test_post_403(data_endpoint_path):
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path,integrity_error_dataframe_data,missed_records", [
+    "data_endpoint_path,integrity_error_dataframe_data,missed_records",
+    [
         (
-            TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.RCA,
+            rca_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(rca_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.CCE, cce_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.CCE,
+            cce_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(cce_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.DIFF_LIB, diff_lib_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.DIFF_LIB,
+            diff_lib_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(diff_lib_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.TRANSPORT_TEST, transport_test_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.TRANSPORT_TEST,
+            transport_test_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(transport_test_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.COMPOSITIONAL_ANALYSIS, compositional_analysis_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.COMPOSITIONAL_ANALYSIS,
+            compositional_analysis_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(compositional_analysis_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.ATMOSPHERIC_FLASH, atmospheric_flash_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.ATMOSPHERIC_FLASH,
+            atmospheric_flash_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(atmospheric_flash_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.MSS, mss_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.MSS,
+            mss_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(mss_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.SWELLING, swelling_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.SWELLING,
+            swelling_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(swelling_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.CVD, cvd_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.CVD,
+            cvd_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(cvd_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.WATER_ANALYSIS, water_analysis_data_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.WATER_ANALYSIS,
+            water_analysis_data_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(water_analysis_data_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.INTERFACIAL_TENSION, interfacial_tension_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.INTERFACIAL_TENSION,
+            interfacial_tension_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(interfacial_tension_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.VLE,
+            vle_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(vle_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.MCM, mcm_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.MCM,
+            mcm_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(mcm_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.SLIMTUBE, slimtube_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.SLIMTUBE,
+            slimtube_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(slimtube_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.EXTRACTION, extraction_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.EXTRACTION,
+            extraction_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(extraction_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.FRACTIONATION, fractionation_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.FRACTIONATION,
+            fractionation_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(fractionation_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.RELATIVE_PERMEABILITY, relative_permeability_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(relative_permeability_mock_objects.TEST_DATA)),
             ),
         ),
         (
-            TestContentPathsApiV2.ROCK_COMPRESSIBILITY, rock_compressibility_mock_objects.TEST_DATA, list(
+            TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
+            rock_compressibility_mock_objects.TEST_DATA,
+            list(
                 find_osdu_ids_from_string(json.dumps(rock_compressibility_mock_objects.TEST_DATA)),
             ),
         ),
     ],
 )
 @pytest.mark.asyncio
-async def test_post_integrity_error(data_endpoint_path, integrity_error_dataframe_data, missed_records, with_patched_storage_failed_integrity_validation):
+async def test_post_integrity_error(
+    data_endpoint_path, integrity_error_dataframe_data, missed_records, with_patched_storage_failed_integrity_validation
+):
     with services_overrides():
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.post(
@@ -6022,6 +6192,7 @@ async def test_post_integrity_error(data_endpoint_path, integrity_error_datafram
         TestContentPathsApiV2.CEC_CONTENT,
         TestContentPathsApiV2.ELECTRICAL_PROPERTIES,
         TestContentPathsApiV2.TRIAXIAL_TEST,
+        TestContentPathsApiV2.PROPPANT_EMBEDMENT,
         TestContentPathsApiV2.CAP_PRESSURE,
         TestContentPathsApiV2.WETTABILITY_INDEX,
         TestContentPathsApiV2.TEC,
@@ -6090,6 +6261,7 @@ async def test_invalid_data_with_nan(path):
         (TestContentPathsApiV2.CEC_CONTENT, ORIENT_SPLIT_422_PAYLOADS),
         (TestContentPathsApiV2.ELECTRICAL_PROPERTIES, ORIENT_SPLIT_422_PAYLOADS),
         (TestContentPathsApiV2.TRIAXIAL_TEST, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.PROPPANT_EMBEDMENT, ORIENT_SPLIT_422_PAYLOADS),
         (TestContentPathsApiV2.CAP_PRESSURE, ORIENT_SPLIT_422_PAYLOADS),
         (TestContentPathsApiV2.WETTABILITY_INDEX, ORIENT_SPLIT_422_PAYLOADS),
         (TestContentPathsApiV2.TEC, ORIENT_SPLIT_422_PAYLOADS),
