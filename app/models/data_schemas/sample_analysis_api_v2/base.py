@@ -63,6 +63,7 @@ from app.models.data_schemas.sample_analysis_api_v2.xrd_data_model_2_0_0 import 
 from app.models.data_schemas.sample_analysis_api_v2.pdp_data_model_1_0_0 import PdpModel100
 from app.models.data_schemas.sample_analysis_api_v2.crushed_rock_analysis_data_model_1_0_0 import CrushedRockAnalysisModel100
 from app.models.data_schemas.sample_analysis_api_v2.mining_geotech_logging_data_model_1_0_0 import MiningGeotechLoggingModel100
+from app.models.data_schemas.sample_analysis_api_v2.proppant_embedment_data_model_1_0_0 import ProppantEmbedmentModel100
 
 RCA_MODELS = {
     ContentSchemaVersion.V_1_0_0: RoutineCoreAnalysisModel100,
@@ -206,6 +207,9 @@ CRUSHED_ROCK_ANALYSIS_MODELS = {
 MINING_GEOTECH_LOGGING_MODELS = {
     ContentSchemaVersion.V_1_0_0: MiningGeotechLoggingModel100,
 }
+PROPPANT_EMBEDMENT_MODELS = {
+    ContentSchemaVersion.V_1_0_0: ProppantEmbedmentModel100,
+}
 
 common_relative_paths_api_v2 = CommonRelativePathsV2()
 PATH_TO_DATA_MODEL_VERSIONS_API_V2 = {
@@ -255,4 +259,5 @@ PATH_TO_DATA_MODEL_VERSIONS_API_V2 = {
     common_relative_paths_api_v2.STO: STO_MODELS,
     common_relative_paths_api_v2.CRUSHED_ROCK_ANALYSIS: CRUSHED_ROCK_ANALYSIS_MODELS,
     common_relative_paths_api_v2.MINING_GEOTECH_LOGGING: MINING_GEOTECH_LOGGING_MODELS,
+    common_relative_paths_api_v2.PROPPANT_EMBEDMENT: PROPPANT_EMBEDMENT_MODELS,
 }
