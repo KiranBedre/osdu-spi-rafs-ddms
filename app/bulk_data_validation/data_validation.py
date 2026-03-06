@@ -45,11 +45,11 @@ class DataValidator(object):
         """
         schema_errors = self._validate_schema(df, bulk_mode=bulk_mode)
         if schema_errors:
-            return schema_errors
+            return schema_errors  # noqa: ASYNC910
 
         data_integrity_errors = await self._validate_integrity(df)
         if data_integrity_errors:
-            return {
+            return {  # noqa: ASYNC910
                 "missing_records": list(data_integrity_errors),
             }
 
@@ -108,7 +108,7 @@ class DataValidator(object):
         for ids_to_check_batch in divide_chunks(list(ids_to_check), settings.storage_query_limit):
             missing_records.update(await self._find_missing_records(ids_to_check=ids_to_check_batch))
 
-        return missing_records
+        return missing_records  # noqa: ASYNC910
 
     def _get_excluded_records(self, records: Iterable, skip_types: Iterable) -> set:
         """Get excluded record ids from a list given skip types."""
@@ -170,11 +170,26 @@ class DataValidator(object):
         # Handle dict failure case
         if isinstance(failure_case, dict):
             return any(
-                pd.isna(field_value) and field_name not in required_fields
+                self._is_scalar_nan(field_value) and field_name not in required_fields
                 for field_name, field_value in failure_case.items()
             )
 
         return False
+
+    @staticmethod
+    def _is_scalar_nan(field_value) -> bool:
+        """Check if a value is a scalar NaN (not a list, dict, or array).
+
+        :param field_value: the value to check
+        :return: True only if value is a scalar NaN
+        :rtype: bool
+        """
+        if isinstance(field_value, (list, dict)):
+            return False
+        try:
+            return bool(pd.isna(field_value))
+        except (ValueError, TypeError):
+            return False
 
     def _get_required_fields(self) -> set:
         """Extract required field names from the Pydantic model.

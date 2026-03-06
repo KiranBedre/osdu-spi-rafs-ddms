@@ -62,21 +62,36 @@ class ParquetLoader(object):
             ]
             return await asyncio.gather(*tasks)
 
+    def _apply_filters(
+        self,
+        read_content: bytes,
+        dataset_id: str,
+        df_filter_processor: Optional[FilterProcessor],
+    ) -> pd.DataFrame:
+        """Apply filters to parquet content or read raw."""
+        if not df_filter_processor:
+            return pq.read_table(pa.BufferReader(read_content)).to_pandas()
+        processor = df_filter_processor.get_filters_without_aggregation()
+        try:
+            return processor.apply_filters_from_bytes(read_content)
+        except (ValueError, KeyError, RuntimeError, UnprocessableContentException) as err:  # noqa: WPS239
+            return self._handle_filter_error(err, dataset_id).df
+
+    _filter_error_messages = {
+        ValueError: "invalid filter value",
+        KeyError: "unknown filter field",
+        RuntimeError: "filter execution failure",
+        UnprocessableContentException: "unprocessable content",
+    }
+
     def _handle_filter_error(
         self,
         err: Exception,
         dataset_id: str,
     ) -> DFPayload:
         """Handle filter application errors, returning an empty DFPayload."""
-        if isinstance(err, ValueError):
-            message = "invalid filter value"
-        elif isinstance(err, KeyError):
-            message = "unknown filter field"
-        elif isinstance(err, RuntimeError):
-            message = "filter execution failure"
-        elif isinstance(err, UnprocessableContentException):
-            message = "unprocessable content"
-        else:
+        message = self._filter_error_messages.get(type(err))
+        if not message:
             raise err
 
         logger.warning(f"Omitted due to {message}. Dataset ID = {dataset_id}, error: {err}")
@@ -94,14 +109,7 @@ class ParquetLoader(object):
             async with client.stream("GET", url) as response:
                 response.raise_for_status()
                 read_content = await response.aread()
-                if df_filter_processor:
-                    df_filter_processor = df_filter_processor.get_filters_without_aggregation()
-                    try:
-                        df = df_filter_processor.apply_filters_from_bytes(read_content)
-                    except (ValueError, KeyError, RuntimeError, UnprocessableContentException) as err:
-                        return self._handle_filter_error(err, dataset_id)
-                else:
-                    df = pq.read_table(pa.BufferReader(read_content)).to_pandas()
+                df = self._apply_filters(read_content, dataset_id, df_filter_processor)
                 error_msg = None
         except httpx.HTTPStatusError as http_exc:
             error_msg = f"HTTP status error {http_exc.response.status_code} for URL: {url}"  # noqa: WPS237
@@ -116,4 +124,4 @@ class ParquetLoader(object):
             logger.error(error_msg)
             df = pd.DataFrame()
 
-        return DFPayload(dataset_id, df, error_msg)
+        return DFPayload(dataset_id, df, error_msg)  # noqa: ASYNC910
