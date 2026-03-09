@@ -64,6 +64,7 @@ class CommonRelativePathsV2(NamedTuple):
     CRUSHED_ROCK_ANALYSIS: str = "/data/crushedrockanalysis"
     MINING_GEOTECH_LOGGING: str = "/data/mininggeotechlogging"
     PROPPANT_EMBEDMENT: str = "/data/proppantembed"
+    ROLLER_OVEN_TEST: str = "/data/rolleroventest"
 
 
 class CommonRelativePathsDev(CommonRelativePathsV2):
@@ -172,8 +173,11 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
     "crushedrockanalysis": ["BasicRockProperties.CrushedRockAnalysis"],
     "mininggeotechlogging": ["Mining.Geotechlogging"],
     "proppantembed": ["Geomechanics.ProppantEmbedmentTest"],
+    "rolleroventest": ["WellFluids.RollerOvenTest"],
 }
 
 SATURATION_FUNCTION_SET_STR = "saturationfunctionset"
 
 RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR = "reservoirsimulationrockphysicsmodel"
+
+ROLLER_OVEN_TEST_STR = "rolleroventest"
