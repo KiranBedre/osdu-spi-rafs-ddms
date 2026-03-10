@@ -286,14 +286,13 @@ class BaseDataView(object):
 
         if "validation error" in error_msg and "OrientSplit" in error_msg:
             required_keys = ["columns", "index", "data"]
-            missing_fields = [
-                f"'{key}'" for key in required_keys
-                if f"{key}\n  field required" in error_msg
-            ]
+            missing_fields = [f"'{key}'" for key in required_keys if f"{key}\n  field required" in error_msg]
 
             if missing_fields:
                 fields_str = ", ".join(missing_fields)
-                reason = "Data error: missing required fields: {0}. For records format, wrap the data in an array [{{...}}, ...].".format(fields_str)  # noqa: E501, WPS326
+                reason = "Data error: missing required fields: {0}. For records format, wrap the data in an array [{{...}}, ...].".format(  # noqa: E501, WPS326
+                    fields_str,
+                )
             else:
                 reason = "Data error: invalid 'split' format. Expected 'columns' (list of strings), 'index' (list of integers), and 'data' (list of arrays). For records format, use an array of objects [{{...}}, ...]."  # noqa: E501, WPS326
 
@@ -466,10 +465,10 @@ class BaseDataView(object):
         :raises exceptions.InvalidHeaderException: if client schema
             version is improper
         """
-        schema_versions = find_schema_versions_for_dataset_id(ddms_datasets, dataset_id)
+        schema_versions = list(find_schema_versions_for_dataset_id(ddms_datasets, dataset_id))
         if content_schema_version not in schema_versions:
-            error_title = "Invalid schema version has been provided."
-            error_details = f"Schema version {content_schema_version} is not one of proper versions: {schema_versions}"
+            error_title = f"Schema version mismatch for dataset {dataset_id}:"
+            error_details = f"requested {content_schema_version}, stored {schema_versions}"
             reason = f"{error_title} {error_details}"
             logger.debug(reason)
             raise exceptions.InvalidHeaderException(detail=reason)
@@ -510,7 +509,7 @@ class BaseDataView(object):
         """Add api route for get_data."""
         bulk_dataset_regex = self.bulk_dataset_regex.format(bulk_dataset_prefix=self._bulk_dataset_prefix)
 
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -520,7 +519,7 @@ class BaseDataView(object):
             """
             return record_id
 
-        async def validate_dataset_id(dataset_id: str = Path(default=..., pattern=bulk_dataset_regex)) -> str:
+        def validate_dataset_id(dataset_id: str = Path(default=..., pattern=bulk_dataset_regex)) -> str:
             """Validate if dataset id matches regex.
 
             :param dataset_id: dataset id
@@ -545,7 +544,8 @@ class BaseDataView(object):
 
     def _prepare_post_data_route(self) -> None:
         """Add api route for post_data."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id

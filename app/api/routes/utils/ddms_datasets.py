@@ -55,10 +55,10 @@ def check_object_name_schema_version(
     :raises exceptions.InvalidHeaderException: if client schema version
         is improper
     """
-    schema_versions = find_schema_versions_for_object_name(ddms_datasets, blob_id)
+    schema_versions = list(find_schema_versions_for_object_name(ddms_datasets, blob_id))
     if content_schema_version not in schema_versions:
-        error_title = "Invalid schema version has been provided."
-        error_details = f"Schema version {content_schema_version} is not one of proper versions: {schema_versions}"
+        error_title = f"Schema version mismatch for dataset {blob_id}:"
+        error_details = f"requested {content_schema_version}, stored {schema_versions}"
         reason = f"{error_title} {error_details}"
         logger.debug(reason)
         raise exceptions.InvalidHeaderException(detail=reason)

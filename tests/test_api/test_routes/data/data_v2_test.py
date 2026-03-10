@@ -29,6 +29,7 @@ from app.api.dependencies.services import (
     get_async_storage_service,
 )
 from app.api.routes.utils.query import find_osdu_ids_from_string
+from app.api.routes.utils.records import get_id_version
 from app.main import app
 from app.services import dataset, entitlements, storage
 from tests.test_api.test_routes import dependencies
@@ -3754,9 +3755,12 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
                 data_endpoint_path,
                 headers=TEST_HEADERS_JSON,
             )
+    dataset_id, _ = get_id_version(data_endpoint_path.split("/")[-1])
+    error_title = f"Schema version mismatch for dataset {dataset_id}:"
+    error_details = f"requested 1.0.0, stored ['2.0.0']"
     expected_error = {
         "code": status.HTTP_400_BAD_REQUEST,
-        "reason": "Invalid schema version has been provided. Schema version 1.0.0 is not one of proper versions: {'2.0.0'}",
+        "reason": f"{error_title} {error_details}",
     }
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
