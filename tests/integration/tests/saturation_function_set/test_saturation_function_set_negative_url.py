@@ -13,8 +13,8 @@
 #  limitations under the License.
 
 import copy
-import pytest
 
+import pytest
 from starlette import status
 
 from tests.integration.config import (
@@ -50,8 +50,10 @@ def test_sfs_negative_invalid_regex_record_id_in_url(api, tests_data, endpoint, 
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert ("work-product-component--SaturationFunctionSet ID is not provided in expected OSDU pattern "
-            "\"^[\\w\\-\\.]+:work-product-component--SaturationFunctionSet:[\\w\\-\\.\\:\\%]+$\"") in body["errors"]
+    assert (
+        "work-product-component--SaturationFunctionSet ID is not provided in expected OSDU pattern "
+        '"^[\\w\\-\\.]+:work-product-component--SaturationFunctionSet:[\\w\\-\\.\\:\\%]+$"'
+    ) in body["errors"]
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.RECORD_ID_ENDPOINTS_ARGS)
@@ -106,8 +108,10 @@ def test_sfs_negative_non_existing_record_id_in_url(api, tests_data, endpoint, a
     assert response.status_code == 404
     body = response.json()
     assert "Record not found" in body["reason"]
-    assert (f"The record '{record_id}' was not found" in body["message"]
-            or f"Record with id '{record_id}' does not exist" in body["message"])
+    assert (
+        f"The record '{record_id}' was not found" in body["message"]
+        or f"Record with id '{record_id}' does not exist" in body["message"]
+    )
 
 
 def test_sfs_negative_non_existing_version_in_url(api, tests_data, record_id):
@@ -177,8 +181,10 @@ def test_sfs_negative_invalid_regex_dataset_id_in_url(api, tests_data, record_id
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert ("content_id string does not match regex \"([\\w\\-\\.]+:dataset--File.Generic:[\\w\\-\\d\\.]+:?"
-            "[\\w\\-\\.\\:\\%]*)|([\\d\\w]+-[\\d\\w]+-[\\d\\w]+-[\\d\\w]+-[\\d\\w]+)\"") in body["errors"]
+    assert (
+        'content_id string does not match regex "([\\w\\-\\.]+:dataset--File.Generic:[\\w\\-\\d\\.]+:?'
+        '[\\w\\-\\.\\:\\%]*)|([\\d\\w]+-[\\d\\w]+-[\\d\\w]+-[\\d\\w]+-[\\d\\w]+)"'
+    ) in body["errors"]
 
 
 def test_sfs_negative_invalid_data_partition_id_in_dataset_id_in_url(api, tests_data, record_id):
@@ -325,8 +331,10 @@ def test_sfs_negative_unsupported_filtering_rows_filter_param(api, tests_data, e
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert ("Column 'RelativePermeabilityFunctions' is an array; dotted field access "
-            "('RelativePermeabilityFunctions.FunctionUsageTypeID') is not supported.") in body["reason"]
+    assert (
+        "Column 'RelativePermeabilityFunctions' is an array; dotted field access "
+        "('RelativePermeabilityFunctions.FunctionUsageTypeID') is not supported."
+    ) in body["reason"]
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.ENDPOINTS_WITH_FILTERS_ARGS)
@@ -424,11 +432,13 @@ def test_sfs_negative_unsupported_aggregation_on_array_fields(api, tests_data, e
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert ("Column 'RelativePermeabilityFunctions' is an array; dotted field access "
-            "('RelativePermeabilityFunctions.FunctionUsageTypeID') is not supported.") in body["reason"]
+    assert (
+        "Column 'RelativePermeabilityFunctions' is an array; dotted field access "
+        "('RelativePermeabilityFunctions.FunctionUsageTypeID') is not supported."
+    ) in body["reason"]
 
 
-@pytest.mark.parametrize("endpoint,args", Endpoints.ENDPOINTS_WITH_FILTERS_ARGS)
+@pytest.mark.parametrize("endpoint,args", Endpoints.RETURN_DATA_ENDPOINTS_ARGS)
 def test_sfs_negative_params_conflict(api, tests_data, endpoint, args, record_id, dataset_id):
     """Reject incompatible parameter combinations with 422 Unprocessable Content."""
     method = getattr(api.saturation_function_set, endpoint)

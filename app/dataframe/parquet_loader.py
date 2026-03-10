@@ -62,7 +62,7 @@ class ParquetLoader(object):
             ]
             return await asyncio.gather(*tasks)
 
-    def _handle_filter_error(
+    def _handle_filter_error(  # noqa: WPS231
         self,
         err: Exception,
         dataset_id: str,
@@ -96,10 +96,15 @@ class ParquetLoader(object):
                 read_content = await response.aread()
                 if df_filter_processor:
                     df_filter_processor = df_filter_processor.get_filters_without_aggregation()
-                    try:
-                        df = df_filter_processor.apply_filters_from_bytes(read_content)
-                    except (ValueError, KeyError, RuntimeError, UnprocessableContentException) as err:
-                        return self._handle_filter_error(err, dataset_id)
+                    try:  # noqa: WPS505
+                        df = df_filter_processor.apply_filters_from_bytes(read_content)  # noqa: WPS220
+                    except (  # noqa: WPS220, WPS239
+                        ValueError,
+                        KeyError,
+                        RuntimeError,
+                        UnprocessableContentException,
+                    ) as err:
+                        return self._handle_filter_error(err, dataset_id)  # noqa: WPS220
                 else:
                     df = pq.read_table(pa.BufferReader(read_content)).to_pandas()
                 error_msg = None
@@ -116,4 +121,4 @@ class ParquetLoader(object):
             logger.error(error_msg)
             df = pd.DataFrame()
 
-        return DFPayload(dataset_id, df, error_msg)
+        return DFPayload(dataset_id, df, error_msg)  # noqa: ASYNC910
