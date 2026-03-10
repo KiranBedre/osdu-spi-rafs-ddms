@@ -47,6 +47,7 @@ class DataTemplates:
 class DataTypes:
     """Values have to be equal to client/api/__init__.py keys for a specific
     data type client api."""
+
     # v2
     MASTER_DATA = "masterdata"
     SAMPLE_ANALYSIS = "sample_analysis"
@@ -118,11 +119,17 @@ class Endpoints:
         "search_data",
     ]
 
+    RETURN_DATA_ENDPOINTS = {
+        "get_data",
+        "search_data",
+    }
+
     RECORD_ID_ENDPOINTS_ARGS = []
     ENDPOINTS_WITH_FILTERS_ARGS = []
     ORIENT_ENDPOINTS_ARGS = []
     CONTENT_TYPE_ENDPOINTS_ARGS = []
     ACCEPT_ENDPOINTS_ARGS = []
+    RETURN_DATA_ENDPOINTS_ARGS = []
 
     _MAPPING = [
         (RECORD_ID_ENDPOINTS_ARGS, RECORD_ID_ENDPOINTS),
@@ -130,6 +137,7 @@ class Endpoints:
         (ORIENT_ENDPOINTS_ARGS, ORIENT_ENDPOINTS),
         (CONTENT_TYPE_ENDPOINTS_ARGS, CONTENT_TYPE_ENDPOINTS),
         (ACCEPT_ENDPOINTS_ARGS, ACCEPT_ENDPOINTS),
+        (RETURN_DATA_ENDPOINTS_ARGS, RETURN_DATA_ENDPOINTS),
     ]
 
     for item in ALL_ENDPOINTS_ARGS:
@@ -137,4 +145,3 @@ class Endpoints:
         for target_list, source_set in _MAPPING:
             if endpoint_name in source_set:
                 target_list.append(item)
-
