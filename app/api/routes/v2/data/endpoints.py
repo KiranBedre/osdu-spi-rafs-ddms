@@ -255,7 +255,10 @@ class BaseDataViewV2(BaseDataView):
 
     def _prepare_get_data_route_v2(self) -> None:
         """Add api route for get_data."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        async def validate_record_id(  # noqa: ASYNC124
+            record_id: str = Path(default=..., pattern=self._id_regex_str),
+        ) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -263,9 +266,11 @@ class BaseDataViewV2(BaseDataView):
             :return: record id
             :rtype: str
             """
-            return record_id
+            return record_id  # noqa: ASYNC910
 
-        async def validate_content_id(content_id: str = Path(default=..., pattern=self._content_id_regex)) -> str:
+        async def validate_content_id(  # noqa: ASYNC124
+            content_id: str = Path(default=..., pattern=self._content_id_regex),
+        ) -> str:
             """Validate if content identifier matches regex.
 
             :param content_id: content id
@@ -273,7 +278,7 @@ class BaseDataViewV2(BaseDataView):
             :return: content id
             :rtype: str
             """
-            return content_id
+            return content_id  # noqa: ASYNC910
 
         self._router.add_api_route(
             path="/{record_id}/data/{analysis_type}/{content_id}",
@@ -290,7 +295,10 @@ class BaseDataViewV2(BaseDataView):
 
     def _prepare_post_data_route_v2(self) -> None:
         """Add api route for post_data."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        async def validate_record_id(  # noqa: ASYNC124
+            record_id: str = Path(default=..., pattern=self._id_regex_str),
+        ) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -298,7 +306,7 @@ class BaseDataViewV2(BaseDataView):
             :return: record id
             :rtype: str
             """
-            return record_id
+            return record_id  # noqa: ASYNC910
 
         self._router.add_api_route(
             path="/{record_id}/data/{analysis_type}",
@@ -325,13 +333,15 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         super().__init__(router, id_regex_str, **kwargs)
 
     @cache(expire=CACHE_DEFAULT_TTL, coder=ResponseCoder, key_builder=key_builder_using_token)
-    async def get_data_multiple_content_type(
+    async def get_data_multiple_content_type(  # noqa: CFQ002, WPS211
         self,
         request: Request,
         record_id: str,
+        content_type: str,
         content_id: str,
         dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
         storage_service: storage.StorageService = Depends(get_async_storage_service),
+        blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
         df_filter: DataFrameFilterValidator = Depends(validate_filters_for_content_type),
         content_schema_version: str = Depends(get_content_schema_version),
         orient: str = Depends(get_orient),
@@ -342,12 +352,16 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :type request: Request
         :param record_id: record id,
         :type record_id: str
+        :param content_type: content schema type
+        :type content_type: str
         :param content_id: content identifier (dataset id or blob uuid),
         :type content_id: str
         :param dataset_service: dataset service
         :type dataset_service: dataset.DatasetService
         :param storage_service: storage service
         :type storage_service: storage.StorageService
+        :param blob_storage_service: blob storage service
+        :type blob_storage_service: IBlobStorage
         :param df_filter: df filter validator
         :type df_filter: DataFrameFilterValidator
         :param content_schema_version: the version used for content
@@ -358,16 +372,36 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :return: dataset data
         :rtype: Response
         """
-        return await self._get_data(
-            request,
-            record_id,
-            content_id,
-            dataset_service,
-            storage_service,
-            df_filter,
-            content_schema_version,
-            orient,
-        )
+        settings: AppSettings = get_app_settings()
+        if settings.use_blob_storage:
+            blob_metadata = BlobMetadata(
+                analysis_family=get_family_type_from_url(request.url.path),
+                analysis_type=content_type,
+                version=content_schema_version,
+                uuid=content_id,
+                content_type=SupportedMimeTypes.PARQUET,
+            )
+            response = await get_parquet_data(
+                request=request,
+                record_id=record_id,
+                blob_metadata=blob_metadata,
+                blob_storage_service=blob_storage_service,
+                storage_service=storage_service,
+                df_filter=df_filter,
+                orient=orient,
+            )
+        else:
+            response = await self._get_data(
+                request,
+                record_id,
+                content_id,
+                dataset_service,
+                storage_service,
+                df_filter,
+                content_schema_version,
+                orient,
+            )
+        return response
 
     async def post_data_multiple_content_type(
         self,
@@ -422,13 +456,14 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         )
 
     @cache(expire=CACHE_DEFAULT_TTL, coder=ResponseCoder, key_builder=key_builder_using_token)
-    async def get_data_single_content_type(
+    async def get_data_single_content_type(  # noqa: CFQ002, WPS211
         self,
         request: Request,
         record_id: str,
         content_id: str,
         dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
         storage_service: storage.StorageService = Depends(get_async_storage_service),
+        blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
         df_filter: DataFrameFilterValidator = Depends(validate_filters_for_domain_inferred_model),
         content_schema_version: str = Depends(get_content_schema_version),
         orient: str = Depends(get_orient),
@@ -445,6 +480,8 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :type dataset_service: dataset.DatasetService
         :param storage_service: storage service
         :type storage_service: storage.StorageService
+        :param blob_storage_service: blob storage service
+        :type blob_storage_service: IBlobStorage
         :param df_filter: df filter validator
         :type df_filter: DataFrameFilterValidator
         :param content_schema_version: the version used for content
@@ -455,16 +492,36 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :return: dataset data
         :rtype: Response
         """
-        return await self._get_data(
-            request,
-            record_id,
-            content_id,
-            dataset_service,
-            storage_service,
-            df_filter,
-            content_schema_version,
-            orient,
-        )
+        settings: AppSettings = get_app_settings()
+        if settings.use_blob_storage:
+            blob_metadata = BlobMetadata(
+                analysis_family=get_family_type_from_url(request.url.path),
+                analysis_type=self._single_content_type,
+                version=content_schema_version,
+                uuid=content_id,
+                content_type=SupportedMimeTypes.PARQUET,
+            )
+            response = await get_parquet_data(
+                request=request,
+                record_id=record_id,
+                blob_metadata=blob_metadata,
+                blob_storage_service=blob_storage_service,
+                storage_service=storage_service,
+                df_filter=df_filter,
+                orient=orient,
+            )
+        else:
+            response = await self._get_data(
+                request,
+                record_id,
+                content_id,
+                dataset_service,
+                storage_service,
+                df_filter,
+                content_schema_version,
+                orient,
+            )
+        return response
 
     async def post_data_single_content_type(
         self,
@@ -532,7 +589,10 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
 
     def _prepare_get_data_route(self, api_function: Callable, path: str) -> None:
         """Add api route for get_data."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        async def validate_record_id(  # noqa: ASYNC124
+            record_id: str = Path(default=..., pattern=self._id_regex_str),
+        ) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -540,9 +600,11 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             :return: record id
             :rtype: str
             """
-            return record_id
+            return record_id  # noqa: ASYNC910
 
-        async def validate_content_id(content_id: str = Path(default=..., pattern=self._content_id_regex)) -> str:
+        async def validate_content_id(  # noqa: ASYNC124
+            content_id: str = Path(default=..., pattern=self._content_id_regex),
+        ) -> str:
             """Validate if content identifier matches regex.
 
             :param content_id: content id
@@ -550,7 +612,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             :return: content id
             :rtype: str
             """
-            return content_id
+            return content_id  # noqa: ASYNC910
 
         self._router.add_api_route(
             path=path,
@@ -567,7 +629,10 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
 
     def _prepare_post_data_route(self, api_function: Callable, path: str) -> None:
         """Add api route for post_data."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        async def validate_record_id(  # noqa: ASYNC124
+            record_id: str = Path(default=..., pattern=self._id_regex_str),
+        ) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -575,7 +640,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             :return: record id
             :rtype: str
             """
-            return record_id
+            return record_id  # noqa: ASYNC910
 
         self._router.add_api_route(
             path=path,

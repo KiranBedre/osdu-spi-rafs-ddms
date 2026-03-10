@@ -96,7 +96,7 @@ class BlobParquetLoader(object):
             blob = await blob_storage_service.get_blob(blob_metadata=blob_metadata)
             if df_filter_processor:
                 df_filter_processor = df_filter_processor.get_filters_without_aggregation()
-                try:
+                try:  # noqa: WPS505
                     df = df_filter_processor.apply_filters_from_bytes(blob.blob_data)
                 except (ValueError, KeyError, RuntimeError) as err:
                     return self._handle_filter_error(err, blob_id, blob_metadata.object_name)
@@ -113,4 +113,4 @@ class BlobParquetLoader(object):
             logger.error(error_msg)
             df = pd.DataFrame()
 
-        return DFPayload(blob_metadata.object_name, df, error_msg)
+        return DFPayload(blob_metadata.object_name, df, error_msg)  # noqa: ASYNC910
