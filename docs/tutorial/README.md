@@ -208,6 +208,54 @@ Used to retrieve a concanated dataframe of all content found for a given analysi
 Retrieve all multistageseparator test where the SaturationPressure is greater than a 950 psi
 !["Search result example"](search_data_result_example.png "Search result example")
 
+## Dataset Versioning
+
+Starting with issue #707, RAFS uses **immutable datasets with WPC versioning**. Each time bulk data is uploaded via POST, a new dataset with a unique ID is created and the WPC record version is incremented. Previous datasets are never modified or overwritten.
+
+### How it works
+
+1. **POST** bulk data to a record — a new immutable dataset is created and the record's WPC version is incremented.
+2. **GET** bulk data without a version suffix — returns the latest version (same behavior as before).
+3. **GET** bulk data with a version suffix — returns the bulk data from that specific WPC version.
+
+### Retrieving the latest version (default)
+
+Omitting the version suffix returns the most recent bulk data, preserving backward compatibility:
+
+```bash
+curl --location --request GET '{RAFS_DDMS_URL}/v2/samplesanalysis/{SamplesAnalysisID}/data/relativepermeability/{DatasetID}' \
+--header 'Content-Type: application/json' \
+--header 'data-partition-id: osdu' \
+--header 'Authorization: Bearer token' \
+--header 'Accept: */*;version=1.0.0'
+```
+
+### Retrieving a specific historical version
+
+Append the WPC version number to the record id using a colon separator (`record_id:version`):
+
+```bash
+curl --location --request GET '{RAFS_DDMS_URL}/v2/samplesanalysis/{SamplesAnalysisID}:1/data/relativepermeability/{DatasetID}' \
+--header 'Content-Type: application/json' \
+--header 'data-partition-id: osdu' \
+--header 'Authorization: Bearer token' \
+--header 'Accept: */*;version=1.0.0'
+```
+
+In this example, `:1` retrieves the bulk data as it existed after the first upload. You can use the versions endpoint to list all available versions:
+
+```bash
+curl --location --request GET '{RAFS_DDMS_URL}/api/rafs-ddms/v2/samplesanalysis/{SamplesAnalysisID}/versions' \
+--header 'Content-Type: application/json' \
+--header 'data-partition-id: osdu' \
+--header 'Authorization: Bearer token'
+```
+
+### Backward compatibility
+
+- Requests **without** a version suffix continue to work exactly as before, returning the latest data.
+- Dataset IDs are no longer reused across updates. Each POST generates a new unique dataset ID.
+
 #### Deprecated Api V1
 
 API v1 is deprecated and therefore is not covered in the tutorial.

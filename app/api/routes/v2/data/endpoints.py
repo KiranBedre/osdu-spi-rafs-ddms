@@ -46,7 +46,10 @@ from app.api.routes.utils.ddms_datasets import (
     get_parquet_data,
     upsert_parquet_data,
 )
-from app.api.routes.utils.records import get_family_type_from_url
+from app.api.routes.utils.records import (
+    get_family_type_from_url,
+    get_id_version,
+)
 from app.core.config import get_app_settings
 from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
@@ -74,15 +77,17 @@ class BaseDataViewV2(BaseDataView):
         self._id_regex_str = id_regex_str
         self.description_template_post_data = APIDescriptionHelper.append_manage_roles(
             "Upload the bulk data for a given `{analysis_type}` object by record id.<br>\
-            It creates a new version of the record. <br>\
-            The previous meta-data with bulk data is available by their `versions`. <br> <br>\
+            Each update creates a new immutable dataset and a new WPC record version. \
+                Dataset IDs are never reused; historical data is preserved through WPC versioning. <br> <br>\
             Use the `Content-Type` request header to specify payload and response formats \
                 (`application/json` and `application/parquet` are supported).<br>\
             Use the `Accept` request header to specify content schema version \
                 (example header `Accept: */*;version=1.0.0` is supported).",
         )
         self.description_template_get_data = APIDescriptionHelper.append_joined_roles(
-            "Get the (`latest version`) bulk data for a given `{analysis_type}` object by record id. <br><br>\
+            "Get the bulk data for a given `{analysis_type}` object by record id. <br><br>\
+            To retrieve a specific version, append the version number to the record id \
+                (e.g., `record_id:1` for version 1). Without a version suffix, returns the latest version.<br><br>\
             Use the `Accept` request header to specify content schema version \
                 (example header `Accept: */*;version=1.0.0` is supported).<br><br>\
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
@@ -139,6 +144,9 @@ class BaseDataViewV2(BaseDataView):
         logger.info(f"Get data for type {analysis_type}")
         settings: AppSettings = get_app_settings()
 
+        # Issue #707: Support versioned record IDs (e.g., record_id:1)
+        base_record_id, version = get_id_version(record_id)
+
         if settings.use_blob_storage:
             blob_metadata = BlobMetadata(
                 analysis_family=get_family_type_from_url(request.url.path),
@@ -147,6 +155,7 @@ class BaseDataViewV2(BaseDataView):
                 uuid=content_id,
                 content_type=SupportedMimeTypes.PARQUET,
             )
+            # get_parquet_data handles version parsing internally
             response = await get_parquet_data(
                 request=request,
                 record_id=record_id,
@@ -159,13 +168,14 @@ class BaseDataViewV2(BaseDataView):
         else:
             response = await self._get_data(
                 request,
-                record_id,
+                base_record_id,
                 content_id,
                 dataset_service,
                 storage_service,
                 df_filter,
                 content_schema_version,
                 orient,
+                version,
             )
         return response
 
@@ -372,6 +382,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :return: dataset data
         :rtype: Response
         """
+        base_record_id, version = get_id_version(record_id)
         settings: AppSettings = get_app_settings()
         if settings.use_blob_storage:
             blob_metadata = BlobMetadata(
@@ -393,13 +404,14 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         else:
             response = await self._get_data(
                 request,
-                record_id,
+                base_record_id,
                 content_id,
                 dataset_service,
                 storage_service,
                 df_filter,
                 content_schema_version,
                 orient,
+                version,
             )
         return response
 
@@ -492,6 +504,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :return: dataset data
         :rtype: Response
         """
+        base_record_id, version = get_id_version(record_id)
         settings: AppSettings = get_app_settings()
         if settings.use_blob_storage:
             blob_metadata = BlobMetadata(
@@ -513,13 +526,14 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         else:
             response = await self._get_data(
                 request,
-                record_id,
+                base_record_id,
                 content_id,
                 dataset_service,
                 storage_service,
                 df_filter,
                 content_schema_version,
                 orient,
+                version,
             )
         return response
 
