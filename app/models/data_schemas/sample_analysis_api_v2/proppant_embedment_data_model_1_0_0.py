@@ -372,7 +372,7 @@ class TestStep(RafsBaseModel):
     class Config:
         extra = Extra.forbid
 
-    StepNumber: Optional[float] = Field(
+    StepNumber: Optional[int] = Field(
         None,
         description="Internal step number which identifies the repeated steps in this analysis.",
         title="Step Number",
@@ -496,20 +496,24 @@ class ProppantEmbedmentModel100(RafsBaseModel):
         description="Mass of proppant loaded per sample area.",
         title="Proppant Load",
     )
-    ProppantLayers: Optional[float] = Field(
+    ProppantLayers: Optional[int] = Field(
         None,
         description="The number of discrete proppant beds or layers placed against the rock surface.",
-        example="",
         title="Proppant Layers",
     )
-    TestFluid: Optional[
+    WellFluidTypeID: Optional[
         constr(
             regex=r"^[\w\-\.]+:reference-data\-\-WellFluidType:[\w\-\.\:\%]+:[0-9]*$"
         )
     ] = Field(
         None,
         description="Fluid used for sample saturation and circulation during the embedment test.",
-        title="Test Fluid",
+        title="Well Fluid Type ID",
+    )
+    AverageEmbedmentPercentage: Optional[float] = Field(
+        None,
+        description="Average percentage of the proppant's nominal diameter that has been embedded into the rock surface at closure pressure.",
+        title="Average Embedment Percentage",
     )
     AverageEmbedmentDepthAtClosure: Optional[float] = Field(
         None,

@@ -52,7 +52,8 @@
         "ProppantAgent.ISO13503_2Properties[*].MedianParticleDiameter",
         "TestSteps[*].AxialDisplacement",
         "TestSteps[*].ProppantCompressionDisplacementCorrection",
-        "TestSteps[*].EmbedmentDepth"
+        "TestSteps[*].EmbedmentDepth",
+        "TestSteps[*].AxialPistonDisplacement"
       ]
     },
     {
@@ -115,7 +116,7 @@
         "ProppantAgent.ISO13503_2Properties[*].TurbidityNTU",
         "ProppantAgent.ISO13503_2Properties[*].TurbidityFNU",
         "TestSteps[*].StepNumber",
-        "TestSteps[*].AxialPistonDisplacement"
+        "AverageEmbedmentPercentage"
       ]
     }
   ],
@@ -177,12 +178,13 @@
     "Remarks": "Example Remarks"
   },
   "ProppantLoad": 12345.6,
-  "ProppantLayers": -123.0,
-  "TestFluid": "namespace:reference-data--WellFluidType:WBM-PADMud:",
+  "ProppantLayers": 2,
+  "WellFluidTypeID": "namespace:reference-data--WellFluidType:WBM-PADMud:",
+  "AverageEmbedmentPercentage": 12345.6,
   "AverageEmbedmentDepthAtClosure": 12345.6,
   "TestSteps": [
     {
-      "StepNumber": 12345.6,
+      "StepNumber": 1,
       "ElapsedTime": 12345.6,
       "AxialPistonPumpPressure": 12345.6,
       "AxialPistonDisplacement": 12345.6,
