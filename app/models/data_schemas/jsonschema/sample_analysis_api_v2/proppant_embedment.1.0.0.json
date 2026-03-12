@@ -649,14 +649,13 @@
       "x-osdu-frame-of-reference": "UOM:mass per area"
     },
     "ProppantLayers": {
-      "type": "number",
+      "type": "integer",
       "title": "Proppant Layers",
-      "description": "The number of discrete proppant beds or layers placed against the rock surface.",
-      "example": ""
+      "description": "The number of discrete proppant beds or layers placed against the rock surface."
     },
-    "TestFluid": {
+    "WellFluidTypeID": {
       "type": "string",
-      "title": "Test Fluid",
+      "title": "Well Fluid Type ID",
       "description": "Fluid used for sample saturation and circulation during the embedment test.",
       "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WellFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
       "x-osdu-relationship": [
@@ -665,6 +664,12 @@
           "EntityType": "WellFluidType"
         }
       ]
+    },
+    "AverageEmbedmentPercentage": {
+      "type": "number",
+      "title": "Average Embedment Percentage",
+      "description": "Average percentage of the proppant's nominal diameter that has been embedded into the rock surface at closure pressure.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
     },
     "AverageEmbedmentDepthAtClosure": {
       "type": "number",
@@ -685,10 +690,9 @@
         "description": "The array of test data.",
         "properties": {
           "StepNumber": {
-            "type": "number",
+            "type": "integer",
             "title": "Step Number",
-            "description": "Internal step number which identifies the repeated steps in this analysis.",
-            "x-osdu-frame-of-reference": "UOM:non-dimensional"
+            "description": "Internal step number which identifies the repeated steps in this analysis."
           },
           "ElapsedTime": {
             "type": "number",
@@ -706,7 +710,7 @@
             "type": "number",
             "title": "Axial Piston Displacement",
             "description": "Reading from the Linear Variable Differential Transformer (LVDT) that measures the relative axial displacement of the loading piston (or platen) with respect to a fixed reference point.",
-            "x-osdu-frame-of-reference": "UOM:dimensionless"
+            "x-osdu-frame-of-reference": "UOM:length"
           },
           "AxialStress": {
             "type": "number",

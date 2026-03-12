@@ -117,4 +117,4 @@ INCORRECT_SCHEMA_TEST_DATA = {
 
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
 INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting Remarks in index row 0
-EXPECTED_ERROR_REASON = "Data error: 15 columns passed, passed data had 14 columns"
+EXPECTED_ERROR_REASON = "Data error: 16 columns passed, passed data had 15 columns"
