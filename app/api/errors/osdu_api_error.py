@@ -15,6 +15,7 @@
 import json
 
 from httpx import HTTPStatusError
+from loguru import logger
 from requests.exceptions import HTTPError
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -27,6 +28,8 @@ from app.models.schemas.errors import OsduApiErrorResponse
 def format_request_exc(exc: HTTPError) -> dict:
     try:
         exc_message = json.loads(exc.response.text)
+        if not isinstance(exc_message, dict):
+            raise TypeError("Response is not a JSON object")
         formatted_exc = OsduApiErrorResponse.construct(
             code=exc_message.get("code") or exc.response.status_code,
             reason=exc_message.get("reason") or exc.response.reason,
@@ -42,8 +45,16 @@ def format_request_exc(exc: HTTPError) -> dict:
 
 
 async def osdu_api_http_error_handler(_: Request, exc: HTTPError) -> JSONResponse:
+    formatted_error = format_request_exc(exc)
+    error_code = formatted_error.get("code", "N/A")
+    error_reason = formatted_error.get("reason", "N/A")
+    error_message = formatted_error.get("message", "N/A")
+    log_message = (
+        f"OSDU API HTTP error: {error_code} - {error_reason} | Message: {error_message}"
+    )
+    logger.error(log_message)
     return JSONResponse(
-        format_request_exc(exc),
+        formatted_error,
         status_code=exc.response.status_code,
     )
 
@@ -51,23 +62,33 @@ async def osdu_api_http_error_handler(_: Request, exc: HTTPError) -> JSONRespons
 def format_exc(exc: HTTPStatusError) -> dict:
     try:
         exc_message = json.loads(exc.response.text)
+        if not isinstance(exc_message, dict):
+            raise TypeError("Response is not a JSON object")
         formatted_exc = OsduApiErrorResponse.construct(
             code=exc_message.get("code") or exc.response.status_code,
-            reason=exc_message.get("reason"),
+            reason=exc_message.get("reason") or exc.response.reason_phrase,
             message=exc_message.get("message") or exc.response.text,
         ).dict()
     except (TypeError, json.JSONDecodeError):
         formatted_exc = OsduApiErrorResponse.construct(
             code=exc.response.status_code,
-            reason=str(exc.response.content),
+            reason=exc.response.reason_phrase,
             message=exc.response.text,
         ).dict()
     return transform_to_human_readable(formatted_exc)
 
 
 async def osdu_api_httpx_error_handler(_: Request, exc: HTTPStatusError) -> JSONResponse:
+    formatted_error = format_exc(exc)
+    error_code = formatted_error.get("code", "N/A")
+    error_reason = formatted_error.get("reason", "N/A")
+    error_message = formatted_error.get("message", "N/A")
+    log_message = (
+        f"OSDU API HTTPX error: {error_code} - {error_reason} | Message: {error_message}"
+    )
+    logger.error(log_message)
     return JSONResponse(
-        format_exc(exc),
+        formatted_error,
         status_code=exc.response.status_code,
     )
 
@@ -79,11 +100,20 @@ async def osdu_api_custom_exc_handler(_: Request, exc: OsduApiException) -> JSON
             "reason": exc.detail.get("reason"),
             "message": exc.detail.get("message"),
         }
+        error_reason = exc.detail.get("reason", "N/A")
+        error_message = exc.detail.get("message", "N/A")
+        log_message = (
+            f"OSDU API custom exception: {exc.status_code} - {error_reason} | Message: {error_message}"
+        )
+        logger.error(log_message)
     else:
         error_kwargs = {
             "code": exc.status_code,
             "reason": exc.detail,
         }
+        logger.error(
+            f"OSDU API custom exception: {exc.status_code} - {exc.detail}",
+        )
     return JSONResponse(
         OsduApiErrorResponse.construct(**error_kwargs).dict(),
         status_code=exc.status_code,
