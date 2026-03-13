@@ -20,16 +20,12 @@ import sys
 import pandas as pd
 from pydantic.error_wrappers import ValidationError
 
-from app.models.data_schemas.reservoir_simulation_rock_physics_v2 import (
-    base as rsrpm_base,
-)
-from app.models.data_schemas.sample_analysis_api_v2 import base as sa_base
-from app.models.data_schemas.saturation_function_set_api_v2 import (
-    base as sfs_base,
-)
+app_dir = os.path.join(os.path.dirname(__file__), "..")  # noqa # isort: skip
+sys.path.append(app_dir)  # noqa # isort: skip
 
-app_dir = os.path.join(os.path.dirname(__file__), "..")
-sys.path.append(app_dir)
+from app.models.data_schemas.reservoir_simulation_rock_physics_v2 import base as rsrpm_base
+from app.models.data_schemas.sample_analysis_api_v2 import base as sa_base
+from app.models.data_schemas.saturation_function_set_api_v2 import base as sfs_base
 
 
 def create_test_data_from_example(
