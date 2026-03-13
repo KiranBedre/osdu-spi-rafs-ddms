@@ -1,14 +1,16 @@
 [
   {
-    "SamplesAnalysisID": "namespace:work-product-component--SamplesAnalysis:sample-analysis-001:1",
-    "SampleID": "namespace:master-data--Sample:sample-001:1",
+    "SamplesAnalysisID": "namespace:work-product-component--SamplesAnalysis:sample-analysis-001:",
+    "SampleID": "namespace:master-data--Sample:sample-001:",
     "Meta": [
       {
         "kind": "Unit",
         "name": "degC",
         "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:degC:",
         "propertyNames": [
-          "TestTemperature"
+          "TestTemperature",
+          "SlimTubeTestSteps[*].StepAverageTemperature",
+          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].SeparatorTemperature"
         ]
       },
       {
@@ -43,16 +45,8 @@
         "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:cm3:",
         "propertyNames": [
           "SlimTubeSpecification[*].ColumnTotalPoreVolume",
-          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeOilProductionAtStockTankConditions"
-        ]
-      },
-      {
-        "kind": "Unit",
-        "name": "percent [volume basis]",
-        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:%25%5Bvol%5D:",
-        "propertyNames": [
-          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InjectionVolumeAtTestTemperature",
-          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InjectionVolumeAtPumpTemperature"
+          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeOilProductionAtStockTankConditions",
+          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeGasProductionAtStockTankConditions"
         ]
       },
       {
@@ -104,7 +98,9 @@
         "propertyNames": [
           "MinimumMiscibilityPressure",
           "SlimTubeTestSteps[*].StepAveragePressure",
-          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].DifferentialPressure"
+          "SlimTubeTestSteps[*].StepBackPressure",
+          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].DifferentialPressure",
+          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].SeparatorPressure"
         ]
       },
       {
@@ -135,19 +131,18 @@
       },
       {
         "kind": "Unit",
-        "name": "mole per mole",
-        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:mol%2Fmol:",
-        "propertyNames": [
-          "CalculatedProperties[*].ResidueCalculatedProperties[*].ResidueRelativeMolarWeight"
-        ]
-      },
-      {
-        "kind": "Unit",
         "name": "gram per mole",
         "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:g%2Fmol:",
         "propertyNames": [
           "CalculatedProperties[*].AvgMoleWeight",
-          "CalculatedProperties[*].ResidueCalculatedProperties[*].ResidueMolecularWeight"
+          "CalculatedProperties[*].ResidueCalculatedProperties[*].ResidueMolecularWeight",
+          "InjectedGas[*].VaporMolecularWeight",
+          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeVaporCompositionalAnalysis[*].VaporMolecularWeight",
+          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalVaporCompositionalAnalysis[*].VaporMolecularWeight",
+          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InstantaneousVaporCompositionalAnalysis[*].VaporMolecularWeight",
+          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeLiquidCompositionalAnalysis[*].LiquidMolecularWeight",
+          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalLiquidCompositionalAnalysis[*].LiquidMolecularWeight",
+          "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InstantaneousLiquidCompositionalAnalysis[*].LiquidMolecularWeight"
         ]
       },
       {
@@ -174,8 +169,8 @@
         "ColumnPorosity": 0.35,
         "ColumnTotalPoreVolume": 350,
         "ColumnPermeability": 2.5,
-        "PermeabilityMeasurementMethodID": "namespace:reference-data--PermeabilityMeasurementMethod:Gas:1",
-        "FluidTypeID": "namespace:reference-data--SampleInjectionFluidType:CO2:1",
+        "ColumnPermeabilityMeasurementMethodID": "namespace:reference-data--PermeabilityMeasurementMethod:Gas:",
+        "ColumnPermeabilityFluidTypeID": "namespace:reference-data--SampleInjectionFluidType:CO2:",
         "ColumnOuterDiameter": 2.54,
         "ColumnInnerDiameter": 2,
         "ColumnFlowCrossSectionalArea": 3.14
@@ -183,22 +178,26 @@
     ],
     "InjectedGas": [
       {
-        "ComponentNameID": "namespace:reference-data--SampleCompositionComponent:CO2:1",
-        "RelativeMoleWeight": 1,
-        "MolecularWeight": 44.01,
-        "MolePercent": 98,
-        "MassPercent": 99,
-        "VolumePercent": 97.5,
-        "SpecificGravity": 1.52
-      },
-      {
-        "ComponentNameID": "namespace:reference-data--SampleCompositionComponent:N2:1",
-        "RelativeMoleWeight": 0.03,
-        "MolecularWeight": 28.01,
-        "MolePercent": 2,
-        "MassPercent": 1,
-        "VolumePercent": 2.5,
-        "SpecificGravity": 0.97
+        "VaporSpecificGravity": 1.52,
+        "VaporMolecularWeight": 43.69,
+        "VaporComposition": [
+          {
+            "ComponentNameID": "namespace:reference-data--SampleOrganicCompositionComponent:CO2:",
+            "MolecularWeight": 44.01,
+            "RelativeMole": 0.98,
+            "RelativeMass": 0.99,
+            "RelativeVolume": 0.975,
+            "SpecificGravity": 1.52
+          },
+          {
+            "ComponentNameID": "namespace:reference-data--SampleOrganicCompositionComponent:N2:",
+            "MolecularWeight": 28.01,
+            "RelativeMole": 0.02,
+            "RelativeMass": 0.01,
+            "RelativeVolume": 0.025,
+            "SpecificGravity": 0.97
+          }
+        ]
       }
     ],
     "MinimumMiscibilityPressure": 1800,
@@ -255,7 +254,7 @@
                 "VaporMolecularWeight": 44,
                 "VaporComposition": [
                   {
-                    "ComponentNameID": "CO2",
+                    "ComponentNameID": "namespace:reference-data--SampleOrganicCompositionComponent:CO2:",
                     "MolecularWeight": 44.01,
                     "RelativeMole": 0.98,
                     "RelativeMass": 0.99,
@@ -291,7 +290,7 @@
                 "VaporMolecularWeight": 44,
                 "VaporComposition": [
                   {
-                    "ComponentNameID": "CO2",
+                    "ComponentNameID": "namespace:reference-data--SampleOrganicCompositionComponent:CO2:",
                     "MolecularWeight": 44.01,
                     "RelativeMole": 0.98,
                     "RelativeMass": 0.99,
@@ -327,7 +326,7 @@
                 "VaporMolecularWeight": 44,
                 "VaporComposition": [
                   {
-                    "ComponentNameID": "CO2",
+                    "ComponentNameID": "namespace:reference-data--SampleOrganicCompositionComponent:CO2:",
                     "MolecularWeight": 44.01,
                     "RelativeMole": 0.98,
                     "RelativeMass": 0.99,

@@ -64,20 +64,7 @@
                 "title": "UOM Persistable Reference",
                 "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
                 "type": "string",
-                "example": {
-                  "abcd": {
-                    "a": 0,
-                    "b": 1200,
-                    "c": 3937,
-                    "d": 0
-                  },
-                  "symbol": "ft[US]",
-                  "baseMeasurement": {
-                    "ancestry": "L",
-                    "type": "UM"
-                  },
-                  "type": "UAD"
-                }
+                "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}"
               },
               "unitOfMeasureID": {
                 "description": "SRN to unit of measure reference.",
@@ -128,16 +115,7 @@
                 "title": "CRS Persistable Reference",
                 "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
                 "type": "string",
-                "example": {
-                  "authCode": {
-                    "auth": "EPSG",
-                    "code": "32615"
-                  },
-                  "name": "WGS_1984_UTM_Zone_15N",
-                  "type": "LBC",
-                  "ver": "PE_10_9_1",
-                  "wkt": "PROJCS[\"WGS_1984_UTM_Zone_15N\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",-93.0],PARAMETER[\"Scale_Factor\",0.9996],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0],AUTHORITY[\"EPSG\",32615]]"
-                }
+                "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}"
               },
               "coordinateReferenceSystemID": {
                 "description": "SRN to CRS reference.",
@@ -189,11 +167,7 @@
                 "title": "DateTime Persistable Reference",
                 "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
                 "type": "string",
-                "example": {
-                  "format": "yyyy-MM-ddTHH:mm:ssZ",
-                  "timeZone": "UTC",
-                  "type": "DTM"
-                }
+                "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}"
               },
               "propertyNames": {
                 "title": "DateTime Property Names",
@@ -233,10 +207,7 @@
                 "title": "AzimuthReference Persistable Reference",
                 "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
                 "type": "string",
-                "example": {
-                  "code": "TrueNorth",
-                  "type": "AZR"
-                }
+                "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}"
               },
               "propertyNames": {
                 "title": "AzimuthReference Property Names",
@@ -349,10 +320,10 @@
             "description": "The permeability of the packed column.",
             "x-osdu-frame-of-reference": "UOM:permeability rock"
           },
-          "PermeabilityMeasurementMethodID": {
+          "ColumnPermeabilityMeasurementMethodID": {
             "type": "string",
-            "title": "Permeability Measurement Method ID",
-            "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+            "title": "Column Permeability Measurement Method ID",
+            "description": "The method of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
             "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
             "x-osdu-relationship": [
               {
@@ -361,10 +332,10 @@
               }
             ]
           },
-          "FluidTypeID": {
+          "ColumnPermeabilityFluidTypeID": {
             "type": "string",
-            "title": "Fluid Type ID",
-            "description": "The fluid type used in determining effective permeability.",
+            "title": "Column Fluid Type ID",
+            "description": "The fluid type used in determining the column permeability.",
             "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
             "x-osdu-relationship": [
               {
@@ -404,56 +375,78 @@
       },
       "items": {
         "type": "object",
-        "title": "Injected Gas",
-        "description": "An array object capturing the composition and other properties of the injected gas.",
+        "title": "Vapor Analysis",
+        "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
         "properties": {
-          "ComponentNameID": {
-            "type": "string",
-            "title": "Component Name ID",
-            "description": "Name of the component in the liquid.",
-            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-            "x-osdu-relationship": [
-              {
-                "GroupType": "reference-data",
-                "EntityType": "SampleCompositionComponent"
-              }
-            ]
-          },
-          "RelativeMoleWeight": {
+          "VaporSpecificGravity": {
             "type": "number",
-            "title": "Relative Mole Weight",
-            "description": "Molar mass relative to other components.",
+            "title": "Vapor Specific Gravity",
+            "description": "The specific gravity of the vapor retrieved from the sample.",
             "x-osdu-frame-of-reference": "UOM:dimensionless"
           },
-          "MolecularWeight": {
+          "VaporMolecularWeight": {
             "type": "number",
-            "title": "Molecular Weight",
-            "description": "The molecular weight of the component.",
+            "title": "Vapor Molecular Weight",
+            "description": "The molecular weight of the vapor retrieved from the sample.",
             "x-osdu-frame-of-reference": "UOM:molecular weight"
           },
-          "MolePercent": {
-            "type": "number",
-            "title": "Mole Percent",
-            "description": "The molar percentage of the component, if available.",
-            "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
-          },
-          "MassPercent": {
-            "type": "number",
-            "title": "Mass Percent",
-            "description": "The mass percentage of the component, if available.",
-            "x-osdu-frame-of-reference": "UOM:mass per mass"
-          },
-          "VolumePercent": {
-            "type": "number",
-            "title": "Volume Percent",
-            "description": "The volume percentage of the component, if available.",
-            "x-osdu-frame-of-reference": "UOM:volume per volume"
-          },
-          "SpecificGravity": {
-            "type": "number",
-            "title": "Specific Gravity",
-            "description": "The specific gravity of the component.",
-            "x-osdu-frame-of-reference": "UOM:dimensionless"
+          "VaporComposition": {
+            "type": "array",
+            "title": "Vapor Composition",
+            "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Vapor Composition",
+              "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+              "properties": {
+                "ComponentNameID": {
+                  "type": "string",
+                  "title": "Component Name ID",
+                  "description": "Name of the component in the liquid.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "SampleOrganicCompositionComponent"
+                    }
+                  ]
+                },
+                "MolecularWeight": {
+                  "type": "number",
+                  "title": "Molecular Weight",
+                  "description": "The molecular weight of the component.",
+                  "x-osdu-frame-of-reference": "UOM:molecular weight"
+                },
+                "RelativeMole": {
+                  "type": "number",
+                  "title": "Relative Mole",
+                  "description": "The molar quantity of the component relative to the total moles of the sample.",
+                  "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                },
+                "RelativeMass": {
+                  "type": "number",
+                  "title": "Relative Mass",
+                  "description": "The mass of the component relative to the total mass of the sample.",
+                  "x-osdu-frame-of-reference": "UOM:mass per mass"
+                },
+                "RelativeVolume": {
+                  "type": "number",
+                  "title": "Relative Volume",
+                  "description": "The volume of the component relative to the total volume of the sample.",
+                  "x-osdu-frame-of-reference": "UOM:volume per volume"
+                },
+                "SpecificGravity": {
+                  "type": "number",
+                  "title": "Specific Gravity",
+                  "description": "The specific gravity of the component.",
+                  "x-osdu-frame-of-reference": "UOM:dimensionless"
+                }
+              },
+              "additionalProperties": false
+            }
           }
         },
         "additionalProperties": false
@@ -778,7 +771,14 @@
                             "ComponentNameID": {
                               "type": "string",
                               "title": "Component Name ID",
-                              "description": "Name of the component in the liquid."
+                              "description": "Name of the component in the liquid.",
+                              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                              "x-osdu-relationship": [
+                                {
+                                  "GroupType": "reference-data",
+                                  "EntityType": "SampleOrganicCompositionComponent"
+                                }
+                              ]
                             },
                             "MolecularWeight": {
                               "type": "number",
@@ -967,7 +967,14 @@
                             "ComponentNameID": {
                               "type": "string",
                               "title": "Component Name ID",
-                              "description": "Name of the component in the liquid."
+                              "description": "Name of the component in the liquid.",
+                              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                              "x-osdu-relationship": [
+                                {
+                                  "GroupType": "reference-data",
+                                  "EntityType": "SampleOrganicCompositionComponent"
+                                }
+                              ]
                             },
                             "MolecularWeight": {
                               "type": "number",
@@ -1156,7 +1163,14 @@
                             "ComponentNameID": {
                               "type": "string",
                               "title": "Component Name ID",
-                              "description": "Name of the component in the liquid."
+                              "description": "Name of the component in the liquid.",
+                              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                              "x-osdu-relationship": [
+                                {
+                                  "GroupType": "reference-data",
+                                  "EntityType": "SampleOrganicCompositionComponent"
+                                }
+                              ]
                             },
                             "MolecularWeight": {
                               "type": "number",
