@@ -56,7 +56,7 @@ from app.models.data_schemas.sample_analysis_api_v2.xrf_data_model_2_0_0 import 
 from app.models.data_schemas.sample_analysis_api_v2.capillary_pressure_data_model_1_0_0 import CapillaryPressureModel100
 from app.models.data_schemas.sample_analysis_api_v2.capillary_suction_time_data_model_1_0_0 import CapillarySuctionTimeModel100
 from app.models.data_schemas.sample_analysis_api_v2.stock_tank_oil_analysis_data_model_1_0_0 import StockTankOilAnalysisModel100
-from app.models.data_schemas.sample_analysis_api_v2.stock_tank_oil_analysis_data_model_2_0_0 import StockTankOilAnalysisModel200
+from app.models.data_schemas.sample_analysis_api_v2.stock_tank_oil_analysis_data_model_1_1_0 import StockTankOilAnalysisModel110
 from app.models.data_schemas.sample_analysis_api_v2.tensile_strength_data_model_1_0_0 import TensileStrengthModel100
 from app.models.data_schemas.sample_analysis_api_v2.vitrinite_reflectance_data_model_1_0_0 import VitriniteReflectanceModel100
 from app.models.data_schemas.sample_analysis_api_v2.xrd_data_model_1_0_0 import XrdModel100
@@ -202,7 +202,7 @@ PDP_MODELS = {
 }
 STO_MODELS = {
     ContentSchemaVersion.V_1_0_0: StockTankOilAnalysisModel100,
-    ContentSchemaVersion.V_2_0_0: StockTankOilAnalysisModel200,
+    ContentSchemaVersion.V_1_1_0: StockTankOilAnalysisModel110,
 }
 CRUSHED_ROCK_ANALYSIS_MODELS = {
     ContentSchemaVersion.V_1_0_0: CrushedRockAnalysisModel100,

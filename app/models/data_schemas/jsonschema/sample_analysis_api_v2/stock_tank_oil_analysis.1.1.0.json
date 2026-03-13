@@ -1,7 +1,7 @@
 {
   "x-osdu-license": "Copyright 2025, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
   "x-osdu-review-status": "Mature",
-  "$id": "stock_tank_oil_analysis.2.0.0.json",
+  "$id": "stock_tank_oil_analysis.1.1.0.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Stock Tank Oil Data Schema",
   "description": "The result of running a Crude Assay. For representative samples of Stock Tank Oil, an additional set of stock tank oil (STO) analysis tests may be conducted to provide measurements of viscosity (at temperature), pour point, cloud point, wax appearance temperature, paraffin content, Reid vapor pressure, total acid number, total sulfur, molecular weight, water content, and the amounts of lead, nickel, vanadium and elemental sulfur present. Note that in OSDU, StockTankOilCharacterization does not include SARA and High Temperature GC; those have their own SampleAnalysisTypes. Also, other forms of Elemental Composition are captured in the Elemental Composition Family.",
@@ -347,6 +347,13 @@
       "title": "Wax Content",
       "description": "The amount or percentage of wax present in a sample",
       "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "ParrafinContent": {
+      "type": "number",
+      "title": "Parrafin Content",
+      "description": "DEPRECATED: use ParaffinContent instead.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless",
+      "deprecated": true
     },
     "ParaffinContent": {
       "type": "number",
