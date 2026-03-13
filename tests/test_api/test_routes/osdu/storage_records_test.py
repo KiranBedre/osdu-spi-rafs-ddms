@@ -16,7 +16,7 @@ from contextlib import contextmanager
 from unittest.mock import create_autospec, patch
 
 import pytest
-from httpx import AsyncClient, HTTPStatusError
+from httpx import AsyncClient, HTTPStatusError, Response
 from starlette import status
 
 from app.api.dependencies.services import (
@@ -79,15 +79,15 @@ def storage_schema_override():
 @pytest.fixture
 def with_patched_storage_raises_404(storage_method):
     """Patch storage to raise 404."""
-    class Response(object):
-        status_code = status.HTTP_404_NOT_FOUND
-        content = b"test reason"
-        text = "test txt"
+    response = Response(
+        status_code=status.HTTP_404_NOT_FOUND,
+        content=b"test content",
+    )
 
     with patch.object(
         storage_record_service_mock,
         storage_method,
-        side_effect=HTTPStatusError("test", response=Response(), request=None),
+        side_effect=HTTPStatusError("test", response=response, request=None),
     ):
         yield
 
@@ -127,20 +127,20 @@ def with_patched_storage_pvt_link_200(created_responses: list, get_response: dic
 @pytest.fixture
 def with_patched_storage_raises_40x(storage_method, api_status_code):
     """Patch storage to raise 40x."""
-    class Response(object):
-        status_code = api_status_code
-        content = b"test reason"
-        text = "test txt"
+    response = Response(
+        status_code=api_status_code,
+        content=b"test content",
+    )
 
     with patch.object(
         storage_record_service_mock,
         storage_method,
-        side_effect=HTTPStatusError("test", response=Response(), request=None),
+        side_effect=HTTPStatusError("test", response=response, request=None),
     ):
         with patch.object(
             storage_record_service_mock,
             "query_records",
-            side_effect=HTTPStatusError("test", response=Response(), request=None),
+            side_effect=HTTPStatusError("test", response=response, request=None),
         ):
             yield
 
