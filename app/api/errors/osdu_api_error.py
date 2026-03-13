@@ -24,6 +24,11 @@ from app.api.errors.human_readable_maps import transform_to_human_readable
 from app.exceptions.exceptions import OsduApiException
 from app.models.schemas.errors import OsduApiErrorResponse
 
+# Error response field constants
+ERROR_FIELD_CODE = "code"
+ERROR_FIELD_REASON = "reason"
+ERROR_FIELD_MESSAGE = "message"
+
 
 def format_request_exc(exc: HTTPError) -> dict:
     try:
@@ -31,9 +36,9 @@ def format_request_exc(exc: HTTPError) -> dict:
         if not isinstance(exc_message, dict):
             raise TypeError("Response is not a JSON object")
         formatted_exc = OsduApiErrorResponse.construct(
-            code=exc_message.get("code") or exc.response.status_code,
-            reason=exc_message.get("reason") or exc.response.reason,
-            message=exc_message.get("message") or exc.response.text,
+            code=exc_message.get(ERROR_FIELD_CODE) or exc.response.status_code,
+            reason=exc_message.get(ERROR_FIELD_REASON) or exc.response.reason,
+            message=exc_message.get(ERROR_FIELD_MESSAGE) or exc.response.text,
         ).dict()
     except (TypeError, json.JSONDecodeError):
         formatted_exc = OsduApiErrorResponse.construct(
@@ -46,9 +51,9 @@ def format_request_exc(exc: HTTPError) -> dict:
 
 async def osdu_api_http_error_handler(_: Request, exc: HTTPError) -> JSONResponse:
     formatted_error = format_request_exc(exc)
-    error_code = formatted_error.get("code", "N/A")
-    error_reason = formatted_error.get("reason", "N/A")
-    error_message = formatted_error.get("message", "N/A")
+    error_code = formatted_error[ERROR_FIELD_CODE]
+    error_reason = formatted_error[ERROR_FIELD_REASON]
+    error_message = formatted_error[ERROR_FIELD_MESSAGE]
     log_message = (
         f"OSDU API HTTP error: {error_code} - {error_reason} | Message: {error_message}"
     )
@@ -65,9 +70,9 @@ def format_exc(exc: HTTPStatusError) -> dict:
         if not isinstance(exc_message, dict):
             raise TypeError("Response is not a JSON object")
         formatted_exc = OsduApiErrorResponse.construct(
-            code=exc_message.get("code") or exc.response.status_code,
-            reason=exc_message.get("reason") or exc.response.reason_phrase,
-            message=exc_message.get("message") or exc.response.text,
+            code=exc_message.get(ERROR_FIELD_CODE) or exc.response.status_code,
+            reason=exc_message.get(ERROR_FIELD_REASON) or exc.response.reason_phrase,
+            message=exc_message.get(ERROR_FIELD_MESSAGE) or exc.response.text,
         ).dict()
     except (TypeError, json.JSONDecodeError):
         formatted_exc = OsduApiErrorResponse.construct(
@@ -80,9 +85,9 @@ def format_exc(exc: HTTPStatusError) -> dict:
 
 async def osdu_api_httpx_error_handler(_: Request, exc: HTTPStatusError) -> JSONResponse:
     formatted_error = format_exc(exc)
-    error_code = formatted_error.get("code", "N/A")
-    error_reason = formatted_error.get("reason", "N/A")
-    error_message = formatted_error.get("message", "N/A")
+    error_code = formatted_error[ERROR_FIELD_CODE]
+    error_reason = formatted_error[ERROR_FIELD_REASON]
+    error_message = formatted_error[ERROR_FIELD_MESSAGE]
     log_message = (
         f"OSDU API HTTPX error: {error_code} - {error_reason} | Message: {error_message}"
     )
@@ -96,20 +101,20 @@ async def osdu_api_httpx_error_handler(_: Request, exc: HTTPStatusError) -> JSON
 async def osdu_api_custom_exc_handler(_: Request, exc: OsduApiException) -> JSONResponse:
     if isinstance(exc.detail, dict):
         error_kwargs = {
-            "code": exc.status_code,
-            "reason": exc.detail.get("reason"),
-            "message": exc.detail.get("message"),
+            ERROR_FIELD_CODE: exc.status_code,
+            ERROR_FIELD_REASON: exc.detail.get(ERROR_FIELD_REASON),
+            ERROR_FIELD_MESSAGE: exc.detail.get(ERROR_FIELD_MESSAGE),
         }
-        error_reason = exc.detail.get("reason", "N/A")
-        error_message = exc.detail.get("message", "N/A")
+        error_reason = exc.detail.get(ERROR_FIELD_REASON)
+        error_message = exc.detail.get(ERROR_FIELD_MESSAGE)
         log_message = (
             f"OSDU API custom exception: {exc.status_code} - {error_reason} | Message: {error_message}"
         )
         logger.error(log_message)
     else:
         error_kwargs = {
-            "code": exc.status_code,
-            "reason": exc.detail,
+            ERROR_FIELD_CODE: exc.status_code,
+            ERROR_FIELD_REASON: exc.detail,
         }
         logger.error(
             f"OSDU API custom exception: {exc.status_code} - {exc.detail}",
