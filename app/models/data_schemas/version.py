@@ -14,4 +14,5 @@
 
 class ContentSchemaVersion:
     V_1_0_0 = "1.0.0"
+    V_1_1_0 = "1.1.0"
     V_2_0_0 = "2.0.0"
