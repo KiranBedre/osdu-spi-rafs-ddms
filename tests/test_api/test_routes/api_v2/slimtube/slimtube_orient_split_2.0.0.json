@@ -7,6 +7,7 @@
     "TestTemperature",
     "Remarks",
     "SlimTubeSpecification",
+    "InjectedGasID",
     "InjectedGas",
     "MinimumMiscibilityPressure",
     "CalculatedProperties",
@@ -193,6 +194,7 @@
           "ColumnFlowCrossSectionalArea":3.14
         }
       ],
+      "namespace:master-data--Sample:sample-002:",
       [
         {
           "VaporSpecificGravity":1.52,

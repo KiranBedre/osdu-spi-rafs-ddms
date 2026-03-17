@@ -176,6 +176,7 @@
         "ColumnFlowCrossSectionalArea": 3.14
       }
     ],
+    "InjectedGasID": "namespace:master-data--Sample:sample-002:",
     "InjectedGas": [
       {
         "VaporSpecificGravity": 1.52,
