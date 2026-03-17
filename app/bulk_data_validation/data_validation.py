@@ -101,7 +101,7 @@ class DataValidator(object):
         :return: missing records
         :rtype: list
         """
-        df_string = df.to_string()
+        df_string = df.to_json()
         ids_to_check = find_osdu_ids_from_string(df_string)
 
         missing_records = set()
