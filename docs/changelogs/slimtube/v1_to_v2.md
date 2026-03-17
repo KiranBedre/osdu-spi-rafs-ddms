@@ -31,6 +31,7 @@
 * **MaterialBalanceData** (now nested under `SlimTubeTestSteps`):
 
   * Replaced previous fields with a new, more detailed set: `MassOfReservoirOilInSlimTube`, `MassOfReservoirOilInConnectingLines`, `MassOfReservoirOil`, `MassOfGasSolvent`, `MassTotalInjected`, `MassOfEffluentStockTankOilBeforeBlowDown`, `MassOfProducedEffluentGasBeforeBlowDown`, `MassOfEffluentStockTankOilAfterBlowDown`, `MassOfProducedEffluentGasAfterBlowDown`, `MassOfResidualOil`, `MassTotalRecovered`, `WeightPercentRecovered`
+* **InjectedGasID**: Injected gas used in this analysis, x-osdu-relation-ship: master-data--Sample.
 * **InjectedGas**: Introduced as a new array capturing the composition and properties of injected gas. Each entry now contains `VaporSpecificGravity`, `VaporMolecularWeight`, and a nested `VaporComposition` array describing gas components and their composition properties.
 * **CalculatedProperties.ResidueCalculatedProperties**: Added `ResidueMolecularWeight` and clarified descriptions.
 

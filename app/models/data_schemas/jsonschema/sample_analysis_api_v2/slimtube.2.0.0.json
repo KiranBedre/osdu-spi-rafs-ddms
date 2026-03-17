@@ -366,6 +366,18 @@
         "additionalProperties": false
       }
     },
+    "InjectedGasID": {
+      "type": "string",
+      "title": "Injected Gas ID",
+      "description": "The OSDU Identifier, if any, for the injected gas used in this analysis.",
+      "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "master-data",
+          "EntityType": "Sample"
+        }
+      ]
+    },
     "InjectedGas": {
       "type": "array",
       "title": "Injected Gas",
@@ -1434,6 +1446,5 @@
     "SampleID",
     "Meta"
   ],
-  "x-osdu-inheriting-from-kind": [],
   "additionalProperties": false
 }
