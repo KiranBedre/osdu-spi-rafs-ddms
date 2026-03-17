@@ -244,6 +244,23 @@ class DataValidator(object):
 
         return getattr(dtype, "type", None)
 
+    @staticmethod
+    def _unwrap_pydantic_error(column, raw_failure):
+        """Unwrap pandera PydanticModel dtype errors.
+
+        Pandera sets column="failure_case" for PydanticModel dtype errors
+        and nests the real column name inside the failure_case dict.
+
+        :param column: column name from pandera error
+        :param raw_failure: raw failure_case value from pandera error
+        :return: corrected (column, failure_case) tuple
+        :rtype: tuple
+        """
+        if column == "failure_case" and isinstance(raw_failure, dict):
+            real_column = next(iter(raw_failure))
+            return real_column, raw_failure[real_column]
+        return column, raw_failure
+
     def _collect_errors(self, error_cases: Iterable) -> dict:
         """Collect the errors.
 
@@ -256,7 +273,10 @@ class DataValidator(object):
         for error_case in error_cases:
             check = error_case.get("check", "")
             column = error_case.get("column", "")
-            failure_case = str(error_case.get("failure_case", ""))
+            raw_failure = error_case.get("failure_case", "")
+
+            column, raw_failure = self._unwrap_pydantic_error(column, raw_failure)
+            failure_case = str(raw_failure)
 
             if check not in {"column_in_dataframe", "column_in_schema"}:
                 check = "invalid_type" if "dtype" in check else "invalid_value"
