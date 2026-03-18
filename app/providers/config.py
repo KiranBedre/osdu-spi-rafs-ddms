@@ -32,6 +32,16 @@ class AzureConfig(BaseSettings):
 
     az_aad_client_id_key: str = "aad-client-id"
 
+    redis_auth_token_scope: str = "https://redis.azure.com/.default"
+
+    redis_health_check_interval: int = 30
+
+    redis_socket_connect_timeout: int = 5
+
+    redis_socket_keepalive: bool = True
+
+    redis_use_passwordless_auth: bool = True
+
     class Config(object):
         env_file = ".env"
 
