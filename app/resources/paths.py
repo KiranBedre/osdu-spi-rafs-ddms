@@ -154,7 +154,7 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
         "CapillaryPressure",
     ],
     "capillarysuctiontime": [
-        "BasicRockProperties.CapillarySuctionTime",
+        "FluidSensitivity.CapillarySuctionTime",
     ],
     "wettabilityindex": [
         "Wettability.AmottHarvey",
@@ -172,8 +172,8 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
     "stocktankoilanalysis": ["PVT.StockTankOilCharacterization"],
     "crushedrockanalysis": ["BasicRockProperties.CrushedRockAnalysis"],
     "mininggeotechlogging": ["Mining.Geotechlogging"],
-    "proppantembed": ["Geomechanics.ProppantEmbedmentTest"],
-    "rolleroventest": ["WellFluids.RollerOvenTest"],
+    "proppantembed": ["Geomechanics.ProppantEmbedment"],
+    "rolleroventest": ["FluidSensitivity.RollerOvenTest"],
 }
 
 SATURATION_FUNCTION_SET_STR = "saturationfunctionset"
