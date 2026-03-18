@@ -12,43 +12,31 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import asyncio
-
 from loguru import logger
 from redis.asyncio.client import Redis
 from redis.commands.search.field import TagField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
-from redis.exceptions import (
-    AuthenticationError,
-    ConnectionError,
-    ResponseError,
-)
+from redis.exceptions import ResponseError
 
-from app.core.helpers.cache.config import RedisCacheConfig
+from app.core.config import get_app_settings
+from app.providers.dependencies.redis_factory import get_redis_factory
 
 SAMPLESANALYSIS_IX = "idx:{partition}-samplesanalyses"
 SAMPLESANALYSIS_IX_PREFIX = "{partition}-samplesanalysis:"
-WAIT_FOR_REDIS = 5  # in seconds
 
 
-async def get_redis_client():
-    redis_settings = RedisCacheConfig()
-    while True:
-        try:
-            redis_client = Redis(
-                host=redis_settings.redis_hostname,
-                port=redis_settings.redis_port,
-                password=redis_settings.redis_password,
-                db=redis_settings.redis_index_database,
-                ssl=redis_settings.redis_ssl,
-            )
-            await redis_client.ping()
-            return redis_client
-        except (AuthenticationError, ConnectionError, ResponseError) as exc:
-            exc_msg = str(exc)
-            error_msg = f"Redis client error: {exc_msg}"
-            logger.error(error_msg)
-            await asyncio.sleep(WAIT_FOR_REDIS)
+async def get_redis_client() -> Redis:
+    """Get Redis client for index operations.
+
+    Uses provider-specific factory if available, otherwise defaults to base factory.
+    Provider resolution happens at runtime based on CLOUD_PROVIDER setting.
+
+    :return: Connected Redis client
+    :rtype: Redis
+    """
+    settings = get_app_settings()
+    factory = get_redis_factory(settings, use_index_database=True)
+    return await factory.create_client()
 
 
 def build_samplesanalysis_schema():

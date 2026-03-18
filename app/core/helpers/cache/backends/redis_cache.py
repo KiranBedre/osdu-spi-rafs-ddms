@@ -23,9 +23,10 @@ from redis.exceptions import (
     ResponseError,
 )
 
+from app.core.config import get_app_settings
 from app.core.helpers.cache.backends.base_cache import BaseCacheBackend
-from app.core.helpers.cache.config import RedisCacheConfig
 from app.core.helpers.cache.errors import CacheBackendError
+from app.providers.dependencies.redis_factory import get_redis_factory
 
 
 class LoggingRedisBackend(RedisBackend):
@@ -82,28 +83,36 @@ class LoggingRedisBackend(RedisBackend):
 
 
 class RedisCacheBackend(BaseCacheBackend):
-    def __init__(self):
-        self.settings = RedisCacheConfig()
-        self._redis_client = None
+    """Redis cache backend that uses the provider-specific Redis client factory.
+
+    This backend integrates with the Redis client factory system, allowing
+    provider-specific authentication to be used transparently with fastapi-cache2.
+    """
 
     async def get_backend(self) -> LoggingRedisBackend:
         """Init and return instance of LoggingRedisBackend with cache hit/miss logging.
 
-        :return LoggingRedisBackend: instance of LoggingRedisBackend
-        """
-        if self._redis_client is None:
-            self._redis_client = Redis(
-                host=self.settings.redis_hostname,
-                port=self.settings.redis_port,
-                password=self.settings.redis_password,
-                db=self.settings.redis_database,
-                ssl=self.settings.redis_ssl,
-            )
-        await self._validate_redis_settings(self._redis_client)
-        return LoggingRedisBackend(self._redis_client)
+        Uses the provider-specific Redis client factory to create a client with appropriate authentication.
 
-    async def _validate_redis_settings(self, redis_client: Redis) -> None:
-        """Validate redis settings.
+        :return LoggingRedisBackend: instance of LoggingRedisBackend with provider-specific client
+        """
+        # Get app settings
+        settings = get_app_settings()
+
+        # Get the provider-specific factory
+        factory = get_redis_factory(settings, use_index_database=False)
+
+        # Create the Redis client (with provider-specific auth)
+        redis_client = await factory.create_client()
+
+        # Validate the connection
+        await self._validate_redis_connection(redis_client)
+
+        logger.info("Redis cache backend initialized with provider-specific client")
+        return LoggingRedisBackend(redis_client)
+
+    async def _validate_redis_connection(self, redis_client: Redis) -> None:
+        """Validate Redis connection by pinging the server.
 
         :param Redis redis_client: redis instance
         :raises:
@@ -112,7 +121,7 @@ class RedisCacheBackend(BaseCacheBackend):
           ResponseError: for wrong db
         """
         try:
-            logger.debug(f"Redis client settings: {self.settings}")
+            logger.debug("Validating Redis connection...")
             await redis_client.ping()
         except (AuthenticationError, ConnectionError, ResponseError):
             raise CacheBackendError("Redis client can't be init. Redis host, port, password or db are wrong")
