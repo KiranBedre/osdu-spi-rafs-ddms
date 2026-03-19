@@ -19,6 +19,7 @@ from app.models.data_schemas.sample_analysis_api_v2.constant_composition_expansi
 from app.models.data_schemas.sample_analysis_api_v2.differential_liberation_data_model_1_0_0 import DifferentialLiberationModel100
 from app.models.data_schemas.sample_analysis_api_v2.transport_data_model_1_0_0 import TransportModel100
 from app.models.data_schemas.sample_analysis_api_v2.atmospheric_flash_and_compositional_analysis_data_model_1_0_0 import AtmosphericFlashAndCompositionalAnalysisModel100
+from app.models.data_schemas.sample_analysis_api_v2.atmospheric_flash_and_compositional_analysis_data_model_1_1_0 import AtmosphericFlashAndCompositionalAnalysisModel110
 from app.models.data_schemas.sample_analysis_api_v2.multi_stage_separator_data_model_1_0_0 import MultiStageSeparatorModel100
 from app.models.data_schemas.sample_analysis_api_v2.swelling_data_model_1_0_0 import SwellingModel100
 from app.models.data_schemas.sample_analysis_api_v2.constant_volume_depletion_data_model_1_0_0 import ConstantVolumeDepletionModel100
@@ -81,9 +82,11 @@ TRANSPORT_TEST_MODELS = {
 }
 COMPOSITIONAL_ANALYSIS_MODELS = {
     ContentSchemaVersion.V_1_0_0: AtmosphericFlashAndCompositionalAnalysisModel100,
+    ContentSchemaVersion.V_1_1_0: AtmosphericFlashAndCompositionalAnalysisModel110,
 }
 ATMOSPHERIC_FLASH_MODELS = {
     ContentSchemaVersion.V_1_0_0: AtmosphericFlashAndCompositionalAnalysisModel100,
+    ContentSchemaVersion.V_1_1_0: AtmosphericFlashAndCompositionalAnalysisModel110,
 }
 MSS_MODELS = {
     ContentSchemaVersion.V_1_0_0: MultiStageSeparatorModel100,
