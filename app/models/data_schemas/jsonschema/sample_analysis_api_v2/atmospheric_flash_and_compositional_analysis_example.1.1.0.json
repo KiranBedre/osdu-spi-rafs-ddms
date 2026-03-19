@@ -1,0 +1,110 @@
+[
+  {
+    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:Example_WPC:",
+    "SampleID": "opendes:master-data--Sample:Example_Sample:",
+    "Meta": [
+      {
+        "kind": "Unit",
+        "name": "degree Fahrenheit",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:degF:",
+        "propertyNames": [
+          "FlashTemperature"
+        ]
+      }
+    ],
+    "TestNumber": "1",
+    "FlashPressure": 1626,
+    "FlashTemperature": 100,
+    "CompositionalAnalysis": [
+      {
+        "ComponentNameID": "opendes:reference-data--SampleOrganicCompositionComponent:H2O:",
+        "FlashedGasRelativeMass": 6731,
+        "OverallFluidRelativeMass": 5799,
+        "FlashedLiquidRelativeMole": 6575,
+        "OverallFluidRelativeMole": 4069,
+        "FlashedGasRelativeMole": 9442,
+        "OverallFluidMolecularWeight": 4613,
+        "FlashedLiquidRelativeMass": 1,
+        "OverallFluidSpecificGravity": 1
+      }
+    ],
+    "CalculatedProperties": {
+      "SampleCalculatedProperties": {
+        "AvgFlashedLiquidMolecularWeight": 1.23,
+        "AvgFlashedGasMolecularWeight": 1.23,
+        "AvgOverallFluidMolecularWeight": 1.23,
+        "FlashedLiquidDensity": 1.23,
+        "FlashedGasDensity": 1.23,
+        "FlashedOverallFluidDensity": 1.23,
+        "FlashedLiquidRealRelativeDensity": 1.23,
+        "FlashedGasRealRelativeDensity": 1.23,
+        "OverallFluidRealRelativeDensity": 1.23,
+        "OverallFluidGasOilRatio": 1.23,
+        "FlashedLiquidMoleFraction": 1.23,
+        "FlashedGasMoleFraction": 1.23,
+        "OverallFluidMoleFraction": 1.23,
+        "FlashedLiquidMassFraction": 1.23,
+        "FlashedGasMassFraction": 1.23,
+        "OverallFluidMassFraction": 1.23,
+        "FlashedGasGravity": 1.23,
+        "FlashedLiquidAPIGravity": 1.23
+      },
+      "PlusComponentsCalculatedProperties": [
+        {
+          "FlashedGasRelativeMole": 6263,
+          "FlashedGasMolecularWeight": 472,
+          "FlashedGasRelativeMass": 9669,
+          "OverallFluidRelativeMass": 4399,
+          "OverallFluidSpecificGravity": 8386,
+          "FlashedGasSpecificGravity": 6072,
+          "FlashedLiquidRelativeMole": 1,
+          "OverallFluidRelativeMole": 1,
+          "FlashedLiquidMolecularWeight": 1,
+          "OverallFluidMolecularWeight": 1,
+          "FlashedLiquidDensity": 1,
+          "FlashedGasDensity": 1,
+          "OverallFluidDensity": 1,
+          "FlashedLiquidRelativeMass": 1,
+          "FlashedLiquidSpecificGravity": 1
+        }
+      ]
+    },
+    "GasCompositionalCalculations": [
+      {
+        "ComponentNameID": "opendes:reference-data--SampleOrganicCompositionComponent:H2O:",
+        "MolecularWeight": 383,
+        "Density": 2124
+      }
+    ],
+    "OilCompositionalCalculations": [
+      {
+        "ComponentNameID": "opendes:reference-data--SampleOrganicCompositionComponent:H2O:",
+        "MolecularWeight": 6075,
+        "Density": 2183
+      }
+    ],
+    "ContaminationCorrection": {
+      "ContaminationCorrectionStatus": "Status",
+      "ContaminantID": "opendes:master-data--Sample:Example_Sample:",
+      "ReferenceFluidID": "Fluid ID",
+      "WeightFraction": 1,
+      "VolumeFraction": 1.23,
+      "MoleFraction": 3.16
+    },
+    "StandardConditionPressure": 1,
+    "StandardConditionTemperature": 1,
+    "InitialConditionPressure": 1,
+    "InitialConditionTemperature": 1,
+    "InitialConditionFormationVolumeFactor": 1,
+    "InitialConditionSaturatedFluidDensity": 1,
+    "StandardConditionWaterDensity": 1,
+    "Remarks": [
+      {
+        "RemarkSequenceNumber": 1,
+        "Remark": "Sample remark for atmospheric flash analysis.",
+        "RemarkSource": "Lab Analyst",
+        "RemarkDate": "2024-01-15"
+      }
+    ]
+  }
+]

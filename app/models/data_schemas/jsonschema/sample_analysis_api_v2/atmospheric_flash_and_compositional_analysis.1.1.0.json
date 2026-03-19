@@ -1,0 +1,788 @@
+{
+  "x-osdu-license": "Copyright 2025, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "x-osdu-review-status": "Mature",
+  "$id": "atmospheric_flash_and_compositional_analysis.1.1.0.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Atmospheric Flash And Compositional Analysis",
+  "description": "Compositional Analysis contains properties that generally include mole and mass percents of: total fluid, flashed gas and flashed liquid, and individual components (e.g., C1, C2, C3\u2026).",
+  "type": "object",
+  "properties": {
+    "SamplesAnalysisID": {
+      "type": "string",
+      "title": "Samples Analysis ID",
+      "description": "OSDU Identifier for this SamplesAnalysis",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "work-product-component",
+          "EntityType": "SamplesAnalysis"
+        }
+      ]
+    },
+    "SampleID": {
+      "type": "string",
+      "title": "Sample ID",
+      "description": "OSDU Identifier for the Sample associated with this analysis",
+      "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "master-data",
+          "EntityType": "Sample"
+        }
+      ]
+    },
+    "Meta": {
+      "type": "array",
+      "title": "Meta",
+      "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+      "items": {
+        "x-osdu-license": "Copyright 2022, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+        "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractMetaItem.1.0.0.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "x-osdu-schema-source": "osdu:wks:AbstractMetaItem:1.0.0",
+        "title": "Frame of Reference Meta Data Item",
+        "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+        "oneOf": [
+          {
+            "title": "FrameOfReferenceUOM",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "UOM Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                "const": "Unit"
+              },
+              "name": {
+                "title": "UOM Unit Symbol",
+                "description": "The unit symbol or name of the unit.",
+                "type": "string",
+                "example": "ft[US]"
+              },
+              "persistableReference": {
+                "title": "UOM Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                "type": "string",
+                "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}"
+              },
+              "unitOfMeasureID": {
+                "description": "SRN to unit of measure reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "UnitOfMeasure"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "UOM Property Names",
+                "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "HorizontalDeflection.EastWest",
+                  "HorizontalDeflection.NorthSouth"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceCRS",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "CRS Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                "const": "CRS"
+              },
+              "name": {
+                "title": "CRS Name",
+                "description": "The name of the CRS.",
+                "type": "string",
+                "example": "WGS 84 / UTM zone 15N"
+              },
+              "persistableReference": {
+                "title": "CRS Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                "type": "string",
+                "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}"
+              },
+              "coordinateReferenceSystemID": {
+                "description": "SRN to CRS reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "CoordinateReferenceSystem"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "CRS Property Names",
+                "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "KickOffPosition.X",
+                  "KickOffPosition.Y"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceDateTime",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "DateTime Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                "const": "DateTime"
+              },
+              "name": {
+                "title": "DateTime Name",
+                "description": "The name of the DateTime format and reference.",
+                "type": "string",
+                "example": "UTC"
+              },
+              "persistableReference": {
+                "title": "DateTime Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                "type": "string",
+                "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}"
+              },
+              "propertyNames": {
+                "title": "DateTime Property Names",
+                "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Acquisition.StartTime",
+                  "Acquisition.EndTime"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceAzimuthReference",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "AzimuthReference Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                "const": "AzimuthReference"
+              },
+              "name": {
+                "title": "AzimuthReference Name",
+                "description": "The name of the CRS or the symbol/name of the unit.",
+                "type": "string",
+                "example": "TrueNorth"
+              },
+              "persistableReference": {
+                "title": "AzimuthReference Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                "type": "string",
+                "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}"
+              },
+              "propertyNames": {
+                "title": "AzimuthReference Property Names",
+                "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Bearing"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          }
+        ],
+        "x-osdu-inheriting-from-kind": []
+      }
+    },
+    "TestNumber": {
+      "type": "string",
+      "title": "Test Number",
+      "description": "A number for this test for purposes of e.g., tracking lab sequence."
+    },
+    "FlashPressure": {
+      "type": "number",
+      "title": "Flash Pressure",
+      "description": "Pressure at which the sample is flashed.",
+      "x-osdu-frame-of-reference": "UOM:pressure"
+    },
+    "FlashTemperature": {
+      "type": "number",
+      "title": "Flash Temperature",
+      "description": "Temperature at which the sampleis flashed.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "CompositionalAnalysis": {
+      "type": "array",
+      "title": "Compositional Analysis",
+      "description": "Compositional Analysis contains properties that generally include mole and mass percents of: total fluid, flashed gas and flashed liquid, and individual components (e.g., C1, C2, C3\u2026).",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Compositional Analysis",
+        "description": "Compositional Analysis contains properties that generally include mole and mass percents of: total fluid, flashed gas and flashed liquid, and individual components (e.g., C1, C2, C3\u2026).",
+        "properties": {
+          "ComponentNameID": {
+            "type": "string",
+            "title": "Component Name ID",
+            "description": "The name of the component.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "SampleOrganicCompositionComponent"
+              }
+            ]
+          },
+          "FlashedLiquidRelativeMass": {
+            "type": "number",
+            "title": "Flashed Liquid Relative Mass",
+            "description": "The relative mass of the component in the flashed liquid.",
+            "x-osdu-frame-of-reference": "UOM:mass per mass"
+          },
+          "FlashedGasRelativeMass": {
+            "type": "number",
+            "title": "Flashed Gas Relative Mass",
+            "description": "The relative mass of the component in the flashed gas.",
+            "x-osdu-frame-of-reference": "UOM:mass per mass"
+          },
+          "OverallFluidRelativeMass": {
+            "type": "number",
+            "title": "Overall Fluid Relative Mass",
+            "description": "The relative mass of the component in the flashed liquid.",
+            "x-osdu-frame-of-reference": "UOM:mass per mass"
+          },
+          "FlashedLiquidRelativeMole": {
+            "type": "number",
+            "title": "Flashed Liquid Relative Mole",
+            "description": "The relative molar weight of the component in the flashed liquid.",
+            "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+          },
+          "FlashedGasRelativeMole": {
+            "type": "number",
+            "title": "Flashed Gas Relative Mole",
+            "description": "The relative molar weight of the component in the flashed gas.",
+            "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+          },
+          "OverallFluidRelativeMole": {
+            "type": "number",
+            "title": "Overall Fluid Relative Mole",
+            "description": "The relative mass of the component in the overall fluid.",
+            "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+          },
+          "OverallFluidSpecificGravity": {
+            "type": "number",
+            "title": "Overall Fluid Specific Gravity",
+            "description": "The specific gravity of the component in the overall fluid.",
+            "x-osdu-frame-of-reference": "UOM:dimensionless"
+          },
+          "OverallFluidMolecularWeight": {
+            "type": "number",
+            "title": "Overall Fluid Molecular Weight",
+            "description": "The molecular weight of the component in the overall fluid.",
+            "x-osdu-frame-of-reference": "UOM:molecular weight"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "CalculatedProperties": {
+      "type": "object",
+      "title": "Sample Calculated Properties",
+      "description": "Properties calculated for the sample.",
+      "properties": {
+        "SampleCalculatedProperties": {
+          "type": "object",
+          "title": "Sample Calculated Properties",
+          "description": "Properties calculated for the sample.",
+          "properties": {
+            "AvgFlashedLiquidMolecularWeight": {
+              "type": "number",
+              "title": "Avg Flashed Liquid Molecular Weight",
+              "description": "The average mole weight of the flashed liquid.",
+              "x-osdu-frame-of-reference": "UOM:molecular weight"
+            },
+            "AvgFlashedGasMolecularWeight": {
+              "type": "number",
+              "title": "Avg Flashed Gas Molecular Weight",
+              "description": "The average mole weight of the flashed gas.",
+              "x-osdu-frame-of-reference": "UOM:molecular weight"
+            },
+            "AvgOverallFluidMolecularWeight": {
+              "type": "number",
+              "title": "Avg Overall Fluid Molecular Weight",
+              "description": "The average mole weight of the overall fluid.",
+              "x-osdu-frame-of-reference": "UOM:molecular weight"
+            },
+            "FlashedLiquidDensity": {
+              "type": "number",
+              "title": "Flashed Liquid Density",
+              "description": "The density of the flashed liquid at standard condition.",
+              "x-osdu-frame-of-reference": "UOM:mass per volume"
+            },
+            "FlashedGasDensity": {
+              "type": "number",
+              "title": "Flashed Gas Density",
+              "description": "The density of the flashed gas at standard condition.",
+              "x-osdu-frame-of-reference": "UOM:mass per volume"
+            },
+            "FlashedOverallFluidDensity": {
+              "type": "number",
+              "title": "Flashed Overall Fluid Density",
+              "description": "The density of the overall fluid.",
+              "x-osdu-frame-of-reference": "UOM:mass per volume"
+            },
+            "FlashedLiquidRealRelativeDensity": {
+              "type": "number",
+              "title": "Flashed Liquid Real Relative Density",
+              "description": "The real relative density of the flashed liquid.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "FlashedGasRealRelativeDensity": {
+              "type": "number",
+              "title": "Flashed Gas Real Relative Density",
+              "description": "The real relative density of the flashed gas.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "OverallFluidRealRelativeDensity": {
+              "type": "number",
+              "title": "Overall Fluid Real Relative Density",
+              "description": "The real relative density of the overall fluid.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "OverallFluidGasOilRatio": {
+              "type": "number",
+              "title": "Overall Fluid Gas Oil Ratio",
+              "description": "The gas-oil ratio of the overall fluid.",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            },
+            "FlashedLiquidMoleFraction": {
+              "type": "number",
+              "title": "Flashed Liquid Mole Fraction",
+              "description": "The mole fraction of the flashed liquid.",
+              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+            },
+            "FlashedGasMoleFraction": {
+              "type": "number",
+              "title": "Flashed Gas Mole Fraction",
+              "description": "The mole fraction of the flashed gas.",
+              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+            },
+            "OverallFluidMoleFraction": {
+              "type": "number",
+              "title": "Overall Fluid Mole Fraction",
+              "description": "The mole fraction of the overall fluid.",
+              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+            },
+            "FlashedLiquidMassFraction": {
+              "type": "number",
+              "title": "Flashed Liquid Mas sFraction",
+              "description": "The mass fraction of the flashed liquid.",
+              "x-osdu-frame-of-reference": "UOM:mass per mass"
+            },
+            "FlashedGasMassFraction": {
+              "type": "number",
+              "title": "Flashed Gas Mass Fraction",
+              "description": "The mass fraction of the flashed gas.",
+              "x-osdu-frame-of-reference": "UOM:mass per mass"
+            },
+            "OverallFluidMassFraction": {
+              "type": "number",
+              "title": "Overall Fluid Mass Fraction",
+              "description": "The mass fraction of the overall fluid.",
+              "x-osdu-frame-of-reference": "UOM:mass per mass"
+            },
+            "FlashedGasGravity": {
+              "type": "number",
+              "title": "Flashed Gas Gravity",
+              "description": "The gravity of flashed gas, represented the molecular weight of the gas divided by the molecular weight of air.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "FlashedLiquidAPIGravity": {
+              "type": "number",
+              "title": "Flashed Liquid API Gravity",
+              "description": "The API Gravity of the flashed liquid.",
+              "x-osdu-frame-of-reference": "UOM:API gravity"
+            }
+          },
+          "additionalProperties": false
+        },
+        "PlusComponentsCalculatedProperties": {
+          "type": "array",
+          "title": "Plus Components Calculated Properties",
+          "description": "Properties of additional components calculated.",
+          "x-osdu-indexing": {
+            "type": "nested"
+          },
+          "items": {
+            "type": "object",
+            "title": "Plus Components Calculated Properties",
+            "description": "Properties of additional components calculated.",
+            "properties": {
+              "ComponentNameID": {
+                "type": "string",
+                "title": "Component Name ID",
+                "description": "The name of the component.",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "SampleOrganicCompositionComponent"
+                  }
+                ]
+              },
+              "FlashedLiquidRelativeMole": {
+                "type": "number",
+                "title": "Flashed Liquid Relative Mole",
+                "description": "The relative molar concentration of the component in the flashed liquid.",
+                "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+              },
+              "FlashedGasRelativeMole": {
+                "type": "number",
+                "title": "Flashed Gas Relative Mole",
+                "description": "The relative molar concentration of the component in the flashed gas.",
+                "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+              },
+              "OverallFluidRelativeMole": {
+                "type": "number",
+                "title": "Overall Fluid Relative Mole",
+                "description": "The relative molar concentration of the component in the overall fluid.",
+                "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+              },
+              "FlashedLiquidMolecularWeight": {
+                "type": "number",
+                "title": "Flashed Liquid Molecular Weight",
+                "description": "The molecular weight of the flashed liquid in the overall fluid.",
+                "x-osdu-frame-of-reference": "UOM:molecular weight"
+              },
+              "FlashedGasMolecularWeight": {
+                "type": "number",
+                "title": "Flashed Gas Molecular Weight",
+                "description": "The molecular weight of the flashed gas in the overall fluid.",
+                "x-osdu-frame-of-reference": "UOM:molecular weight"
+              },
+              "OverallFluidMolecularWeight": {
+                "type": "number",
+                "title": "Overall Fluid Molecular Weight",
+                "description": "The molecular weight of the overall fluid.",
+                "x-osdu-frame-of-reference": "UOM:molecular weight"
+              },
+              "FlashedLiquidDensity": {
+                "type": "number",
+                "title": "Flashed Liquid Density",
+                "description": "The density of the component in the flashed liquid at standard condition.",
+                "x-osdu-frame-of-reference": "UOM:mass per volume"
+              },
+              "FlashedGasDensity": {
+                "type": "number",
+                "title": "Flashed Gas Density",
+                "description": "The density of the component in the flashed gas at standard condition.",
+                "x-osdu-frame-of-reference": "UOM:mass per volume"
+              },
+              "OverallFluidDensity": {
+                "type": "number",
+                "title": "Overall Fluid Density",
+                "description": "The density of the component within the overall fluid at standard condition.",
+                "x-osdu-frame-of-reference": "UOM:mass per volume"
+              },
+              "FlashedLiquidRelativeMass": {
+                "type": "number",
+                "title": "Flashed Liquid Relative Mass",
+                "description": "The relative mass of the component in the flashed liquid.",
+                "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+              },
+              "FlashedGasRelativeMass": {
+                "type": "number",
+                "title": "Flashed Gas Relative Mass",
+                "description": "The relative mass of the component in the flashed gas.",
+                "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+              },
+              "OverallFluidRelativeMass": {
+                "type": "number",
+                "title": "Overall Fluid Relative Mass",
+                "description": "The relative mass of the component in the flashed liquid.",
+                "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+              },
+              "OverallFluidSpecificGravity": {
+                "type": "number",
+                "title": "Overall Fluid Specific Gravity",
+                "description": "The specific gravity of the component in the overall fluid.  It is typical for either Specific Gravity or Density to be reported, but not necessarily both.",
+                "x-osdu-frame-of-reference": "UOM:dimensionless"
+              },
+              "FlashedGasSpecificGravity": {
+                "type": "number",
+                "title": "Flashed Gas Specific Gravity",
+                "description": "The specific gravity of the component in the flashed gas. It is typical for either Specific Gravity or Density to be reported, but not necessarily both.",
+                "x-osdu-frame-of-reference": "UOM:dimensionless"
+              },
+              "FlashedLiquidSpecificGravity": {
+                "type": "number",
+                "title": "Flashed Liquid Specific Gravity",
+                "description": "The specific gravity of the component in the flashed liquid. It is typical for either Specific Gravity or Density to be reported, but not necessarily both.",
+                "x-osdu-frame-of-reference": "UOM:dimensionless"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "GasCompositionalCalculations": {
+      "type": "array",
+      "title": "Gas Compositional Calculations",
+      "description": "Calculations related to the composition of the gas.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Gas Compositional Calculations",
+        "description": "Calculations related to the composition of the gas.",
+        "properties": {
+          "ComponentNameID": {
+            "type": "string",
+            "title": "Component Name ID",
+            "description": "The name of the component.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "SampleOrganicCompositionComponent"
+              }
+            ]
+          },
+          "MolecularWeight": {
+            "type": "number",
+            "title": "Molecular Weight",
+            "description": "Molecular Weight",
+            "x-osdu-frame-of-reference": "UOM:molecular weight"
+          },
+          "Density": {
+            "type": "number",
+            "title": "Density",
+            "description": "Mass per volume of the component within the sample at standard condition.",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "OilCompositionalCalculations": {
+      "type": "array",
+      "title": "Oil Compositional Calculations",
+      "description": "Calculations related to the composition of the oil.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Oil Compositional Calculations",
+        "description": "Calculations related to the composition of the oil.",
+        "properties": {
+          "ComponentNameID": {
+            "type": "string",
+            "title": "Component Name ID",
+            "description": "The name of the component.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "SampleOrganicCompositionComponent"
+              }
+            ]
+          },
+          "MolecularWeight": {
+            "type": "number",
+            "title": "Molecular Weight",
+            "description": "Molecular Weight",
+            "x-osdu-frame-of-reference": "UOM:molecular weight"
+          },
+          "Density": {
+            "type": "number",
+            "title": "Density",
+            "description": "Mass per volume of the component within the sample at standard condition.",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "ContaminationCorrection": {
+      "type": "object",
+      "title": "Contamination Correction",
+      "description": "This object captures if the reported compositional analysis is pre or post correction for mud contamination and the reported mud contamination percentage.",
+      "properties": {
+        "ContaminationCorrectionStatus": {
+          "type": "string",
+          "title": "Contamination Correction Status",
+          "description": "Status of correction for mud contamination."
+        },
+        "ContaminantID": {
+          "type": "string",
+          "title": "Contaminant ID",
+          "description": "The OSDU ID for the contaminant fluid sample record.",
+          "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+          "x-osdu-relationship": [
+            {
+              "GroupType": "master-data",
+              "EntityType": "Sample"
+            }
+          ]
+        },
+        "ReferenceFluidID": {
+          "type": "string",
+          "title": "Reference Fluid ID",
+          "description": "The fluid used as a reference to determine the degree of contamination, e.g. stock tank oil or reservoir fluid."
+        },
+        "WeightFraction": {
+          "type": "number",
+          "title": "Weight Fraction",
+          "description": "The degree of contamination as a fraction of weight.",
+          "x-osdu-frame-of-reference": "UOM:mass per mass"
+        },
+        "VolumeFraction": {
+          "type": "number",
+          "title": "Volume Fraction",
+          "description": "The degree of contamination as a fraction of volume.",
+          "x-osdu-frame-of-reference": "UOM:volume per volume"
+        },
+        "MoleFraction": {
+          "type": "number",
+          "title": "Mole Fraction",
+          "description": "The degree of contamination as a molar fraction.",
+          "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+        }
+      },
+      "additionalProperties": false
+    },
+    "StandardConditionPressure": {
+      "type": "number",
+      "title": "Standard Condition Pressure",
+      "description": "Pressure at which the Gas Oil Ratio is defined.",
+      "x-osdu-frame-of-reference": "UOM:pressure"
+    },
+    "StandardConditionTemperature": {
+      "type": "number",
+      "title": "Standard Condition Temperature",
+      "description": "Temperature at which the Gas Oil Ratio is defined.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "InitialConditionPressure": {
+      "type": "number",
+      "title": "Initial Condition Pressure",
+      "description": "Initial pressure condition at the start of the experiment.",
+      "x-osdu-frame-of-reference": "UOM:pressure"
+    },
+    "InitialConditionTemperature": {
+      "type": "number",
+      "title": "Initial Condition Temperature",
+      "description": "Initial temperature condition at the start of the experiment.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "InitialConditionFormationVolumeFactor": {
+      "type": "number",
+      "title": "Initial Condition Formation Volume Factor",
+      "description": "The ratio of the volume of fluid in the reservoir to the volume of the fluid at the surface conditions, accounting for the effects of pressure and temperature.",
+      "x-osdu-frame-of-reference": "UOM:volume per volume"
+    },
+    "InitialConditionSaturatedFluidDensity": {
+      "type": "number",
+      "title": "Initial Condition Saturated Fluid Density",
+      "description": "Density of saturated fluid at initial pressure and temperature conditions.",
+      "x-osdu-frame-of-reference": "UOM:mass per volume"
+    },
+    "StandardConditionWaterDensity": {
+      "type": "number",
+      "title": "Standard Condition Water Density",
+      "description": "The density of water at standard conditions.",
+      "x-osdu-frame-of-reference": "UOM:mass per volume"
+    },
+    "Remarks": {
+      "type": "array",
+      "title": "Remarks",
+      "description": "Array object capturing remarks or additional information for this analysis.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "x-osdu-license": "Copyright 2023, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+        "x-osdu-review-status": "Accepted",
+        "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractRemark.1.0.0.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "x-osdu-schema-source": "osdu:wks:AbstractRemark:1.0.0",
+        "title": "AbstractRemark",
+        "description": "A remark object, pairing a remark text with a source, e.g. an author, and a date, which is typically included in an array. The RemarkSequenceNumber acts as unique key in this case.",
+        "type": "object",
+        "properties": {
+          "RemarkSequenceNumber": {
+            "type": "integer",
+            "title": "Remark Sequence Number",
+            "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+            "example": 1
+          },
+          "Remark": {
+            "type": "string",
+            "title": "Remark",
+            "description": "A descriptive comment for this remark."
+          },
+          "RemarkSource": {
+            "type": "string",
+            "title": "Remark Source",
+            "description": "The person, vendor, interpreter or other provider of information."
+          },
+          "RemarkDate": {
+            "type": "string",
+            "title": "Remark Date",
+            "description": "The date the remark was issued.",
+            "format": "date",
+            "x-osdu-frame-of-reference": "DateTime"
+          }
+        },
+        "x-osdu-inheriting-from-kind": []
+      }
+    }
+  },
+  "required": [
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta"
+  ],
+  "additionalProperties": false
+}
