@@ -459,8 +459,14 @@ class ContaminationCorrection(RafsBaseModel):
     )
     ReferenceFluidID: Optional[str] = Field(
         None,
-        description="The fluid used as a reference to determine the degree of contamination, e.g. stock tank oil or reservoir fluid.",
+        description="DEPRECATED: use ReferenceFluid instead.",
         title="Reference Fluid ID",
+        deprecated=True,
+    )
+    ReferenceFluid: Optional[str] = Field(
+        None,
+        description="The fluid used as a reference to determine the degree of contamination, e.g. stock tank oil or reservoir fluid.",
+        title="Reference Fluid",
     )
     WeightFraction: Optional[float] = Field(
         None,
