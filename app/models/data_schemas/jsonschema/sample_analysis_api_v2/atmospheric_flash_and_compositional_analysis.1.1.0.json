@@ -669,6 +669,12 @@
         "ReferenceFluidID": {
           "type": "string",
           "title": "Reference Fluid ID",
+          "description": "DEPRECATED: use ReferenceFluid instead.",
+          "deprecated": true
+        },
+        "ReferenceFluid": {
+          "type": "string",
+          "title": "Reference Fluid",
           "description": "The fluid used as a reference to determine the degree of contamination, e.g. stock tank oil or reservoir fluid."
         },
         "WeightFraction": {

@@ -87,6 +87,7 @@
       "ContaminationCorrectionStatus": "Status",
       "ContaminantID": "opendes:master-data--Sample:Example_Sample:",
       "ReferenceFluidID": "Fluid ID",
+      "ReferenceFluid": "Stock tank oil",
       "WeightFraction": 1,
       "VolumeFraction": 1.23,
       "MoleFraction": 3.16
