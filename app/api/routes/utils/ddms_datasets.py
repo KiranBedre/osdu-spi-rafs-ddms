@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from fastapi import Request
 from fastapi.responses import JSONResponse, Response
@@ -120,6 +120,41 @@ async def upsert_parquet_data(
     )
 
 
+def _resolve_blob_for_version(
+    blob_metadata: BlobMetadata,
+    ddms_datasets: List[str],
+    version: Optional[int],
+) -> BlobMetadata:
+    """Resolve historical blob metadata by analysis type for versioned WPC records.
+
+    When a WPC record version is requested, the client-provided content UUID may
+    belong to a different (newer) version. This function looks up the correct
+    historical blob from the record's DDMSDatasets by analysis type.
+    Returns the original blob_metadata unchanged when version is None.
+
+    :param blob_metadata: blob metadata from the request
+    :type blob_metadata: BlobMetadata
+    :param ddms_datasets: DDMSDatasets from the historical WPC record
+    :type ddms_datasets: List[str]
+    :param version: WPC record version, or None for the latest
+    :type version: Optional[int]
+    :return: resolved blob_metadata for the historical version, or original
+    :rtype: BlobMetadata
+    """
+    if version is None:
+        return blob_metadata
+    resolved = find_object_name_from_type(ddms_datasets, blob_metadata.full_analysis_type)
+    if resolved:
+        return BlobMetadata(
+            analysis_family=blob_metadata.analysis_family,
+            analysis_type=blob_metadata.analysis_type,
+            version=blob_metadata.version,
+            uuid=resolved.split("/")[-1],
+            content_type=blob_metadata.content_type,
+        )
+    return blob_metadata
+
+
 async def get_parquet_data(
     request: Request,
     record_id: str,
@@ -154,8 +189,12 @@ async def get_parquet_data(
     # Aggregation results only make sense in split format (index holds the function name)
     orient = "split" if df_filter.valid_columns_aggregation else orient
 
-    object_name = blob_metadata.object_name
     ddms_datasets = record["data"].get("DDMSDatasets", [])
+
+    # Issue #707: For versioned records, resolve the historical blob from DDMSDatasets
+    # by analysis type — client-provided UUID may belong to a different version
+    blob_metadata = _resolve_blob_for_version(blob_metadata, ddms_datasets, version)
+    object_name = blob_metadata.object_name
 
     if find_object_name_index(ddms_datasets, object_name) is not None:
         logger.debug(f"Retrieving parquet: {object_name}")
