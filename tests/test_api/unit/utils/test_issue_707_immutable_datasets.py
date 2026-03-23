@@ -24,8 +24,10 @@ These tests verify that:
 import pytest
 
 from app.api.routes.utils.records import (
+    ENTITY_TYPE_INDEX,
     dataset_id_exist,
     find_dataset_id,
+    find_object_name_from_type,
     find_schema_versions_for_dataset_id,
     generate_dataset_urn,
     get_id_version,
@@ -257,3 +259,108 @@ class TestImmutableDatasetBehavior:
         record_id_latest = "opendes:work-product-component--SamplesAnalysis:abc"
         base_id, version = get_id_version(record_id_latest)
         assert version is None
+
+
+class TestHistoricalDataResolution:
+    """Tests for the historical data resolution pattern (Issue #707 QA fix).
+
+    When retrieving bulk data for a versioned WPC record, RAFS resolves the
+    correct dataset from the historical record's DDMSDatasets by analysis type,
+    regardless of which dataset_id the client provides in the request.
+    """
+
+    def _extract_prefix(self, dataset_id: str) -> str:
+        """Helper: extract analysis type prefix from a dataset ID."""
+        dataset_id_parts = dataset_id.split(":")
+        if len(dataset_id_parts) > ENTITY_TYPE_INDEX:
+            return dataset_id_parts[ENTITY_TYPE_INDEX].split("-")[0]
+        return ""
+
+    def test_resolves_historical_dataset_when_client_sends_current_id(self):
+        """Should resolve old UUID from historical DDMSDatasets via type prefix."""
+        historical_ddms_datasets = [
+            "urn://rafs-v2/rcadata/wpc_id/opendes:dataset--File.Generic:rca-old-uuid:1/1.0.0",
+        ]
+        current_dataset_id = "opendes:dataset--File.Generic:rca-new-uuid"
+
+        analysis_prefix = self._extract_prefix(current_dataset_id)
+        resolved_id = find_dataset_id(historical_ddms_datasets, analysis_prefix)
+
+        assert resolved_id == "opendes:dataset--File.Generic:rca-old-uuid"
+
+    def test_resolves_xrd_historical_dataset(self):
+        """Should resolve XRD historical dataset (reproduces QA-reported 404)."""
+        historical_ddms_datasets = [
+            "urn://rafs-v2/xrddata/wpc_id/osdu:dataset--File.Generic:xrd-old-uuid:1/1.0.0",
+        ]
+        current_dataset_id = "osdu:dataset--File.Generic:xrd-e41944ee-2078-4941-823e-1645fa191f7b"
+
+        analysis_prefix = self._extract_prefix(current_dataset_id)
+        resolved_id = find_dataset_id(historical_ddms_datasets, analysis_prefix)
+
+        assert resolved_id == "osdu:dataset--File.Generic:xrd-old-uuid"
+
+    def test_resolves_satfuncset_historical_dataset(self):
+        """Should resolve SaturationFunctionSet historical dataset."""
+        historical_ddms_datasets = [
+            (
+                "urn://rafs-v2/saturationfunctionsetdata/wpc_id/"
+                "osdu:dataset--File.Generic:saturationfunctionset-old-uuid:1/1.0.0"
+            ),
+        ]
+        current_dataset_id = "osdu:dataset--File.Generic:saturationfunctionset-4fbab005-4839-4585-94a8-62ca0cc2961b"
+
+        analysis_prefix = self._extract_prefix(current_dataset_id)
+        resolved_id = find_dataset_id(historical_ddms_datasets, analysis_prefix)
+
+        assert resolved_id == "osdu:dataset--File.Generic:saturationfunctionset-old-uuid"
+
+    def test_returns_none_when_type_not_in_historical_record(self):
+        """Should return None when analysis type not in historical DDMSDatasets."""
+        historical_ddms_datasets = [
+            "urn://rafs-v2/ccedata/wpc_id/opendes:dataset--File.Generic:cce-uuid:1/1.0.0",
+        ]
+        current_dataset_id = "opendes:dataset--File.Generic:rca-new-uuid"
+
+        analysis_prefix = self._extract_prefix(current_dataset_id)
+        resolved_id = find_dataset_id(historical_ddms_datasets, analysis_prefix)
+
+        assert resolved_id is None
+
+    def test_resolves_correct_type_among_multiple(self):
+        """Should resolve only the matching analysis type."""
+        historical_ddms_datasets = [
+            "urn://rafs-v2/ccedata/wpc_id/opendes:dataset--File.Generic:cce-old-uuid:1/1.0.0",
+            "urn://rafs-v2/rcadata/wpc_id/opendes:dataset--File.Generic:rca-old-uuid:1/1.0.0",
+        ]
+        current_dataset_id = "opendes:dataset--File.Generic:rca-new-uuid"
+
+        analysis_prefix = self._extract_prefix(current_dataset_id)
+        resolved_id = find_dataset_id(historical_ddms_datasets, analysis_prefix)
+
+        assert resolved_id == "opendes:dataset--File.Generic:rca-old-uuid"
+
+    def test_resolves_historical_blob_by_full_analysis_type(self):
+        """find_object_name_from_type should resolve historical blob for blob-storage path."""
+        historical_ddms_datasets = [
+            "urn://rafs/wpc_id/samplesanalysis/rca/1.0.0/old-uuid",
+        ]
+        full_analysis_type = "samplesanalysis/rca/1.0.0"
+
+        resolved = find_object_name_from_type(historical_ddms_datasets, full_analysis_type)
+
+        assert resolved == "samplesanalysis/rca/1.0.0/old-uuid"
+
+    def test_blob_resolution_ignores_client_uuid(self):
+        """Blob resolution finds historical UUID regardless of client-provided UUID."""
+        historical_ddms_datasets = [
+            "urn://rafs/wpc_id/samplesanalysis/nmr/1.0.0/historical-uuid",
+        ]
+        # Client blob_metadata.full_analysis_type = "samplesanalysis/nmr/1.0.0"
+        # Client blob_metadata.uuid = "current-uuid" (different from historical)
+        full_analysis_type = "samplesanalysis/nmr/1.0.0"
+
+        resolved = find_object_name_from_type(historical_ddms_datasets, full_analysis_type)
+
+        assert resolved == "samplesanalysis/nmr/1.0.0/historical-uuid"
+        assert resolved.split("/")[-1] == "historical-uuid"
