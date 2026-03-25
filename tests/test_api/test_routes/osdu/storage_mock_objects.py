@@ -458,6 +458,7 @@ class TestContentPathsApiV2:
     RES_SIM_ROCK_PHYSICS_MODEL = RES_SIM_ROCK_PHYSICS_DATA_PATH
     SATURATION_FUNCTION_SET_MODEL = SATURATION_FUNCTION_SET_DATA_PATH
     ROLLER_OVEN_TEST = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.ROLLER_OVEN_TEST}"
+    SATURATION_TEST = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.SATURATION_TEST}"
 
 
 class BulkDatasetIdV2(NamedTuple):
@@ -513,6 +514,7 @@ class BulkDatasetIdV2(NamedTuple):
     )
     SATURATION_FUNCTION_SET_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:{SATURATION_FUNCTION_SET_STR}-{TEST_DATASET_UID}"
     ROLLER_OVEN_TEST = f"{PARTITION}:{FILE_GENERIC_TYPE}:rolleroventest-{TEST_DATASET_UID}"
+    SATURATION_TEST = f"{PARTITION}:{FILE_GENERIC_TYPE}:saturationtest-{TEST_DATASET_UID}"
 
 
 with open(f"{dir_path}/schemas/wpc_definitions.json") as fp:

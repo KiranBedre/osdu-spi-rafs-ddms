@@ -65,6 +65,7 @@ class CommonRelativePathsV2(NamedTuple):
     MINING_GEOTECH_LOGGING: str = "/data/mininggeotechlogging"
     PROPPANT_EMBEDMENT: str = "/data/proppantembed"
     ROLLER_OVEN_TEST: str = "/data/rolleroventest"
+    SATURATION_TEST: str = "/data/saturationtest"
 
 
 class CommonRelativePathsDev(CommonRelativePathsV2):
@@ -174,6 +175,7 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
     "mininggeotechlogging": ["Mining.Geotechlogging"],
     "proppantembed": ["Geomechanics.ProppantEmbedment"],
     "rolleroventest": ["FluidSensitivity.RollerOvenTest"],
+    "saturationtest": ["PVT.SaturationTest"],
 }
 
 SATURATION_FUNCTION_SET_STR = "saturationfunctionset"

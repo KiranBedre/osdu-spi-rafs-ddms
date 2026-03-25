@@ -123,6 +123,7 @@ from tests.test_api.test_routes.api_v2.roller_oven_test import roller_oven_test_
 from tests.test_api.test_routes.api_v2.routinecoreanalysis import (
     rca_mock_objects,
 )
+from tests.test_api.test_routes.api_v2.saturation_test import saturation_test_mock_objects
 from tests.test_api.test_routes.api_v2.slimtube import slimtube_mock_objects
 from tests.test_api.test_routes.api_v2.sto import sto_mock_objects
 from tests.test_api.test_routes.api_v2.swelling import swelling_mock_objects
@@ -312,6 +313,7 @@ def _headers_parquet(version="1.0.0"):
         (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, BulkDatasetIdV2.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL),
         (TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL, BulkDatasetIdV2.SATURATION_FUNCTION_SET_MODEL),
         (TestContentPathsApiV2.ROLLER_OVEN_TEST, BulkDatasetIdV2.ROLLER_OVEN_TEST),
+        (TestContentPathsApiV2.SATURATION_TEST, BulkDatasetIdV2.SATURATION_TEST),
     ],
 )
 @pytest.mark.asyncio
@@ -380,6 +382,7 @@ async def test_get_content_data_no_data(data_endpoint_path, dataset_id):
         (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, BulkDatasetIdV2.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL),
         (TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL, BulkDatasetIdV2.SATURATION_FUNCTION_SET_MODEL),
         (TestContentPathsApiV2.ROLLER_OVEN_TEST, BulkDatasetIdV2.ROLLER_OVEN_TEST),
+        (TestContentPathsApiV2.SATURATION_TEST, BulkDatasetIdV2.SATURATION_TEST),
     ],
 )
 @pytest.mark.asyncio
@@ -448,6 +451,7 @@ async def test_get_data_no_content_header(data_endpoint_path, dataset_id):
         (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, BulkDatasetIdV2.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL),
         (TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL, BulkDatasetIdV2.SATURATION_FUNCTION_SET_MODEL),
         (TestContentPathsApiV2.ROLLER_OVEN_TEST, BulkDatasetIdV2.ROLLER_OVEN_TEST),
+        (TestContentPathsApiV2.SATURATION_TEST, BulkDatasetIdV2.SATURATION_TEST),
     ],
 )
 @pytest.mark.asyncio
@@ -999,6 +1003,16 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
             ],
             "download_file",
             [build_get_test_data("x-parquet", roller_oven_test_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.SATURATION_TEST,
+            saturation_test_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                saturation_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_test_mock_objects.TEST_DATA)],
         ),
     ],
 )
@@ -2486,6 +2500,33 @@ async def test_get_content_parquet_data(
             [build_get_test_data("x-parquet", roller_oven_test_mock_objects.TEST_DATA)],
             roller_oven_test_mock_objects.TEST_FILTERED_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.SATURATION_TEST}/{saturation_test_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [saturation_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_test_mock_objects.TEST_DATA)],
+            saturation_test_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.SATURATION_TEST}/{saturation_test_mock_objects.TEST_DATASET_RECORD_ID}",
+            saturation_test_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [saturation_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_test_mock_objects.TEST_DATA)],
+            saturation_test_mock_objects.TEST_AGGREGATED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.SATURATION_TEST}/{saturation_test_mock_objects.TEST_DATASET_RECORD_ID}",
+            saturation_test_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [saturation_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_test_mock_objects.TEST_DATA)],
+            saturation_test_mock_objects.TEST_FILTERED_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -2900,6 +2941,14 @@ async def test_get_data_json_data(
             "download_file",
             [build_get_test_data("x-parquet", roller_oven_test_mock_objects.TEST_DATA)],
             roller_oven_test_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.SATURATION_TEST}/{saturation_test_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [saturation_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_test_mock_objects.TEST_DATA)],
+            saturation_test_mock_objects.TEST_DATA,
         ),
     ],
 )
@@ -3737,6 +3786,14 @@ async def test_get_data_json_data_improper_schema_version(
             [build_get_test_data("x-parquet", roller_oven_test_mock_objects.TEST_DATA)],
             roller_oven_test_mock_objects.TEST_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.SATURATION_TEST}/{saturation_test_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [saturation_test_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", saturation_test_mock_objects.TEST_DATA)],
+            saturation_test_mock_objects.TEST_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -4155,6 +4212,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID,
             roller_oven_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.SATURATION_TEST,
+            saturation_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            saturation_test_mock_objects.TEST_DATA,
+            saturation_test_mock_objects.TEST_DATASET_RECORD_ID,
+            saturation_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -4562,6 +4626,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID,
             roller_oven_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.SATURATION_TEST,
+            saturation_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            saturation_test_mock_objects.TEST_DATA,
+            saturation_test_mock_objects.TEST_DATASET_RECORD_ID,
+            saturation_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -4855,6 +4926,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
             TestContentPathsApiV2.ROLLER_OVEN_TEST,
             roller_oven_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.SATURATION_TEST,
+            saturation_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            saturation_test_mock_objects.TEST_DATASET_RECORD_ID,
         ),
     ],
 )
@@ -5259,6 +5335,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             roller_oven_test_mock_objects.TRIMMED_TEST_DATA,
             roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID,
             roller_oven_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.SATURATION_TEST,
+            saturation_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            saturation_test_mock_objects.TEST_DATA,
+            saturation_test_mock_objects.TEST_DATASET_RECORD_ID,
+            saturation_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
     ],
 )
@@ -5669,6 +5752,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID,
             roller_oven_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.SATURATION_TEST,
+            saturation_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            saturation_test_mock_objects.TEST_DATA,
+            saturation_test_mock_objects.TEST_DATASET_RECORD_ID,
+            saturation_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -5744,6 +5834,7 @@ async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data,
             saturation_function_set_mock_objects.INCORRECT_SCHEMA_TEST_DATA,
         ),
         (TestContentPathsApiV2.ROLLER_OVEN_TEST, roller_oven_test_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
+        (TestContentPathsApiV2.SATURATION_TEST, saturation_test_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
     ],
 )
 @pytest.mark.asyncio
@@ -6018,6 +6109,11 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             roller_oven_test_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             roller_oven_test_mock_objects.EXPECTED_ERROR_REASON,
         ),
+        (
+            TestContentPathsApiV2.SATURATION_TEST,
+            saturation_test_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
+            saturation_test_mock_objects.EXPECTED_ERROR_REASON,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -6087,6 +6183,7 @@ async def test_post_invalid_df_error(data_endpoint_path, incorrect_dataframe_dat
         f"{TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL}/{res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL}/{saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.ROLLER_OVEN_TEST}/{roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID}",
+        f"{TestContentPathsApiV2.SATURATION_TEST}/{saturation_test_mock_objects.TEST_DATASET_RECORD_ID}",
     ],
 )
 @pytest.mark.asyncio
@@ -6152,6 +6249,7 @@ async def test_get_403(data_endpoint_path):
         TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
         TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
+        TestContentPathsApiV2.SATURATION_TEST,
     ],
 )
 @pytest.mark.asyncio
@@ -6301,6 +6399,13 @@ async def test_post_403(data_endpoint_path):
                 find_osdu_ids_from_string(json.dumps(roller_oven_test_mock_objects.TEST_DATA)),
             ),
         ),
+        (
+            TestContentPathsApiV2.SATURATION_TEST,
+            saturation_test_mock_objects.TEST_DATA,
+            list(
+                find_osdu_ids_from_string(json.dumps(saturation_test_mock_objects.TEST_DATA)),
+            ),
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -6375,6 +6480,7 @@ async def test_post_integrity_error(
         TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
         TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
+        TestContentPathsApiV2.SATURATION_TEST,
     ],
 )
 async def test_invalid_data_with_nan(path):
@@ -6443,6 +6549,7 @@ async def test_invalid_data_with_nan(path):
         (TestContentPathsApiV2.STO, ORIENT_SPLIT_422_PAYLOADS),
         (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, ORIENT_SPLIT_422_PAYLOADS),
         (TestContentPathsApiV2.ROLLER_OVEN_TEST, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.SATURATION_TEST, ORIENT_SPLIT_422_PAYLOADS),
     ],
 )
 async def test_invalid_data_json_payload(path, payloads):

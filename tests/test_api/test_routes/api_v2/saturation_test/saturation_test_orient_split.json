@@ -1,0 +1,55 @@
+{
+  "columns":[
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta",
+    "TestNumber",
+    "Temperature",
+    "SaturationPressure",
+    "SaturationPressureTypeID",
+    "SourceAnalysisID",
+    "Remarks"
+  ],
+  "index":[
+    0
+  ],
+  "data":[
+    [
+      "opendes:work-product-component--SamplesAnalysis:Example_WPC:",
+      "opendes:master-data--Sample:Example_Sample:",
+      [
+        {
+          "kind":"Unit",
+          "name":"degree Fahrenheit",
+          "persistableReference":"{\"abcd\":{\"a\":0.0,\"b\":255.3722222222222,\"c\":1.0,\"d\":273.15},\"symbol\":\"degF\",\"baseMeasurement\":{\"ancestry\":\"K\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:degF:",
+          "propertyNames":[
+            "Temperature"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"pound-force per square inch",
+          "persistableReference":"{\"abcd\":{\"a\":0.0,\"b\":6894.757293168,\"c\":1.0,\"d\":0.0},\"symbol\":\"psi\",\"baseMeasurement\":{\"ancestry\":\"M/(L*T2)\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:psi:",
+          "propertyNames":[
+            "SaturationPressure"
+          ]
+        }
+      ],
+      "1",
+      250.0,
+      3500.0,
+      "opendes:reference-data--SaturationPressureType:BubblePoint:",
+      "opendes:work-product-component--SamplesAnalysis:Example_CCE_WPC:",
+      [
+        {
+          "RemarkSequenceNumber":1,
+          "Remark":"Bubble point determined from constant composition expansion test.",
+          "RemarkSource":"Laboratory Analyst",
+          "RemarkDate":"2025-01-15"
+        }
+      ]
+    ]
+  ]
+}
