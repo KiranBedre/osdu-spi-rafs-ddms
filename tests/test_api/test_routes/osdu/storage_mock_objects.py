@@ -364,7 +364,7 @@ STORAGE_SERVICE_200_RESPONSE = {
     "recordIdVersions": ["partition:type:test:1"],
 }
 
-EXPECTED_404_RESPONSE = {"code": 404, "reason": str(b"test reason"), "message": "test txt"}
+EXPECTED_404_RESPONSE = {"code": 404, "reason": "Not Found", "message": "test content"}
 EXPECTED_422_NO_KIND_RESPONSE = {"code": 422, "reason": "Unprocessable entity.", "errors": ["kind field required"]}
 EXPECTED_422_INVALID_KIND_REASON = "Kind `{}` not supported in RAFS-DDMS."
 EXPECTED_422_WRONG_PATTERN = ["ValidationError", "string does not match regex"]

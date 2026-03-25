@@ -394,7 +394,7 @@ class BaseDataView(object):
                 df = pd.read_json(io.StringIO(validated_json), orient=orient)
                 _normalize_nan_to_none(df)
 
-        except (ValueError, pyarrow.lib.ArrowException) as v_exc:
+        except (ValueError, OSError, pyarrow.lib.ArrowException) as v_exc:
             self._handle_validation_exception(v_exc)
 
         logger.info(f"Data has been read from {mime_type} format")
