@@ -29,7 +29,7 @@ from loguru import logger
 
 from app.exceptions.exceptions import (
     NotFoundException,
-    UnprocessableContentException,
+    ServiceUnavailableException,
 )
 from app.providers.dependencies.az.storage_account_info import (
     STORAGE_ACCOUNT_BLOB_ENDPOINT,
@@ -139,6 +139,6 @@ class AzureBlobStorage(IBlobStorage):
                 return blob.blob_metadata
             except ALL_AZURE_CORE_ERRORS as exc:
                 exc_msg = str(exc)
-                error_msg = f"Unable to upload the blob: {exc_msg}"
+                error_msg = f"Azure Blob Storage upload failed: {exc_msg}"
                 logger.error(error_msg)
-                raise UnprocessableContentException(detail=error_msg)
+                raise ServiceUnavailableException(detail=error_msg) from exc
