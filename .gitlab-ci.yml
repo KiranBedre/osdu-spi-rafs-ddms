@@ -54,6 +54,10 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/cimpl-global.yml"
 
+  # reporting stage
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "reporting/reporting.yml"
+
   # OVERRIDE STAGES
 
   # general

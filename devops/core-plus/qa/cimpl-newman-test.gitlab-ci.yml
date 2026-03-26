@@ -8,67 +8,28 @@
   tags: ["osdu-medium"]
   stage: integration
   image:
-    name: dannydainton/htmlextra
-    entrypoint: [""]
+    name: node:alpine
   needs: 
     - "cimpl-deploy"
   before_script:
   - apk add --no-cache curl bash jq
+  - npm install -g newman newman-reporter-allure
   script:
   - sleep 200  # Waiting for services to be ready
-  - echo "🛠 Generating custom Newman HTML template" # Generating custom Newman HTML template with Request Description section removed. Reason: Request descriptions contain sensitive data (e.g., bearer tokens, client secrets), and at the moment there is no any flag for "newman run" command that allows us to solve this problem.
-  - |
-    set -e 
-    ORIG=$(npm root -g)/newman-reporter-htmlextra/lib/dashboard-template.hbs
-    if [[ ! -f "$ORIG" ]]; then
-      echo "❌ Template dashboard-template.hbs not found — check image/installation"
-      exit 1
-    fi
-    cp "$ORIG" ./custom-dashboard-template.hbs
-    sed -i '/{{#if description.content}}/,/{{\/if}}/d' ./custom-dashboard-template.hbs
-    echo "✅ Custom template generated"
   - echo "▶️ Starting Newman tests"
   - |
-    set -o pipefail
-    newman run "$COLLECTION_JSON" \
-      -e "$ENVIRONMENT" \
-      --env-var "TENANT_ID=${CIMPL_TENANT}" \
-      --env-var "CLIENT_ID=${TEST_EPAM_OPENID_PROVIDER_CLIENT_ID}" \
-      --env-var "CLIENT_SECRET=${CIMPL_TEST_EPAM_OPENID_PROVIDER_CLIENT_SECRET}" \
-      --reporters cli,htmlextra \
-      --reporter-htmlextra-template ./custom-dashboard-template.hbs \
-      --reporter-htmlextra-export $REPORT_HTML \
-      --reporter-htmlextra-title "RAFS DDMS API Tests" \
-      --reporter-htmlextra-skipHeaders "Authorization" \
-      --reporter-htmlextra-hideResponseBody "Refresh Token" \
-      --reporter-htmlextra-hideRequestBody "Refresh Token" \
-      --insecure 2>&1 | tee newman.log
-    NEWMAN_EXIT_CODE=$?
-  - rm -f ./custom-dashboard-template.hbs || true
-  - echo "🧹 Custom template removed"
-  - |
-    bash <<'EOF'
-    echo "🔍 Scanning $REPORT_HTML for secrets"
-    declare -A SECRET_PATTERNS=(
-      ['Bearer [A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+']='bearer token'
-      ['client_secret&quot;:&quot;[^&]+']='client_secret'
-      ['access_token&quot;:&quot;[^&]+']='access_token'
-    )
-    FOUND=0
-    for PATTERN in "${!SECRET_PATTERNS[@]}"; do
-      COUNT=$(grep -Eoic "$PATTERN" "$REPORT_HTML")
-      if [[ $COUNT -gt 0 ]]; then
-        echo -e "\e[41m❌ $COUNT line(s) found with ${SECRET_PATTERNS[$PATTERN]} — ⚠️ Please make sure that confidential data is not included in the report.\!\e[0m"
-        FOUND=1
-      fi
-    done
-    if [[ $FOUND -eq 1 ]]; then
-      exit 1
-    fi
-    EOF
-  - echo "Test Artifacts Summary"
-  - echo "📝 HTML report ${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/file/$REPORT_HTML"
-  - echo "📜 Logs ${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/file/newman.log"
+    mkdir -pv "tests/cimpl"
+    cd "tests/cimpl"
+    set +e
+    { newman run "$CI_PROJECT_DIR/$COLLECTION_JSON" \
+        -e "$CI_PROJECT_DIR/$ENVIRONMENT" \
+        --env-var "TENANT_ID=${CIMPL_TENANT}" \
+        --env-var "CLIENT_ID=${TEST_EPAM_OPENID_PROVIDER_CLIENT_ID}" \
+        --env-var "CLIENT_SECRET=${CIMPL_TEST_EPAM_OPENID_PROVIDER_CLIENT_SECRET}" \
+        --reporters cli,allure \
+        --insecure; echo $? > /tmp/newman_exit; } 2>&1 | tee "$CI_PROJECT_DIR/newman.log"
+    NEWMAN_EXIT_CODE=$(cat /tmp/newman_exit)
+    set -e
   - |
     if [ "$NEWMAN_EXIT_CODE" -ne 0 ]; then
       echo "❌ Newman tests failed (exit code $NEWMAN_EXIT_CODE)"
@@ -77,7 +38,7 @@
   artifacts:
     when: always
     paths:
-      - $REPORT_HTML
+      - $ALLURE_RESULTS_DIR
       - newman.log
     expire_in: 1 month
   rules:
@@ -99,5 +60,5 @@ cimpl-acceptance-test-postman:
   variables:
     ENVIRONMENT: "./devops/core-plus/qa/Postman Collection/Environment/OSDU_CI.postman_environment.json"
     COLLECTION_JSON: "./devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
-    REPORT_HTML: "report-newman.html"
+    ALLURE_RESULTS_DIR: "tests/cimpl/allure-results"
   allow_failure: true
