@@ -14,7 +14,7 @@
 
 import io
 import uuid
-from typing import List, Optional
+from typing import List
 
 import pandas as pd
 import pyarrow
@@ -43,12 +43,12 @@ from app.api.routes.utils.api_description_helper import APIDescriptionHelper
 from app.api.routes.utils.api_version import get_api_version_from_url
 from app.api.routes.utils.gc_collector import with_gc_collect
 from app.api.routes.utils.records import (
-    ENTITY_TYPE_INDEX,
     dataset_id_exist,
     find_dataset_id,
     find_schema_versions_for_dataset_id,
     generate_dataset_urn,
     get_id_version,
+    update_dataset_id,
 )
 from app.bulk_data_validation.data_validation import DataValidator
 from app.core.config import get_app_settings
@@ -61,38 +61,6 @@ from app.models.data_schemas.data_schema import build_data_schema
 from app.resources.filters import DataFrameFilterValidator
 from app.resources.mime_types import SupportedMimeTypes
 from app.services import dataset, storage
-
-
-def _resolve_historical_dataset_id(
-    dataset_id: str,
-    ddms_datasets: List[str],
-    version: Optional[int],
-) -> str:
-    """Resolve historical dataset_id by analysis type prefix for versioned WPC records.
-
-    When a WPC record version is requested, the client-provided dataset_id may belong
-    to a different (newer) version. This function resolves the correct historical
-    dataset from the record's DDMSDatasets by matching the analysis type prefix.
-    Returns the original dataset_id unchanged when version is None.
-
-    :param dataset_id: dataset_id from the request (may be from a different version)
-    :type dataset_id: str
-    :param ddms_datasets: DDMSDatasets from the historical WPC record
-    :type ddms_datasets: List[str]
-    :param version: WPC record version, or None for the latest
-    :type version: Optional[int]
-    :return: resolved historical dataset_id, or original if not resolvable
-    :rtype: str
-    """
-    if version is None:
-        return dataset_id
-    dataset_id_parts = dataset_id.split(":")
-    if len(dataset_id_parts) > ENTITY_TYPE_INDEX:
-        analysis_prefix = dataset_id_parts[ENTITY_TYPE_INDEX].split("-")[0]
-        resolved = find_dataset_id(ddms_datasets, analysis_prefix)
-        if resolved:
-            return resolved
-    return dataset_id
 
 
 def _normalize_nan_to_none(df: pd.DataFrame) -> None:
@@ -123,17 +91,15 @@ class BaseDataView(object):
         self._specific_route_type = specific_route_type
         self.description_template_roles = APIDescriptionHelper.append_manage_roles(
             "Upload the bulk data for a given `{record_type}` object by record id.<br>\
-            Each update creates a new immutable dataset and a new WPC record version. \
-                Dataset IDs are never reused; historical data is preserved through WPC versioning. <br> <br>\
+            It creates a new version of the record. <br>\
+            The previous meta-data with bulk data is available by their `versions`. <br> <br>\
             Use the `Content-Type` request header to specify payload and response formats \
                 (`application/json` and `application/parquet` are supported).<br>\
             Use the `Accept` request header to specify content schema version \
                 (example header `Accept: */*;version=1.0.0` is supported).",
         )
         self.description_template_get_data = APIDescriptionHelper.append_joined_roles(
-            "Get the bulk data for a given `{record_type}` object by record id. <br><br>\
-            To retrieve a specific version, append the version number to the record id \
-                (e.g., `record_id:1` for version 1). Without a version suffix, returns the latest version.<br><br>\
+            "Get the (`latest version`) bulk data for a given `{record_type}` object by record id. <br><br>\
             Use the `Accept` request header to specify content schema version \
                 (example header `Accept: */*;version=1.0.0` is supported).<br><br>\
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
@@ -170,7 +136,7 @@ class BaseDataView(object):
 
         :param request: request
         :type request: Request
-        :param record_id: record id (may include version suffix like record_id:1)
+        :param record_id: record id,
         :type record_id: str
         :param dataset_id: dataset id,
         :type dataset_id: str
@@ -183,19 +149,14 @@ class BaseDataView(object):
         :return: dataset data
         :rtype: Response
         """
-        # Issue #707: Support versioned record IDs (e.g., record_id:1)
-        # Uses OSDU's built-in WPC versioning instead of query parameter
-        base_record_id, version = get_id_version(record_id)
-
         return await self._get_data(
             request,
-            base_record_id,
+            record_id,
             dataset_id,
             dataset_service,
             storage_service,
             df_filter,
             content_schema_version,
-            version,
         )
 
     async def post_data(
@@ -254,7 +215,6 @@ class BaseDataView(object):
         df_filter: DataFrameFilterValidator = Depends(validate_filters),
         content_schema_version: str = Depends(get_content_schema_version),
         orient: str = "split",
-        version: Optional[int] = None,
     ) -> Response:
         """Get record data.
 
@@ -272,23 +232,16 @@ class BaseDataView(object):
         :type df_filter: DataFrameFilterValidator
         :param orient: JSON output format ('split' or 'records')
         :type orient: str
-        :param version: WPC record version (optional)
-        :type version: Optional[int]
         :return: dataset data
         :rtype: Response
         """
-        # Issue #707: Support retrieving historical bulk data by WPC version
-        record = await storage_service.get_record(record_id, version)
+        record = await storage_service.get_record(record_id)
         mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
         # Aggregation results only make sense in split format (index holds the function name)
         orient = "split" if df_filter.valid_columns_aggregation else orient
 
         dataset_id, _ = get_id_version(dataset_id)
         ddms_datasets = record["data"].get("DDMSDatasets", [])
-
-        # Issue #707: For versioned records, resolve the historical dataset_id from
-        # DDMSDatasets by analysis type — client-provided ID may belong to a different version
-        dataset_id = _resolve_historical_dataset_id(dataset_id, ddms_datasets, version)
 
         if dataset_id_exist(ddms_datasets, dataset_id):
             logger.debug(f"Retrieving dataset: {dataset_id}")
@@ -459,27 +412,35 @@ class BaseDataView(object):
         entity_type = bulk_dataset_prefix.replace("-", "")
         record_data = record["data"]
         ddms_datasets = record_data.get("DDMSDatasets", [])
+        existent_dataset_id = find_dataset_id(ddms_datasets, bulk_dataset_prefix)
 
-        # Issue #707: Always create a new dataset ID to ensure immutable versioning.
-        # Each bulk data update creates a new dataset and a new WPC version.
-        # Historical data is preserved through OSDU's built-in WPC versioning.
-        new_dataset_id = f"{data_partition_id}:dataset--File.Generic:{bulk_dataset_prefix}-{uuid.uuid4()}"
-        dataset_record_id = await dataset_service.upload_file(parquet_file, new_dataset_id, record)
+        if existent_dataset_id:
+            dataset_record_id = await dataset_service.upload_file(parquet_file, existent_dataset_id, record)
+            ddms_urn = generate_dataset_urn(
+                ddms_id=settings.ddms_id,
+                api_version=api_version,
+                entity_type=f"{entity_type}data",
+                wpc_id=record_id,
+                dataset_id=dataset_record_id,
+                content_schema_version=content_schema_version,
+            )
+            update_dataset_id(record_data["DDMSDatasets"], ddms_urn, bulk_dataset_prefix)
+            logger.info(f"File uploaded for existent dataset: {existent_dataset_id}")
+        else:
+            new_dataset_id = f"{data_partition_id}:dataset--File.Generic:{bulk_dataset_prefix}-{uuid.uuid4()}"
+            dataset_record_id = await dataset_service.upload_file(parquet_file, new_dataset_id, record)
 
-        ddms_urn = generate_dataset_urn(
-            ddms_id=settings.ddms_id,
-            api_version=api_version,
-            entity_type=f"{entity_type}data",
-            wpc_id=record_id,
-            dataset_id=dataset_record_id,
-            content_schema_version=content_schema_version,
-        )
-        # Replace the existing entry for this dataset prefix instead of appending.
-        # Historical versions are preserved via WPC versioning, not via array growth.
-        ddms_datasets = [urn for urn in ddms_datasets if f"/{entity_type}data/" not in urn]
-        ddms_datasets.append(ddms_urn)
-        record_data["DDMSDatasets"] = ddms_datasets
-        logger.info(f"File uploaded for new immutable dataset: {new_dataset_id}")
+            ddms_urn = generate_dataset_urn(
+                ddms_id=settings.ddms_id,
+                api_version=api_version,
+                entity_type=f"{entity_type}data",
+                wpc_id=record_id,
+                dataset_id=dataset_record_id,
+                content_schema_version=content_schema_version,
+            )
+            ddms_datasets.append(ddms_urn)
+            record_data["DDMSDatasets"] = ddms_datasets
+            logger.info(f"File uploaded for new dataset: {new_dataset_id}")
 
         logger.debug(f"Dataset Id: {dataset_record_id}")
         storage_response = await storage_service.upsert_records([record])
