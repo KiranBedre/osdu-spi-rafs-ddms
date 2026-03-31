@@ -460,17 +460,24 @@
     "VaporTransportTestReferenceID": {
       "type": "string",
       "title": "Vapor Transport Test Reference ID",
-      "description": "A reference to a test assessing the transport properties of the vapor phase, such as flow rates or permeability."
+      "description": "A reference to a test assessing the transport properties of the vapor phase, such as flow rates or permeability.",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "work-product-component",
+          "EntityType": "SamplesAnalysis"
+        }
+      ]
     },
     "VaporPhaseAtmosphericFlashTestReferenceID": {
       "type": "string",
       "title": "Atmospheric Flash Test Reference ID",
       "description": "A reference to the atmospheric flash test, used to describe the behavior of the mixture when brought to atmospheric pressure.",
-      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysisID:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
       "x-osdu-relationship": [
         {
           "GroupType": "work-product-component",
-          "EntityType": "SamplesAnalysisID"
+          "EntityType": "SamplesAnalysis"
         }
       ]
     },
@@ -495,7 +502,14 @@
     "LiquidTransportTestReferenceID": {
       "type": "string",
       "title": "Liquid Transport Test Reference ID",
-      "description": "A reference to a test assessing the transport properties of the liquid phase, like viscosity or diffusion rates."
+      "description": "A reference to a test assessing the transport properties of the liquid phase, like viscosity or diffusion rates.",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "work-product-component",
+          "EntityType": "SamplesAnalysis"
+        }
+      ]
     },
     "LiquidComposition": {
       "type": "array",
@@ -585,11 +599,11 @@
       "type": "string",
       "title": "Atmospheric Flash Test Reference ID",
       "description": "A reference to the atmospheric flash test, used to describe the behavior of the mixture when brought to atmospheric pressure.",
-      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysisID:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
       "x-osdu-relationship": [
         {
           "GroupType": "work-product-component",
-          "EntityType": "SamplesAnalysisID"
+          "EntityType": "SamplesAnalysis"
         }
       ]
     }

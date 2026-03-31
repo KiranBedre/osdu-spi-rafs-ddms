@@ -33,8 +33,8 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:samplesanalysis_test:",
-      "opendes:master-data--Sample:fluid_sample_test:",
+      "opendes:work-product-component--SamplesAnalysis:VLE_WPC_001:",
+      "opendes:master-data--Sample:VLE_Sample_001:",
       [
         {
           "kind":"Unit",
@@ -55,11 +55,25 @@
         },
         {
           "kind":"Unit",
+          "name":"dimensionless",
+          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:Euc:",
+          "propertyNames":[
+            "GasToFluidMoleFraction",
+            "GasToFluidMolePercent",
+            "GasToTotalMoleFraction",
+            "GasToTotalMolePercent",
+            "MixtureRelativeVolume",
+            "InjectedGas[*].RelativeMoleWeight",
+            "InjectedGas[*].SpecificGravity"
+          ]
+        },
+        {
+          "kind":"Unit",
           "name":"cubic metre per cubic metre",
           "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:m3%2Fm3:",
           "propertyNames":[
             "MixtureGOR",
-            "MixtureRelativeVolume"
+            "InjectedGas[*].VolumePercent"
           ]
         },
         {
@@ -70,6 +84,30 @@
             "MixtureVolume",
             "VaporPhaseVolume",
             "LiquidPhaseVolume"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"gram per mole",
+          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:g%2Fmol:",
+          "propertyNames":[
+            "InjectedGas[*].MolecularWeight"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"mole per mole",
+          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:mol%2Fmol:",
+          "propertyNames":[
+            "InjectedGas[*].MolePercent"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"kilogram per kilogram",
+          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:kg%2Fkg:",
+          "propertyNames":[
+            "InjectedGas[*].MassPercent"
           ]
         },
         {
@@ -109,68 +147,68 @@
           ]
         }
       ],
-      "test_number",
-      1.23,
-      1.23,
-      1.23,
-      1.23,
-      1.23,
-      1.23,
-      1.23,
-      1.23,
-      1.23,
-      1.23,
+      "VLE-001",
+      250.0,
+      3500.0,
+      0.35,
+      35.0,
+      0.28,
+      28.0,
+      150.0,
+      250.0,
+      0.5,
+      1.05,
       [
         {
-          "ComponentNameID":"opendes:reference-data--SampleOrganicCompositionComponent:O2:",
-          "RelativeMoleWeight":1.23,
-          "MolecularWeight":1.23,
-          "MolePercent":1.23,
-          "MassPercent":1.23,
-          "VolumePercent":1.23,
-          "SpecificGravity":1.23
+          "ComponentNameID":"opendes:reference-data--SampleOrganicCompositionComponent:C1:",
+          "RelativeMoleWeight":1.0,
+          "MolecularWeight":16.04,
+          "MolePercent":85.0,
+          "MassPercent":72.5,
+          "VolumePercent":80.0,
+          "SpecificGravity":0.553
         }
       ],
-      1.23,
-      1.23,
-      1.23,
+      0.32,
+      0.018,
+      12.5,
       [
         {
-          "ComponentNameID":"opendes:reference-data--SampleOrganicCompositionComponent:H2S:",
-          "MoleFraction":1.23,
-          "MassFraction":1.23,
+          "ComponentNameID":"opendes:reference-data--SampleOrganicCompositionComponent:C1:",
+          "MoleFraction":0.85,
+          "MassFraction":0.725,
           "Remarks":[
             {
               "RemarkSequenceNumber":1,
-              "Remark":"Remark",
-              "RemarkSource":"Remark Source",
-              "RemarkDate":"2025-01-01"
+              "Remark":"Component analyzed by gas chromatography.",
+              "RemarkSource":"Laboratory Analyst",
+              "RemarkDate":"2025-01-15"
             }
           ]
         }
       ],
-      "Vapor Transport Test #55",
-      "opendes:work-product-component--SamplesAnalysisID:SamplesAnalysisID-test:",
-      1.23,
-      1.23,
-      1.23,
-      "Liquid Transport Test #55",
+      "opendes:work-product-component--SamplesAnalysis:VLE_VaporTransport_001:",
+      "opendes:work-product-component--SamplesAnalysis:AtmFlash_VaporPhase_001:",
+      2.5,
+      0.18,
+      52.3,
+      "opendes:work-product-component--SamplesAnalysis:VLE_LiquidTransport_001:",
       [
         {
-          "ComponentNameID":"opendes:reference-data--SampleOrganicCompositionComponent:H2O:",
-          "MoleFraction":1.23,
-          "MassFraction":1.23,
+          "ComponentNameID":"opendes:reference-data--SampleOrganicCompositionComponent:C7plus:",
+          "MoleFraction":0.15,
+          "MassFraction":0.275,
           "Remarks":[
             {
               "RemarkSequenceNumber":1,
-              "Remark":"Remark",
-              "RemarkSource":"Remark Source",
-              "RemarkDate":"2025-01-01"
+              "Remark":"Heavy fraction analyzed by distillation.",
+              "RemarkSource":"Laboratory Analyst",
+              "RemarkDate":"2025-01-15"
             }
           ]
         }
       ],
-      "opendes:work-product-component--SamplesAnalysisID:SamplesAnalysisID-test:"
+      "opendes:work-product-component--SamplesAnalysis:AtmFlash_LiquidPhase_001:"
     ]
   ]
 }
