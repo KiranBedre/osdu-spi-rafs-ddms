@@ -40,6 +40,65 @@ Instructions and payload examples are presented on [the tutorial page](./docs/tu
 
 Compiled REST API documentation is presented in the [openapi.json](./docs/spec/openapi.json) file.
 
+Run the OpenAPI maintenance commands from the repository root.
+
+Recommended local workflow:
+
+Step 1: Create and activate a virtual environment with a compatible Python version.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+On Windows PowerShell:
+
+```powershell
+py -3.11 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+Step 2: Install the runtime dependencies required to import the FastAPI application.
+
+```bash
+pip install -r requirements.txt
+```
+
+Step 3: Regenerate the committed OpenAPI specification.
+
+```bash
+python -m scripts.generate_openapi
+```
+
+Step 4: Check that the committed specification is still in sync with the codebase.
+
+```bash
+python -m scripts.check_openapi_sync
+```
+
+If your environment already has the project dependencies installed, only the last two commands are required.
+
+If local dependency installation is not working on your platform, run the same commands in a Linux environment, container, or CI image that already has `requirements.txt` installed.
+
+OpenAPI validation currently runs at two different levels in RAFS:
+
+* Pre-merge sync check: `rafs_openapi_sync_check` generates the OpenAPI document directly from the FastAPI codebase and fails the pipeline on drift between generated output and [openapi.json](./docs/spec/openapi.json).
+* Post-deploy CImpl check: `cimpl-check-openapi-spec` compares the committed [openapi.json](./docs/spec/openapi.json) file with the OpenAPI document served by the deployed RAFS service in CImpl.
+
+The post-deploy CImpl check is configured with `CIMPL_OPENAPI_SPEC_PATH` for the committed file location and `CIMPL_OPENAPI_JSON_ROUTE` for the live `openapi.json` endpoint.
+
+OpenAPI validation flow in GitLab:
+
+* `build_rafs_tests` (`build` stage): builds the RAFS test image used by the pre-merge sync check.
+* `rafs_openapi_sync_check` (`scan` stage): runs `python scripts/check_openapi_sync.py` against the source code before deployment.
+* `cimpl-deploy` (`deploy` flow in CImpl): deploys the current build.
+* `cimpl-check-openapi-spec` (`acceptance` stage, CImpl only): downloads the live `/api/rafs-ddms/openapi.json` document from the deployed service and compares it with the committed [openapi.json](./docs/spec/openapi.json).
+
+The generator uses deterministic defaults for repository-managed output:
+
+* `APP_ENV=test`
+* `OPENAPI_PREFIX=/api/rafs-ddms`
+
 ## DDMS Footprint
 
 The DDMS Footprint lists of the OSDU `group-type--EntityType` and `content types` handled by the DDMS.
