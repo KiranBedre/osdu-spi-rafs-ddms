@@ -20,6 +20,74 @@ build_rafs_tests:
     - docker buildx rm
 
 # For quality check
+rafs_openapi_sync_check:
+  image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
+  stage: scan
+  tags: ["osdu-small"]
+  extends:
+    - .skipForTriggeringMergeRequests
+  needs:
+    - job: build_rafs_tests
+  script:
+    - python scripts/check_openapi_sync.py --app-env test --openapi-prefix "/${URL_PREFIX}" --cloud-provider ""
+
+cimpl-check-openapi-spec:
+  script:
+    - apk add --no-cache jq wget
+    - |
+      if [ -z "${CIMPL_OPENAPI_SPEC_PATH}" ]; then
+        echo "CIMPL_OPENAPI_SPEC_PATH not set, using default"
+        CIMPL_OPENAPI_SPEC_PATH=docs/spec/openapi.json
+      fi
+    - |
+      if [ -z "${CIMPL_OPENAPI_JSON_ROUTE}" ]; then
+        echo "CIMPL_OPENAPI_JSON_ROUTE not set, using default"
+        CIMPL_OPENAPI_JSON_ROUTE=/${URL_PREFIX}/openapi.json
+      fi
+    - |
+      if ! wget --https-only --timeout=20 --tries=3 -O live-openapi-spec.json "https://osdu.${CIMPL_DOMAIN}${CIMPL_OPENAPI_JSON_ROUTE}"; then
+        echo "Failed to fetch the OpenAPI spec from: https://osdu.${CIMPL_DOMAIN}${CIMPL_OPENAPI_JSON_ROUTE}"
+        echo "Please check if the URL is reachable or change the CIMPL_OPENAPI_JSON_ROUTE"
+        echo "variable to point to the correct JSON route (ex. /api/.../openapi.json)."
+        exit 1
+      fi
+    - |
+      if ! jq -e . live-openapi-spec.json >/dev/null; then
+        echo "Downloaded OpenAPI document is not valid JSON: live-openapi-spec.json"
+        echo "Please check whether the deployed endpoint returned an HTML error page or another unexpected payload."
+        exit 1
+      fi
+    - |
+      if [ ! -f "${CIMPL_OPENAPI_SPEC_PATH}" ]; then
+        echo "Committed OpenAPI spec couldn't be found at ${CIMPL_OPENAPI_SPEC_PATH}"
+        exit 1
+      fi
+    - |
+      jq -S . "${CIMPL_OPENAPI_SPEC_PATH}" > committed-openapi-spec.normalized.json
+      jq -S . live-openapi-spec.json > live-openapi-spec.normalized.json
+      if ! diff -u committed-openapi-spec.normalized.json live-openapi-spec.normalized.json; then
+        echo "--------------------------------------------------------------------------------"
+        echo "The committed OpenAPI spec differs (or doesn't exist) from the one served by the"
+        echo "running service. Please review these differences and update the committed"
+        echo "OpenAPI spec."
+        echo "--------------------------------------------------------------------------------"
+        echo "To update the committed spec, run the following:"
+        echo "$ mkdir -p ${CIMPL_OPENAPI_SPEC_PATH%/*}"
+        echo "$ wget -O ${CIMPL_OPENAPI_SPEC_PATH} '${CI_PROJECT_URL}/-/jobs/${CI_JOB_ID}/artifacts/raw/live-openapi-spec.json?inline=false'"
+        echo "$ git add ${CIMPL_OPENAPI_SPEC_PATH}"
+        echo "$ git commit -m 'docs: update OpenAPI spec to match deployed service'"
+        echo "$ git push"
+        echo "--------------------------------------------------------------------------------"
+        exit 1
+      else
+        echo "OpenAPI spec is up to date, no differences detected."
+      fi
+  artifacts:
+    when: on_failure
+    paths:
+      - live-openapi-spec.json
+    expire_in: 4 days
+
 rafs_code_quality_check:
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
   stage: scan
