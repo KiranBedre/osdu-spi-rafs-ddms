@@ -1944,7 +1944,7 @@ async def test_get_content_parquet_data(
         ),
         (
             f"{TestContentPathsApiV2.VLE}/{vle_mock_objects.TEST_DATASET_RECORD_ID}",
-            vle_mock_objects.TEST_PARAMS_FILTERS,
+            vle_mock_objects.TEST_PARAMS_FILTERS_V2,
             "get_record",
             [vle_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
             "download_file",

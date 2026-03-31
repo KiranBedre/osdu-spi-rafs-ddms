@@ -379,14 +379,19 @@ class VaporLiquidEquilibriumModel200(RafsBaseModel):
         description="The overall composition of the vapor phase, detailing the proportion of each component present.",
         title="Vapor Composition",
     )
-    VaporTransportTestReferenceID: str | None = Field(
+    VaporTransportTestReferenceID: (
+        constr(
+            regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
+        )
+        | None
+    ) = Field(
         None,
         description="A reference to a test assessing the transport properties of the vapor phase, such as flow rates or permeability.",
         title="Vapor Transport Test Reference ID",
     )
     VaporPhaseAtmosphericFlashTestReferenceID: (
         constr(
-            regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysisID:[\w\-\.\:\%]+:[0-9]*$"
+            regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
         )
         | None
     ) = Field(
@@ -409,7 +414,12 @@ class VaporLiquidEquilibriumModel200(RafsBaseModel):
         description="The density of the liquid phase, important for understanding mass, flow properties, and phase behavior.",
         title="Liquid Phase Density",
     )
-    LiquidTransportTestReferenceID: str | None = Field(
+    LiquidTransportTestReferenceID: (
+        constr(
+            regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
+        )
+        | None
+    ) = Field(
         None,
         description="A reference to a test assessing the transport properties of the liquid phase, like viscosity or diffusion rates.",
         title="Liquid Transport Test Reference ID",
@@ -421,7 +431,7 @@ class VaporLiquidEquilibriumModel200(RafsBaseModel):
     )
     LiquidPhaseAtmosphericFlashTestReferenceID: (
         constr(
-            regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysisID:[\w\-\.\:\%]+:[0-9]*$"
+            regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
         )
         | None
     ) = Field(
