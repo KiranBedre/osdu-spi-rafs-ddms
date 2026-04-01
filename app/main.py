@@ -42,7 +42,9 @@ from app.exceptions.exceptions import (
     OsduApiException,
 )
 from app.middleware.correlation_id_middleware import CorrelationIDMiddleware
+from app.middleware.tracing_middleware import TracingMiddleware
 from app.providers.helpers.metric import init_metric
+from app.providers.helpers.tracing import initialize_tracer
 
 EXCEPTIONS_AND_HANDLERS = (
     (HTTPException, http_error_handler),
@@ -66,8 +68,14 @@ def get_application() -> FastAPI:
 
     settings.configure_logging()
 
+    # Initialize tracer before any middleware so the provider is registered first.
+    initialize_tracer(settings)
+
     application = FastAPI(**settings.fastapi_kwargs)
 
+    # Middleware registration is LIFO: last-registered = outermost at runtime.
+    # Desired execution order: CORSMiddleware → TracingMiddleware → CorrelationIDMiddleware.
+    # Register in reverse: CORS first, CorrelationID second, Tracing last.
     application.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_hosts,
@@ -76,6 +84,7 @@ def get_application() -> FastAPI:
         allow_headers=["*"],
     )
     application.add_middleware(CorrelationIDMiddleware)
+    application.add_middleware(TracingMiddleware)
     init_metric(application, settings)
 
     application.add_event_handler(
