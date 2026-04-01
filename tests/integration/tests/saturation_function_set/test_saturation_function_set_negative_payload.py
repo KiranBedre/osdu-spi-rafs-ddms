@@ -13,8 +13,8 @@
 #  limitations under the License.
 
 import copy
-import pytest
 
+import pytest
 from starlette import status
 
 from tests.integration.config import (
@@ -421,8 +421,10 @@ def test_sfs_negative_create_record_missing_mandatory_specific_field(api, tests_
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert (f"Missing {field_name} in index 0" in body["reason"]
-            or f"'{field_name}' is a required property" in body["reason"][0]["errors"])
+    assert (
+        f"Missing {field_name} in index 0" in body["reason"]
+        or f"'{field_name}' is a required property" in body["reason"][0]["errors"]
+    )
     assert len(body["reason"]) == 1 or len(body["reason"][0]["errors"]) == 1
 
 
@@ -484,8 +486,10 @@ def test_sfs_negative_create_record_missing_reference_specific_field(api, tests_
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert (f"Request can't be processed due to missing referenced records. Records not found: ['{record_value}']"
-            in body["reason"])
+    assert (
+        f"Request can't be processed due to missing referenced records. Records not found: ['{record_value}']"
+        in body["reason"]
+    )
 
 
 @pytest.mark.parametrize("field_path,value", INVALID_REGEX_FIELDS)
@@ -543,8 +547,10 @@ def test_sfs_negative_create_unsupported_kind(api, tests_data, helper):
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert (f"Kind `{unsupported_kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: "
-            f"['{DATA_PARTITION_ID}:wks:work-product-component--SaturationFunctionSet:1.0.0']") in body["reason"]
+    assert (
+        f"Kind `{unsupported_kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: "
+        f"['{DATA_PARTITION_ID}:wks:work-product-component--SaturationFunctionSet:1.0.0']"
+    ) in body["reason"]
 
 
 def test_sfs_negative_create_invalid_record_id(api, tests_data, helper):
@@ -563,9 +569,11 @@ def test_sfs_negative_create_invalid_record_id(api, tests_data, helper):
     assert response.status_code == 400
     body = response.json()
     assert "Invalid record id" in body["reason"]
-    assert (f"The record '{invalid_record_id}' does not follow the naming convention: "
-            f"The record id must be in the format of <tenantId>:<kindSubType>:<uniqueId>. "
-            f"Example: {DATA_PARTITION_ID}:work-product-component--SaturationFunctionSet:<uuid>") in body["message"]
+    assert (
+        f"The record '{invalid_record_id}' does not follow the naming convention: "
+        f"The record id must be in the format of <tenantId>:<kindSubType>:<uniqueId>. "
+        f"Example: {DATA_PARTITION_ID}:work-product-component--SaturationFunctionSet:<uuid>"
+    ) in body["message"]
 
 
 @pytest.mark.parametrize("field_path", GENERIC_MANDATORY_DATA_FIELDS)
@@ -588,7 +596,6 @@ def test_sfs_negative_add_data_missing_mandatory_generic_field(api, tests_data, 
     assert f"Data error: missing required fields: '{field_name}'." in body["reason"]
 
 
-@pytest.mark.skip(reason="#721")
 def test_sfs_negative_add_data_missing_main_mandatory_column(api, tests_data, helper, record_id):
     """Reject data upload with missing main column with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
@@ -741,8 +748,10 @@ def test_sfs_negative_add_data_invalid_payload_format(api, tests_data, record_id
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert ("Data error: split format must be a JSON object, not wrapped in an array. Remove the outer [] brackets."
-            in body["reason"])
+    assert (
+        "Data error: split format must be a JSON object, not wrapped in an array. Remove the outer [] brackets."
+        in body["reason"]
+    )
 
 
 def test_sfs_negative_add_data_records_format_invalid_payload_format(api, tests_data, record_id):
@@ -759,15 +768,15 @@ def test_sfs_negative_add_data_records_format_invalid_payload_format(api, tests_
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert ("Data error: missing required fields: 'columns', 'index', 'data'. "
-            "For records format, wrap the data in an array [{...}, ...]." in body["reason"])
+    assert (
+        "Data error: missing required fields: 'columns', 'index', 'data'. "
+        "For records format, wrap the data in an array [{...}, ...]." in body["reason"]
+    )
 
 
 @pytest.mark.parametrize("field_path", SPECIFIC_MANDATORY_DATA_FIELDS_RECORDS_FORMAT)
 def test_sfs_negative_add_data_records_format_missing_specific_field(api, tests_data, helper, field_path, record_id):
     """Reject data upload in records format with missing main column with 422 Unprocessable Content."""
-    if field_path == "/SaturationFunctionSetID":
-        pytest.skip(reason="#721")
     data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_RECORDS_FORMAT))
     helper.delete_by_path(data_payload, field_path)
 

@@ -249,7 +249,8 @@ class DataValidator(object):
         """Unwrap pandera PydanticModel dtype errors.
 
         Pandera sets column="failure_case" for PydanticModel dtype errors
-        and nests the real column name inside the failure_case dict.
+        and nests the row data inside the failure_case dict. Use "DataSchema"
+        as a consistent column name to match other PydanticModel error cases.
 
         :param column: column name from pandera error
         :param raw_failure: raw failure_case value from pandera error
@@ -257,8 +258,7 @@ class DataValidator(object):
         :rtype: tuple
         """
         if column == "failure_case" and isinstance(raw_failure, dict):
-            real_column = next(iter(raw_failure))
-            return real_column, raw_failure[real_column]
+            return "DataSchema", raw_failure
         return column, raw_failure
 
     def _collect_errors(self, error_cases: Iterable) -> dict:
