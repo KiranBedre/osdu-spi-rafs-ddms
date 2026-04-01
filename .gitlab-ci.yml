@@ -2,6 +2,8 @@ variables:
   DDMS_NAME: rafs
   GIT_DEPTH: 20
   URL_PREFIX: api/rafs-ddms
+  CIMPL_OPENAPI_SPEC_PATH: docs/spec/openapi.json
+  CIMPL_OPENAPI_JSON_ROUTE: /api/rafs-ddms/openapi.json
   REDIS_IMAGE_VERSION: redis/redis-stack-server:7.4.0-v8
 
   # Azure specific
@@ -53,6 +55,10 @@ include:
   # CI provider
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/cimpl-global.yml"
+
+  # reporting stage
+  - project: "osdu/platform/ci-cd-pipelines"
+    file: "reporting/reporting.yml"
 
   # OVERRIDE STAGES
 

@@ -87,3 +87,12 @@ class NotAcceptableException(HTTPException):
         headers: Optional[Dict[str, Any]] = None,
     ) -> None:
         super().__init__(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=detail, headers=headers)
+
+
+class ServiceUnavailableException(HTTPException):
+    def __init__(
+        self,
+        detail: Any = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        super().__init__(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=detail, headers=headers)
