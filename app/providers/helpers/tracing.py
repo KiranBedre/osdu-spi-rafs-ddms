@@ -31,8 +31,9 @@ def initialize_tracer(settings) -> None:
     from opentelemetry.sdk.trace.export import BatchSpanProcessor  # noqa: WPS433
 
     resource = Resource.create({"service.name": settings.otel_service_name})
-    exporter = OTLPSpanExporter(endpoint=settings.otel_exporter_otlp_endpoint)
-    processor = BatchSpanProcessor(exporter, max_export_timeout_millis=MAX_EXPORT_TIMEOUT_MS)
+    traces_endpoint = "{0}/v1/traces".format(settings.otel_exporter_otlp_endpoint.rstrip("/"))
+    exporter = OTLPSpanExporter(endpoint=traces_endpoint)
+    processor = BatchSpanProcessor(exporter, export_timeout_millis=MAX_EXPORT_TIMEOUT_MS)
     provider = TracerProvider(resource=resource)
     provider.add_span_processor(processor)
     trace.set_tracer_provider(provider)
