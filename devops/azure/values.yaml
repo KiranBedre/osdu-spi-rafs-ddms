@@ -57,6 +57,7 @@ configuration:
     REDIS_DATABASE: "13"
     REDIS_SSL: "False"
     REDIS_PORT: "6379"
+    REDIS_USE_PASSWORDLESS_AUTH: "False"
     REQUEST_TIMEOUT: "180"
     REDIS_HOSTNAME: redis-rafs-service
     REDIS_PASSWORD: redispass
