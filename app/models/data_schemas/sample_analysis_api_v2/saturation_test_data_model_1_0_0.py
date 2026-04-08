@@ -39,8 +39,8 @@ class Meta(RafsBaseModel):
         example="ft[US]",
         title="UOM Unit Symbol",
     )
-    persistableReference: str = Field(
-        ...,
+    persistableReference: str | None = Field(
+        None,
         description="The self-contained, persistable reference string uniquely identifying the Unit.",
         example='{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}',
         title="UOM Persistable Reference",
