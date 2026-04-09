@@ -22,6 +22,13 @@ FROM python:${python_version}-slim-trixie AS runtime-env
 # Must re-declare ARG after FROM to make it available in this stage
 ARG python_version=3.11
 
+# Apply OS security patches for packages with fixes available
+# CVE-2026-28390: openssl/libssl3t64/openssl-provider-legacy DoS (NULL ptr in CMS)
+RUN apt-get update \
+    && apt-get upgrade -y openssl libssl3t64 openssl-provider-legacy \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 # Remove packages with no patched version available and not needed at runtime
 # CVE-2025-69720: ncurses | CVE-2026-29111: libsystemd0/libudev1
 RUN dpkg --force-all --purge ncurses-bin ncurses-base libncursesw6 libtinfo6 libsystemd0 libudev1 2>/dev/null || true \
