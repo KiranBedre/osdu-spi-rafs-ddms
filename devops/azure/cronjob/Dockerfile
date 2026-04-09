@@ -1,6 +1,8 @@
 # Build the application from source
-ARG golang_version=1.24
+ARG golang_version=1.25
 FROM golang:${golang_version}-alpine AS build-env
+
+RUN apk update && apk add --no-cache --upgrade zlib
 
 WORKDIR /app
 
@@ -12,6 +14,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /rafs-cronjob
 
 # Deploy the application binary into a secure image
 FROM golang:${golang_version}-alpine AS release-env
+
+RUN apk update && apk add --no-cache --upgrade zlib
+
 ARG golang_version
 ARG user_id=nonroot
 
