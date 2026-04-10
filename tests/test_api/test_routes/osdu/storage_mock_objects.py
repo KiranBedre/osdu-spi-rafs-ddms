@@ -16,6 +16,7 @@ import json
 import os
 from typing import NamedTuple
 
+from app.core.config import get_app_settings
 from app.models.data_schemas.base import (
     ALL_PATHS_TO_DATA_MODEL,
     SAMPLES_ANALYSIS,
@@ -27,6 +28,8 @@ from app.resources.paths import (
     CommonRelativePathsV2,
 )
 from tests.test_api.api_version import API_VERSION_V2
+
+_OPENAPI_PREFIX = get_app_settings().openapi_prefix
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -383,16 +386,16 @@ EXPECTED_200_VERSIONS_RESPONSE = STORAGE_SERVICE_200_VERSIONS_RESPONSE
 
 # V2 endpoint paths
 RESERVOIR_SIMULATION_ROCK_PHYSICS_ENDPOINT_PATH_V2 = (
-    f"/api/os-rafs-ddms/{API_VERSION_V2}/reservoirsimulationrockphysics"
+    f"{_OPENAPI_PREFIX}/{API_VERSION_V2}/reservoirsimulationrockphysics"
 )
-SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/samplesanalysesreport"
-SAMPLESANALYSIS_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/samplesanalysis"
-SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/saturationfunctionset"
-FLUID_MODEL_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/fluidmodel"
-MASTER_DATA_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/masterdata"
+SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2 = f"{_OPENAPI_PREFIX}/{API_VERSION_V2}/samplesanalysesreport"
+SAMPLESANALYSIS_ENDPOINT_PATH_V2 = f"{_OPENAPI_PREFIX}/{API_VERSION_V2}/samplesanalysis"
+SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2 = f"{_OPENAPI_PREFIX}/{API_VERSION_V2}/saturationfunctionset"
+FLUID_MODEL_ENDPOINT_PATH_V2 = f"{_OPENAPI_PREFIX}/{API_VERSION_V2}/fluidmodel"
+MASTER_DATA_ENDPOINT_PATH_V2 = f"{_OPENAPI_PREFIX}/{API_VERSION_V2}/masterdata"
 
 # data endpoints v2
-BASE_V2_PATH = f"api/os-rafs-ddms/{API_VERSION_V2}"
+BASE_V2_PATH = f"{_OPENAPI_PREFIX.lstrip('/')}/{API_VERSION_V2}"
 
 SAMPLESANALYSIS_ENDPOINT_PATH = f"{BASE_V2_PATH}/samplesanalysis"
 BASE_DATA_V2_PATH = f"{SAMPLESANALYSIS_ENDPOINT_PATH}/{TEST_SAMPLESANALYSIS_ID}"
@@ -559,7 +562,7 @@ with open(f"{dir_path}/schemas/sample_container.json") as fp:
     SAMPLE_CONTAINER_SCHEMA = json.load(fp)
     SAMPLE_CONTAINER_SCHEMA["definitions"] = MD_DEFINITIONS
 
-PREFIX_TO_STRIP = f"v2/{SAMPLES_ANALYSIS}/"
+PREFIX_TO_STRIP = "/data/"
 
 VALID_ANALYSIS_TYPES_V1_0_0 = [
     path.replace(PREFIX_TO_STRIP, "")

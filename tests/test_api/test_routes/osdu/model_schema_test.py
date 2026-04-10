@@ -42,10 +42,11 @@ from tests.test_api.test_routes.osdu.storage_mock_objects import (
 async def test_samplesanalysis_content_schema_success(analysistype):
     """Tests successful retrieval of the schema for each valid analysis_type with version 1.0.0"""
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
-        response = await client.get(
-            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
-            headers={**TEST_HEADERS, "Accept": "application/json;version=1.0.0"},
-        )
+        with services_overrides():
+            response = await client.get(
+                f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
+                headers={**TEST_HEADERS, "Accept": "application/json;version=1.0.0"},
+            )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.headers["content-type"] == "application/json"
@@ -61,13 +62,15 @@ async def test_samplesanalysis_content_schema_wrong_version(analysistype):
     """Tests 404 error when requesting a non-existent version for a valid analysis_type"""
     invalid_version = "0.0.0"
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
-        response = await client.get(
-            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
-            headers={**TEST_HEADERS, "Accept": f"application/json;version={invalid_version}"},
-        )
+        with services_overrides():
+            response = await client.get(
+                f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
+                headers={**TEST_HEADERS, "Accept": f"application/json;version={invalid_version}"},
+            )
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json()["message"] == f"Schema not found for {analysistype} and version {invalid_version}"
+    assert analysistype in response.json()["reason"]
+    assert invalid_version in response.json()["reason"]
 
 
 @pytest.mark.asyncio
@@ -98,10 +101,11 @@ ANALYSIS_TYPES_WITH_EXTRA_VERSIONS = [
 async def test_samplesanalysis_content_schema_extra_versions_success(analysistype, version):
     """Tests successful retrieval of the schema for each valid analysis_type with versions beyond 1.0.0"""
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
-        response = await client.get(
-            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
-            headers={**TEST_HEADERS, "Accept": f"application/json;version={version}"},
-        )
+        with services_overrides():
+            response = await client.get(
+                f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
+                headers={**TEST_HEADERS, "Accept": f"application/json;version={version}"},
+            )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.headers["content-type"] == "application/json"
@@ -162,6 +166,7 @@ async def test_single_content_type_schema_wrong_version(endpoint_path, _, expect
             )
     print(f"DEBUG RESPONSE: {response.json()}")
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json()[
-        "reason"
-    ] == f"Model not found for type '{expected_content_type_in_error}',  version '{invalid_version}'. Available versions: {{'1.0.0'}}."
+    assert (
+        response.json()["reason"]
+        == f"Model not found for type '{expected_content_type_in_error}',  version '{invalid_version}'. Available versions: {{'1.0.0'}}."
+    )

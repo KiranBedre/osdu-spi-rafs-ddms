@@ -51,25 +51,33 @@
                     "kind": "Unit",
                     "name": "millilitre",
                     "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:mL:",
-                    "propertyNames": ["TestFluidVolume"]
+                    "propertyNames": [
+                        "TestFluidVolume"
+                    ]
                 },
                 {
                     "kind": "Unit",
                     "name": "degree Fahrenheit",
                     "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:degF:",
-                    "propertyNames": ["RollingTemperature"]
+                    "propertyNames": [
+                        "RollingTemperature"
+                    ]
                 },
                 {
                     "kind": "Unit",
                     "name": "hour",
                     "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:h:",
-                    "propertyNames": ["RollingTime"]
+                    "propertyNames": [
+                        "RollingTime"
+                    ]
                 },
                 {
                     "kind": "Unit",
                     "name": "unitless",
                     "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:unitless:",
-                    "propertyNames": ["SieveMeshSize"]
+                    "propertyNames": [
+                        "SieveMeshSize"
+                    ]
                 }
             ],
             45.2,
@@ -77,7 +85,7 @@
             350.1,
             150.2,
             16.3,
-            50,
+            50.0,
             "{data_partition_id}:reference-data--MeshSizeType:Tyler:",
             20.4,
             17.4,
