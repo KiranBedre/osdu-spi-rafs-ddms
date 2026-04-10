@@ -2,7 +2,8 @@
 ARG golang_version=1.25
 FROM golang:${golang_version}-alpine AS build-env
 
-RUN apk update && apk add --no-cache --upgrade zlib
+# CVE-2026-28390: openssl DoS (NULL ptr in CMS) - upgrade libcrypto3/libssl3
+RUN apk update && apk add --no-cache --upgrade zlib libcrypto3 libssl3
 
 WORKDIR /app
 
@@ -15,7 +16,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /rafs-cronjob
 # Deploy the application binary into a secure image
 FROM golang:${golang_version}-alpine AS release-env
 
-RUN apk update && apk add --no-cache --upgrade zlib
+# CVE-2026-28390: openssl DoS (NULL ptr in CMS) - upgrade libcrypto3/libssl3
+RUN apk update && apk add --no-cache --upgrade zlib libcrypto3 libssl3
 
 ARG golang_version
 ARG user_id=nonroot
