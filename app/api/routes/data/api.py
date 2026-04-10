@@ -74,6 +74,18 @@ def _normalize_nan_to_none(df: pd.DataFrame) -> None:
     df[obj_cols] = df[obj_cols].where(df[obj_cols].notna(), None)
 
 
+def _cast_float_columns(df: pd.DataFrame, model: type) -> None:
+    """Cast DataFrame columns to float64 for fields annotated as float in the model.
+
+    pd.read_json infers int64 for whole-number values (e.g. 2 instead of 2.0),
+    so float fields sent as 2.0 are stored as integers in parquet and returned
+    as 2 on GET. This corrects the dtype before parquet storage.
+    """
+    for field_name, field in model.__fields__.items():
+        if field.type_ is float and field_name in df.columns:
+            df[field_name] = df[field_name].astype(float)
+
+
 class BaseDataView(object):
     def __init__(
         self,
@@ -303,6 +315,41 @@ class BaseDataView(object):
         logger.debug(f"Raw validation error: {error_msg}")
         raise exceptions.UnprocessableContentException(detail=reason)
 
+    async def _read_dataframe(
+        self,
+        request: Request,
+        mime_type: SupportedMimeTypes,
+    ):
+        """Read request body into a DataFrame and return (df, raw_parquet_bytes).
+
+        For JSON input, raw_parquet_bytes is None and the caller must convert df
+        to parquet. For parquet input, raw_parquet_bytes holds the original bytes
+        and df is a JSON-round-tripped copy used only for validation.
+
+        :param request: request object
+        :type request: Request
+        :param mime_type: detected content mime type
+        :type mime_type: SupportedMimeTypes
+        :return: (dataframe, raw_parquet_bytes or None)
+        :rtype: tuple
+        """
+        try:
+            if mime_type == SupportedMimeTypes.PARQUET:
+                raw_parquet = await request.body()
+                logger.debug(pd.get_option("io.parquet.engine"))
+                df = pd.read_parquet(io.BytesIO(raw_parquet))
+                # workaround to pass pandera validation
+                # TODO remove when migration to pyarrow validation is done
+                df = pd.read_json(io.StringIO(df.to_json(orient="split")), orient="split")
+                return df, raw_parquet
+            validated_json, orient = await get_validated_bulk_data_json(request)
+            df = pd.read_json(io.StringIO(validated_json), orient=orient)
+            _normalize_nan_to_none(df)
+            return df, None
+        except (ValueError, OSError, pyarrow.lib.ArrowException) as v_exc:
+            self._handle_validation_exception(v_exc)
+            raise  # unreachable; satisfies async checkpoint analysis
+
     @with_gc_collect
     async def _get_validated_payload(
         self,
@@ -331,25 +378,7 @@ class BaseDataView(object):
         data_schema = build_data_schema(model)
         data_validator = DataValidator(data_schema, storage_service, api_version)
 
-        parquet_file = None
-
-        try:
-            if mime_type == SupportedMimeTypes.PARQUET:
-                parquet_file = await request.body()
-                logger.debug(pd.get_option("io.parquet.engine"))
-                df = pd.read_parquet(io.BytesIO(parquet_file))
-
-                # workaround to pass pandera validation
-                # TODO remove when migration to pyarrow validation is done
-                df = pd.read_json(io.StringIO(df.to_json(orient="split")), orient="split")
-            else:
-                validated_json, orient = await get_validated_bulk_data_json(request)
-                df = pd.read_json(io.StringIO(validated_json), orient=orient)
-                _normalize_nan_to_none(df)
-
-        except (ValueError, OSError, pyarrow.lib.ArrowException) as v_exc:
-            self._handle_validation_exception(v_exc)
-
+        df, parquet_file = await self._read_dataframe(request, mime_type)
         logger.info(f"Data has been read from {mime_type} format")
 
         # Use bulk_mode for relaxed validation: allows NaN in optional object fields
@@ -360,6 +389,7 @@ class BaseDataView(object):
 
         if not parquet_file:
             try:
+                _cast_float_columns(df, model)
                 df.astype(str)
                 logger.debug(f"Dataset info: {df.size} elements; {df.columns}")
                 parquet_file = df.to_parquet(index=False)
