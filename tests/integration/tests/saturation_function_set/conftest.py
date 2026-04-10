@@ -59,7 +59,7 @@ def version(api, record_id):
 @pytest.fixture(scope="module")
 def dataset_id(api, helper, record_id, tests_data):
     """Create a fresh dataset and return dataset_id."""
-    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
     data_payload["data"][0][0] = f"{record_id}:"
     post_response = api.saturation_function_set.post_data(record_id, data_payload)
     return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
@@ -68,7 +68,7 @@ def dataset_id(api, helper, record_id, tests_data):
 @pytest.fixture(scope="function")
 def fresh_dataset_id(api, helper, fresh_record_id, tests_data):
     """Create a fresh dataset and return dataset_id."""
-    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
     data_payload["data"][0][0] = f"{fresh_record_id}:"
     post_response = api.saturation_function_set.post_data(record_id=fresh_record_id, body=data_payload)
     return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
@@ -80,7 +80,11 @@ def search_available(api, helper, record_id):
     params = {"rows_filter": f"SaturationFunctionSetID,eq,{record_id}:"}
 
     # Wait until search returns the record_id in its result set
-    helper.wait_for_search_record(lambda: api.saturation_function_set.search_records(params=params), record_id)
+    helper.wait_for_search_record(
+        lambda: api.saturation_function_set.search_records(params=params),
+        record_id,
+        max_attempts=5,
+    )
 
 
 @pytest.fixture(scope="session")

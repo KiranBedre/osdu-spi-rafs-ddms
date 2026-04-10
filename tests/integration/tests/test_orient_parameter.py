@@ -33,7 +33,7 @@ from tests.integration.config import (
 
 @pytest.mark.parametrize(
     "analysis_type,measurements_file", [
-        (SamplesAnalysisTypes.NMR, DataFiles.NMR_DATA),
+        (SamplesAnalysisTypes.NMR, DataFiles.NMR_DATA_V1),
     ],
 )
 def test_get_measurements_orient_split(
@@ -56,8 +56,10 @@ def test_get_measurements_orient_split(
     content_id = helper.get_content_id_from_ddms_urn(full_dataset_id)
 
     # Get with orient=split
+    params = {"orient": "split"}
+
     response = api.sample_analysis.get_measurements(
-        record_data["id"], content_id, analysis_type, orient="split",
+        record_data["id"], content_id, analysis_type, params=params,
     )
 
     # Verify split format structure
@@ -79,7 +81,7 @@ def test_get_measurements_orient_split(
 
 @pytest.mark.parametrize(
     "analysis_type,measurements_file", [
-        (SamplesAnalysisTypes.NMR, DataFiles.NMR_DATA),
+        (SamplesAnalysisTypes.NMR, DataFiles.NMR_DATA_V1),
     ],
 )
 def test_get_measurements_orient_records(
@@ -97,13 +99,15 @@ def test_get_measurements_orient_records(
     test_data["data"][0][0] = f'{record_data["id"]}:'
 
     full_dataset_id = api.sample_analysis.post_measurements(
-        record_data["id"], test_data, analysis_type,
+        record_data["id"], test_data, analysis_type
     )["ddms_urn"]
     content_id = helper.get_content_id_from_ddms_urn(full_dataset_id)
 
     # Get with orient=records
+    params = {"orient": "records"}
+
     response = api.sample_analysis.get_measurements(
-        record_data["id"], content_id, analysis_type, orient="records",
+        record_data["id"], content_id, analysis_type, params=params,
     )
 
     # Verify records format structure

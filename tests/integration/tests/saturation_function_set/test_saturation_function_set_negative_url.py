@@ -40,7 +40,7 @@ def test_sfs_negative_invalid_regex_record_id_in_url(api, tests_data, endpoint, 
     }
 
     if endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 
@@ -60,7 +60,7 @@ def test_sfs_negative_invalid_regex_record_id_in_url(api, tests_data, endpoint, 
 def test_sfs_negative_invalid_data_partition_id_record_id_in_url(api, tests_data, endpoint, args, version, dataset_id):
     """Reject record ID with wrong partition prefix with 424 Failed Dependency."""
     method = getattr(api.saturation_function_set, endpoint)
-    record_id = "WrongID:work-product-component--SaturationFunctionSet:Test123:"
+    record_id = "WrongID:work-product-component--SaturationFunctionSet:Test123"
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
 
@@ -71,7 +71,7 @@ def test_sfs_negative_invalid_data_partition_id_record_id_in_url(api, tests_data
 
     if endpoint == "post_data":
         pytest.skip(reason="#733")
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 
@@ -98,7 +98,7 @@ def test_sfs_negative_non_existing_record_id_in_url(api, tests_data, endpoint, a
 
     if endpoint == "post_data":
         pytest.skip(reason="#733")
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 

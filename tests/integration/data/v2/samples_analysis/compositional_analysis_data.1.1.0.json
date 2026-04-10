@@ -1,0 +1,137 @@
+{
+    "columns": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Meta",
+        "TestNumber",
+        "FlashPressure",
+        "FlashTemperature",
+        "CompositionalAnalysis",
+        "CalculatedProperties",
+        "GasCompositionalCalculations",
+        "OilCompositionalCalculations",
+        "ContaminationCorrection",
+        "StandardConditionPressure",
+        "StandardConditionTemperature",
+        "InitialConditionPressure",
+        "InitialConditionTemperature",
+        "InitialConditionFormationVolumeFactor",
+        "InitialConditionSaturatedFluidDensity",
+        "StandardConditionWaterDensity",
+        "Remarks"
+    ],
+    "index": [
+        0
+    ],
+    "data": [
+        [
+            "{data_partition_id}:work-product-component--SamplesAnalysis:CompositionalAnalysisV110:",
+            "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+            [
+                {
+                    "kind": "Unit",
+                    "name": "degree Fahrenheit",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:degF:",
+                    "propertyNames": [
+                        "FlashTemperature"
+                    ]
+                }
+            ],
+            "Test_007",
+            1626,
+            100,
+            [
+                {
+                    "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:H2O:",
+                    "FlashedLiquidRelativeMass": 22,
+                    "FlashedGasRelativeMass": 6731,
+                    "OverallFluidRelativeMass": 5799,
+                    "FlashedLiquidRelativeMole": 6575,
+                    "FlashedGasRelativeMole": 9442,
+                    "OverallFluidRelativeMole": 4069,
+                    "OverallFluidMolecularWeight": 4613,
+                    "OverallFluidSpecificGravity": 1
+                }
+            ],
+            {
+                "SampleCalculatedProperties": {
+                    "AvgFlashedLiquidMolecularWeight": 1.23,
+                    "AvgFlashedGasMolecularWeight": 1.23,
+                    "AvgOverallFluidMolecularWeight": 1.23,
+                    "FlashedLiquidDensity": 1.23,
+                    "FlashedGasDensity": 1.23,
+                    "FlashedOverallFluidDensity": 1.23,
+                    "FlashedLiquidRealRelativeDensity": 1.23,
+                    "FlashedGasRealRelativeDensity": 1.23,
+                    "OverallFluidRealRelativeDensity": 1.23,
+                    "OverallFluidGasOilRatio": 1.23,
+                    "FlashedLiquidMoleFraction": 1.23,
+                    "FlashedGasMoleFraction": 1.23,
+                    "OverallFluidMoleFraction": 1.23,
+                    "FlashedLiquidMassFraction": 1.23,
+                    "FlashedGasMassFraction": 1.23,
+                    "OverallFluidMassFraction": 1.23,
+                    "FlashedGasGravity": 1.23,
+                    "FlashedLiquidAPIGravity": 1.23
+                },
+                "PlusComponentsCalculatedProperties": [
+                    {
+                        "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:H2O:",
+                        "FlashedGasRelativeMole": 6263,
+                        "FlashedGasMolecularWeight": 472,
+                        "FlashedGasRelativeMass": 9669,
+                        "OverallFluidRelativeMass": 4399,
+                        "OverallFluidSpecificGravity": 8386,
+                        "FlashedGasSpecificGravity": 6072,
+                        "FlashedLiquidRelativeMole": 1,
+                        "OverallFluidRelativeMole": 1,
+                        "FlashedLiquidMolecularWeight": 1,
+                        "OverallFluidMolecularWeight": 1,
+                        "FlashedLiquidDensity": 1,
+                        "FlashedGasDensity": 1,
+                        "OverallFluidDensity": 1,
+                        "FlashedLiquidRelativeMass": 1,
+                        "FlashedLiquidSpecificGravity": 1
+                    }
+                ]
+            },
+            [
+                {
+                    "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:H2O:",
+                    "MolecularWeight": 383,
+                    "Density": 2124
+                }
+            ],
+            [
+                {
+                    "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:H2O:",
+                    "MolecularWeight": 6075,
+                    "Density": 2183
+                }
+            ],
+            {
+                    "ContaminationCorrectionStatus": "Status",
+                    "ContaminantID": "{data_partition_id}:master-data--Sample:Example_Sample:",
+                    "ReferenceFluid": "Fluid ID",
+                    "WeightFraction": 1,
+                    "VolumeFraction": 1.23,
+                    "MoleFraction": 3.16
+            },
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            [
+                {
+                    "RemarkSequenceNumber": 1,
+                    "Remark": "Sample remark for atmospheric flash analysis.",
+                    "RemarkSource": "Lab Analyst",
+                    "RemarkDate": "2024-01-15"
+                }
+            ]
+        ]
+    ]
+}

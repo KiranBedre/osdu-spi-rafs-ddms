@@ -1,0 +1,365 @@
+{
+    "columns": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Meta",
+        "DesaturationMethodID",
+        "InitialConditions",
+        "TerminalConditions",
+        "RelativePermeabilityCrossover",
+        "EndFaceSaturationCrossover",
+        "ReferencePermeability",
+        "SaturationProcessMethodID",
+        "InterfacialTension",
+        "BrineSalinity",
+        "OilViscosity",
+        "GasViscosity",
+        "WaterViscosity",
+        "OilDensity",
+        "GasDensity",
+        "WaterDensity",
+        "FluidSystemAnalysisTypeID",
+        "PermeabilityTestSteps",
+        "OilTypeID",
+        "GasTypeID",
+        "WaterTypeID",
+        "EndTime"
+    ],
+    "index": [
+        0
+    ],
+    "data": [
+        [
+            "{data_partition_id}:work-product-component--SamplesAnalysis:{record_id}:",
+            "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+            [
+                {
+                    "kind": "Unit",
+                    "name": "degree Fahrenheit",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:degF:",
+                    "propertyNames": [
+                        "InitialConditions.TestTemperature"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "feet",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:ft:",
+                    "propertyNames": [
+                        "PermeabilityTestSteps.InSituSaturationProfiles.Position"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "centiPoise",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:cP:",
+                    "propertyNames": [
+                        "OilViscosity",
+                        "GasViscosity",
+                        "WaterViscosity"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "minute",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:min:",
+                    "propertyNames": [
+                        "EndTime",
+                        "PermeabilityTestSteps.StartTime",
+                        "PermeabilityTestSteps.InSituSaturationProfiles.Time",
+                        "PermeabilityTestSteps.DifferentialPressureProfiles.Time",
+                        "PermeabilityTestSteps.ProductionProfiles.Time"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "percent",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:%25:",
+                    "propertyNames": [
+                        "InitialConditions.RelativePermeability",
+                        "InitialConditions.Saturation.Value",
+                        "TerminalConditions.RelativePermeability",
+                        "TerminalConditions.Saturation.Value",
+                        "RelativePermeabilityCrossover",
+                        "EndFaceSaturationCrossover",
+                        "PermeabilityTestSteps.RelativePermeability",
+                        "PermeabilityTestSteps.InSituSaturationProfiles.InitialSaturation",
+                        "PermeabilityTestSteps.InSituSaturationProfiles.EquilibriumSaturation"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "millidarcys",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:mD:",
+                    "propertyNames": [
+                        "InitialConditions.EffectivePermeability.Value",
+                        "TerminalConditions.EffectivePermeability.Value",
+                        "PermeabilityTestSteps.EffectivePermeability.Value",
+                        "ReferencePermeability.Value"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "pounds per square inch",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:psi:",
+                    "propertyNames": [
+                        "InitialConditions.NetConfiningStress",
+                        "InitialConditions.OverburdenPressure",
+                        "InitialConditions.PorePressure",
+                        "PermeabilityTestSteps.DifferentialPressure",
+                        "PermeabilityTestSteps.DifferentialPressureProfiles.DifferentialPressure"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "Flow Rate",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:cm3%2Fmin:",
+                    "propertyNames": [
+                        "InitialConditions.LastFlowRate",
+                        "PermeabilityTestSteps.FractionalFlowRate",
+                        "PermeabilityTestSteps.InjectionRate.Value",
+                        "ProductionProfiles.ProductionRate"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "gram per cubic centimetre",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:g%2Fcm3:",
+                    "propertyNames": [
+                        "GasDensity",
+                        "OilDensity",
+                        "WaterDensity",
+                        "BrineSalinity"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "cubic centimetres",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:cm3:",
+                    "propertyNames": [
+                        "PermeabilityTestSteps.CumulativeProduction",
+                        "CumulativeProduction.Value"
+                    ]
+                }
+            ],
+            "{data_partition_id}:reference-data--DesaturationMethod:CentrifugeGasWater:",
+            {
+                "TestTemperature": 70,
+                "EffectivePermeability": {
+                    "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:",
+                    "Value": 5915,
+                    "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Gas:"
+                },
+                "RelativePermeability": {
+                    "Value": 1.0,
+                    "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                },
+                "Saturation": {
+                    "Value": 0.073,
+                    "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Brine:",
+                    "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
+                }
+            },
+            {
+                "EffectivePermeability": {
+                    "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:",
+                    "Value": 1687,
+                    "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Gas:"
+                },
+                "RelativePermeability": {
+                    "Value": 0.285,
+                    "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                },
+                "Saturation": {
+                    "Value": 0.819,
+                    "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Brine:",
+                    "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
+                }
+            },
+            15,
+            20.5,
+            [
+                {
+                    "Value": 6690,
+                    "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:"
+                }
+            ],
+            "{data_partition_id}:reference-data--SaturationProcessMethod:Imbibition:",
+            10,
+            23,
+            34,
+            56,
+            67,
+            34.5,
+            33,
+            654,
+            "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasOil:",
+            [
+                {
+                    "EffectivePermeability": [
+                        {
+                            "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:",
+                            "Value": 250,
+                            "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Gas:"
+                        }
+                    ],
+                    "RelativePermeability": [
+                        {
+                            "Value": 1.00,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        }
+                    ],
+                    "Saturation": {
+                        "Value": 0.073,
+                        "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Brine:",
+                        "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
+                    }
+                },
+                {
+                    "EffectivePermeability": [
+                        {
+                            "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:",
+                            "Value": 250,
+                            "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Gas:"
+                        }
+                    ],
+                    "RelativePermeability": [
+                        {
+                            "Value": 0.001,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        },
+                        {
+                            "Value": 0.057,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        }
+                    ],
+                    "Saturation": {
+                        "Value": 0.698,
+                        "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Brine:",
+                        "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
+                    }
+                },
+                {
+                    "EffectivePermeability": [
+                        {
+                            "Value": 250,
+                            "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Gas:",
+                            "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:"
+                        }
+                    ],
+                    "RelativePermeability": [
+                        {
+                            "Value": 0.003,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        },
+                        {
+                            "Value": 0.049,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        }
+                    ],
+                    "Saturation": {
+                        "Value": 0.715,
+                        "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Brine:",
+                        "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
+                    }
+                },
+                {
+                    "EffectivePermeability": [
+                        {
+                            "Value": 250,
+                            "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Gas:",
+                            "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:"
+                        }
+                    ],
+                    "RelativePermeability": [
+                        {
+                            "Value": 0.005,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        },
+                        {
+                            "Value": 0.045,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        }
+                    ],
+                    "Saturation": {
+                        "Value": 0.724,
+                        "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Brine:",
+                        "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
+                    }
+                },
+                {
+                    "EffectivePermeability": [
+                        {
+                            "Value": 250,
+                            "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Gas:",
+                            "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:"
+                        }
+                    ],
+                    "RelativePermeability": [
+                        {
+                            "Value": 0.031,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        },
+                        {
+                            "Value": 0.031,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        }
+                    ],
+                    "Saturation": {
+                        "Value": 0.752,
+                        "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Brine:",
+                        "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
+                    }
+                },
+                {
+                    "EffectivePermeability": [
+                        {
+                            "Value": 250,
+                            "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Gas:",
+                            "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:"
+                        }
+                    ],
+                    "RelativePermeability": [
+                        {
+                            "Value": 0.285,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        }
+                    ],
+                    "Saturation": {
+                        "Value": 0.787,
+                        "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Brine:",
+                        "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
+                    }
+                },
+                {
+                    "EffectivePermeability": [
+                        {
+                            "Value": 250,
+                            "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Gas:",
+                            "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:"
+                        }
+                    ],
+                    "RelativePermeability": [
+                        {
+                            "Value": 0.116,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        },
+                        {
+                            "Value": 0.012,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                        }
+                    ],
+                    "Saturation": {
+                        "Value": 0.819,
+                        "FluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:Brine:",
+                        "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
+                    }
+                }
+            ],
+            "{data_partition_id}:reference-data--DisplacedFluidType:LiveCrudeOil:",
+            "{data_partition_id}:reference-data--SampleInjectionFluidType:Gas:",
+            "{data_partition_id}:reference-data--SampleInjectionFluidType:Brine:",
+            24
+        ]
+    ]
+}

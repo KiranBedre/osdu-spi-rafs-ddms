@@ -227,19 +227,16 @@ class CommonHelper():
             columns = result.get("columns", [])
             data = result.get("data", [])
 
-            try:
-                column_idx = columns.index("SaturationFunctionSetID")
-            except ValueError:
-                logger.warning(
-                    f"Column SaturationFunctionSetID' not found yet (attempt {attempt + 1}/{max_attempts}).")
+            if not data:
+                logger.warning(f"No results yet (attempt {attempt + 1}/{max_attempts}).")
             else:
                 for row in data:
-                    if row[column_idx] == f"{record_id}:":
+                    if row[0] == f"{record_id}:":
                         logger.info(f"Record '{record_id}' found in search results.")
                         return last_response
 
             logger.info(
-                f"Record '{record_id}' not found; retrying in {interval}s (attempt {attempt + 1,}/{max_attempts}).")
+                f"Record '{record_id}' not found; retrying in {interval}s (attempt {attempt + 1}/{max_attempts}).")
             if attempt < max_attempts - 1:
                 time.sleep(interval)
 

@@ -2,7 +2,7 @@ from collections import defaultdict
 from typing import Optional
 
 from client.api.core.api_source import APIResource
-from tests.integration.config import ACCEPT_HEADERS, SCHEMA_VERSION
+from tests.integration.config import ACCEPT_HEADERS, SchemaVersions
 
 
 class SaturationFunctionSetPaths(object):
@@ -34,7 +34,7 @@ class SaturationFunctionSet(APIResource):
         self,
         record_id: str,
         body: dict,
-        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SCHEMA_VERSION),
+        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SchemaVersions.DEFAULT),
         raw: bool = False,
         **kwargs,
     ) -> dict:
@@ -50,7 +50,7 @@ class SaturationFunctionSet(APIResource):
         self,
         record_id: str,
         dataset_id: str,
-        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SCHEMA_VERSION),
+        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SchemaVersions.DEFAULT),
         raw: bool = False,
         **kwargs,
     ):
@@ -66,7 +66,7 @@ class SaturationFunctionSet(APIResource):
 
     def get_schema(
         self,
-        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SCHEMA_VERSION),
+        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SchemaVersions.DEFAULT),
         raw: bool = False,
         **kwargs,
     ) -> dict:
@@ -76,7 +76,7 @@ class SaturationFunctionSet(APIResource):
 
     def search_records(
         self,
-        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SCHEMA_VERSION),
+        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SchemaVersions.DEFAULT),
         raw: bool = False,
         **kwargs,
     ) -> dict:
@@ -86,7 +86,7 @@ class SaturationFunctionSet(APIResource):
 
     def search_data(
         self,
-        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SCHEMA_VERSION),
+        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SchemaVersions.DEFAULT),
         raw: bool = False,
         **kwargs,
     ) -> dict:
