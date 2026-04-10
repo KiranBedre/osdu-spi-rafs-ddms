@@ -1,0 +1,96 @@
+{
+  "columns":[
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta",
+    "TotalClay",
+    "WellFluidsReportID",
+    "TestFluidVolume",
+    "TestFluidAverageCapillarySuctionTime",
+    "AverageCapillarySuctionTime",
+    "AverageCapillarySuctionTimeRatio",
+    "TestSteps",
+    "Remarks"
+  ],
+  "index":[
+    0
+  ],
+  "data":[
+    [
+      "{data_partition_id}:work-product-component--SamplesAnalysis:CapillarySuctionTimeV100:",
+      "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+      [
+        {
+          "kind":"Unit",
+          "name":"percent",
+
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:%25:",
+          "propertyNames":[
+            "TotalClay"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"milliliter",
+
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:mL:",
+          "propertyNames":[
+            "TestFluidVolume"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"second",
+
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:s:",
+          "propertyNames":[
+            "TestFluidAverageCapillarySuctionTime",
+            "AverageCapillarySuctionTime",
+            "TestSteps.CapillarySuctionTime",
+            "TestSteps.TestFluidCapillarySuctionTime"
+          ]
+        }
+      ],
+      15.5,
+      "{data_partition_id}:work-product-component--WellFluidsReport:FluidReport_007:",
+      100,
+      12.5,
+      45.8,
+      3.664,
+      [
+        {
+          "StepNumber":1,
+          "CapillarySuctionTime":42.3,
+          "TestFluidCapillarySuctionTime":11.8,
+          "CapillarySuctionTimeRatio":3.585
+        },
+        {
+          "StepNumber":2,
+          "CapillarySuctionTime":46.5,
+          "TestFluidCapillarySuctionTime":12.5,
+          "CapillarySuctionTimeRatio":3.72
+        },
+        {
+          "StepNumber":3,
+          "CapillarySuctionTime":48.6,
+          "TestFluidCapillarySuctionTime":13.2,
+          "CapillarySuctionTimeRatio":3.682
+        }
+      ],
+      [
+        {
+          "RemarkSequenceNumber":1,
+          "Remark":"Test performed at ambient temperature and pressure.",
+          "RemarkSource":"Laboratory Technician",
+          "RemarkDate":"2025-01-15"
+        },
+        {
+          "RemarkSequenceNumber":2,
+          "Remark":"Sample showed good stability with test fluid.",
+          "RemarkSource":"Senior Analyst",
+          "RemarkDate":"2025-01-16"
+        }
+      ]
+    ]
+  ]
+}

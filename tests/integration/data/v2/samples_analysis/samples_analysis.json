@@ -1,5 +1,5 @@
 {
-    "kind": "{schema_authority}:wks:work-product-component--SamplesAnalysis:{schema_version}",
+    "kind": "{schema_authority}:wks:work-product-component--SamplesAnalysis:{wpc_version}",
     "acl": {
         "viewers": [
             "{acl_viewers}"
@@ -21,6 +21,7 @@
         "NameOfKey": "String value"
     },
     "data": {
+        "Name": "Sample Analysis integration test",
         "SampleIDs": [
             "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:"
         ],
@@ -29,7 +30,7 @@
         ],
         "AnalysisDate": "2015-01-01",
         "LaboratoryIDs": [
-            "{data_partition_id}:master-data--Organisation:GenericOrganisation_100:"
+            "{data_partition_id}:master-data--Organisation:GenericOrganisation_007:"
         ],
         "LaboratoryNames": [
             "TestLab"
@@ -45,11 +46,11 @@
         "DatePublished": "2015-01-01",
         "ParentSamplesAnalysesReports": [
             {
-                "ParentSamplesAnalysesReportID": "{sar_v2_record_id}:"
+                "ParentSamplesAnalysesReportID": "{parent_report_id}:"
             }
         ],
         "SampleAnalysisTypeIDs": [
-            "{data_partition_id}:reference-data--SampleAnalysisType:NMR:"
+            "{data_partition_id}:reference-data--SampleAnalysisType:{samples_analysis_type}:"
         ],
         "SamplesAnalysisCategoryTagIDs": [
             "{data_partition_id}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:"

@@ -15,8 +15,6 @@
 import copy
 import datetime
 
-import pytest
-
 from app.resources.common_headers import CONTENT_TYPE
 
 from tests.integration.config import (
@@ -67,7 +65,7 @@ def test_sfs_versions(api, record_id, helper):
 def test_sfs_add_data(api, record_id, helper, tests_data):
     """Upload bulk data and verify retrieval in JSON and Parquet formats are equivalent."""
     # Prepare and upload dataset payload
-    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
     data_payload["data"][0][0] = f"{record_id}:"
     post_response = api.saturation_function_set.post_data(record_id, data_payload)
     dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
@@ -90,7 +88,7 @@ def test_sfs_add_data(api, record_id, helper, tests_data):
 def test_sfs_get_data_filtered_by_column(api, helper, tests_data, record_id, dataset_id):
     """Verify bulk data retrieval filtered by column."""
     # Prepare baseline
-    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
     baseline["data"][0][0] = f"{record_id}:"
     baseline["columns"] = baseline["columns"][2:]
     baseline["data"][0] = baseline["data"][0][2:]
@@ -104,7 +102,7 @@ def test_sfs_get_data_filtered_by_column(api, helper, tests_data, record_id, dat
 def test_sfs_get_data_filtered_in_by_row(api, helper, tests_data, record_id, dataset_id):
     """Verify bulk data retrieval filtered in by row."""
     # Prepare baseline
-    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
     baseline["data"][0][0] = f"{record_id}:"
 
     # GET data as JSON and compare with modified payload
@@ -150,7 +148,6 @@ def test_sfs_get_schema(api, helper, tests_data):
     helper.compare_responses(schema, baseline, response_type="json")
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_record_filtered_in_by_row(api, helper, record_id, dataset_id):
     """Verify record appears in search results after indexing completes."""
     params = {"rows_filter": f"SaturationFunctionSetID,eq,{record_id}:"}
@@ -163,13 +160,12 @@ def test_sfs_search_record_filtered_in_by_row(api, helper, record_id, dataset_id
     assert record_id in response["result"]
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_data_filtered_in_by_row(api, helper, tests_data, record_id, dataset_id):
     """Verify bulk data appears in search results matching baseline."""
     params = {"rows_filter": f"SaturationFunctionSetID,eq,{record_id}:"}
 
     # Baseline expected dataset (with concrete record id substituted)
-    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
     baseline["data"][0][0] = f"{record_id}:"
 
     # Wait until search data returns the record_id in result set
@@ -182,7 +178,6 @@ def test_sfs_search_data_filtered_in_by_row(api, helper, tests_data, record_id, 
     helper.compare_responses(result_data, baseline, response_type="json")
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_record_filtered_out_by_row(api, record_id, dataset_id, search_available):
     """Verify record is filtered out by the specified row filter in the search results"""
     params = {"rows_filter": f"SaturationFunctionSetID,neq,{record_id}:"}
@@ -192,7 +187,6 @@ def test_sfs_search_record_filtered_out_by_row(api, record_id, dataset_id, searc
     assert record_id not in response["result"]
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_record_filtered_in_by_start_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered in by the specified start date filter in the search results"""
     current_date = datetime.date.today()
@@ -203,7 +197,6 @@ def test_sfs_search_record_filtered_in_by_start_date(api, record_id, dataset_id,
     assert record_id in response["result"]
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_record_filtered_out_by_start_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered out by the specified start date filter in the search results"""
     current_date = datetime.date.today()
@@ -215,7 +208,6 @@ def test_sfs_search_record_filtered_out_by_start_date(api, record_id, dataset_id
     assert response["result"] == []
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_record_filtered_in_by_end_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered in by the specified end date filter in the search results"""
     current_date = datetime.date.today()
@@ -226,7 +218,6 @@ def test_sfs_search_record_filtered_in_by_end_date(api, record_id, dataset_id, s
     assert record_id in response["result"]
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_record_filtered_out_by_end_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered out by the specified end date filter in the search results"""
     current_date = datetime.date.today()
@@ -238,7 +229,6 @@ def test_sfs_search_record_filtered_out_by_end_date(api, record_id, dataset_id, 
     assert record_id not in response["result"]
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_record_filtered_out_by_page_limit(api, record_id, dataset_id, search_available):
     """Verify records are filtered out by the specified page limit filter in the search results"""
     params = {"page_limit": 2}
@@ -248,7 +238,6 @@ def test_sfs_search_record_filtered_out_by_page_limit(api, record_id, dataset_id
     assert len(response["result"]) == 2
 
 
-@pytest.mark.skip(reason="#706")
 def test_sfs_search_data_filtered_by_columns(api, helper, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified columns filter in the search results"""
     params = {"columns_filter": "CapillaryPressureFunctions,RelativePermeabilityFunctions",
@@ -257,7 +246,7 @@ def test_sfs_search_data_filtered_by_columns(api, helper, tests_data, record_id,
     result_data = response.get("result", {})
 
     # Prepare baseline
-    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
     baseline["columns"] = baseline["columns"][2:]
     baseline["data"][0] = baseline["data"][0][2:]
 
@@ -265,7 +254,6 @@ def test_sfs_search_data_filtered_by_columns(api, helper, tests_data, record_id,
     helper.compare_responses(result_data, baseline, response_type="json")
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_data_filtered_out_by_row(api, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by row filter in the search results"""
     params = {"rows_filter": "SaturationFunctionSetID,eq,DummyValue"}
@@ -277,7 +265,6 @@ def test_sfs_search_data_filtered_out_by_row(api, record_id, dataset_id, search_
     assert response["result"]["data"] == []
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_data_aggregated(api, record_id, dataset_id, search_available):
     """Verify bulk data aggregated in the search results"""
     params = {"columns_aggregation": "SaturationFunctionSetID,describe"}
@@ -288,7 +275,6 @@ def test_sfs_search_data_aggregated(api, record_id, dataset_id, search_available
     assert set(response["result"]["index"]) == {"count", "unique", "top", "freq"}
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_data_filtered_in_by_start_date(api, record_id, dataset_id, search_available):
     """Verify bulk data is filtered in by the specified start date filter in the search results"""
     current_date = datetime.date.today()
@@ -305,7 +291,6 @@ def test_sfs_search_data_filtered_in_by_start_date(api, record_id, dataset_id, s
     assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_data_filtered_out_by_start_date(api, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified start date filter in the search results"""
     current_date = datetime.date.today()
@@ -319,7 +304,6 @@ def test_sfs_search_data_filtered_out_by_start_date(api, record_id, dataset_id, 
     assert response["result"]["data"] == []
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_data_filtered_in_by_end_date(api, record_id, dataset_id, search_available):
     """Verify bulk data is filtered in by the specified end date filter in the search results"""
     current_date = datetime.date.today()
@@ -336,7 +320,6 @@ def test_sfs_search_data_filtered_in_by_end_date(api, record_id, dataset_id, sea
     assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_data_filtered_out_by_end_date(api, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified end date filter in the search results"""
     current_date = datetime.date.today()
@@ -354,7 +337,6 @@ def test_sfs_search_data_filtered_out_by_end_date(api, record_id, dataset_id, se
     assert not any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_data_filtered_out_by_page_limit(api, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified page limit filter in the search results"""
     params = {"page_limit": 2}
@@ -373,7 +355,7 @@ def test_sfs_search_data_filtered_out_by_page_limit(api, record_id, dataset_id, 
 def test_sfs_add_data_records_format(api, helper, tests_data, record_id):
     """Upload bulk data in records format and verify retrieval in JSON."""
     # Prepare and upload dataset payload
-    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_RECORDS_FORMAT))
+    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1_RECORDS_FORMAT))
     data_payload["SaturationFunctionSetID"] = f"{record_id}:"
     post_response = api.saturation_function_set.post_data(record_id, [data_payload])
     dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
@@ -384,7 +366,6 @@ def test_sfs_add_data_records_format(api, helper, tests_data, record_id):
     helper.compare_responses(gotten_data, [data_payload], response_type="json")
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_data_records_format_filtered_in_by_row(
     api, helper, tests_data, record_id, dataset_id, search_available
 ):
@@ -395,14 +376,13 @@ def test_sfs_search_data_records_format_filtered_in_by_row(
     }
 
     # Baseline expected dataset (with concrete record id substituted)
-    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_RECORDS_FORMAT))
+    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1_RECORDS_FORMAT))
     baseline["SaturationFunctionSetID"] = f"{record_id}:"
 
     response = api.saturation_function_set.search_data(params=params)
     helper.compare_responses(response["result"], [baseline], response_type="json")
 
 
-@pytest.mark.skip(reason="#706")
 def test_sfs_search_data_records_format_filtered_by_columns(
     api, helper, tests_data, record_id, dataset_id, search_available
 ):
@@ -414,7 +394,7 @@ def test_sfs_search_data_records_format_filtered_by_columns(
     }
 
     # Prepare baseline
-    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_RECORDS_FORMAT))
+    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1_RECORDS_FORMAT))
     baseline.pop("SaturationFunctionSetID", None)
     baseline.pop("Meta", None)
 
@@ -422,7 +402,6 @@ def test_sfs_search_data_records_format_filtered_by_columns(
     helper.compare_responses(response["result"], [baseline], response_type="json")
 
 
-@pytest.mark.skip(reason="#726")
 def test_sfs_search_data_records_format_aggregated(api, record_id, dataset_id, search_available):
     """Verify bulk data in record format aggregated in the search results - orient param ignored in response"""
     params = {

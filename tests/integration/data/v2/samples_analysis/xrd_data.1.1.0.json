@@ -1,0 +1,74 @@
+{
+  "columns":[
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta",
+    "QuartzCrystallinityIndex",
+    "MineralContent",
+    "IsClayFraction",
+    "ClayFractionCutoff",
+    "TotalClay",
+    "TotalPhyllosilicates"
+  ],
+  "index":[
+    0
+  ],
+  "data":[
+    [
+      "{data_partition_id}:work-product-component--SamplesAnalysis:XRF_WPC:",
+      "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+      [
+        {
+          "kind":"Unit",
+          "name":"euclidean",
+
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:Euc:",
+          "propertyNames":[
+            "QuartzCrystallinityIndex"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"kilogram per kilogram",
+
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:kg%2Fkg:",
+          "propertyNames":[
+            "MineralContent[*].WeightPercent",
+            "TotalClay",
+            "TotalPhyllosilicates"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"cubic metre per cubic metre",
+
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:m3%2Fm3:",
+          "propertyNames":[
+            "MineralContent[*].VolumePercent"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"micrometre",
+
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:um:",
+          "propertyNames":[
+            "ClayFractionCutoff"
+          ]
+        }
+      ],
+      1.23,
+      [
+        {
+          "MineralID":"{data_partition_id}:reference-data--Minerals:kaolinite:",
+          "WeightPercent":1.23,
+          "VolumePercent":1.23
+        }
+      ],
+      true,
+      2.0,
+      0.45,
+      0.55
+    ]
+  ]
+}

@@ -20,9 +20,10 @@ from typing import Optional
 from tests.integration.config import (
     CONFIG,
     DATA_DIR,
-    SCHEMA_VERSION,
+    WPC_VERSION,
     TEST_DATA_STORE,
     SamplesAnalysisTypes,
+    SamplesAnalysisConfig
 )
 from tests.integration.helpers import CommonHelper
 
@@ -73,15 +74,13 @@ def load_test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes]
         data_values = aws_values
     elif CONFIG["CLOUD_PROVIDER"] == "gc":
         data_values = create_gc_values(CONFIG["DATA_PARTITION"])
-    with open(os.path.join(DATA_DIR, file_name)) as json_file:
+    with open(os.path.join(DATA_DIR, file_name), encoding="utf-8") as json_file:
         data_str = (
             json_file.read(
             ).replace(
                 "{record_id}", f"{CommonHelper.generate_random_record_id()}",
             ).replace(
-                "{sar_v2_record_id}", TEST_DATA_STORE.get("sar_v2_record_id", ""),
-            ).replace(
-                "{schema_version}", SCHEMA_VERSION,
+                "{wpc_version}", WPC_VERSION,
             ).replace(
                 "{data_partition_id}", data_values.data_partition_id,
             ).replace(
@@ -96,4 +95,11 @@ def load_test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes]
                 "{legal_tag}", TEST_DATA_STORE.get("legal_tag"),
             )
         )
+        if analysis_type:
+            context = SamplesAnalysisConfig.get(analysis_type)
+            data_str = (
+                data_str
+                .replace("{parent_report_id}", context["parent_report_id"])
+                .replace("{samples_analysis_type}", context["samples_analysis_type"])
+            )
         return json.loads(data_str)

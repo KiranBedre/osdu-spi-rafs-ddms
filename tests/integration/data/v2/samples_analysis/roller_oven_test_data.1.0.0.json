@@ -1,0 +1,98 @@
+{
+    "columns": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Meta",
+        "TotalClay",
+        "WellFluidsReportID",
+        "TestFluidVolume",
+        "RollingTemperature",
+        "RollingTime",
+        "SieveMeshSize",
+        "MeshSizeTypeID",
+        "InitialSampleWeight",
+        "FinalSampleWeight",
+        "SampleContainerWeight",
+        "FinalTotalWeight",
+        "RecoveryPercent",
+        "DisaggregationPercent",
+        "Remarks"
+    ],
+    "index": [
+        0
+    ],
+    "data": [
+        [
+            "{data_partition_id}:work-product-component--SamplesAnalysis:RollerOvenTestV100:",
+            "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+            [
+                {
+                    "kind": "Unit",
+                    "name": "gram",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:g:",
+                    "propertyNames": [
+                        "InitialSampleWeight",
+                        "FinalSampleWeight",
+                        "SampleContainerWeight",
+                        "FinalTotalWeight"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "percent [mass basis]",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:%25%5Bmass%5D:",
+                    "propertyNames": [
+                        "TotalClay",
+                        "RecoveryPercent",
+                        "DisaggregationPercent"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "millilitre",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:mL:",
+                    "propertyNames": ["TestFluidVolume"]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "degree Fahrenheit",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:degF:",
+                    "propertyNames": ["RollingTemperature"]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "hour",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:h:",
+                    "propertyNames": ["RollingTime"]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "unitless",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:unitless:",
+                    "propertyNames": ["SieveMeshSize"]
+                }
+            ],
+            45.2,
+            "{data_partition_id}:work-product-component--WellFluidsReport:FluidReport_007:",
+            350.1,
+            150.2,
+            16.3,
+            50,
+            "{data_partition_id}:reference-data--MeshSizeType:Tyler:",
+            20.4,
+            17.4,
+            5.2,
+            22.6,
+            87.6,
+            13.7,
+            [
+                {
+                    "RemarkSequenceNumber": 1,
+                    "Remark": "Sample showed good inhibition with the water-based mud system.",
+                    "RemarkSource": "Lab Technician A",
+                    "RemarkDate": "2025-01-15"
+                }
+            ]
+        ]
+    ]
+}

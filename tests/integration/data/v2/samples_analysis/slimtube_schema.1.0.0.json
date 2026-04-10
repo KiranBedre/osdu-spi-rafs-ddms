@@ -1,0 +1,710 @@
+{
+    "title": "SlimtubeModel100",
+    "type": "object",
+    "properties": {
+        "SamplesAnalysisID": {
+            "title": "Samples Analysis ID",
+            "description": "The OSDU Identifier for this SamplesAnalysis.",
+            "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "SampleID": {
+            "title": "Sample ID",
+            "description": "The OSDU Identifier for the Sample associated with this analysis.",
+            "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "Meta": {
+            "title": "Meta",
+            "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+            "example": "",
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/Meta"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta1"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta2"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta3"
+                    }
+                ]
+            }
+        },
+        "TestNumber": {
+            "title": "Test Number",
+            "description": "A number for this test for purposes of e.g., tracking lab sequence.",
+            "type": "string"
+        },
+        "TestTemperature": {
+            "title": "Test Temperature",
+            "description": "The recorded temperature within the test environment.",
+            "type": "number"
+        },
+        "Remarks": {
+            "title": "Remarks",
+            "description": "Additional notes or observations regarding the test, conditions, or results that may be relevant for interpretation.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/Remarks"
+                }
+            ]
+        },
+        "PackedColumnProperties": {
+            "title": "Packed Column Properties",
+            "description": "Physical properties of the packed column with sample.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/PackedColumnProperty"
+            }
+        },
+        "CoreFlooding": {
+            "title": "Core Flooding",
+            "description": "Core flooding is a laboratory technique used to simulate and analyze fluid flow and behavior in a reservoir rock under controlled conditions.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/CoreFloodingItem"
+            }
+        },
+        "MinimumMiscibilityPressure": {
+            "title": "Minimum Miscibility Pressure",
+            "description": "The minimum pressure for miscibility to be achieved.",
+            "type": "number"
+        },
+        "PackedColumnDisplacement": {
+            "title": "Packed Column Displacement",
+            "description": "Array  of measurements recording the incremental and cumulative recovery of oil from the packed column.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/PackedColumnDisplacementItem"
+            }
+        },
+        "MaterialBalanceData": {
+            "title": "Material Balance Data",
+            "description": "Array that records the type and weight of the material injected into the sample as well as the material recovered.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/MaterialBalanceDatum"
+            }
+        },
+        "VaporCompositionalAnalysis": {
+            "title": "Vapor Compositional Analysis",
+            "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/VaporCompositionalAnalysi"
+            }
+        },
+        "LiquidCompositionalAnalysis": {
+            "title": "Liquid Compositional Analysis",
+            "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/LiquidCompositionalAnalysi"
+            }
+        },
+        "CalculatedProperties": {
+            "title": "Calculated Properties",
+            "description": "Derived attributes and parameters obtained from slim tube tests, which are experimental methods used to evaluate the miscibility and interaction of injected fluids with reservoir hydrocarbons under simulated reservoir conditions.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/CalculatedProperty"
+            }
+        },
+        "SlimTubeTestSteps": {
+            "title": "SlimTubeTest Steps",
+            "description": "Array object capturing the slim tube test steps.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/SlimTubeTestStep"
+            }
+        },
+        "SlimTubeTestVolumeSteps": {
+            "title": "Slim Tube Test Volume Steps",
+            "description": "The sequence of changes in volume for the analysis.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/SlimTubeTestVolumeStep"
+            }
+        }
+    },
+    "required": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Meta"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "Meta": {
+            "title": "Meta",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "UOM Reference Kind",
+                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                    "default": "Unit",
+                    "const": "Unit",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "UOM Unit Symbol",
+                    "description": "The unit symbol or name of the unit.",
+                    "example": "ft[US]",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "UOM Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+                    "type": "string"
+                },
+                "unitOfMeasureID": {
+                    "title": "Unitofmeasureid",
+                    "description": "SRN to unit of measure reference.",
+                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "UOM Property Names",
+                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "HorizontalDeflection.EastWest",
+                        "HorizontalDeflection.NorthSouth"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "Meta1": {
+            "title": "Meta1",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "CRS Reference Kind",
+                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                    "default": "CRS",
+                    "const": "CRS",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "CRS Name",
+                    "description": "The name of the CRS.",
+                    "example": "WGS 84 / UTM zone 15N",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "CRS Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
+                    "type": "string"
+                },
+                "coordinateReferenceSystemID": {
+                    "title": "Coordinatereferencesystemid",
+                    "description": "SRN to CRS reference.",
+                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "CRS Property Names",
+                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "KickOffPosition.X",
+                        "KickOffPosition.Y"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "Meta2": {
+            "title": "Meta2",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "DateTime Reference Kind",
+                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                    "default": "DateTime",
+                    "const": "DateTime",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "DateTime Name",
+                    "description": "The name of the DateTime format and reference.",
+                    "example": "UTC",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "DateTime Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "DateTime Property Names",
+                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Acquisition.StartTime",
+                        "Acquisition.EndTime"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "Meta3": {
+            "title": "Meta3",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "AzimuthReference Reference Kind",
+                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                    "default": "AzimuthReference",
+                    "const": "AzimuthReference",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "AzimuthReference Name",
+                    "description": "The name of the CRS or the symbol/name of the unit.",
+                    "example": "TrueNorth",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "AzimuthReference Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "AzimuthReference Property Names",
+                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Bearing"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "Remarks": {
+            "title": "Remarks",
+            "type": "object",
+            "properties": {
+                "RemarkSequenceNumber": {
+                    "title": "Remark Sequence Number",
+                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                    "example": 1,
+                    "type": "integer"
+                },
+                "Remark": {
+                    "title": "Remark",
+                    "description": "A descriptive comment for this remark.",
+                    "type": "string"
+                },
+                "RemarkSource": {
+                    "title": "Remark Source",
+                    "description": "The person, vendor, interpreter or other provider of information.",
+                    "type": "string"
+                },
+                "RemarkDate": {
+                    "title": "Remark Date",
+                    "description": "The date the remark was issued.",
+                    "type": "string",
+                    "format": "date"
+                }
+            },
+            "additionalProperties": false
+        },
+        "PackedColumnProperty": {
+            "title": "PackedColumnProperty",
+            "type": "object",
+            "properties": {
+                "ColumnLength": {
+                    "title": "Column Length",
+                    "description": "Length of the packed column enclosing the sample.",
+                    "type": "number"
+                },
+                "ColumnDiameter": {
+                    "title": "Column Diameter",
+                    "description": "Diameter of the packed column enclosing the sample.",
+                    "type": "number"
+                },
+                "PackingMaterial": {
+                    "title": "Packing Material",
+                    "description": "Material used to fill the packed column, e.g. sand.",
+                    "type": "string"
+                },
+                "ColumnPorosity": {
+                    "title": "Column Porosity",
+                    "description": "The amount of pore space relative to the volume of the packed column sample.",
+                    "type": "number"
+                },
+                "ColumnTotalPoreVolume": {
+                    "title": "Column Total Pore Volume",
+                    "description": "The total volume of pore space within the packed column.",
+                    "type": "number"
+                },
+                "ColumnPermeability": {
+                    "title": "Column Permeability",
+                    "description": "The permeability of packed column.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "CoreFloodingItem": {
+            "title": "CoreFloodingItem",
+            "type": "object",
+            "properties": {
+                "DisplacementPressure": {
+                    "title": "Displacement Pressure",
+                    "description": "The minimum pressure required to initiate and sustain the movement of fluids through a porous medium.",
+                    "type": "number"
+                },
+                "PoreVolumeInjected": {
+                    "title": "Pore Volume Injected",
+                    "description": "The total volume of fluid injected into a reservoir relative to the volume of its pore spaces.",
+                    "type": "number"
+                },
+                "CumulativeOilRecovery": {
+                    "title": "Cumulative Oil Recovery",
+                    "description": "The total amount of oil produced from a reservoir over a specified period.",
+                    "type": "number"
+                },
+                "MaterialBalance": {
+                    "title": "Material Balance",
+                    "description": "A calculation assessing the consistency between the amounts of oil, gas, and water produced versus injected to evaluate reservoir performance.",
+                    "type": "number"
+                },
+                "AsphaltanceContentOfResidualOil": {
+                    "title": "Asphaltance Content Of Residual Oil",
+                    "description": "The concentration of heavy, complex hydrocarbons known as asphaltenes remaining in the residual oil after extraction processes.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "PackedColumnDisplacementItem": {
+            "title": "PackedColumnDisplacementItem",
+            "type": "object",
+            "properties": {
+                "IncrementNumber": {
+                    "title": "Increment Number",
+                    "description": "A sequential identifier representing the number of increments or stages in a process or measurement.",
+                    "type": "string"
+                },
+                "PoresInjected": {
+                    "title": "Pores Injected",
+                    "description": "The number of pore volumes of a fluid injected into a reservoir during enhanced oil recovery processes.",
+                    "type": "number"
+                },
+                "CumulativeOilRecoveryVolume": {
+                    "title": "Cumulative Oil Recovery Volume",
+                    "description": "The total volume of oil extracted from a reservoir over a specified period.",
+                    "type": "number"
+                },
+                "CumulativeOilRecoveryWeight": {
+                    "title": "Cumulative Oil Recovery Weight",
+                    "description": "The total weight of oil extracted from a reservoir over a specified period.",
+                    "type": "number"
+                },
+                "GasOilRatio": {
+                    "title": "Gas Oil Ratio",
+                    "description": "The volume ratio of produced gas to produced oil from a reservoir.",
+                    "type": "number"
+                },
+                "GasGravity": {
+                    "title": "Gas Gravity",
+                    "description": "The relative density of produced gas compared to air.",
+                    "type": "number"
+                },
+                "OilDensity": {
+                    "title": "Oil Density",
+                    "description": "The mass per unit volume of oil, typically measured in kilograms per cubic meter (kg/m³) or grams per cubic centimeter (g/cm³).",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "MaterialBalanceDatum": {
+            "title": "MaterialBalanceDatum",
+            "type": "object",
+            "properties": {
+                "MaterialInjected": {
+                    "title": "Material Injected",
+                    "description": "The material injected",
+                    "type": "string"
+                },
+                "MaterialInjectedWeight": {
+                    "title": "Material Injected Weight",
+                    "description": "The weight of the material injected",
+                    "type": "number"
+                },
+                "MaterialRecovered": {
+                    "title": "Material Recovered",
+                    "description": "The material recovered.",
+                    "type": "string"
+                },
+                "MaterialRecoveredWeight": {
+                    "title": "Material Recovered Weight",
+                    "description": "The weight of the recovered material.",
+                    "type": "number"
+                },
+                "MaterialRecoveredCumulativeWeight": {
+                    "title": "Material Recovered Cumulative Weight",
+                    "description": "The cumulative weight of the recovered material since the start of injection.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "VaporCompositionItem": {
+            "title": "VaporCompositionItem",
+            "type": "object",
+            "properties": {
+                "ComponentNameID": {
+                    "title": "Component Name ID",
+                    "description": "The chemical formula of each component found in the vapor during analysis.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "VaporRelativeMole": {
+                    "title": "Vapor Relative Mole",
+                    "description": "The molar weight of the component relative to the vapor.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "VaporCompositionalAnalysi": {
+            "title": "VaporCompositionalAnalysi",
+            "type": "object",
+            "properties": {
+                "IncrementNumberSampled": {
+                    "title": "Increment Number Sampled",
+                    "description": "A sequential identifier representing the number of specific sampling points or intervals taken during a measurement or observation process.",
+                    "type": "number"
+                },
+                "PoreVolumeInjected": {
+                    "title": "Pore Volume Injected",
+                    "description": "The cumulative volume of fluid injected into a reservoir expressed as a proportion of the total pore volume within the reservoir.",
+                    "type": "number"
+                },
+                "VaporComposition": {
+                    "title": "Vapor Composition",
+                    "description": "Object capturing the component name and molar weight of this component of the vapor.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/VaporCompositionItem"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "LiquidCompositionalAnalysi": {
+            "title": "LiquidCompositionalAnalysi",
+            "type": "object",
+            "properties": {
+                "ComponentNameID": {
+                    "title": "Component Name ID",
+                    "description": "The chemical formula of each component found in the liquid during analysis.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "LiquidRelativeMolarWeight": {
+                    "title": "Liquid Relative Molar Weight",
+                    "description": "The molar weight of the component relative to the liquid.",
+                    "type": "number"
+                },
+                "FlashedLiquidRelativeMass": {
+                    "title": "Flashed Liquid Relative Mass",
+                    "description": "The relative mass of the flashed liquid.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ResidueCalculatedProperty": {
+            "title": "ResidueCalculatedProperty",
+            "type": "object",
+            "properties": {
+                "ComponentNameID": {
+                    "title": "Component Name ID",
+                    "description": "The chemical formula representing the composition of a specific component in terms of the elements and their proportions.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "ResidueRelativeMolarWeight": {
+                    "title": "Residue Relative Molar Weight",
+                    "description": "he ratio of the molar mass of the residual oil component to the molar mass of a reference substance, typically dimensionless.",
+                    "type": "number"
+                },
+                "ResidueMolecularWeight": {
+                    "title": "Residue Molecular Weight",
+                    "description": "The molecular weight of the residual oil, representing the sum of the atomic weights of its constituent atoms.",
+                    "type": "number"
+                },
+                "ResidueDensity": {
+                    "title": "Residue Density",
+                    "description": "The mass per unit volume of the residual oil.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "CalculatedProperty": {
+            "title": "CalculatedProperty",
+            "type": "object",
+            "properties": {
+                "AvgMoleWeight": {
+                    "title": "Average Mole Weight",
+                    "description": "The weighted average mass of the molecules in a sample.",
+                    "type": "number"
+                },
+                "ResidueDensity": {
+                    "title": "Residue Density",
+                    "description": "The mass per unit volume of the residual oil.",
+                    "type": "number"
+                },
+                "ResidueAPI": {
+                    "title": "Residue API",
+                    "description": "The API gravity of the residual oil, which measures its density relative to water.",
+                    "type": "number"
+                },
+                "ResidueCalculatedProperties": {
+                    "title": "Residue Calculated Properties",
+                    "description": "The set of derived physical and chemical properties of the residual oil, calculated from experimental data or using theoretical models.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ResidueCalculatedProperty"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "SlimTubeTestStep": {
+            "title": "SlimTubeTestStep",
+            "type": "object",
+            "properties": {
+                "StepNumber": {
+                    "title": "Step Number",
+                    "type": "number"
+                },
+                "StepAveragePressure": {
+                    "title": "Step Average Pressure",
+                    "description": "Average pressure applied in this step of the SLim Tube Test",
+                    "type": "number"
+                },
+                "Remarks": {
+                    "title": "Remarks",
+                    "description": "Additional notes or observations regarding the step, includes conditions, or results that may be relevant for interpretation.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Remarks"
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false
+        },
+        "SlimTubeTestVolumeStep": {
+            "title": "SlimTubeTestVolumeStep",
+            "type": "object",
+            "properties": {
+                "StepNumber": {
+                    "title": "Step Number",
+                    "description": "The number used to sequence and identify the changes in volume for this analysis.",
+                    "type": "number"
+                },
+                "DifferentialPressure": {
+                    "title": "Differential Pressure",
+                    "description": "The differential pressure of this test step.",
+                    "type": "number"
+                },
+                "RunTime": {
+                    "title": "Run Time",
+                    "description": "The overall run time of the test at this step.",
+                    "type": "number"
+                },
+                "InjectionVolumeAtTestTemperature": {
+                    "title": "Injection Volume At Test Temperature",
+                    "description": "The volume of injected fluid at test temperature.",
+                    "type": "number"
+                },
+                "InjectionVolumeAtPumpTemperature": {
+                    "title": "Injection Volume At Pump Temperature",
+                    "description": "The volume of injected fluid measured at pump temperature.",
+                    "type": "number"
+                },
+                "InjectedPoreVolumeFraction": {
+                    "title": "Injected Pore Volume Fraction",
+                    "description": "The injected fluid measured as a fraction of pore volume",
+                    "type": "number"
+                },
+                "DarcyVelocity": {
+                    "title": "Darcy Velocity",
+                    "description": "The flow velocity of a fluid through a porous medium, as described by Darcy's law.",
+                    "type": "number"
+                },
+                "CumulativeOilProductionPercOOIP": {
+                    "title": "Cumulative Oil Production Percentage of Oil in Place",
+                    "description": "Cumulative oil production as a percentage of oil in place.",
+                    "type": "number"
+                },
+                "CumulativeOilProductionSTO": {
+                    "title": "Cumulative Oil Production STO",
+                    "description": "Cumulative oil production, Stock Tank",
+                    "type": "number"
+                },
+                "IncrementalProducedGOR": {
+                    "title": "Incremental Produced GOR",
+                    "description": "Gas oil ratio of the production during this test step.",
+                    "type": "number"
+                },
+                "CumulativeProducedGOR": {
+                    "title": "Cumulative Produced GOR",
+                    "description": "Gas Oil ratio of the cumulative production from the sample during slim tube testing.",
+                    "type": "number"
+                },
+                "Remarks": {
+                    "title": "Remarks",
+                    "description": "Recorded remarks for this step of the slim tube test.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Remarks"
+                        }
+                    ]
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

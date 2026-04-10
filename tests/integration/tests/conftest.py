@@ -48,8 +48,16 @@ def create_referenced_records(api, helper, tests_data):
     records_with_references = [
         copy.deepcopy(tests_data(DataFiles.SAMPLE)),
         copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS)),
-        copy.deepcopy(tests_data(DataFiles.SAR_V2)),
-        copy.deepcopy(tests_data(DataFiles.NMR_DATA)),
+        copy.deepcopy(tests_data(DataFiles.SAR)),
+        copy.deepcopy(tests_data(DataFiles.COMPOSITIONAL_ANALYSIS_DATA_V1_1)),
+        copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1)),
+        copy.deepcopy(tests_data(DataFiles.SLIM_TUBE_DATA_V2)),
+        copy.deepcopy(tests_data(DataFiles.PROPPANT_EMBEDMENT_DATA_V1)),
+        copy.deepcopy(tests_data(DataFiles.ROLLER_OVEN_TEST_DATA_V1)),
+        copy.deepcopy(tests_data(DataFiles.STOCK_TANK_OIL_DATA_V1_1)),
+        copy.deepcopy(tests_data(DataFiles.VLE_DATA_V2)),
+        copy.deepcopy(tests_data(DataFiles.XRD_DATA_V1_1)),
+        copy.deepcopy(tests_data(DataFiles.XRF_DATA_V1_1)),
     ]
 
     storage_dependencies = set()
@@ -68,14 +76,14 @@ def create_referenced_records(api, helper, tests_data):
         record_to_store = copy.deepcopy(osdu_generic_record)
         record_to_store["id"] = reference_id
         record_type = reference_id.split(":")[1]
-        record_to_store["kind"] = f"osdu:wks:{record_type}:1.0.0"
+        record_to_store["kind"] = f"{partition}:wks:{record_type}:1.0.0"
         records_to_store.append(record_to_store)
 
     response = api.storage.create_or_update_records(records_to_store)
     logger.debug(response.json())
 
     record_to_create = [
-        (DataTypes.SAR_V2, DataFiles.SAR_V2, DataTemplates.ID_SAR.format(partition=partition)),
+        (DataTypes.SAR, DataFiles.SAR, DataTemplates.ID_SAR.format(partition=partition)),
     ]
     for data_type, data, id_template in record_to_create:
         record_data = copy.deepcopy(tests_data(data))
