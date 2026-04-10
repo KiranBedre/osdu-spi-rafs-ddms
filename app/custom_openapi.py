@@ -53,31 +53,49 @@ def _get_parameter_sort_key(openapi_param: dict) -> tuple:
     return (is_optional, location_rank, openapi_param.get("name", ""))
 
 
-def _sort_and_annotate_parameters(openapi_schema: dict) -> None:
-    """Sort parameters: required first, then by location (path, header, query).
+def _route_record_id_info() -> dict:
+    """Return mapping of URL route segment to (entity_type, route_segment) for record_id annotations."""
+    return {
+        "masterdata": ("master-data--Sample", "masterdata"),
+        "samplesanalysis": ("work-product-component--SamplesAnalysis", "samplesanalysis"),
+        "samplesanalysesreport": ("work-product-component--SamplesAnalysesReport", "samplesanalysesreport"),
+        "saturationfunctionset": ("work-product-component--SaturationFunctionSet", "saturationfunctionset"),
+        "reservoirsimulationrockphysicsmodel": (
+            "work-product-component--ReservoirSimulationRockPhysicsModel",
+            "reservoirsimulationrockphysicsmodel",
+        ),
+        "fluidmodel": ("work-product-component--FluidModel", "fluidmodel"),
+    }
 
-    Sorts: required first, then by location (path, header, query).
-    Annotates: adds URL double-encoding description to record_id path parameters
-    to document the requirement when IDs contain literal percent characters (RFC 3986).
+
+def _build_record_id_description(entity_type: str, route_segment: str) -> str:
+    """Build a tailored record_id parameter description for a specific resource endpoint.
+
+    :param str entity_type: OSDU entity type fragment (e.g. 'master-data--Sample').
+    :param str route_segment: URL route segment for examples (e.g. 'masterdata').
+    :return str: HTML description string for the Swagger UI parameter.
     """
     pct = "&#37;"  # HTML entity for the percent-sign character
-    record_id_description = "".join(
+    return "".join(
         [
-            "OSDU record identifier.<br><br>",
+            "OSDU record identifier for a <code>{0}</code> entity.<br><br>".format(entity_type),
             "<b>URL Encoding:</b> If the record ID contains literal ",
             "<code>{0}</code> characters ".format(pct),
-            "(e.g., <code>osdu:master-data--Sample:",
+            "(e.g., <code>osdu:{0}:".format(entity_type),
             "7{0}2F12-A-7{0}20D_Sample_249</code>), ".format(pct),
             "the <code>{0}</code> must be ".format(pct),
             "<b>double-encoded</b> in the URL path. ",
             "This is standard HTTP behavior per ",
             "<a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.",
             "<br><br><b>Examples:</b><br>",
-            "<code>osdu:...:simple_id</code>",
-            "→<code>/v2/masterdata/osdu:...:simple_id</code><br><br>",
-            "<code>osdu:...:7{0}2F12-A-7{0}20D</code>".format(pct),
-            "&nbsp;&nbsp;→ <code>/v2/masterdata/",
-            "osdu:...:7{0}252F12-A-7{0}2520D</code>".format(pct),
+            "<code>osdu:{0}:simple_id</code>".format(entity_type),
+            "&nbsp;&nbsp;→&nbsp; <code>/v2/{0}/osdu:{1}:simple_id</code><br><br>".format(
+                route_segment,
+                entity_type,
+            ),
+            "<code>osdu:{0}:7{1}2F12-A-7{1}20D</code>".format(entity_type, pct),
+            "&nbsp;&nbsp;→&nbsp; <code>/v2/{0}/".format(route_segment),
+            "osdu:{0}:7{1}252F12-A-7{1}2520D</code>".format(entity_type, pct),
             "<br><br><b>Encoding reference:</b><br>",
             "<code>{0}</code> &nbsp;→&nbsp; <code>{0}25</code><br>".format(pct),
             "<code>{0}2F</code> →&nbsp; <code>{0}252F</code><br>".format(pct),
@@ -85,18 +103,49 @@ def _sort_and_annotate_parameters(openapi_schema: dict) -> None:
         ],
     )
 
-    all_operations = (
-        operation
-        for path_item in openapi_schema.get("paths", {}).values()
-        for operation in path_item.values()
-        if isinstance(operation, dict) and "parameters" in operation
-    )
-    for operation in all_operations:
-        for openapi_param in operation["parameters"]:
-            is_record_id_path = openapi_param.get("name") == "record_id" and openapi_param.get("in") == "path"
-            if is_record_id_path:
-                openapi_param["description"] = record_id_description
-        operation["parameters"].sort(key=_get_parameter_sort_key)
+
+def _get_route_segment(path_key: str) -> str:
+    """Extract the top-level v2/dev route segment from a path key.
+
+    e.g. '/api/os-rafs-ddms/v2/samplesanalysis/{record_id}/...' → 'samplesanalysis'
+    """
+    parts = path_key.strip("/").split("/")
+    for idx, part in enumerate(parts):
+        if part in {"v2", "dev"} and idx + 1 < len(parts):
+            return parts[idx + 1]
+    return ""
+
+
+def _annotate_record_id_param(openapi_param: dict, route_info: tuple) -> None:
+    """Inject a tailored URL encoding description into a record_id path parameter.
+
+    :param dict openapi_param: The OpenAPI parameter object to annotate.
+    :param tuple route_info: Tuple of (entity_type, route_segment) for this resource.
+    """
+    is_record_id_path = openapi_param.get("name") == "record_id" and openapi_param.get("in") == "path"
+    if is_record_id_path:
+        entity_type, segment = route_info
+        openapi_param["description"] = _build_record_id_description(entity_type, segment)
+
+
+def _sort_and_annotate_parameters(openapi_schema: dict) -> None:  # noqa: WPS231
+    """Sort parameters and inject tailored record_id descriptions per resource endpoint.
+
+    Sorts: required first, then by location (path, header, query).
+    Annotates: injects a URL double-encoding note into each record_id path parameter,
+    with examples tailored to the specific resource entity type and URL path for that
+    endpoint group (RFC 3986).
+    """
+    route_info_map = _route_record_id_info()
+    for path_key, path_item in openapi_schema.get("paths", {}).items():
+        route_info = route_info_map.get(_get_route_segment(path_key))
+        for operation in path_item.values():
+            if not isinstance(operation, dict) or "parameters" not in operation:
+                continue
+            if route_info is not None:
+                for openapi_param in operation["parameters"]:
+                    _annotate_record_id_param(openapi_param, route_info)
+            operation["parameters"].sort(key=_get_parameter_sort_key)
 
 
 def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
