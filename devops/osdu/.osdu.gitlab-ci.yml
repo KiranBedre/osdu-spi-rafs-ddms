@@ -82,11 +82,17 @@ redis-containerize:
     LATEST_IMAGE: ${CI_PROJECT_NAME}-redis-${CI_COMMIT_REF_SLUG}:latest
     RELEASE_IMAGE: release-${CI_COMMIT_TAG}:${CI_PROJECT_NAME}-redis-${CI_COMMIT_TAG}
   script:
-    - apk add crane
     - !reference [.get_version, script]
-    - crane copy ${REDIS_IMAGE_VERSION} $CI_REGISTRY_IMAGE/$SHA_IMAGE
-    - crane copy ${REDIS_IMAGE_VERSION} $CI_REGISTRY_IMAGE/$LATEST_IMAGE
+    - |
+      docker buildx build --push --provenance=false \
+      -f ./devops/osdu/redis/Dockerfile \
+      -t $CI_REGISTRY_IMAGE/$SHA_IMAGE \
+      -t $CI_REGISTRY_IMAGE/$LATEST_IMAGE \
+      ./devops/osdu/redis/
     - |
       if [ ! -z "$CI_COMMIT_TAG" ]; then
-        crane copy ${REDIS_IMAGE_VERSION} $CI_REGISTRY_IMAGE/$RELEASE_IMAGE
+        docker buildx build --push --provenance=false \
+        -f ./devops/osdu/redis/Dockerfile \
+        -t $CI_REGISTRY_IMAGE/$RELEASE_IMAGE \
+        ./devops/osdu/redis/
       fi
