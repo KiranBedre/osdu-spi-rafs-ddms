@@ -44,132 +44,133 @@
     ],
     "data": [
         [
-            "{data_partition_id}:work-product-component--SamplesAnalysis:StockTankOilV110:",
-            "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
-            [
-                {
-                    "kind": "Unit",
-                    "name": "degree Fahrenheit",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:degF:",
-                    "propertyNames": [
-                        "Stock Tank Temperature "
-                    ]
-                }
-            ],
-            "{data_partition_id}:reference-data--SampleTestCondition:CurrentReservoir:",
-            "{data_partition_id}:reference-data--FluidPhasesPresent:Wellstream:",
-            8.0,
-            5.0,
-            5.0,
-            [
-                {
-                    "Value": 8,
-                    "Temperature": 2
-                },
-                {
-                    "Value": 4,
-                    "Temperature": 8
-                },
-                {
-                    "Value": 10,
-                    "Temperature": 7
-                },
-                {
-                    "Value": 6,
-                    "Temperature": 7
-                },
-                {
-                    "Value": 1,
-                    "Temperature": 5
-                },
-                {
-                    "Value": 2,
-                    "Temperature": 2
-                },
-                {
-                    "Value": 4,
-                    "Temperature": 9
-                }
-            ],
-            9.0,
-            4.0,
-            10.0,
-            2.0,
-            9.0,
-            6.0,
-            10.0,
-            1.0,
-            4.0,
-            8.0,
-            8.0,
-            2.0,
-            1.0,
-            8.0,
-            2.0,
-            9.0,
-            3.0,
-            6.0,
-            5.0,
-            10.0,
-            6.0,
-            9.0,
-            [
-                {
-                    "DynamicViscosity": 3,
-                    "Temperature": 8
-                },
-                {
-                    "DynamicViscosity": 5,
-                    "Temperature": 8
-                },
-                {
-                    "DynamicViscosity": 10,
-                    "Temperature": 4
-                },
-                {
-                    "DynamicViscosity": 6,
-                    "Temperature": 4
-                },
-                {
-                    "DynamicViscosity": 3,
-                    "Temperature": 6
-                },
-                {
-                    "DynamicViscosity": 8,
-                    "Temperature": 4
-                }
-            ],
-            [
-                {
-                    "ElementID": "{data_partition_id}:reference-data--Elements:S:",
-                    "Value": 2,
-                    "ElementalAnalysisMethodID": "{data_partition_id}:reference-data--ElementalAnalysisMethod:XRF:"
-                },
-                {
-                    "ElementID": "{data_partition_id}:reference-data--Elements:S:",
-                    "Value": 9,
-                    "ElementalAnalysisMethodID": "{data_partition_id}:reference-data--ElementalAnalysisMethod:XRF:"
-                },
-                {
-                    "ElementID": "{data_partition_id}:reference-data--Elements:S:",
-                    "Value": 4,
-                    "ElementalAnalysisMethodID": "{data_partition_id}:reference-data--ElementalAnalysisMethod:XRF:"
-                }
-            ],
-            [
-                "{data_partition_id}:work-product-component--SamplesAnalysis:{fractionation_record_id}:"
-            ],
-            9.0,
-            6.0,
-            4.0,
-            [
-                {
-                    "RemarkSequenceNumber": 1,
-                    "Remark": "Sample showed good inhibition with the water-based mud system.",
-                    "RemarkSource": "Lab Technician A",
-                    "RemarkDate": "2025-01-15"
-                }
+      "{data_partition_id}:work-product-component--SamplesAnalysis:StockTankOilV110:",
+      "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+    [
+      {
+        "kind": "Unit",
+        "name": "degree Fahrenheit",
+        "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:degF:",
+        "propertyNames": [
+          "Stock Tank Temperature "
+        ]
+      }
+    ],
+    "{data_partition_id}:reference-data--SampleTestCondition:CurrentReservoir:",
+    "{data_partition_id}:reference-data--FluidPhasesPresent:Wellstream:",
+    8,
+    5,
+    5,
+    [
+      {
+        "Value": 8,
+        "Temperature": 2
+      },
+      {
+        "Value": 4,
+        "Temperature": 8
+      },
+      {
+        "Value": 10,
+        "Temperature": 7
+      },
+      {
+        "Value": 6,
+        "Temperature": 7
+      },
+      {
+        "Value": 1,
+        "Temperature": 5
+      },
+      {
+        "Value": 2,
+        "Temperature": 2
+      },
+      {
+        "Value": 4,
+        "Temperature": 9
+      }
+    ],
+    9,
+    4,
+    10,
+    2,
+    9,
+    6,
+    10,
+    1,
+    4,
+    8,
+    8,
+    2,
+    1,
+    8,
+    2,
+    9,
+    3,
+    6,
+    5,
+    10,
+    6,
+    9,
+    [
+      {
+        "DynamicViscosity": 3,
+        "Temperature": 8
+      },
+      {
+        "DynamicViscosity": 5,
+        "Temperature": 8
+      },
+      {
+        "DynamicViscosity": 10,
+        "Temperature": 4
+      },
+      {
+        "DynamicViscosity": 6,
+        "Temperature": 4
+      },
+      {
+        "DynamicViscosity": 3,
+        "Temperature": 6
+      },
+      {
+        "DynamicViscosity": 8,
+        "Temperature": 4
+      }
+    ],
+    [
+      {
+        "ElementID": "{data_partition_id}:reference-data--Elements:S:",
+        "Value": 2,
+        "ElementalAnalysisMethodID": "{data_partition_id}:reference-data--ElementalAnalysisMethod:XRF:"
+      },
+      {
+        "ElementID": "{data_partition_id}:reference-data--Elements:S:",
+        "Value": 9,
+        "ElementalAnalysisMethodID": "{data_partition_id}:reference-data--ElementalAnalysisMethod:XRF:"
+      },
+      {
+        "ElementID": "{data_partition_id}:reference-data--Elements:S:",
+        "Value": 4,
+        "ElementalAnalysisMethodID": "{data_partition_id}:reference-data--ElementalAnalysisMethod:XRF:"
+      }
+    ],
+    [
+      "{data_partition_id}:work-product-component--SamplesAnalysis:{fractionation_record_id}:"
+    ],
+    9,
+    6,
+    4,
+    [
+      {
+        "RemarkSequenceNumber": 1,
+        "Remark": "Sample showed good inhibition with the water-based mud system.",
+        "RemarkSource": "Lab Technician A",
+        "RemarkDate": "2025-01-15"
+      }
+    ]
+
             ]
         ]
-    ]
 }

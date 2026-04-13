@@ -1,402 +1,402 @@
 {
-    "columns": [
-        "SamplesAnalysisID",
-        "SampleID",
-        "Meta",
-        "TestNumber",
-        "TestTemperature",
-        "Remarks",
-        "SlimTubeSpecification",
-        "InjectedGasID",
-        "InjectedGas",
-        "MinimumMiscibilityPressure",
-        "CalculatedProperties",
-        "SlimTubeTestSteps"
-    ],
-    "index": [
-        0
-    ],
-    "data": [
-        [
-            "{data_partition_id}:work-product-component--SamplesAnalysis:SlimTubeTestV200:",
-            "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
-            [
-                {
-                    "kind": "Unit",
-                    "name": "degC",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:degC:",
-                    "propertyNames": [
-                        "TestTemperature",
-                        "SlimTubeTestSteps[*].StepAverageTemperature",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].SeparatorTemperature"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "metre",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:cm:",
-                    "propertyNames": [
-                        "SlimTubeSpecification[*].ColumnLength",
-                        "SlimTubeSpecification[*].ColumnOuterDiameter",
-                        "SlimTubeSpecification[*].ColumnInnerDiameter"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "percent",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:%25:",
-                    "propertyNames": [
-                        "SlimTubeSpecification[*].ColumnPorosity"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "millidarcy",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:mD:",
-                    "propertyNames": [
-                        "SlimTubeSpecification[*].ColumnPermeability"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "cubic centimetre",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:cm3:",
-                    "propertyNames": [
-                        "SlimTubeSpecification[*].ColumnTotalPoreVolume",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeOilProductionAtStockTankConditions",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeGasProductionAtStockTankConditions"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "cubic metre per cubic metre",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:m3%2Fm3:",
-                    "propertyNames": [
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InjectedPoreVolumeFraction",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeOilProductionPercOOIP",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalProducedGOR",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeProducedGOR"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "API gravity unit",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:dAPI:",
-                    "propertyNames": [
-                        "CalculatedProperties[*].ResidueAPI",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeLiquidCompositionalAnalysis[*].APIGravity",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalLiquidCompositionalAnalysis[*].APIGravity",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InstantaneousLiquidCompositionalAnalysis[*].APIGravity"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "gram per cubic centimetre",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:g%2Fcm3:",
-                    "propertyNames": [
-                        "CalculatedProperties[*].ResidueDensity",
-                        "CalculatedProperties[*].ResidueCalculatedProperties[*].ResidueDensity",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeLiquidCompositionalAnalysis[*].LiquidSpecificGravity",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalLiquidCompositionalAnalysis[*].LiquidSpecificGravity",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InstantaneousLiquidCompositionalAnalysis[*].LiquidSpecificGravity"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "metre per second",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:m%2Fs:",
-                    "propertyNames": [
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].DarcyVelocity"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "pound-force per square inch",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:psi:",
-                    "propertyNames": [
-                        "MinimumMiscibilityPressure",
-                        "SlimTubeTestSteps[*].StepAveragePressure",
-                        "SlimTubeTestSteps[*].StepBackPressure",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].DifferentialPressure",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].SeparatorPressure"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "percent [mass basis]",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:%25%5Bmass%5D:",
-                    "propertyNames": [
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].WeightPercentRecovered"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "gram",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:g:",
-                    "propertyNames": [
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfReservoirOilInSlimTube",
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfReservoirOilInConnectingLines",
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfReservoirOil",
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfGasSolvent",
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].MassTotalInjected",
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfEffluentStockTankOilBeforeBlowDown",
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfProducedEffluentGasBeforeBlowDown",
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfEffluentStockTankOilAfterBlowDown",
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfProducedEffluentGasAfterBlowDown",
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfResidualOil",
-                        "SlimTubeTestSteps[*].MaterialBalanceData[*].MassTotalRecovered"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "gram per mole",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:g%2Fmol:",
-                    "propertyNames": [
-                        "CalculatedProperties[*].AvgMoleWeight",
-                        "CalculatedProperties[*].ResidueCalculatedProperties[*].ResidueMolecularWeight",
-                        "InjectedGas[*].VaporMolecularWeight",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeVaporCompositionalAnalysis[*].VaporMolecularWeight",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalVaporCompositionalAnalysis[*].VaporMolecularWeight",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InstantaneousVaporCompositionalAnalysis[*].VaporMolecularWeight",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeLiquidCompositionalAnalysis[*].LiquidMolecularWeight",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalLiquidCompositionalAnalysis[*].LiquidMolecularWeight",
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InstantaneousLiquidCompositionalAnalysis[*].LiquidMolecularWeight"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "second",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:s:",
-                    "propertyNames": [
-                        "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].RunTime"
-                    ]
-                }
-            ],
-            "STT-2026-001",
-            60.0,
+  "columns":[
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta",
+    "TestNumber",
+    "TestTemperature",
+    "Remarks",
+    "SlimTubeSpecification",
+    "InjectedGasID",
+    "InjectedGas",
+    "MinimumMiscibilityPressure",
+    "CalculatedProperties",
+    "SlimTubeTestSteps"
+  ],
+  "index":[
+    0
+  ],
+  "data":[
+    [
+      "{data_partition_id}:work-product-component--SamplesAnalysis:SlimTubeTestV200:",
+      "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+      [
+        {
+          "kind":"Unit",
+          "name":"degC",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:degC:",
+          "propertyNames":[
+            "TestTemperature",
+            "SlimTubeTestSteps[*].StepAverageTemperature",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].SeparatorTemperature"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"metre",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:cm:",
+          "propertyNames":[
+            "SlimTubeSpecification[*].ColumnLength",
+            "SlimTubeSpecification[*].ColumnOuterDiameter",
+            "SlimTubeSpecification[*].ColumnInnerDiameter"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"percent",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:%25:",
+          "propertyNames":[
+            "SlimTubeSpecification[*].ColumnPorosity"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"millidarcy",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:mD:",
+          "propertyNames":[
+            "SlimTubeSpecification[*].ColumnPermeability"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"cubic centimetre",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:cm3:",
+          "propertyNames":[
+            "SlimTubeSpecification[*].ColumnTotalPoreVolume",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeOilProductionAtStockTankConditions",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeGasProductionAtStockTankConditions"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"cubic metre per cubic metre",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:m3%2Fm3:",
+          "propertyNames":[
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InjectedPoreVolumeFraction",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeOilProductionPercOOIP",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalProducedGOR",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeProducedGOR"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"API gravity unit",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:dAPI:",
+          "propertyNames":[
+            "CalculatedProperties[*].ResidueAPI",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeLiquidCompositionalAnalysis[*].APIGravity",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalLiquidCompositionalAnalysis[*].APIGravity",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InstantaneousLiquidCompositionalAnalysis[*].APIGravity"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"gram per cubic centimetre",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:g%2Fcm3:",
+          "propertyNames":[
+            "CalculatedProperties[*].ResidueDensity",
+            "CalculatedProperties[*].ResidueCalculatedProperties[*].ResidueDensity",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeLiquidCompositionalAnalysis[*].LiquidSpecificGravity",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalLiquidCompositionalAnalysis[*].LiquidSpecificGravity",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InstantaneousLiquidCompositionalAnalysis[*].LiquidSpecificGravity"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"metre per second",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:m%2Fs:",
+          "propertyNames":[
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].DarcyVelocity"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"pound-force per square inch",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:psi:",
+          "propertyNames":[
+            "MinimumMiscibilityPressure",
+            "SlimTubeTestSteps[*].StepAveragePressure",
+            "SlimTubeTestSteps[*].StepBackPressure",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].DifferentialPressure",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].SeparatorPressure"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"percent [mass basis]",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:%25%5Bmass%5D:",
+          "propertyNames":[
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].WeightPercentRecovered"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"gram",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:g:",
+          "propertyNames":[
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfReservoirOilInSlimTube",
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfReservoirOilInConnectingLines",
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfReservoirOil",
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfGasSolvent",
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].MassTotalInjected",
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfEffluentStockTankOilBeforeBlowDown",
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfProducedEffluentGasBeforeBlowDown",
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfEffluentStockTankOilAfterBlowDown",
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfProducedEffluentGasAfterBlowDown",
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].MassOfResidualOil",
+            "SlimTubeTestSteps[*].MaterialBalanceData[*].MassTotalRecovered"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"gram per mole",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:g%2Fmol:",
+          "propertyNames":[
+            "CalculatedProperties[*].AvgMoleWeight",
+            "CalculatedProperties[*].ResidueCalculatedProperties[*].ResidueMolecularWeight",
+            "InjectedGas[*].VaporMolecularWeight",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeVaporCompositionalAnalysis[*].VaporMolecularWeight",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalVaporCompositionalAnalysis[*].VaporMolecularWeight",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InstantaneousVaporCompositionalAnalysis[*].VaporMolecularWeight",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].CumulativeLiquidCompositionalAnalysis[*].LiquidMolecularWeight",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].IncrementalLiquidCompositionalAnalysis[*].LiquidMolecularWeight",
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].InstantaneousLiquidCompositionalAnalysis[*].LiquidMolecularWeight"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"second",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:s:",
+          "propertyNames":[
+            "SlimTubeTestSteps[*].SlimTubeTestVolumeSteps[*].RunTime"
+          ]
+        }
+      ],
+      "STT-2026-001",
+      60,
+      {
+        "RemarkSequenceNumber":1,
+        "Remark":"Test performed at constant temperature. All equipment calibrated.",
+        "RemarkSource":"Lab Technician A",
+        "RemarkDate":"2026-02-25"
+      },
+      [
+        {
+          "ColumnLength":1200,
+          "PackingMaterial":"sand",
+          "ColumnPorosity":0.35,
+          "ColumnTotalPoreVolume":350,
+          "ColumnPermeability":2.5,
+          "ColumnPermeabilityMeasurementMethodID":"{data_partition_id}:reference-data--PermeabilityMeasurementMethod:Gas:",
+          "ColumnPermeabilityFluidTypeID":"{data_partition_id}:reference-data--SampleInjectionFluidType:CO2:",
+          "ColumnOuterDiameter":2.54,
+          "ColumnInnerDiameter":2,
+          "ColumnFlowCrossSectionalArea":3.14
+        }
+      ],
+      "{data_partition_id}:master-data--Sample:CO2:",
+      [
+        {
+          "VaporSpecificGravity":1.52,
+          "VaporMolecularWeight":43.69,
+          "VaporComposition":[
             {
-                "RemarkSequenceNumber": 1,
-                "Remark": "Test performed at constant temperature. All equipment calibrated.",
-                "RemarkSource": "Lab Technician A",
-                "RemarkDate": "2026-02-25"
+              "ComponentNameID":"{data_partition_id}:reference-data--SampleOrganicCompositionComponent:CO2:",
+              "MolecularWeight":44.01,
+              "RelativeMole":0.98,
+              "RelativeMass":0.99,
+              "RelativeVolume":0.975,
+              "SpecificGravity":1.52
             },
-            [
+            {
+              "ComponentNameID":"{data_partition_id}:reference-data--SampleOrganicCompositionComponent:N2:",
+              "MolecularWeight":28.01,
+              "RelativeMole":0.02,
+              "RelativeMass":0.01,
+              "RelativeVolume":0.025,
+              "SpecificGravity":0.97
+            }
+          ]
+        }
+      ],
+      1800,
+      [
+        {
+          "AvgMoleWeight":42.5,
+          "ResidueDensity":0.85,
+          "ResidueAPI":32,
+          "ResidueCalculatedProperties":[
+            {
+              "ComponentNameID":"{data_partition_id}:reference-data--SampleOrganicCompositionComponent:C7:",
+              "ResidueRelativeMolarWeight":1.2,
+              "ResidueMolecularWeight":200,
+              "ResidueDensity":0.92
+            }
+          ]
+        }
+      ],
+      [
+        {
+          "StepNumber":1,
+          "StepAveragePressure":1800,
+          "StepAverageTemperature":60,
+          "StepBackPressure":1795,
+          "Remarks":{
+            "RemarkSequenceNumber":1,
+            "Remark":"Initial step, pressure ramped up.",
+            "RemarkSource":"Lab Technician A",
+            "RemarkDate":"2026-02-25"
+          },
+          "SlimTubeTestVolumeSteps":[
+            {
+              "StepNumber":1,
+              "DifferentialPressure":5,
+              "RunTime":10,
+              "InjectionVolumeAtTestTemperature":50,
+              "InjectionVolumeAtPumpTemperature":49.5,
+              "InjectedPoreVolumeFraction":0.14,
+              "DarcyVelocity":0.02,
+              "CumulativeOilProductionPercOOIP":10,
+              "CumulativeOilProductionAtStockTankConditions":5,
+              "CumulativeGasProductionAtStockTankConditions":1,
+              "IncrementalProducedGOR":0.2,
+              "CumulativeProducedGOR":0.2,
+              "Remarks":{
+                "RemarkSequenceNumber":1,
+                "Remark":"No anomalies detected.",
+                "RemarkSource":"Lab Technician A",
+                "RemarkDate":"2026-02-25"
+              },
+              "CumulativeVaporCompositionalAnalysis":[
                 {
-                    "ColumnLength": 1200,
-                    "PackingMaterial": "sand",
-                    "ColumnPorosity": 0.35,
-                    "ColumnTotalPoreVolume": 350,
-                    "ColumnPermeability": 2.5,
-                    "ColumnPermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:Gas:",
-                    "ColumnPermeabilityFluidTypeID": "{data_partition_id}:reference-data--SampleInjectionFluidType:CO2:",
-                    "ColumnOuterDiameter": 2.54,
-                    "ColumnInnerDiameter": 2,
-                    "ColumnFlowCrossSectionalArea": 3.14
+                  "VaporSpecificGravity":1.1,
+                  "VaporMolecularWeight":44,
+                  "VaporComposition":[
+                    {
+                      "ComponentNameID":"{data_partition_id}:reference-data--SampleOrganicCompositionComponent:CO2:",
+                      "MolecularWeight":44.01,
+                      "RelativeMole":0.98,
+                      "RelativeMass":0.99,
+                      "RelativeVolume":0.97,
+                      "SpecificGravity":1.52
+                    }
+                  ]
                 }
-            ],
-            "{data_partition_id}:master-data--Sample:CO2:",
-            [
+              ],
+              "CumulativeLiquidCompositionalAnalysis":[
                 {
-                    "VaporSpecificGravity": 1.52,
-                    "VaporMolecularWeight": 43.69,
-                    "VaporComposition": [
-                        {
-                            "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:CO2:",
-                            "MolecularWeight": 44.01,
-                            "RelativeMole": 0.98,
-                            "RelativeMass": 0.99,
-                            "RelativeVolume": 0.975,
-                            "SpecificGravity": 1.52
-                        },
-                        {
-                            "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:N2:",
-                            "MolecularWeight": 28.01,
-                            "RelativeMole": 0.02,
-                            "RelativeMass": 0.01,
-                            "RelativeVolume": 0.025,
-                            "SpecificGravity": 0.97
-                        }
-                    ]
+                  "LiquidSpecificGravity":0.85,
+                  "LiquidMolecularWeight":200,
+                  "APIGravity":32,
+                  "LiquidComposition":[
+                    {
+                      "ComponentNameID":"{data_partition_id}:reference-data--SampleOrganicCompositionComponent:C7:",
+                      "MolecularWeight":200,
+                      "MolePercent":80,
+                      "MassPercent":85,
+                      "VolumePercent":75,
+                      "SpecificGravity":0.92,
+                      "MoleFraction":0.8,
+                      "MassFraction":0.85,
+                      "VolumeFraction":0.75
+                    }
+                  ]
                 }
-            ],
-            1800.0,
-            [
+              ],
+              "IncrementalVaporCompositionalAnalysis":[
                 {
-                    "AvgMoleWeight": 42.5,
-                    "ResidueDensity": 0.85,
-                    "ResidueAPI": 32,
-                    "ResidueCalculatedProperties": [
-                        {
-                            "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:C7:",
-                            "ResidueRelativeMolarWeight": 1.2,
-                            "ResidueMolecularWeight": 200,
-                            "ResidueDensity": 0.92
-                        }
-                    ]
+                  "VaporSpecificGravity":1.1,
+                  "VaporMolecularWeight":44,
+                  "VaporComposition":[
+                    {
+                      "ComponentNameID":"{data_partition_id}:reference-data--SampleOrganicCompositionComponent:CO2:",
+                      "MolecularWeight":44.01,
+                      "RelativeMole":0.98,
+                      "RelativeMass":0.99,
+                      "RelativeVolume":0.97,
+                      "SpecificGravity":1.52
+                    }
+                  ]
                 }
-            ],
-            [
+              ],
+              "IncrementalLiquidCompositionalAnalysis":[
                 {
-                    "StepNumber": 1,
-                    "StepAveragePressure": 1800,
-                    "StepAverageTemperature": 60,
-                    "StepBackPressure": 1795,
-                    "Remarks": {
-                        "RemarkSequenceNumber": 1,
-                        "Remark": "Initial step, pressure ramped up.",
-                        "RemarkSource": "Lab Technician A",
-                        "RemarkDate": "2026-02-25"
-                    },
-                    "SlimTubeTestVolumeSteps": [
-                        {
-                            "StepNumber": 1,
-                            "DifferentialPressure": 5,
-                            "RunTime": 10,
-                            "InjectionVolumeAtTestTemperature": 50,
-                            "InjectionVolumeAtPumpTemperature": 49.5,
-                            "InjectedPoreVolumeFraction": 0.14,
-                            "DarcyVelocity": 0.02,
-                            "CumulativeOilProductionPercOOIP": 10,
-                            "CumulativeOilProductionAtStockTankConditions": 5,
-                            "CumulativeGasProductionAtStockTankConditions": 1,
-                            "IncrementalProducedGOR": 0.2,
-                            "CumulativeProducedGOR": 0.2,
-                            "Remarks": {
-                                "RemarkSequenceNumber": 1,
-                                "Remark": "No anomalies detected.",
-                                "RemarkSource": "Lab Technician A",
-                                "RemarkDate": "2026-02-25"
-                            },
-                            "CumulativeVaporCompositionalAnalysis": [
-                                {
-                                    "VaporSpecificGravity": 1.1,
-                                    "VaporMolecularWeight": 44,
-                                    "VaporComposition": [
-                                        {
-                                            "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:CO2:",
-                                            "MolecularWeight": 44.01,
-                                            "RelativeMole": 0.98,
-                                            "RelativeMass": 0.99,
-                                            "RelativeVolume": 0.97,
-                                            "SpecificGravity": 1.52
-                                        }
-                                    ]
-                                }
-                            ],
-                            "CumulativeLiquidCompositionalAnalysis": [
-                                {
-                                    "LiquidSpecificGravity": 0.85,
-                                    "LiquidMolecularWeight": 200,
-                                    "APIGravity": 32,
-                                    "LiquidComposition": [
-                                        {
-                                            "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:C7:",
-                                            "MolecularWeight": 200,
-                                            "MolePercent": 80,
-                                            "MassPercent": 85,
-                                            "VolumePercent": 75,
-                                            "SpecificGravity": 0.92,
-                                            "MoleFraction": 0.8,
-                                            "MassFraction": 0.85,
-                                            "VolumeFraction": 0.75
-                                        }
-                                    ]
-                                }
-                            ],
-                            "IncrementalVaporCompositionalAnalysis": [
-                                {
-                                    "VaporSpecificGravity": 1.1,
-                                    "VaporMolecularWeight": 44,
-                                    "VaporComposition": [
-                                        {
-                                            "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:CO2:",
-                                            "MolecularWeight": 44.01,
-                                            "RelativeMole": 0.98,
-                                            "RelativeMass": 0.99,
-                                            "RelativeVolume": 0.97,
-                                            "SpecificGravity": 1.52
-                                        }
-                                    ]
-                                }
-                            ],
-                            "IncrementalLiquidCompositionalAnalysis": [
-                                {
-                                    "LiquidSpecificGravity": 0.85,
-                                    "LiquidMolecularWeight": 200,
-                                    "APIGravity": 32,
-                                    "LiquidComposition": [
-                                        {
-                                            "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:C7:",
-                                            "MolecularWeight": 200,
-                                            "MolePercent": 80,
-                                            "MassPercent": 85,
-                                            "VolumePercent": 75,
-                                            "SpecificGravity": 0.92,
-                                            "MoleFraction": 0.8,
-                                            "MassFraction": 0.85,
-                                            "VolumeFraction": 0.75
-                                        }
-                                    ]
-                                }
-                            ],
-                            "InstantaneousVaporCompositionalAnalysis": [
-                                {
-                                    "VaporSpecificGravity": 1.1,
-                                    "VaporMolecularWeight": 44,
-                                    "VaporComposition": [
-                                        {
-                                            "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:CO2:",
-                                            "MolecularWeight": 44.01,
-                                            "RelativeMole": 0.98,
-                                            "RelativeMass": 0.99,
-                                            "RelativeVolume": 0.97,
-                                            "SpecificGravity": 1.52
-                                        }
-                                    ]
-                                }
-                            ],
-                            "InstantaneousLiquidCompositionalAnalysis": [
-                                {
-                                    "LiquidSpecificGravity": 0.85,
-                                    "LiquidMolecularWeight": 200,
-                                    "APIGravity": 32,
-                                    "LiquidComposition": [
-                                        {
-                                            "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:C7:",
-                                            "MolecularWeight": 200,
-                                            "MolePercent": 80,
-                                            "MassPercent": 85,
-                                            "VolumePercent": 75,
-                                            "SpecificGravity": 0.92,
-                                            "MoleFraction": 0.8,
-                                            "MassFraction": 0.85,
-                                            "VolumeFraction": 0.75
-                                        }
-                                    ]
-                                }
-                            ],
-                            "SeparatorTemperature": 60,
-                            "SeparatorPressure": 1795
-                        }
-                    ],
-                    "MaterialBalanceData": [
-                        {
-                            "MassOfReservoirOilInSlimTube": 100,
-                            "MassOfReservoirOilInConnectingLines": 5,
-                            "MassOfReservoirOil": 105,
-                            "MassOfGasSolvent": 50,
-                            "MassTotalInjected": 155,
-                            "MassOfEffluentStockTankOilBeforeBlowDown": 80,
-                            "MassOfProducedEffluentGasBeforeBlowDown": 40,
-                            "MassOfEffluentStockTankOilAfterBlowDown": 75,
-                            "MassOfProducedEffluentGasAfterBlowDown": 45,
-                            "MassOfResidualOil": 10,
-                            "MassTotalRecovered": 130,
-                            "WeightPercentRecovered": 83.9
-                        }
-                    ]
+                  "LiquidSpecificGravity":0.85,
+                  "LiquidMolecularWeight":200,
+                  "APIGravity":32,
+                  "LiquidComposition":[
+                    {
+                      "ComponentNameID":"{data_partition_id}:reference-data--SampleOrganicCompositionComponent:C7:",
+                      "MolecularWeight":200,
+                      "MolePercent":80,
+                      "MassPercent":85,
+                      "VolumePercent":75,
+                      "SpecificGravity":0.92,
+                      "MoleFraction":0.8,
+                      "MassFraction":0.85,
+                      "VolumeFraction":0.75
+                    }
+                  ]
                 }
-            ]
-        ]
+              ],
+              "InstantaneousVaporCompositionalAnalysis":[
+                {
+                  "VaporSpecificGravity":1.1,
+                  "VaporMolecularWeight":44,
+                  "VaporComposition":[
+                    {
+                      "ComponentNameID":"{data_partition_id}:reference-data--SampleOrganicCompositionComponent:CO2:",
+                      "MolecularWeight":44.01,
+                      "RelativeMole":0.98,
+                      "RelativeMass":0.99,
+                      "RelativeVolume":0.97,
+                      "SpecificGravity":1.52
+                    }
+                  ]
+                }
+              ],
+              "InstantaneousLiquidCompositionalAnalysis":[
+                {
+                  "LiquidSpecificGravity":0.85,
+                  "LiquidMolecularWeight":200,
+                  "APIGravity":32,
+                  "LiquidComposition":[
+                    {
+                      "ComponentNameID":"{data_partition_id}:reference-data--SampleOrganicCompositionComponent:C7:",
+                      "MolecularWeight":200,
+                      "MolePercent":80,
+                      "MassPercent":85,
+                      "VolumePercent":75,
+                      "SpecificGravity":0.92,
+                      "MoleFraction":0.8,
+                      "MassFraction":0.85,
+                      "VolumeFraction":0.75
+                    }
+                  ]
+                }
+              ],
+              "SeparatorTemperature":60,
+              "SeparatorPressure":1795
+            }
+          ],
+          "MaterialBalanceData":[
+            {
+              "MassOfReservoirOilInSlimTube":100,
+              "MassOfReservoirOilInConnectingLines":5,
+              "MassOfReservoirOil":105,
+              "MassOfGasSolvent":50,
+              "MassTotalInjected":155,
+              "MassOfEffluentStockTankOilBeforeBlowDown":80,
+              "MassOfProducedEffluentGasBeforeBlowDown":40,
+              "MassOfEffluentStockTankOilAfterBlowDown":75,
+              "MassOfProducedEffluentGasAfterBlowDown":45,
+              "MassOfResidualOil":10,
+              "MassTotalRecovered":130,
+              "WeightPercentRecovered":83.9
+            }
+          ]
+        }
+      ]
     ]
+  ]
 }

@@ -38,8 +38,8 @@
                 }
             ],
             "Test_007",
-            1626.0,
-            100.0,
+            1626,
+            100,
             [
                 {
                     "ComponentNameID": "{data_partition_id}:reference-data--SampleOrganicCompositionComponent:H2O:",
@@ -110,20 +110,20 @@
                 }
             ],
             {
-                "ContaminationCorrectionStatus": "Status",
-                "ContaminantID": "{data_partition_id}:master-data--Sample:Example_Sample:",
-                "ReferenceFluid": "Fluid ID",
-                "WeightFraction": 1,
-                "VolumeFraction": 1.23,
-                "MoleFraction": 3.16
+                    "ContaminationCorrectionStatus": "Status",
+                    "ContaminantID": "{data_partition_id}:master-data--Sample:Example_Sample:",
+                    "ReferenceFluid": "Fluid ID",
+                    "WeightFraction": 1,
+                    "VolumeFraction": 1.23,
+                    "MoleFraction": 3.16
             },
-            1.0,
-            1.0,
-            1.0,
-            1.0,
-            1.0,
-            1.0,
-            1.0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
             [
                 {
                     "RemarkSequenceNumber": 1,
