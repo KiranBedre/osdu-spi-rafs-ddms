@@ -37,11 +37,16 @@ class GenericTypesView(object):
         self._router = router
         self._prepare_types_route()
 
-    async def get_types(self) -> JSONResponse:
-        analysis_types_versions_map = {
-            path.strip("/").split("/")[-1]: list(versions.keys())
-            for path, versions in ALL_PATHS_TO_DATA_MODEL.items()
-        }
+    async def get_types(
+        self,
+        entitlements_service: entitlements.EntitlementsService = Depends(get_async_entitlements_service),
+    ) -> JSONResponse:
+        await entitlements_service.get_groups()
+
+        analysis_types_versions_map = {}
+        for path, versions in ALL_PATHS_TO_DATA_MODEL.items():
+            analysis_type = path.strip("/").split("/")[-1]
+            analysis_types_versions_map[analysis_type] = list(versions.keys())
         return JSONResponse(content=analysis_types_versions_map)
 
     def _prepare_types_route(self) -> None:
@@ -52,7 +57,7 @@ class GenericTypesView(object):
             methods=["GET"],
             status_code=status.HTTP_200_OK,
             response_model=Dict[str, list],
-            description="Get available types.",
+            description=APIDescriptionHelper.append_joined_roles("Get available types."),
         )
 
 
@@ -127,6 +132,7 @@ class GenericSchemasView(object):
                 content_schema_version,
                 entitlements_service,
             )
+
         return get_content_schema
 
 
@@ -137,4 +143,5 @@ def infer_content_type_from_url(request: Request) -> str:
 def build_extractor_for_param_name(param_name: str) -> Callable:
     def extract_param(request: Request) -> str:  # noqa: WPS430
         return request.path_params.get(param_name)
+
     return extract_param
