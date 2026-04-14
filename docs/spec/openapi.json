@@ -3791,7 +3791,7 @@
     },
     "/api/rafs-ddms/v2/samplesanalysis/analysistypes": {
       "get": {
-        "description": "Get available types.",
+        "description": "Get available types.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "get_types_api_rafs_ddms_v2_samplesanalysis_analysistypes_get",
         "parameters": [
           {
@@ -3838,6 +3838,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Get Types",
         "tags": [
           "samplesanalysis"
