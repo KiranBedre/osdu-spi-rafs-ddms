@@ -173,7 +173,7 @@
         }
       ],
       "STT-2026-001",
-      60,
+      60.0,
       {
         "RemarkSequenceNumber":1,
         "Remark":"Test performed at constant temperature. All equipment calibrated.",
@@ -219,7 +219,7 @@
           ]
         }
       ],
-      1800,
+      1800.0,
       [
         {
           "AvgMoleWeight":42.5,

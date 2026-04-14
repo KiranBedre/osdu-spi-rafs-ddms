@@ -1,0 +1,156 @@
+{
+  "routinecoreanalysis": [
+    "1.0.0"
+  ],
+  "constantcompositionexpansion": [
+    "1.0.0"
+  ],
+  "differentialliberation": [
+    "1.0.0"
+  ],
+  "transport": [
+    "1.0.0"
+  ],
+  "compositionalanalysis": [
+    "1.0.0",
+    "1.1.0"
+  ],
+  "atmosphericflash": [
+    "1.0.0",
+    "1.1.0"
+  ],
+  "multistageseparator": [
+    "1.0.0"
+  ],
+  "swelling": [
+    "1.0.0"
+  ],
+  "constantvolumedepletion": [
+    "1.0.0"
+  ],
+  "wateranalysis": [
+    "1.0.0"
+  ],
+  "interfacialtension": [
+    "1.0.0"
+  ],
+  "vaporliquidequilibrium": [
+    "1.0.0",
+    "2.0.0"
+  ],
+  "multiplecontactmiscibility": [
+    "1.0.0"
+  ],
+  "slimtube": [
+    "1.0.0",
+    "2.0.0"
+  ],
+  "extraction": [
+    "1.0.0"
+  ],
+  "fractionation": [
+    "1.0.0"
+  ],
+  "relativepermeability": [
+    "1.0.0"
+  ],
+  "rockcompressibility": [
+    "1.0.0"
+  ],
+  "electricalproperties": [
+    "1.0.0"
+  ],
+  "nmr": [
+    "1.0.0"
+  ],
+  "multiplesalinitytests": [
+    "1.0.0"
+  ],
+  "gcmsalkanes": [
+    "1.0.0"
+  ],
+  "gcmsaromatics": [
+    "1.0.0"
+  ],
+  "gcmsratios": [
+    "1.0.0"
+  ],
+  "gaschromatographyanalyses": [
+    "1.0.0"
+  ],
+  "gascompositionanalyses": [
+    "1.0.0"
+  ],
+  "isotopes": [
+    "1.0.0"
+  ],
+  "bulkpyrolysisanalyses": [
+    "1.0.0"
+  ],
+  "coregamma": [
+    "1.0.0"
+  ],
+  "uniaxial": [
+    "1.0.0"
+  ],
+  "gcmsms": [
+    "1.0.0"
+  ],
+  "cec": [
+    "1.0.0"
+  ],
+  "triaxial": [
+    "1.0.0"
+  ],
+  "capillarypressure": [
+    "1.0.0"
+  ],
+  "capillarysuctiontime": [
+    "1.0.0"
+  ],
+  "wettabilityindex": [
+    "1.0.0"
+  ],
+  "tec": [
+    "1.0.0"
+  ],
+  "edsmapping": [
+    "1.0.0"
+  ],
+  "xrf": [
+    "1.0.0",
+    "1.1.0"
+  ],
+  "tensilestrength": [
+    "1.0.0"
+  ],
+  "vitrinitereflectance": [
+    "1.0.0"
+  ],
+  "xrd": [
+    "1.0.0",
+    "1.1.0"
+  ],
+  "pdp": [
+    "1.0.0"
+  ],
+  "stocktankoilanalysis": [
+    "1.0.0",
+    "1.1.0"
+  ],
+  "crushedrockanalysis": [
+    "1.0.0"
+  ],
+  "mininggeotechlogging": [
+    "1.0.0"
+  ],
+  "proppantembed": [
+    "1.0.0"
+  ],
+  "rolleroventest": [
+    "1.0.0"
+  ],
+  "saturationtest": [
+    "1.0.0"
+  ]
+}

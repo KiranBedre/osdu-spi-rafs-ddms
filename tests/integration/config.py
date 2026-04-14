@@ -37,6 +37,7 @@ class DataFiles:
     SAMPLE = "v2/sample.json"
     SAR = "v2/sample_analyses/sar.json"
     SAMPLE_ANALYSIS = "v2/samples_analysis/samples_analysis.json"
+    SAMPLE_ANALYSIS_TYPES = "v2/samples_analysis/samples_analysis_types.json"
 
     CAPILLARY_SUCTION_TIME_DATA_V1 = "v2/samples_analysis/capillary_suction_time_data.1.0.0.json"
     CAPILLARY_SUCTION_TIME_SCHEMA_V1 = "v2/samples_analysis/capillary_suction_time_schema.1.0.0.json"
