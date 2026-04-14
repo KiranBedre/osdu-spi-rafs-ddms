@@ -3,7 +3,8 @@ ARG golang_version=1.25
 FROM golang:${golang_version}-alpine AS build-env
 
 # CVE-2026-28390: openssl DoS (NULL ptr in CMS) - upgrade libcrypto3/libssl3
-RUN apk update && apk add --no-cache --upgrade zlib libcrypto3 libssl3
+# CVE-2026-40200: musl libc arbitrary code execution - upgrade musl/musl-utils
+RUN apk update && apk add --no-cache --upgrade zlib libcrypto3 libssl3 musl musl-utils
 
 WORKDIR /app
 
@@ -17,7 +18,8 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /rafs-cronjob
 FROM golang:${golang_version}-alpine AS release-env
 
 # CVE-2026-28390: openssl DoS (NULL ptr in CMS) - upgrade libcrypto3/libssl3
-RUN apk update && apk add --no-cache --upgrade zlib libcrypto3 libssl3
+# CVE-2026-40200: musl libc arbitrary code execution - upgrade musl/musl-utils
+RUN apk update && apk add --no-cache --upgrade zlib libcrypto3 libssl3 musl musl-utils
 
 ARG golang_version
 ARG user_id=nonroot
