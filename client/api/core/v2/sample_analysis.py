@@ -78,12 +78,10 @@ class SamplesAnalysis(APIResource, APIClient):
         response = self.get(path=path, **kwargs)
         return response if raw else response.json()
 
-    def get_analysis_types(self, **kwargs) -> dict:
+    def get_analysis_types(self, raw: bool = False, **kwargs) -> dict:
         """Get available types."""
-        return self.get(
-            path=SamplesAnalysisPaths.GET_ANALYSIS_TYPES,
-            **kwargs,
-        ).json()
+        response = self.get(path=SamplesAnalysisPaths.GET_ANALYSIS_TYPES, **kwargs)
+        return response if raw else response.json()
 
     def get_schema(
         self,
