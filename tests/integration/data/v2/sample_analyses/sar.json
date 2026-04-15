@@ -1,6 +1,6 @@
 {
     "id": "{data_partition_id}:work-product-component--SamplesAnalysesReport:{record_id}",
-    "kind": "{schema_authority}:wks:work-product-component--SamplesAnalysesReport:{schema_version}",
+    "kind": "{schema_authority}:wks:work-product-component--SamplesAnalysesReport:{wpc_version}",
     "acl": {
         "viewers": ["{acl_viewers}"],
         "owners": ["{acl_owners}"]

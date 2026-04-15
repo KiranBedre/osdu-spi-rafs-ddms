@@ -1,0 +1,702 @@
+{
+    "title": "AtmosphericFlashAndCompositionalAnalysisModel110",
+    "type": "object",
+    "properties": {
+        "SamplesAnalysisID": {
+            "title": "Samples Analysis ID",
+            "description": "OSDU Identifier for this SamplesAnalysis",
+            "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "SampleID": {
+            "title": "Sample ID",
+            "description": "OSDU Identifier for the Sample associated with this analysis",
+            "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "Meta": {
+            "title": "Meta",
+            "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/Meta"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta1"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta2"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta3"
+                    }
+                ]
+            }
+        },
+        "TestNumber": {
+            "title": "Test Number",
+            "description": "A number for this test for purposes of e.g., tracking lab sequence.",
+            "type": "string"
+        },
+        "FlashPressure": {
+            "title": "Flash Pressure",
+            "description": "Pressure at which the sample is flashed.",
+            "type": "number"
+        },
+        "FlashTemperature": {
+            "title": "Flash Temperature",
+            "description": "Temperature at which the sampleis flashed.",
+            "type": "number"
+        },
+        "CompositionalAnalysis": {
+            "title": "Compositional Analysis",
+            "description": "Compositional Analysis contains properties that generally include mole and mass percents of: total fluid, flashed gas and flashed liquid, and individual components (e.g., C1, C2, C3…).",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/CompositionalAnalysi"
+            }
+        },
+        "CalculatedProperties": {
+            "title": "Sample Calculated Properties",
+            "description": "Properties calculated for the sample.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/CalculatedProperties"
+                }
+            ]
+        },
+        "GasCompositionalCalculations": {
+            "title": "Gas Compositional Calculations",
+            "description": "Calculations related to the composition of the gas.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/GasCompositionalCalculation"
+            }
+        },
+        "OilCompositionalCalculations": {
+            "title": "Oil Compositional Calculations",
+            "description": "Calculations related to the composition of the oil.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/OilCompositionalCalculation"
+            }
+        },
+        "ContaminationCorrection": {
+            "title": "Contamination Correction",
+            "description": "This object captures if the reported compositional analysis is pre or post correction for mud contamination and the reported mud contamination percentage.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ContaminationCorrection"
+                }
+            ]
+        },
+        "StandardConditionPressure": {
+            "title": "Standard Condition Pressure",
+            "description": "Pressure at which the Gas Oil Ratio is defined.",
+            "type": "number"
+        },
+        "StandardConditionTemperature": {
+            "title": "Standard Condition Temperature",
+            "description": "Temperature at which the Gas Oil Ratio is defined.",
+            "type": "number"
+        },
+        "InitialConditionPressure": {
+            "title": "Initial Condition Pressure",
+            "description": "Initial pressure condition at the start of the experiment.",
+            "type": "number"
+        },
+        "InitialConditionTemperature": {
+            "title": "Initial Condition Temperature",
+            "description": "Initial temperature condition at the start of the experiment.",
+            "type": "number"
+        },
+        "InitialConditionFormationVolumeFactor": {
+            "title": "Initial Condition Formation Volume Factor",
+            "description": "The ratio of the volume of fluid in the reservoir to the volume of the fluid at the surface conditions, accounting for the effects of pressure and temperature.",
+            "type": "number"
+        },
+        "InitialConditionSaturatedFluidDensity": {
+            "title": "Initial Condition Saturated Fluid Density",
+            "description": "Density of saturated fluid at initial pressure and temperature conditions.",
+            "type": "number"
+        },
+        "StandardConditionWaterDensity": {
+            "title": "Standard Condition Water Density",
+            "description": "The density of water at standard conditions.",
+            "type": "number"
+        },
+        "Remarks": {
+            "title": "Remarks",
+            "description": "Array object capturing remarks or additional information for this analysis.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Remark"
+            }
+        }
+    },
+    "required": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Meta"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "Meta": {
+            "title": "Meta",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "UOM Reference Kind",
+                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                    "default": "Unit",
+                    "const": "Unit",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "UOM Unit Symbol",
+                    "description": "The unit symbol or name of the unit.",
+                    "example": "ft[US]",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "UOM Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+                    "type": "string"
+                },
+                "unitOfMeasureID": {
+                    "title": "Unitofmeasureid",
+                    "description": "SRN to unit of measure reference.",
+                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "UOM Property Names",
+                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "HorizontalDeflection.EastWest",
+                        "HorizontalDeflection.NorthSouth"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "Meta1": {
+            "title": "Meta1",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "CRS Reference Kind",
+                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                    "default": "CRS",
+                    "const": "CRS",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "CRS Name",
+                    "description": "The name of the CRS.",
+                    "example": "WGS 84 / UTM zone 15N",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "CRS Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
+                    "type": "string"
+                },
+                "coordinateReferenceSystemID": {
+                    "title": "Coordinatereferencesystemid",
+                    "description": "SRN to CRS reference.",
+                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "CRS Property Names",
+                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "KickOffPosition.X",
+                        "KickOffPosition.Y"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "Meta2": {
+            "title": "Meta2",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "DateTime Reference Kind",
+                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                    "default": "DateTime",
+                    "const": "DateTime",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "DateTime Name",
+                    "description": "The name of the DateTime format and reference.",
+                    "example": "UTC",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "DateTime Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "DateTime Property Names",
+                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Acquisition.StartTime",
+                        "Acquisition.EndTime"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "Meta3": {
+            "title": "Meta3",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "AzimuthReference Reference Kind",
+                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                    "default": "AzimuthReference",
+                    "const": "AzimuthReference",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "AzimuthReference Name",
+                    "description": "The name of the CRS or the symbol/name of the unit.",
+                    "example": "TrueNorth",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "AzimuthReference Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "AzimuthReference Property Names",
+                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Bearing"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "CompositionalAnalysi": {
+            "title": "CompositionalAnalysi",
+            "type": "object",
+            "properties": {
+                "ComponentNameID": {
+                    "title": "Component Name ID",
+                    "description": "The name of the component.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "FlashedLiquidRelativeMass": {
+                    "title": "Flashed Liquid Relative Mass",
+                    "description": "The relative mass of the component in the flashed liquid.",
+                    "type": "number"
+                },
+                "FlashedGasRelativeMass": {
+                    "title": "Flashed Gas Relative Mass",
+                    "description": "The relative mass of the component in the flashed gas.",
+                    "type": "number"
+                },
+                "OverallFluidRelativeMass": {
+                    "title": "Overall Fluid Relative Mass",
+                    "description": "The relative mass of the component in the flashed liquid.",
+                    "type": "number"
+                },
+                "FlashedLiquidRelativeMole": {
+                    "title": "Flashed Liquid Relative Mole",
+                    "description": "The relative molar weight of the component in the flashed liquid.",
+                    "type": "number"
+                },
+                "FlashedGasRelativeMole": {
+                    "title": "Flashed Gas Relative Mole",
+                    "description": "The relative molar weight of the component in the flashed gas.",
+                    "type": "number"
+                },
+                "OverallFluidRelativeMole": {
+                    "title": "Overall Fluid Relative Mole",
+                    "description": "The relative mass of the component in the overall fluid.",
+                    "type": "number"
+                },
+                "OverallFluidSpecificGravity": {
+                    "title": "Overall Fluid Specific Gravity",
+                    "description": "The specific gravity of the component in the overall fluid.",
+                    "type": "number"
+                },
+                "OverallFluidMolecularWeight": {
+                    "title": "Overall Fluid Molecular Weight",
+                    "description": "The molecular weight of the component in the overall fluid.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "SampleCalculatedProperties": {
+            "title": "SampleCalculatedProperties",
+            "type": "object",
+            "properties": {
+                "AvgFlashedLiquidMolecularWeight": {
+                    "title": "Avg Flashed Liquid Molecular Weight",
+                    "description": "The average mole weight of the flashed liquid.",
+                    "type": "number"
+                },
+                "AvgFlashedGasMolecularWeight": {
+                    "title": "Avg Flashed Gas Molecular Weight",
+                    "description": "The average mole weight of the flashed gas.",
+                    "type": "number"
+                },
+                "AvgOverallFluidMolecularWeight": {
+                    "title": "Avg Overall Fluid Molecular Weight",
+                    "description": "The average mole weight of the overall fluid.",
+                    "type": "number"
+                },
+                "FlashedLiquidDensity": {
+                    "title": "Flashed Liquid Density",
+                    "description": "The density of the flashed liquid at standard condition.",
+                    "type": "number"
+                },
+                "FlashedGasDensity": {
+                    "title": "Flashed Gas Density",
+                    "description": "The density of the flashed gas at standard condition.",
+                    "type": "number"
+                },
+                "FlashedOverallFluidDensity": {
+                    "title": "Flashed Overall Fluid Density",
+                    "description": "The density of the overall fluid.",
+                    "type": "number"
+                },
+                "FlashedLiquidRealRelativeDensity": {
+                    "title": "Flashed Liquid Real Relative Density",
+                    "description": "The real relative density of the flashed liquid.",
+                    "type": "number"
+                },
+                "FlashedGasRealRelativeDensity": {
+                    "title": "Flashed Gas Real Relative Density",
+                    "description": "The real relative density of the flashed gas.",
+                    "type": "number"
+                },
+                "OverallFluidRealRelativeDensity": {
+                    "title": "Overall Fluid Real Relative Density",
+                    "description": "The real relative density of the overall fluid.",
+                    "type": "number"
+                },
+                "OverallFluidGasOilRatio": {
+                    "title": "Overall Fluid Gas Oil Ratio",
+                    "description": "The gas-oil ratio of the overall fluid.",
+                    "type": "number"
+                },
+                "FlashedLiquidMoleFraction": {
+                    "title": "Flashed Liquid Mole Fraction",
+                    "description": "The mole fraction of the flashed liquid.",
+                    "type": "number"
+                },
+                "FlashedGasMoleFraction": {
+                    "title": "Flashed Gas Mole Fraction",
+                    "description": "The mole fraction of the flashed gas.",
+                    "type": "number"
+                },
+                "OverallFluidMoleFraction": {
+                    "title": "Overall Fluid Mole Fraction",
+                    "description": "The mole fraction of the overall fluid.",
+                    "type": "number"
+                },
+                "FlashedLiquidMassFraction": {
+                    "title": "Flashed Liquid Mas sFraction",
+                    "description": "The mass fraction of the flashed liquid.",
+                    "type": "number"
+                },
+                "FlashedGasMassFraction": {
+                    "title": "Flashed Gas Mass Fraction",
+                    "description": "The mass fraction of the flashed gas.",
+                    "type": "number"
+                },
+                "OverallFluidMassFraction": {
+                    "title": "Overall Fluid Mass Fraction",
+                    "description": "The mass fraction of the overall fluid.",
+                    "type": "number"
+                },
+                "FlashedGasGravity": {
+                    "title": "Flashed Gas Gravity",
+                    "description": "The gravity of flashed gas, represented the molecular weight of the gas divided by the molecular weight of air.",
+                    "type": "number"
+                },
+                "FlashedLiquidAPIGravity": {
+                    "title": "Flashed Liquid API Gravity",
+                    "description": "The API Gravity of the flashed liquid.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "PlusComponentsCalculatedProperty": {
+            "title": "PlusComponentsCalculatedProperty",
+            "type": "object",
+            "properties": {
+                "ComponentNameID": {
+                    "title": "Component Name ID",
+                    "description": "The name of the component.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "FlashedLiquidRelativeMole": {
+                    "title": "Flashed Liquid Relative Mole",
+                    "description": "The relative molar concentration of the component in the flashed liquid.",
+                    "type": "number"
+                },
+                "FlashedGasRelativeMole": {
+                    "title": "Flashed Gas Relative Mole",
+                    "description": "The relative molar concentration of the component in the flashed gas.",
+                    "type": "number"
+                },
+                "OverallFluidRelativeMole": {
+                    "title": "Overall Fluid Relative Mole",
+                    "description": "The relative molar concentration of the component in the overall fluid.",
+                    "type": "number"
+                },
+                "FlashedLiquidMolecularWeight": {
+                    "title": "Flashed Liquid Molecular Weight",
+                    "description": "The molecular weight of the flashed liquid in the overall fluid.",
+                    "type": "number"
+                },
+                "FlashedGasMolecularWeight": {
+                    "title": "Flashed Gas Molecular Weight",
+                    "description": "The molecular weight of the flashed gas in the overall fluid.",
+                    "type": "number"
+                },
+                "OverallFluidMolecularWeight": {
+                    "title": "Overall Fluid Molecular Weight",
+                    "description": "The molecular weight of the overall fluid.",
+                    "type": "number"
+                },
+                "FlashedLiquidDensity": {
+                    "title": "Flashed Liquid Density",
+                    "description": "The density of the component in the flashed liquid at standard condition.",
+                    "type": "number"
+                },
+                "FlashedGasDensity": {
+                    "title": "Flashed Gas Density",
+                    "description": "The density of the component in the flashed gas at standard condition.",
+                    "type": "number"
+                },
+                "OverallFluidDensity": {
+                    "title": "Overall Fluid Density",
+                    "description": "The density of the component within the overall fluid at standard condition.",
+                    "type": "number"
+                },
+                "FlashedLiquidRelativeMass": {
+                    "title": "Flashed Liquid Relative Mass",
+                    "description": "The relative mass of the component in the flashed liquid.",
+                    "type": "number"
+                },
+                "FlashedGasRelativeMass": {
+                    "title": "Flashed Gas Relative Mass",
+                    "description": "The relative mass of the component in the flashed gas.",
+                    "type": "number"
+                },
+                "OverallFluidRelativeMass": {
+                    "title": "Overall Fluid Relative Mass",
+                    "description": "The relative mass of the component in the flashed liquid.",
+                    "type": "number"
+                },
+                "OverallFluidSpecificGravity": {
+                    "title": "Overall Fluid Specific Gravity",
+                    "description": "The specific gravity of the component in the overall fluid.  It is typical for either Specific Gravity or Density to be reported, but not necessarily both.",
+                    "type": "number"
+                },
+                "FlashedGasSpecificGravity": {
+                    "title": "Flashed Gas Specific Gravity",
+                    "description": "The specific gravity of the component in the flashed gas. It is typical for either Specific Gravity or Density to be reported, but not necessarily both.",
+                    "type": "number"
+                },
+                "FlashedLiquidSpecificGravity": {
+                    "title": "Flashed Liquid Specific Gravity",
+                    "description": "The specific gravity of the component in the flashed liquid. It is typical for either Specific Gravity or Density to be reported, but not necessarily both.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "CalculatedProperties": {
+            "title": "CalculatedProperties",
+            "type": "object",
+            "properties": {
+                "SampleCalculatedProperties": {
+                    "title": "Sample Calculated Properties",
+                    "description": "Properties calculated for the sample.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/SampleCalculatedProperties"
+                        }
+                    ]
+                },
+                "PlusComponentsCalculatedProperties": {
+                    "title": "Plus Components Calculated Properties",
+                    "description": "Properties of additional components calculated.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PlusComponentsCalculatedProperty"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "GasCompositionalCalculation": {
+            "title": "GasCompositionalCalculation",
+            "type": "object",
+            "properties": {
+                "ComponentNameID": {
+                    "title": "Component Name ID",
+                    "description": "The name of the component.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "MolecularWeight": {
+                    "title": "Molecular Weight",
+                    "description": "Molecular Weight",
+                    "type": "number"
+                },
+                "Density": {
+                    "title": "Density",
+                    "description": "Mass per volume of the component within the sample at standard condition.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "OilCompositionalCalculation": {
+            "title": "OilCompositionalCalculation",
+            "type": "object",
+            "properties": {
+                "ComponentNameID": {
+                    "title": "Component Name ID",
+                    "description": "The name of the component.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "MolecularWeight": {
+                    "title": "Molecular Weight",
+                    "description": "Molecular Weight",
+                    "type": "number"
+                },
+                "Density": {
+                    "title": "Density",
+                    "description": "Mass per volume of the component within the sample at standard condition.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ContaminationCorrection": {
+            "title": "ContaminationCorrection",
+            "type": "object",
+            "properties": {
+                "ContaminationCorrectionStatus": {
+                    "title": "Contamination Correction Status",
+                    "description": "Status of correction for mud contamination.",
+                    "type": "string"
+                },
+                "ContaminantID": {
+                    "title": "Contaminant ID",
+                    "description": "The OSDU ID for the contaminant fluid sample record.",
+                    "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "ReferenceFluidID": {
+                    "title": "Reference Fluid ID",
+                    "description": "DEPRECATED: use ReferenceFluid instead.",
+                    "deprecated": true,
+                    "type": "string"
+                },
+                "ReferenceFluid": {
+                    "title": "Reference Fluid",
+                    "description": "The fluid used as a reference to determine the degree of contamination, e.g. stock tank oil or reservoir fluid.",
+                    "type": "string"
+                },
+                "WeightFraction": {
+                    "title": "Weight Fraction",
+                    "description": "The degree of contamination as a fraction of weight.",
+                    "type": "number"
+                },
+                "VolumeFraction": {
+                    "title": "Volume Fraction",
+                    "description": "The degree of contamination as a fraction of volume.",
+                    "type": "number"
+                },
+                "MoleFraction": {
+                    "title": "Mole Fraction",
+                    "description": "The degree of contamination as a molar fraction.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Remark": {
+            "title": "Remark",
+            "type": "object",
+            "properties": {
+                "RemarkSequenceNumber": {
+                    "title": "Remark Sequence Number",
+                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                    "example": 1,
+                    "type": "integer"
+                },
+                "Remark": {
+                    "title": "Remark",
+                    "description": "A descriptive comment for this remark.",
+                    "type": "string"
+                },
+                "RemarkSource": {
+                    "title": "Remark Source",
+                    "description": "The person, vendor, interpreter or other provider of information.",
+                    "type": "string"
+                },
+                "RemarkDate": {
+                    "title": "Remark Date",
+                    "description": "The date the remark was issued.",
+                    "type": "string",
+                    "format": "date"
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

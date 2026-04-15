@@ -1,0 +1,1450 @@
+{
+  "x-osdu-license": "Copyright 2026, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "x-osdu-review-status": "Accepted",
+  "$id": "slimtube.2.0.0.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Slimtube Data Schema",
+  "description": "A Slim Tube Test is used to study the miscibility condition of a reservoir oil sample when it comes in contact with a gas sample flowing inside a long tube filled with sand (porous media) in a near one-dimensional flow condition. In general, a number of slim tube tests are performed at constant temperature with varying pressures to determine the minimum pressure at which miscibility is achieved after injection of certain pore volume of gas.",
+  "type": "object",
+  "properties": {
+    "SamplesAnalysisID": {
+      "type": "string",
+      "title": "Samples Analysis ID",
+      "description": "The OSDU Identifier for this SamplesAnalysis.",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "work-product-component",
+          "EntityType": "SamplesAnalysis"
+        }
+      ]
+    },
+    "SampleID": {
+      "type": "string",
+      "title": "Sample ID",
+      "description": "The OSDU Identifier for the Sample associated with this analysis.",
+      "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "master-data",
+          "EntityType": "Sample"
+        }
+      ]
+    },
+    "Meta": {
+      "type": "array",
+      "title": "Meta",
+      "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+      "example": "",
+      "items": {
+        "x-osdu-license": "Copyright 2022, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+        "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractMetaItem.1.0.0.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "x-osdu-schema-source": "osdu:wks:AbstractMetaItem:1.0.0",
+        "title": "Frame of Reference Meta Data Item",
+        "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+        "oneOf": [
+          {
+            "title": "FrameOfReferenceUOM",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "UOM Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                "const": "Unit"
+              },
+              "name": {
+                "title": "UOM Unit Symbol",
+                "description": "The unit symbol or name of the unit.",
+                "type": "string",
+                "example": "ft[US]"
+              },
+              "persistableReference": {
+                "title": "UOM Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                "type": "string",
+                "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}"
+              },
+              "unitOfMeasureID": {
+                "description": "SRN to unit of measure reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "UnitOfMeasure"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "UOM Property Names",
+                "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "HorizontalDeflection.EastWest",
+                  "HorizontalDeflection.NorthSouth"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceCRS",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "CRS Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                "const": "CRS"
+              },
+              "name": {
+                "title": "CRS Name",
+                "description": "The name of the CRS.",
+                "type": "string",
+                "example": "WGS 84 / UTM zone 15N"
+              },
+              "persistableReference": {
+                "title": "CRS Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                "type": "string",
+                "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}"
+              },
+              "coordinateReferenceSystemID": {
+                "description": "SRN to CRS reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "CoordinateReferenceSystem"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "CRS Property Names",
+                "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "KickOffPosition.X",
+                  "KickOffPosition.Y"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceDateTime",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "DateTime Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                "const": "DateTime"
+              },
+              "name": {
+                "title": "DateTime Name",
+                "description": "The name of the DateTime format and reference.",
+                "type": "string",
+                "example": "UTC"
+              },
+              "persistableReference": {
+                "title": "DateTime Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                "type": "string",
+                "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}"
+              },
+              "propertyNames": {
+                "title": "DateTime Property Names",
+                "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Acquisition.StartTime",
+                  "Acquisition.EndTime"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceAzimuthReference",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "AzimuthReference Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                "const": "AzimuthReference"
+              },
+              "name": {
+                "title": "AzimuthReference Name",
+                "description": "The name of the CRS or the symbol/name of the unit.",
+                "type": "string",
+                "example": "TrueNorth"
+              },
+              "persistableReference": {
+                "title": "AzimuthReference Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                "type": "string",
+                "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}"
+              },
+              "propertyNames": {
+                "title": "AzimuthReference Property Names",
+                "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Bearing"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          }
+        ],
+        "x-osdu-inheriting-from-kind": []
+      }
+    },
+    "TestNumber": {
+      "type": "string",
+      "title": "Test Number",
+      "description": "A number for this test for purposes of e.g., tracking lab sequence."
+    },
+    "TestTemperature": {
+      "type": "number",
+      "title": "Test Temperature",
+      "description": "The recorded temperature within the test environment.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "Remarks": {
+      "x-osdu-license": "Copyright 2023, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+      "x-osdu-review-status": "Accepted",
+      "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractRemark.1.0.0.json",
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "x-osdu-schema-source": "osdu:wks:AbstractRemark:1.0.0",
+      "title": "Remarks",
+      "description": "Additional notes or observations regarding the test, conditions, or results that may be relevant for interpretation.",
+      "type": "object",
+      "properties": {
+        "RemarkSequenceNumber": {
+          "type": "integer",
+          "title": "Remark Sequence Number",
+          "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+          "example": 1
+        },
+        "Remark": {
+          "type": "string",
+          "title": "Remark",
+          "description": "A descriptive comment for this remark."
+        },
+        "RemarkSource": {
+          "type": "string",
+          "title": "Remark Source",
+          "description": "The person, vendor, interpreter or other provider of information."
+        },
+        "RemarkDate": {
+          "type": "string",
+          "title": "Remark Date",
+          "description": "The date the remark was issued.",
+          "format": "date",
+          "x-osdu-frame-of-reference": "DateTime"
+        }
+      },
+      "x-osdu-inheriting-from-kind": [],
+      "additionalProperties": false
+    },
+    "SlimTubeSpecification": {
+      "type": "array",
+      "title": "Slim Tube Specification",
+      "description": "The physical specifications and configuration of the slim tube, such as the column length, diameters, and packing material.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Slim Tube Specification",
+        "description": "The physical specifications and configuration of the slim tube, such as the column length, diameters, and packing material.",
+        "properties": {
+          "ColumnLength": {
+            "type": "number",
+            "title": "Column Length",
+            "description": "Length of the packed column enclosing the sample.",
+            "x-osdu-frame-of-reference": "UOM:length"
+          },
+          "PackingMaterial": {
+            "type": "string",
+            "title": "Packing Material",
+            "description": "Material used to fill the packed column, e.g. sand, glass beads of different mesh sizes.",
+            "x-osdu-existing-standard": "ref list?  Sand, glass beads\n\nWe feel this is better served as a free string rather than a reference list (working group, 5 Dec 24)"
+          },
+          "ColumnPorosity": {
+            "type": "number",
+            "title": "Column Porosity",
+            "description": "The amount of pore space relative to the volume of the packed column sample.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume"
+          },
+          "ColumnTotalPoreVolume": {
+            "type": "number",
+            "title": "Column Total Pore Volume",
+            "description": "The total volume of pore space within the packed column.",
+            "x-osdu-frame-of-reference": "UOM:volume"
+          },
+          "ColumnPermeability": {
+            "type": "number",
+            "title": "Column Permeability",
+            "description": "The permeability of the packed column.",
+            "x-osdu-frame-of-reference": "UOM:permeability rock"
+          },
+          "ColumnPermeabilityMeasurementMethodID": {
+            "type": "string",
+            "title": "Column Permeability Measurement Method ID",
+            "description": "The method of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "PermeabilityMeasurementMethod"
+              }
+            ]
+          },
+          "ColumnPermeabilityFluidTypeID": {
+            "type": "string",
+            "title": "Column Fluid Type ID",
+            "description": "The fluid type used in determining the column permeability.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "SampleInjectionFluidType"
+              }
+            ]
+          },
+          "ColumnOuterDiameter": {
+            "type": "number",
+            "title": "Column Outer Diameter",
+            "description": "The outer diameter of the column.",
+            "x-osdu-frame-of-reference": "UOM:length"
+          },
+          "ColumnInnerDiameter": {
+            "type": "number",
+            "title": "Column Inner Diameter",
+            "description": "The inner diameter of the column.",
+            "x-osdu-frame-of-reference": "UOM:length"
+          },
+          "ColumnFlowCrossSectionalArea": {
+            "type": "number",
+            "title": "Column Flow Cross Sectional Area",
+            "description": "Available inner cross-sectional area for fluid to flow, calculated by (pi * d^2)/4, where d is the inner diameter of the column.",
+            "x-osdu-frame-of-reference": "UOM:area"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "InjectedGasID": {
+      "type": "string",
+      "title": "Injected Gas ID",
+      "description": "The OSDU Identifier, if any, for the injected gas used in this analysis.",
+      "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "master-data",
+          "EntityType": "Sample"
+        }
+      ]
+    },
+    "InjectedGas": {
+      "type": "array",
+      "title": "Injected Gas",
+      "description": "An array object capturing the composition and other properties of the injected gas.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Vapor Analysis",
+        "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+        "properties": {
+          "VaporSpecificGravity": {
+            "type": "number",
+            "title": "Vapor Specific Gravity",
+            "description": "The specific gravity of the vapor retrieved from the sample.",
+            "x-osdu-frame-of-reference": "UOM:dimensionless"
+          },
+          "VaporMolecularWeight": {
+            "type": "number",
+            "title": "Vapor Molecular Weight",
+            "description": "The molecular weight of the vapor retrieved from the sample.",
+            "x-osdu-frame-of-reference": "UOM:molecular weight"
+          },
+          "VaporComposition": {
+            "type": "array",
+            "title": "Vapor Composition",
+            "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Vapor Composition",
+              "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+              "properties": {
+                "ComponentNameID": {
+                  "type": "string",
+                  "title": "Component Name ID",
+                  "description": "Name of the component in the liquid.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "SampleOrganicCompositionComponent"
+                    }
+                  ]
+                },
+                "MolecularWeight": {
+                  "type": "number",
+                  "title": "Molecular Weight",
+                  "description": "The molecular weight of the component.",
+                  "x-osdu-frame-of-reference": "UOM:molecular weight"
+                },
+                "RelativeMole": {
+                  "type": "number",
+                  "title": "Relative Mole",
+                  "description": "The molar quantity of the component relative to the total moles of the sample.",
+                  "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                },
+                "RelativeMass": {
+                  "type": "number",
+                  "title": "Relative Mass",
+                  "description": "The mass of the component relative to the total mass of the sample.",
+                  "x-osdu-frame-of-reference": "UOM:mass per mass"
+                },
+                "RelativeVolume": {
+                  "type": "number",
+                  "title": "Relative Volume",
+                  "description": "The volume of the component relative to the total volume of the sample.",
+                  "x-osdu-frame-of-reference": "UOM:volume per volume"
+                },
+                "SpecificGravity": {
+                  "type": "number",
+                  "title": "Specific Gravity",
+                  "description": "The specific gravity of the component.",
+                  "x-osdu-frame-of-reference": "UOM:dimensionless"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "MinimumMiscibilityPressure": {
+      "type": "number",
+      "title": "Minimum Miscibility Pressure",
+      "description": "The minimum pressure for miscibility to be achieved.",
+      "x-osdu-frame-of-reference": "UOM:pressure"
+    },
+    "CalculatedProperties": {
+      "type": "array",
+      "title": "Calculated Properties",
+      "description": "Derived attributes and parameters obtained from slim tube tests, which are experimental methods used to evaluate the miscibility and interaction of injected fluids with reservoir hydrocarbons under simulated reservoir conditions.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Calculated Properties",
+        "description": "Derived attributes and parameters obtained from slim tube tests, which are experimental methods used to evaluate the miscibility and interaction of injected fluids with reservoir hydrocarbons under simulated reservoir conditions.",
+        "properties": {
+          "AvgMoleWeight": {
+            "type": "number",
+            "title": "Average Mole Weight",
+            "description": "The weighted average mass of the molecules in a sample.",
+            "x-osdu-frame-of-reference": "UOM:molecular weight"
+          },
+          "ResidueDensity": {
+            "type": "number",
+            "title": "Residue Density",
+            "description": "The mass per unit volume of the residual oil.",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          },
+          "ResidueAPI": {
+            "type": "number",
+            "title": "Residue API",
+            "description": "The API gravity of the residual oil, which measures its density relative to water.",
+            "x-osdu-frame-of-reference": "UOM:API gravity"
+          },
+          "ResidueCalculatedProperties": {
+            "type": "array",
+            "title": "Residue Calculated Properties",
+            "description": "The set of derived physical and chemical properties of the residual oil, calculated from experimental data or using theoretical models.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Residue Calculated Properties",
+              "description": "The set of derived physical and chemical properties of the residual oil, calculated from experimental data or using theoretical models.",
+              "properties": {
+                "ComponentNameID": {
+                  "type": "string",
+                  "title": "Component Name ID",
+                  "description": "The chemical formula representing the composition of a specific component in terms of the elements and their proportions.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "SampleOrganicCompositionComponent"
+                    }
+                  ]
+                },
+                "ResidueRelativeMolarWeight": {
+                  "type": "number",
+                  "title": "Residue Relative Molar Weight",
+                  "description": "he ratio of the molar mass of the residual oil component to the molar mass of a reference substance, typically dimensionless.",
+                  "x-osdu-frame-of-reference": "UOM:dimensionless"
+                },
+                "ResidueMolecularWeight": {
+                  "type": "number",
+                  "title": "Residue Molecular Weight",
+                  "description": "The molecular weight of the residual oil, representing the sum of the atomic weights of its constituent atoms.",
+                  "x-osdu-frame-of-reference": "UOM:molecular weight"
+                },
+                "ResidueDensity": {
+                  "type": "number",
+                  "title": "Residue Density",
+                  "description": "The mass per unit volume of the residual oil.",
+                  "x-osdu-frame-of-reference": "UOM:mass per volume"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "SlimTubeTestSteps": {
+      "type": "array",
+      "title": "SlimTubeTest Steps",
+      "description": "Array object capturing the slim tube test steps.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Slim Tube Test Steps",
+        "description": "Array object capturing the slim tube test steps.",
+        "properties": {
+          "StepNumber": {
+            "type": "number",
+            "title": "Step Number",
+            "description": "The test step number.",
+            "x-osdu-frame-of-reference": "UOM:non-dimensional"
+          },
+          "StepAveragePressure": {
+            "type": "number",
+            "title": "Step Average Pressure",
+            "description": "Average pressure applied in this step of the Slim Tube Test.",
+            "x-osdu-frame-of-reference": "UOM:pressure"
+          },
+          "StepAverageTemperature": {
+            "type": "number",
+            "title": "Step Average Temperature",
+            "description": "Average temperature applied in this step of the Slim Tube Test",
+            "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+          },
+          "StepBackPressure": {
+            "type": "number",
+            "title": "StepBackPressure",
+            "description": "The pressure measured at the back pressure regulator for this test step.",
+            "x-osdu-frame-of-reference": "UOM:pressure"
+          },
+          "Remarks": {
+            "x-osdu-license": "Copyright 2023, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+            "x-osdu-review-status": "Accepted",
+            "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractRemark.1.0.0.json",
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "x-osdu-schema-source": "osdu:wks:AbstractRemark:1.0.0",
+            "title": "Remarks",
+            "description": "Additional notes or observations regarding the step, includes conditions, or results that may be relevant for interpretation.",
+            "type": "object",
+            "properties": {
+              "RemarkSequenceNumber": {
+                "type": "integer",
+                "title": "Remark Sequence Number",
+                "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                "example": 1
+              },
+              "Remark": {
+                "type": "string",
+                "title": "Remark",
+                "description": "A descriptive comment for this remark."
+              },
+              "RemarkSource": {
+                "type": "string",
+                "title": "Remark Source",
+                "description": "The person, vendor, interpreter or other provider of information."
+              },
+              "RemarkDate": {
+                "type": "string",
+                "title": "Remark Date",
+                "description": "The date the remark was issued.",
+                "format": "date",
+                "x-osdu-frame-of-reference": "DateTime"
+              }
+            },
+            "x-osdu-inheriting-from-kind": [],
+            "additionalProperties": false
+          },
+          "SlimTubeTestVolumeSteps": {
+            "type": "array",
+            "title": "Slim Tube Test Volume Steps",
+            "description": "The sequence of changes in volume for the analysis.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Slim Tube Test Volume Steps",
+              "description": "The sequence of changes in volume for the analysis.",
+              "properties": {
+                "StepNumber": {
+                  "type": "number",
+                  "title": "Step Number",
+                  "description": "The number used to sequence and identify the changes in volume for this analysis.",
+                  "x-osdu-frame-of-reference": "UOM:non-dimensional"
+                },
+                "DifferentialPressure": {
+                  "type": "number",
+                  "title": "Differential Pressure",
+                  "description": "The differential pressure of this test step.",
+                  "x-osdu-frame-of-reference": "UOM:pressure"
+                },
+                "RunTime": {
+                  "type": "number",
+                  "title": "Run Time",
+                  "description": "The overall run time of the test at this step.",
+                  "x-osdu-frame-of-reference": "UOM:time"
+                },
+                "InjectionVolumeAtTestTemperature": {
+                  "type": "number",
+                  "title": "Injection Volume At Test Temperature",
+                  "description": "The volume of injected fluid at test temperature.",
+                  "x-osdu-frame-of-reference": "UOM:volume"
+                },
+                "InjectionVolumeAtPumpTemperature": {
+                  "type": "number",
+                  "title": "Injection Volume At Pump Temperature",
+                  "description": "The volume of injected fluid measured at pump temperature.",
+                  "x-osdu-frame-of-reference": "UOM:volume"
+                },
+                "InjectedPoreVolumeFraction": {
+                  "type": "number",
+                  "title": "Injected Pore Volume Fraction",
+                  "description": "The injected fluid measured as a fraction of pore volume.",
+                  "x-osdu-frame-of-reference": "UOM:volume per volume"
+                },
+                "DarcyVelocity": {
+                  "type": "number",
+                  "title": "Darcy Velocity",
+                  "description": "The flow velocity of a fluid through a porous medium, as described by Darcy's law.",
+                  "x-osdu-frame-of-reference": "UOM:volume per time"
+                },
+                "CumulativeOilProductionPercOOIP": {
+                  "type": "number",
+                  "title": "Cumulative Oil Production Percentage of Oil in Place",
+                  "description": "Cumulative oil production as a percentage of oil in place.",
+                  "x-osdu-frame-of-reference": "UOM:dimensionless"
+                },
+                "CumulativeOilProductionAtStockTankConditions": {
+                  "type": "number",
+                  "title": "Cumulative Oil Production at Stock Tank Conditions",
+                  "description": "Cumulative oil production at Stock Tank temperature and pressure.",
+                  "x-osdu-frame-of-reference": "UOM:volume"
+                },
+                "CumulativeGasProductionAtStockTankConditions": {
+                  "type": "number",
+                  "title": "Cumulative Gas Production at Stock Tank Conditions",
+                  "description": "Cumulative gas production at Stock Tank temperature and pressure.",
+                  "x-osdu-frame-of-reference": "UOM:volume"
+                },
+                "IncrementalProducedGOR": {
+                  "type": "number",
+                  "title": "Incremental Produced GOR",
+                  "description": "Gas oil ratio of the production during this test step.",
+                  "x-osdu-frame-of-reference": "UOM:dimensionless"
+                },
+                "CumulativeProducedGOR": {
+                  "type": "number",
+                  "title": "Cumulative Produced GOR",
+                  "description": "Gas Oil ratio of the cumulative production from the sample during slim tube testing.",
+                  "x-osdu-frame-of-reference": "UOM:dimensionless"
+                },
+                "Remarks": {
+                  "x-osdu-license": "Copyright 2023, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+                  "x-osdu-review-status": "Accepted",
+                  "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractRemark.1.0.0.json",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "x-osdu-schema-source": "osdu:wks:AbstractRemark:1.0.0",
+                  "title": "Remarks",
+                  "description": "Recorded remarks for this step of the slim tube test.",
+                  "type": "object",
+                  "properties": {
+                    "RemarkSequenceNumber": {
+                      "type": "integer",
+                      "title": "Remark Sequence Number",
+                      "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                      "example": 1
+                    },
+                    "Remark": {
+                      "type": "string",
+                      "title": "Remark",
+                      "description": "A descriptive comment for this remark."
+                    },
+                    "RemarkSource": {
+                      "type": "string",
+                      "title": "Remark Source",
+                      "description": "The person, vendor, interpreter or other provider of information."
+                    },
+                    "RemarkDate": {
+                      "type": "string",
+                      "title": "Remark Date",
+                      "description": "The date the remark was issued.",
+                      "format": "date",
+                      "x-osdu-frame-of-reference": "DateTime"
+                    }
+                  },
+                  "x-osdu-inheriting-from-kind": [],
+                  "additionalProperties": false
+                },
+                "CumulativeVaporCompositionalAnalysis": {
+                  "type": "array",
+                  "title": "Cumulative Vapor Compositional Analysis",
+                  "description": "Array recording the compositional analysis of the cumulative vapor retrieved from the sample at this test step.",
+                  "x-osdu-indexing": {
+                    "type": "nested"
+                  },
+                  "items": {
+                    "type": "object",
+                    "title": "Vapor Analysis",
+                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                    "properties": {
+                      "VaporSpecificGravity": {
+                        "type": "number",
+                        "title": "Vapor Specific Gravity",
+                        "description": "The specific gravity of the vapor retrieved from the sample.",
+                        "x-osdu-frame-of-reference": "UOM:dimensionless"
+                      },
+                      "VaporMolecularWeight": {
+                        "type": "number",
+                        "title": "Vapor Molecular Weight",
+                        "description": "The molecular weight of the vapor retrieved from the sample.",
+                        "x-osdu-frame-of-reference": "UOM:molecular weight"
+                      },
+                      "VaporComposition": {
+                        "type": "array",
+                        "title": "Vapor Composition",
+                        "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                        "x-osdu-indexing": {
+                          "type": "nested"
+                        },
+                        "items": {
+                          "type": "object",
+                          "title": "Vapor Composition",
+                          "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                          "properties": {
+                            "ComponentNameID": {
+                              "type": "string",
+                              "title": "Component Name ID",
+                              "description": "Name of the component in the liquid.",
+                              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                              "x-osdu-relationship": [
+                                {
+                                  "GroupType": "reference-data",
+                                  "EntityType": "SampleOrganicCompositionComponent"
+                                }
+                              ]
+                            },
+                            "MolecularWeight": {
+                              "type": "number",
+                              "title": "Molecular Weight",
+                              "description": "The molecular weight of the component.",
+                              "x-osdu-frame-of-reference": "UOM:molecular weight"
+                            },
+                            "RelativeMole": {
+                              "type": "number",
+                              "title": "Relative Mole",
+                              "description": "The molar quantity of the component relative to the total moles of the sample.",
+                              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                            },
+                            "RelativeMass": {
+                              "type": "number",
+                              "title": "Relative Mass",
+                              "description": "The mass of the component relative to the total mass of the sample.",
+                              "x-osdu-frame-of-reference": "UOM:mass per mass"
+                            },
+                            "RelativeVolume": {
+                              "type": "number",
+                              "title": "Relative Volume",
+                              "description": "The volume of the component relative to the total volume of the sample.",
+                              "x-osdu-frame-of-reference": "UOM:volume per volume"
+                            },
+                            "SpecificGravity": {
+                              "type": "number",
+                              "title": "Specific Gravity",
+                              "description": "The specific gravity of the component.",
+                              "x-osdu-frame-of-reference": "UOM:dimensionless"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "CumulativeLiquidCompositionalAnalysis": {
+                  "type": "array",
+                  "title": "Cumulative Liquid Compositional Analysis",
+                  "description": "Array recording the compositional analysis of the cumulative liquid retrieved from the sample at this test step.",
+                  "x-osdu-indexing": {
+                    "type": "nested"
+                  },
+                  "items": {
+                    "type": "object",
+                    "title": "Liquid Analysis",
+                    "description": "Analysis of the liquid sample consisting of composition, molecular weight, and specific gravity.",
+                    "properties": {
+                      "LiquidSpecificGravity": {
+                        "type": "number",
+                        "title": "LiquidSpecificGravity",
+                        "description": "The specific gravity of the liquid sample.",
+                        "x-osdu-frame-of-reference": "UOM:dimensionless"
+                      },
+                      "LiquidMolecularWeight": {
+                        "type": "number",
+                        "title": "LiquidMolecularWeight",
+                        "description": "The molecular weight of the liquid sample.",
+                        "x-osdu-frame-of-reference": "UOM:molecular weight"
+                      },
+                      "APIGravity": {
+                        "type": "number",
+                        "title": "API Gravity",
+                        "description": "The API gravity of the liquid sample.",
+                        "x-osdu-frame-of-reference": "UOM:API gravity"
+                      },
+                      "LiquidComposition": {
+                        "type": "array",
+                        "title": "LiquidComposition",
+                        "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
+                        "x-osdu-indexing": {
+                          "type": "nested"
+                        },
+                        "items": {
+                          "type": "object",
+                          "title": "Liquid Composition",
+                          "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
+                          "properties": {
+                            "ComponentNameID": {
+                              "type": "string",
+                              "title": "Component Name ID",
+                              "description": "The chemical formula of each component found in the liquid during analysis.",
+                              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                              "x-osdu-relationship": [
+                                {
+                                  "GroupType": "reference-data",
+                                  "EntityType": "SampleOrganicCompositionComponent"
+                                }
+                              ]
+                            },
+                            "MolecularWeight": {
+                              "type": "number",
+                              "title": "Molecular Weight",
+                              "description": "The molecular weight of the component.",
+                              "x-osdu-frame-of-reference": "UOM:molecular weight"
+                            },
+                            "MolePercent": {
+                              "type": "number",
+                              "title": "Mole Percent",
+                              "description": "The molar percentage of the component, if available.",
+                              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                            },
+                            "MassPercent": {
+                              "type": "number",
+                              "title": "Mass Percent",
+                              "description": "The mass percentage of the component, if available.",
+                              "x-osdu-frame-of-reference": "UOM:mass per mass"
+                            },
+                            "VolumePercent": {
+                              "type": "number",
+                              "title": "Volume Percent",
+                              "description": "The volume percentage of the component, if available.",
+                              "x-osdu-frame-of-reference": "UOM:volume per volume"
+                            },
+                            "SpecificGravity": {
+                              "type": "number",
+                              "title": "Specific Gravity",
+                              "description": "The specific gravity of the component.",
+                              "x-osdu-frame-of-reference": "UOM:dimensionless"
+                            },
+                            "MoleFraction": {
+                              "type": "number",
+                              "title": "Mole Fraction",
+                              "description": "The molar fraction of the component.",
+                              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                            },
+                            "MassFraction": {
+                              "type": "number",
+                              "title": "Mass Fraction",
+                              "description": "The mass fraction of the component.",
+                              "x-osdu-frame-of-reference": "UOM:mass per mass"
+                            },
+                            "VolumeFraction": {
+                              "type": "number",
+                              "title": "Volume Fraction",
+                              "description": "The volume fraction of the component.",
+                              "x-osdu-frame-of-reference": "UOM:volume per volume"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "IncrementalVaporCompositionalAnalysis": {
+                  "type": "array",
+                  "title": "Incremental Vapor Compositional Analysis",
+                  "description": "Array recording the compositional analysis of the vapor retrieved from the sample at this test step.",
+                  "x-osdu-indexing": {
+                    "type": "nested"
+                  },
+                  "items": {
+                    "type": "object",
+                    "title": "Vapor Analysis",
+                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                    "properties": {
+                      "VaporSpecificGravity": {
+                        "type": "number",
+                        "title": "Vapor Specific Gravity",
+                        "description": "The specific gravity of the vapor retrieved from the sample.",
+                        "x-osdu-frame-of-reference": "UOM:dimensionless"
+                      },
+                      "VaporMolecularWeight": {
+                        "type": "number",
+                        "title": "Vapor Molecular Weight",
+                        "description": "The molecular weight of the vapor retrieved from the sample.",
+                        "x-osdu-frame-of-reference": "UOM:molecular weight"
+                      },
+                      "VaporComposition": {
+                        "type": "array",
+                        "title": "Vapor Composition",
+                        "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                        "x-osdu-indexing": {
+                          "type": "nested"
+                        },
+                        "items": {
+                          "type": "object",
+                          "title": "Vapor Composition",
+                          "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                          "properties": {
+                            "ComponentNameID": {
+                              "type": "string",
+                              "title": "Component Name ID",
+                              "description": "Name of the component in the liquid.",
+                              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                              "x-osdu-relationship": [
+                                {
+                                  "GroupType": "reference-data",
+                                  "EntityType": "SampleOrganicCompositionComponent"
+                                }
+                              ]
+                            },
+                            "MolecularWeight": {
+                              "type": "number",
+                              "title": "Molecular Weight",
+                              "description": "The molecular weight of the component.",
+                              "x-osdu-frame-of-reference": "UOM:molecular weight"
+                            },
+                            "RelativeMole": {
+                              "type": "number",
+                              "title": "Relative Mole",
+                              "description": "The molar quantity of the component relative to the total moles of the sample.",
+                              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                            },
+                            "RelativeMass": {
+                              "type": "number",
+                              "title": "Relative Mass",
+                              "description": "The mass of the component relative to the total mass of the sample.",
+                              "x-osdu-frame-of-reference": "UOM:mass per mass"
+                            },
+                            "RelativeVolume": {
+                              "type": "number",
+                              "title": "Relative Volume",
+                              "description": "The volume of the component relative to the total volume of the sample.",
+                              "x-osdu-frame-of-reference": "UOM:volume per volume"
+                            },
+                            "SpecificGravity": {
+                              "type": "number",
+                              "title": "Specific Gravity",
+                              "description": "The specific gravity of the component.",
+                              "x-osdu-frame-of-reference": "UOM:dimensionless"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "IncrementalLiquidCompositionalAnalysis": {
+                  "type": "array",
+                  "title": "Incremental Liquid Compositional Analysis",
+                  "description": "Array recording the compositional analysis of the liquid retrieved from the sample at this test step.",
+                  "x-osdu-indexing": {
+                    "type": "nested"
+                  },
+                  "items": {
+                    "type": "object",
+                    "title": "Liquid Analysis",
+                    "description": "Analysis of the liquid sample consisting of composition, molecular weight, and specific gravity.",
+                    "properties": {
+                      "LiquidSpecificGravity": {
+                        "type": "number",
+                        "title": "LiquidSpecificGravity",
+                        "description": "The specific gravity of the liquid sample.",
+                        "x-osdu-frame-of-reference": "UOM:dimensionless"
+                      },
+                      "LiquidMolecularWeight": {
+                        "type": "number",
+                        "title": "LiquidMolecularWeight",
+                        "description": "The molecular weight of the liquid sample.",
+                        "x-osdu-frame-of-reference": "UOM:molecular weight"
+                      },
+                      "APIGravity": {
+                        "type": "number",
+                        "title": "API Gravity",
+                        "description": "The API gravity of the liquid sample.",
+                        "x-osdu-frame-of-reference": "UOM:API gravity"
+                      },
+                      "LiquidComposition": {
+                        "type": "array",
+                        "title": "LiquidComposition",
+                        "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
+                        "x-osdu-indexing": {
+                          "type": "nested"
+                        },
+                        "items": {
+                          "type": "object",
+                          "title": "Liquid Composition",
+                          "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
+                          "properties": {
+                            "ComponentNameID": {
+                              "type": "string",
+                              "title": "Component Name ID",
+                              "description": "The chemical formula of each component found in the liquid during analysis.",
+                              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                              "x-osdu-relationship": [
+                                {
+                                  "GroupType": "reference-data",
+                                  "EntityType": "SampleOrganicCompositionComponent"
+                                }
+                              ]
+                            },
+                            "MolecularWeight": {
+                              "type": "number",
+                              "title": "Molecular Weight",
+                              "description": "The molecular weight of the component.",
+                              "x-osdu-frame-of-reference": "UOM:molecular weight"
+                            },
+                            "MolePercent": {
+                              "type": "number",
+                              "title": "Mole Percent",
+                              "description": "The molar percentage of the component, if available.",
+                              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                            },
+                            "MassPercent": {
+                              "type": "number",
+                              "title": "Mass Percent",
+                              "description": "The mass percentage of the component, if available.",
+                              "x-osdu-frame-of-reference": "UOM:mass per mass"
+                            },
+                            "VolumePercent": {
+                              "type": "number",
+                              "title": "Volume Percent",
+                              "description": "The volume percentage of the component, if available.",
+                              "x-osdu-frame-of-reference": "UOM:volume per volume"
+                            },
+                            "SpecificGravity": {
+                              "type": "number",
+                              "title": "Specific Gravity",
+                              "description": "The specific gravity of the component.",
+                              "x-osdu-frame-of-reference": "UOM:dimensionless"
+                            },
+                            "MoleFraction": {
+                              "type": "number",
+                              "title": "Mole Fraction",
+                              "description": "The molar fraction of the component.",
+                              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                            },
+                            "MassFraction": {
+                              "type": "number",
+                              "title": "Mass Fraction",
+                              "description": "The mass fraction of the component.",
+                              "x-osdu-frame-of-reference": "UOM:mass per mass"
+                            },
+                            "VolumeFraction": {
+                              "type": "number",
+                              "title": "Volume Fraction",
+                              "description": "The volume fraction of the component.",
+                              "x-osdu-frame-of-reference": "UOM:volume per volume"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "InstantaneousVaporCompositionalAnalysis": {
+                  "type": "array",
+                  "title": "Instantaneous Vapor Compositional Analysis",
+                  "description": "Array recording the compositional analysis of the vapor retrieved from the sample at this test step.",
+                  "x-osdu-indexing": {
+                    "type": "nested"
+                  },
+                  "items": {
+                    "type": "object",
+                    "title": "Vapor Analysis",
+                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                    "properties": {
+                      "VaporSpecificGravity": {
+                        "type": "number",
+                        "title": "Vapor Specific Gravity",
+                        "description": "The specific gravity of the vapor retrieved from the sample.",
+                        "x-osdu-frame-of-reference": "UOM:dimensionless"
+                      },
+                      "VaporMolecularWeight": {
+                        "type": "number",
+                        "title": "Vapor Molecular Weight",
+                        "description": "The molecular weight of the vapor retrieved from the sample.",
+                        "x-osdu-frame-of-reference": "UOM:molecular weight"
+                      },
+                      "VaporComposition": {
+                        "type": "array",
+                        "title": "Vapor Composition",
+                        "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                        "x-osdu-indexing": {
+                          "type": "nested"
+                        },
+                        "items": {
+                          "type": "object",
+                          "title": "Vapor Composition",
+                          "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                          "properties": {
+                            "ComponentNameID": {
+                              "type": "string",
+                              "title": "Component Name ID",
+                              "description": "Name of the component in the liquid.",
+                              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                              "x-osdu-relationship": [
+                                {
+                                  "GroupType": "reference-data",
+                                  "EntityType": "SampleOrganicCompositionComponent"
+                                }
+                              ]
+                            },
+                            "MolecularWeight": {
+                              "type": "number",
+                              "title": "Molecular Weight",
+                              "description": "The molecular weight of the component.",
+                              "x-osdu-frame-of-reference": "UOM:molecular weight"
+                            },
+                            "RelativeMole": {
+                              "type": "number",
+                              "title": "Relative Mole",
+                              "description": "The molar quantity of the component relative to the total moles of the sample.",
+                              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                            },
+                            "RelativeMass": {
+                              "type": "number",
+                              "title": "Relative Mass",
+                              "description": "The mass of the component relative to the total mass of the sample.",
+                              "x-osdu-frame-of-reference": "UOM:mass per mass"
+                            },
+                            "RelativeVolume": {
+                              "type": "number",
+                              "title": "Relative Volume",
+                              "description": "The volume of the component relative to the total volume of the sample.",
+                              "x-osdu-frame-of-reference": "UOM:volume per volume"
+                            },
+                            "SpecificGravity": {
+                              "type": "number",
+                              "title": "Specific Gravity",
+                              "description": "The specific gravity of the component.",
+                              "x-osdu-frame-of-reference": "UOM:dimensionless"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "InstantaneousLiquidCompositionalAnalysis": {
+                  "type": "array",
+                  "title": "Instantaneous Liquid Compositional Analysis",
+                  "description": "Array recording the compositional analysis of the liquid retrieved from the sample at this test step.",
+                  "x-osdu-indexing": {
+                    "type": "nested"
+                  },
+                  "items": {
+                    "type": "object",
+                    "title": "Liquid Analysis",
+                    "description": "Analysis of the liquid sample consisting of composition, molecular weight, and specific gravity.",
+                    "properties": {
+                      "LiquidSpecificGravity": {
+                        "type": "number",
+                        "title": "LiquidSpecificGravity",
+                        "description": "The specific gravity of the liquid sample.",
+                        "x-osdu-frame-of-reference": "UOM:dimensionless"
+                      },
+                      "LiquidMolecularWeight": {
+                        "type": "number",
+                        "title": "LiquidMolecularWeight",
+                        "description": "The molecular weight of the liquid sample.",
+                        "x-osdu-frame-of-reference": "UOM:molecular weight"
+                      },
+                      "APIGravity": {
+                        "type": "number",
+                        "title": "API Gravity",
+                        "description": "The API gravity of the liquid sample.",
+                        "x-osdu-frame-of-reference": "UOM:API gravity"
+                      },
+                      "LiquidComposition": {
+                        "type": "array",
+                        "title": "LiquidComposition",
+                        "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
+                        "x-osdu-indexing": {
+                          "type": "nested"
+                        },
+                        "items": {
+                          "type": "object",
+                          "title": "Liquid Composition",
+                          "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
+                          "properties": {
+                            "ComponentNameID": {
+                              "type": "string",
+                              "title": "Component Name ID",
+                              "description": "The chemical formula of each component found in the liquid during analysis.",
+                              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                              "x-osdu-relationship": [
+                                {
+                                  "GroupType": "reference-data",
+                                  "EntityType": "SampleOrganicCompositionComponent"
+                                }
+                              ]
+                            },
+                            "MolecularWeight": {
+                              "type": "number",
+                              "title": "Molecular Weight",
+                              "description": "The molecular weight of the component.",
+                              "x-osdu-frame-of-reference": "UOM:molecular weight"
+                            },
+                            "MolePercent": {
+                              "type": "number",
+                              "title": "Mole Percent",
+                              "description": "The molar percentage of the component, if available.",
+                              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                            },
+                            "MassPercent": {
+                              "type": "number",
+                              "title": "Mass Percent",
+                              "description": "The mass percentage of the component, if available.",
+                              "x-osdu-frame-of-reference": "UOM:mass per mass"
+                            },
+                            "VolumePercent": {
+                              "type": "number",
+                              "title": "Volume Percent",
+                              "description": "The volume percentage of the component, if available.",
+                              "x-osdu-frame-of-reference": "UOM:volume per volume"
+                            },
+                            "SpecificGravity": {
+                              "type": "number",
+                              "title": "Specific Gravity",
+                              "description": "The specific gravity of the component.",
+                              "x-osdu-frame-of-reference": "UOM:dimensionless"
+                            },
+                            "MoleFraction": {
+                              "type": "number",
+                              "title": "Mole Fraction",
+                              "description": "The molar fraction of the component.",
+                              "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                            },
+                            "MassFraction": {
+                              "type": "number",
+                              "title": "Mass Fraction",
+                              "description": "The mass fraction of the component.",
+                              "x-osdu-frame-of-reference": "UOM:mass per mass"
+                            },
+                            "VolumeFraction": {
+                              "type": "number",
+                              "title": "Volume Fraction",
+                              "description": "The volume fraction of the component.",
+                              "x-osdu-frame-of-reference": "UOM:volume per volume"
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "SeparatorTemperature": {
+                  "type": "number",
+                  "title": "Separator Temperature",
+                  "description": "Temperature recorded at the separator at this test step.",
+                  "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+                },
+                "SeparatorPressure": {
+                  "type": "number",
+                  "title": "Separator Pressure",
+                  "description": "Pressure recorded at the separator at this test step.",
+                  "x-osdu-frame-of-reference": "UOM:pressure"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "MaterialBalanceData": {
+            "type": "array",
+            "title": "Material Balance Data",
+            "description": "Array that records the type and weight of the material injected into the sample as well as the material recovered.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Material Balance Data",
+              "description": "Array that records the type and weight of the material injected into the sample as well as the material recovered.",
+              "properties": {
+                "MassOfReservoirOilInSlimTube": {
+                  "type": "number",
+                  "title": "Mass of Reservoir Oil in Slim Tube",
+                  "description": "The mass of injected reservoir oil within the slim tube.",
+                  "x-osdu-frame-of-reference": "UOM:mass"
+                },
+                "MassOfReservoirOilInConnectingLines": {
+                  "type": "number",
+                  "title": "Mass of Reservoir Oil in Connecting Lines",
+                  "description": "The mass of injected reservoir oil in the connecting lines.",
+                  "x-osdu-frame-of-reference": "UOM:mass"
+                },
+                "MassOfReservoirOil": {
+                  "type": "number",
+                  "title": "Mass of Reservoir Oil",
+                  "description": "The overall mass of injected reservoir oil within the slim tube and connecting lines.",
+                  "x-osdu-frame-of-reference": "UOM:mass"
+                },
+                "MassOfGasSolvent": {
+                  "type": "number",
+                  "title": "Mass of Gas Solvent",
+                  "description": "The mass of injected gas solvent.",
+                  "x-osdu-frame-of-reference": "UOM:mass"
+                },
+                "MassTotalInjected": {
+                  "type": "number",
+                  "title": "Mass Total Injected",
+                  "description": "The total mass of reservoir oil and gas solvent injected into the slim tube and connecting lines.",
+                  "x-osdu-frame-of-reference": "UOM:mass"
+                },
+                "MassOfEffluentStockTankOilBeforeBlowDown": {
+                  "type": "number",
+                  "title": "Mass Effluent Stock Tank Oil before Blow Down",
+                  "description": "The mass of effluent stock tank oil prior to  depressurization (blow down).",
+                  "x-osdu-frame-of-reference": "UOM:mass"
+                },
+                "MassOfProducedEffluentGasBeforeBlowDown": {
+                  "type": "number",
+                  "title": "Mass Produced Effluent Gas before Blow Down",
+                  "description": "The mass of produced effluent gas prior to  depressurization (blow down).",
+                  "x-osdu-frame-of-reference": "UOM:mass"
+                },
+                "MassOfEffluentStockTankOilAfterBlowDown": {
+                  "type": "number",
+                  "title": "Mass Effluent Stock Tank Oil after Blow Down",
+                  "description": "The mass of effluent stock tank oil after  depressurization (blow down).",
+                  "x-osdu-frame-of-reference": "UOM:mass"
+                },
+                "MassOfProducedEffluentGasAfterBlowDown": {
+                  "type": "number",
+                  "title": "Mass Produced Effluent Gas after Blow Down",
+                  "description": "The mass of produced effluent gas after  depressurization (blow down).",
+                  "x-osdu-frame-of-reference": "UOM:mass"
+                },
+                "MassOfResidualOil": {
+                  "type": "number",
+                  "title": "Mass Of Residual Oil",
+                  "description": "The mass of residual oil remaining in the slim tube and connecting lines after depressurization (blow down).",
+                  "x-osdu-frame-of-reference": "UOM:mass"
+                },
+                "MassTotalRecovered": {
+                  "type": "number",
+                  "title": "Mass Total Recovered",
+                  "description": "The total mass at the end of the experiment.",
+                  "x-osdu-frame-of-reference": "UOM:mass"
+                },
+                "WeightPercentRecovered": {
+                  "type": "number",
+                  "title": "Weight percent recovered",
+                  "description": "The ratio of MassTotalRecovered over MassTotalInjected in weight percent.",
+                  "x-osdu-frame-of-reference": "UOM:mass per mass"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta"
+  ],
+  "additionalProperties": false
+}

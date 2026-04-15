@@ -1,0 +1,509 @@
+{
+    "title": "StockTankOilAnalysisModel110",
+    "type": "object",
+    "properties": {
+        "SamplesAnalysisID": {
+            "title": "Samples Analysis ID",
+            "description": "The OSDU Identifier for this SamplesAnalysis.",
+            "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "SampleID": {
+            "title": "Sample ID",
+            "description": "The OSDU Identifier for the Sample associated with this analysis.",
+            "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "Meta": {
+            "title": "Meta",
+            "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+            "example": "",
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/Meta"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta1"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta2"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta3"
+                    }
+                ]
+            }
+        },
+        "FluidConditionsID": {
+            "title": "Fluid Conditions ID",
+            "description": "Identifies the testing condition of the sample fluid, e.g. InitialReservoir, CurrentReservoir, StockTank, InitialSaturation (References SampleTestCondition).",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleTestCondition:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "PhasesPresentID": {
+            "title": "Phases Present ID",
+            "description": "Identifies the phases of fluid present in the sample, e.g. SeparatorLiquid, FlashedOil, OilWithMud, Gas, ReservoirFluid (references FluidPhasesPresent).",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidPhasesPresent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "StockTankPressure": {
+            "title": "Stock Tank Pressure",
+            "description": "Pressure recorded within the stock tank.",
+            "type": "number"
+        },
+        "StockTankTemperature": {
+            "title": "Stock Tank Temperature",
+            "description": "Temperature recorded within the stock tank.",
+            "type": "number"
+        },
+        "MolecularWeight": {
+            "title": "Molecular Weight",
+            "description": "The average molecular weight of the sample.",
+            "type": "number"
+        },
+        "DensityAtTemperature": {
+            "title": "Density At Temperature",
+            "description": "Fluid Density at specified temperatures.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/DensityAtTemperatureItem"
+            }
+        },
+        "OilAPIGravity": {
+            "title": "Oil API Gravity",
+            "description": "A measure of how heavy or light a petroleum liquid is compared to water. It is expressed in degrees API (°API) and is calculated using the following formula:\nAPI gravity=(141.5/Specific Gravity)−131.5",
+            "type": "number"
+        },
+        "WatsonKFactor": {
+            "title": "Watson K Factor",
+            "description": "Characterizes crude oils based on their boiling points and molecular weights. It is primarily a measure used to estimate certain properties of petroleum fractions.",
+            "type": "number"
+        },
+        "PourPoint": {
+            "title": "Pour Point",
+            "description": "The temperature below which the liquid loses its flow characteristics, ASTM D97",
+            "type": "number"
+        },
+        "FlashPoint": {
+            "title": "Flash Point",
+            "description": "Flash point measurement as determined by an ASTM (American Society for Testing and Materials) standard test. The flash point of a substance is the lowest temperature at which it can vaporize to form an ignitable mixture in air.",
+            "type": "number"
+        },
+        "NitrogenBase": {
+            "title": "Nitrogen Base",
+            "description": "The basic organic nitrogen in the sample, as determined by potentiometric titration (ASTM UOP269-10).",
+            "type": "number"
+        },
+        "TotalSulphurContent": {
+            "title": "TotalSulphur Content",
+            "description": "The total sulphur content in the sample.",
+            "type": "number"
+        },
+        "AsphalteneContent": {
+            "title": "Asphaltene Content",
+            "description": "The asphaltene content in the sample.",
+            "type": "number"
+        },
+        "WaxContent": {
+            "title": "Wax Content",
+            "description": "The amount or percentage of wax present in a sample",
+            "type": "number"
+        },
+        "ParrafinContent": {
+            "title": "Parrafin Content",
+            "description": "DEPRECATED: use ParaffinContent instead.",
+            "deprecated": true,
+            "type": "number"
+        },
+        "ParaffinContent": {
+            "title": "Paraffin Content",
+            "description": "The amount of paraffin present in the sample.",
+            "type": "number"
+        },
+        "WaxAppearanceTemperature": {
+            "title": "Wax Appearance Temperature",
+            "description": "The temperature at which wax crystals first begin to form in a petroleum fluid. It marks the onset of wax precipitation.",
+            "type": "number"
+        },
+        "CloudPoint": {
+            "title": "Cloud Point",
+            "description": "The temperature below which a transparent solution undergoes either a liquid-liquid phase separation to form an emulsion or a liquid-solid phase transition to form either a stable solution or a suspension that settles a precipitate",
+            "type": "number"
+        },
+        "MeltingPoint": {
+            "title": "Melting Point",
+            "description": "The temperature at which a substance changes from its solid state to its liquid state.",
+            "type": "number"
+        },
+        "WaterContent": {
+            "title": "Water Content",
+            "description": "The amount or percentage of water present in a sample",
+            "type": "number"
+        },
+        "TotalAcidNumber": {
+            "title": "Total Acid Number",
+            "description": "The quantity of acidic compounds present in a sample, also referred to as TAN.",
+            "type": "number"
+        },
+        "MercaptanSulfur": {
+            "title": "Mercaptan Sulfur",
+            "description": "Mercaptan sulfur concentration",
+            "type": "number"
+        },
+        "PenetrationGrade": {
+            "title": "Penetration Grade",
+            "description": "The penetration grade",
+            "type": "number"
+        },
+        "SofteningPoint": {
+            "title": "Softening Point",
+            "description": "The temperature at which a resin begins to flow.",
+            "type": "number"
+        },
+        "SmokingPoint": {
+            "title": "Smoking Point",
+            "description": "The temperature at which an oil begins to produce a continuous visible smoke.",
+            "type": "number"
+        },
+        "FreezingPoint": {
+            "title": "Freezing Point",
+            "description": "The temperature at which a substance changes from its liquid state to its solid state.",
+            "type": "number"
+        },
+        "AnilinePoint": {
+            "title": "Aniline Point",
+            "description": "The minimum temperature at which equal volumes of aniline and lubricant oil are miscible, i.e. form a single phase upon mixing.",
+            "type": "number"
+        },
+        "SaltContent": {
+            "title": "Salt Content",
+            "description": "The amount or percentage of sodium chloride present in a sample.",
+            "type": "number"
+        },
+        "WaterSedimentContent": {
+            "title": "Water Sediment Content",
+            "description": "The amount or percentage of basic water and sediment present in a sample.",
+            "type": "number"
+        },
+        "ViscosityAtTemperature": {
+            "title": "Viscosity At Temperature",
+            "description": "Fluid viscosity at indicated temperature.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ViscosityAtTemperatureItem"
+            }
+        },
+        "ElementalAnalysis": {
+            "title": "Elemental Analysis",
+            "description": "Elemental analysis involves various techniques to determine the composition of a sample. Some commonly used methods are X-ray Fluorescence (XRF), Inductively Coupled Plasma Mass Spectrometry (ICP-MS), Atomic Absorption Spectroscopy (AAS), Inductively Coupled Plasma Optical Emission Spectroscopy (ICP-OES), Neutron Activation Analysis (NAA) and Combustion Analysis.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ElementalAnalysi"
+            }
+        },
+        "FractionationAnalysisID": {
+            "title": "Fractionation Analysis ID",
+            "description": "Identifier(s) for the specific Fractionation analysis where asphaltene content is captured.",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$"
+            }
+        },
+        "ReidVaporPressure": {
+            "title": "Reid Vapor Pressure",
+            "description": "A measure of the volatility of gasoline and other petroleum products. It is defined as the absolute vapor pressure exerted by a liquid at 37.8°C (100°F) in a closed container.",
+            "type": "number"
+        },
+        "CarbonResidue": {
+            "title": "Carbon Residue",
+            "description": "Indicates the amount of carbonaceous material left after combustion, affecting refining processes.",
+            "type": "number"
+        },
+        "RefractiveIndex": {
+            "title": "Refractive Index",
+            "description": "The refractive index of crude oil is a measure of how much light bends when it passes through the oil. This property depends on the density and composition of the crude oil. Generally, heavier crude oils with lower API gravity have higher refractive indices",
+            "type": "number"
+        },
+        "Remarks": {
+            "title": "Remarks",
+            "description": "Array object capturing remarks or additional information for this test step.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
+            "example": "",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/Remark"
+            }
+        }
+    },
+    "required": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Meta"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "Meta": {
+            "title": "Meta",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "UOM Reference Kind",
+                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                    "default": "Unit",
+                    "const": "Unit",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "UOM Unit Symbol",
+                    "description": "The unit symbol or name of the unit.",
+                    "example": "ft[US]",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "UOM Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+                    "type": "string"
+                },
+                "unitOfMeasureID": {
+                    "title": "Unitofmeasureid",
+                    "description": "SRN to unit of measure reference.",
+                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "UOM Property Names",
+                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "HorizontalDeflection.EastWest",
+                        "HorizontalDeflection.NorthSouth"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "Meta1": {
+            "title": "Meta1",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "CRS Reference Kind",
+                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                    "default": "CRS",
+                    "const": "CRS",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "CRS Name",
+                    "description": "The name of the CRS.",
+                    "example": "WGS 84 / UTM zone 15N",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "CRS Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
+                    "type": "string"
+                },
+                "coordinateReferenceSystemID": {
+                    "title": "Coordinatereferencesystemid",
+                    "description": "SRN to CRS reference.",
+                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "CRS Property Names",
+                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "KickOffPosition.X",
+                        "KickOffPosition.Y"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "Meta2": {
+            "title": "Meta2",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "DateTime Reference Kind",
+                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                    "default": "DateTime",
+                    "const": "DateTime",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "DateTime Name",
+                    "description": "The name of the DateTime format and reference.",
+                    "example": "UTC",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "DateTime Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "DateTime Property Names",
+                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Acquisition.StartTime",
+                        "Acquisition.EndTime"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "Meta3": {
+            "title": "Meta3",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "AzimuthReference Reference Kind",
+                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                    "default": "AzimuthReference",
+                    "const": "AzimuthReference",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "AzimuthReference Name",
+                    "description": "The name of the CRS or the symbol/name of the unit.",
+                    "example": "TrueNorth",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "AzimuthReference Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "AzimuthReference Property Names",
+                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Bearing"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "DensityAtTemperatureItem": {
+            "title": "DensityAtTemperatureItem",
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "title": "Value",
+                    "description": "The density value at the indicated temperature.",
+                    "type": "number"
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "The temperature at which density was recorded.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ViscosityAtTemperatureItem": {
+            "title": "ViscosityAtTemperatureItem",
+            "type": "object",
+            "properties": {
+                "DynamicViscosity": {
+                    "title": "Dynamic Viscosity",
+                    "description": "Also known as absolute viscosity, this measures a fluid's internal resistance to flow when an external force is applied. It quantifies the frictional forces between adjacent layers of fluid as they move relative to each other. The unit of dynamic viscosity is the Pascal-second (Pa·s) or poise (P).",
+                    "type": "number"
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "The temperature at which viscosity was recorded.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ElementalAnalysi": {
+            "title": "ElementalAnalysi",
+            "type": "object",
+            "properties": {
+                "ElementID": {
+                    "title": "Element ID",
+                    "description": "The ID of the element detected.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-Elements:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "Value": {
+                    "title": "Value",
+                    "description": "The amount of this element.",
+                    "type": "number"
+                },
+                "ElementalAnalysisMethodID": {
+                    "title": "Elemental Analysis Method ID",
+                    "description": "The method used to detect this element.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-ElementalAnalysisMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Remark": {
+            "title": "Remark",
+            "type": "object",
+            "properties": {
+                "RemarkSequenceNumber": {
+                    "title": "Remark Sequence Number",
+                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                    "example": 1,
+                    "type": "integer"
+                },
+                "Remark": {
+                    "title": "Remark",
+                    "description": "A descriptive comment for this remark.",
+                    "type": "string"
+                },
+                "RemarkSource": {
+                    "title": "Remark Source",
+                    "description": "The person, vendor, interpreter or other provider of information.",
+                    "type": "string"
+                },
+                "RemarkDate": {
+                    "title": "Remark Date",
+                    "description": "The date the remark was issued.",
+                    "type": "string",
+                    "format": "date"
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

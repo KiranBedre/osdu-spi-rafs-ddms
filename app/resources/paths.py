@@ -51,6 +51,7 @@ class CommonRelativePathsV2(NamedTuple):
     CEC_CONTENT: str = "/data/cec"
     TRIAXIAL_TEST: str = "/data/triaxial"
     CAP_PRESSURE: str = "/data/capillarypressure"
+    CAP_SUCTION_TIME: str = "/data/capillarysuctiontime"
     WETTABILITY_INDEX: str = "/data/wettabilityindex"
     TEC: str = "/data/tec"
     EDS_MAPPING: str = "/data/edsmapping"
@@ -62,16 +63,21 @@ class CommonRelativePathsV2(NamedTuple):
     STO: str = "/data/stocktankoilanalysis"
     CRUSHED_ROCK_ANALYSIS: str = "/data/crushedrockanalysis"
     MINING_GEOTECH_LOGGING: str = "/data/mininggeotechlogging"
+    PROPPANT_EMBEDMENT: str = "/data/proppantembed"
+    ROLLER_OVEN_TEST: str = "/data/rolleroventest"
+    SATURATION_TEST: str = "/data/saturationtest"
 
 
 class CommonRelativePathsDev(CommonRelativePathsV2):
     pass
 
 
-COMMON_RELATIVE_PATHS = MappingProxyType({
-    "v2": CommonRelativePathsV2,
-    "dev": CommonRelativePathsDev,
-})
+COMMON_RELATIVE_PATHS = MappingProxyType(
+    {
+        "v2": CommonRelativePathsV2,
+        "dev": CommonRelativePathsDev,
+    },
+)
 
 
 SAMPLESANALYSIS_TYPE_MAPPING = {
@@ -148,6 +154,9 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
         "CapillaryPressure.DigitalRockModelling",
         "CapillaryPressure",
     ],
+    "capillarysuctiontime": [
+        "FluidSensitivity.CapillarySuctionTime",
+    ],
     "wettabilityindex": [
         "Wettability.AmottHarvey",
         "Wettability.AmottUSBM",
@@ -164,8 +173,13 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
     "stocktankoilanalysis": ["PVT.StockTankOilCharacterization"],
     "crushedrockanalysis": ["BasicRockProperties.CrushedRockAnalysis"],
     "mininggeotechlogging": ["Mining.Geotechlogging"],
+    "proppantembed": ["Geomechanics.ProppantEmbedment"],
+    "rolleroventest": ["FluidSensitivity.RollerOvenTest"],
+    "saturationtest": ["PVT.SaturationTest"],
 }
 
 SATURATION_FUNCTION_SET_STR = "saturationfunctionset"
 
 RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR = "reservoirsimulationrockphysicsmodel"
+
+ROLLER_OVEN_TEST_STR = "rolleroventest"

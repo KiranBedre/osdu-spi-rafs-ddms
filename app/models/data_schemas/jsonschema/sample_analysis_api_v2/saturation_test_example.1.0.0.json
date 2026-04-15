@@ -1,0 +1,37 @@
+[
+  {
+    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:Example_WPC:",
+    "SampleID": "opendes:master-data--Sample:Example_Sample:",
+    "Meta": [
+      {
+        "kind": "Unit",
+        "name": "degree Fahrenheit",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:degF:",
+        "propertyNames": [
+          "Temperature"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "pound-force per square inch",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:psi:",
+        "propertyNames": [
+          "SaturationPressure"
+        ]
+      }
+    ],
+    "TestNumber": "1",
+    "Temperature": 250.0,
+    "SaturationPressure": 3500.0,
+    "SaturationPressureTypeID": "opendes:reference-data--SaturationPressureType:BubblePoint:",
+    "SourceAnalysisID": "opendes:work-product-component--SamplesAnalysis:Example_CCE_WPC:",
+    "Remarks": [
+      {
+        "RemarkSequenceNumber": 1,
+        "Remark": "Bubble point determined from constant composition expansion test.",
+        "RemarkSource": "Laboratory Analyst",
+        "RemarkDate": "2025-01-15"
+      }
+    ]
+  }
+]

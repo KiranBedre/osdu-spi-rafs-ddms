@@ -1,11 +1,10 @@
 from collections import defaultdict
-from typing import Optional
 
 from client.api.core.api_source import APIResource
 from client.api_client import APIClient
 from tests.integration.config import (
     ACCEPT_HEADERS,
-    SCHEMA_VERSION,
+    SchemaVersions,
     SamplesAnalysisTypes,
 )
 
@@ -34,7 +33,8 @@ class SamplesAnalysis(APIResource, APIClient):
         record_id: str,
         body: dict,
         analysis_type: SamplesAnalysisTypes,
-        schema_version_header: Optional[dict] = ACCEPT_HEADERS.format(version=SCHEMA_VERSION),
+        schema_version: str = SchemaVersions.DEFAULT,
+        raw: bool = False,
         **kwargs,
     ) -> dict:
         """
@@ -44,24 +44,21 @@ class SamplesAnalysis(APIResource, APIClient):
         :param schema_version_header: version of the dataset schema
         :return: created data
         """
-        if schema_version_header:
-            headers = defaultdict(dict, kwargs.get("headers", {}))
-            headers.update({"Accept": schema_version_header})
-            kwargs["headers"] = headers
-        return self.post(
+        self._add_version_header(kwargs, schema_version)
+        response = self.post(
             path=SamplesAnalysisPaths.POST_DATA.format(record_id=record_id, analysis_type=analysis_type),
             json=body,
             **kwargs,
-        ).json()
+        )
+        return response if raw else response.json()
 
     def get_measurements(
         self,
         record_id: str,
-        dataset_id,
+        dataset_id: str,
         analysis_type: SamplesAnalysisTypes,
-        schema_version_header: Optional[dict] = ACCEPT_HEADERS.format(version=SCHEMA_VERSION),
-        json: bool = True,
-        orient: Optional[str] = None,
+        schema_version: str = SchemaVersions.DEFAULT,
+        raw: bool = False,
         **kwargs,
     ) -> dict:
         """
@@ -70,65 +67,72 @@ class SamplesAnalysis(APIResource, APIClient):
         :param dataset_id: created dataset id
         :param schema_version_header: version of the dataset schema
         :param json: is response json or not
-        :param orient: JSON output format ('split' or 'records')
         :return: measurements data
         """
-        if schema_version_header:
-            headers = defaultdict(dict, kwargs.get("headers", {}))
-            headers.update({"Accept": schema_version_header})
-            kwargs["headers"] = headers
+        self._add_version_header(kwargs, schema_version)
         path = SamplesAnalysisPaths.GET_DATA.format(
             record_id=record_id,
             analysis_type=analysis_type,
             dataset_id=dataset_id,
         )
-        if orient:
-            path = f"{path}?orient={orient}"
         response = self.get(path=path, **kwargs)
-        return response.json() if json else response
+        return response if raw else response.json()
 
-    def get_analysis_types(self, **kwargs) -> dict:
+    def get_analysis_types(self, raw: bool = False, **kwargs) -> dict:
         """Get available types."""
-        return self.get(
-            path=SamplesAnalysisPaths.GET_ANALYSIS_TYPES,
-            **kwargs,
-        ).json()
+        response = self.get(path=SamplesAnalysisPaths.GET_ANALYSIS_TYPES, **kwargs)
+        return response if raw else response.json()
 
-    def get_schema(self, analysis_type: SamplesAnalysisTypes, **kwargs) -> dict:
+    def get_schema(
+        self,
+        analysis_type: SamplesAnalysisTypes,
+        schema_version: str = SchemaVersions.DEFAULT,
+        raw: bool = False,
+        **kwargs,
+    ) -> dict:
         """Get actual schema for provided analysis_type."""
-        return self.get(
+        self._add_version_header(kwargs, schema_version)
+        response = self.get(
             path=SamplesAnalysisPaths.GET_SCHEMA.format(analysistypes=analysis_type),
             **kwargs,
-        ).json()
+        )
+        return response if raw else response.json()
 
     def search(
         self,
         analysis_type: SamplesAnalysisTypes,
-        schema_version_header: Optional[dict] = ACCEPT_HEADERS.format(version=SCHEMA_VERSION),
+        schema_version: str = SchemaVersions.DEFAULT,
+        raw: bool = False,
         **kwargs,
     ) -> dict:
         """Search for analysis type ids."""
-        if schema_version_header:
-            headers = defaultdict(dict, kwargs.get("headers", {}))
-            headers.update({"Accept": schema_version_header})
-            kwargs["headers"] = headers
-        return self.get(
+        self._add_version_header(kwargs, schema_version)
+        response = self.get(
             path=SamplesAnalysisPaths.SEARCH.format(analysis_type=analysis_type),
             **kwargs,
-        ).json()
+        )
+        return response if raw else response.json()
 
     def search_data(
         self,
         analysis_type: SamplesAnalysisTypes,
-        schema_version_header: Optional[dict] = ACCEPT_HEADERS.format(version=SCHEMA_VERSION),
+        schema_version: str = SchemaVersions.DEFAULT,
+        raw: bool = False,
         **kwargs,
     ) -> dict:
         """Search for bulk data given analysis type."""
-        if schema_version_header:
-            headers = defaultdict(dict, kwargs.get("headers", {}))
-            headers.update({"Accept": schema_version_header})
-            kwargs["headers"] = headers
-        return self.get(
+        self._add_version_header(kwargs, schema_version)
+        response = self.get(
             path=SamplesAnalysisPaths.SEARCH_DATA.format(analysis_type=analysis_type),
             **kwargs,
-        ).json()
+        )
+        return response if raw else response.json()
+
+    def _add_version_header(self, kwargs: dict, schema_version: str) -> None:
+        """ Helper to construct and inject the Accept header. """
+
+        accept_header = ACCEPT_HEADERS.format(version=schema_version)
+
+        headers = defaultdict(dict, kwargs.get("headers", {}))
+        headers.update({"Accept": accept_header})
+        kwargs["headers"] = headers

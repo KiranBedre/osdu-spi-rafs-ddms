@@ -19,14 +19,17 @@ from app.models.data_schemas.sample_analysis_api_v2.constant_composition_expansi
 from app.models.data_schemas.sample_analysis_api_v2.differential_liberation_data_model_1_0_0 import DifferentialLiberationModel100
 from app.models.data_schemas.sample_analysis_api_v2.transport_data_model_1_0_0 import TransportModel100
 from app.models.data_schemas.sample_analysis_api_v2.atmospheric_flash_and_compositional_analysis_data_model_1_0_0 import AtmosphericFlashAndCompositionalAnalysisModel100
+from app.models.data_schemas.sample_analysis_api_v2.atmospheric_flash_and_compositional_analysis_data_model_1_1_0 import AtmosphericFlashAndCompositionalAnalysisModel110
 from app.models.data_schemas.sample_analysis_api_v2.multi_stage_separator_data_model_1_0_0 import MultiStageSeparatorModel100
 from app.models.data_schemas.sample_analysis_api_v2.swelling_data_model_1_0_0 import SwellingModel100
 from app.models.data_schemas.sample_analysis_api_v2.constant_volume_depletion_data_model_1_0_0 import ConstantVolumeDepletionModel100
 from app.models.data_schemas.sample_analysis_api_v2.water_analysis_data_model_1_0_0 import WaterAnalysisModel100
 from app.models.data_schemas.sample_analysis_api_v2.interfacial_tension_data_model_1_0_0 import InterfacialTensionModel100
 from app.models.data_schemas.sample_analysis_api_v2.vapor_liquid_equilibrium_data_model_1_0_0 import VaporLiquidEquilibriumModel100
+from app.models.data_schemas.sample_analysis_api_v2.vapor_liquid_equilibrium_data_model_2_0_0 import VaporLiquidEquilibriumModel200
 from app.models.data_schemas.sample_analysis_api_v2.multiple_contact_miscibility_data_model_1_0_0 import MultipleContactMiscibilityModel100
 from app.models.data_schemas.sample_analysis_api_v2.slimtube_data_model_1_0_0 import SlimtubeModel100
+from app.models.data_schemas.sample_analysis_api_v2.slimtube_data_model_2_0_0 import SlimtubeModel200
 from app.models.data_schemas.sample_analysis_api_v2.extraction_data_model_1_0_0 import ExtractionModel100
 from app.models.data_schemas.sample_analysis_api_v2.fractionation_data_model_1_0_0 import FractionationModel100
 from app.models.data_schemas.sample_analysis_api_v2.relative_permeability_data_model_1_0_0 import RelativePermeabilityModel100
@@ -50,14 +53,21 @@ from app.models.data_schemas.sample_analysis_api_v2.wettability_index_data_model
 from app.models.data_schemas.sample_analysis_api_v2.tec_data_model_1_0_0 import TecModel100
 from app.models.data_schemas.sample_analysis_api_v2.eds_mapping_data_model_1_0_0 import EdsMappingModel100
 from app.models.data_schemas.sample_analysis_api_v2.xrf_data_model_1_0_0 import XrfModel100
+from app.models.data_schemas.sample_analysis_api_v2.xrf_data_model_1_1_0 import XrfModel110
 from app.models.data_schemas.sample_analysis_api_v2.capillary_pressure_data_model_1_0_0 import CapillaryPressureModel100
+from app.models.data_schemas.sample_analysis_api_v2.capillary_suction_time_data_model_1_0_0 import CapillarySuctionTimeModel100
 from app.models.data_schemas.sample_analysis_api_v2.stock_tank_oil_analysis_data_model_1_0_0 import StockTankOilAnalysisModel100
+from app.models.data_schemas.sample_analysis_api_v2.stock_tank_oil_analysis_data_model_1_1_0 import StockTankOilAnalysisModel110
 from app.models.data_schemas.sample_analysis_api_v2.tensile_strength_data_model_1_0_0 import TensileStrengthModel100
 from app.models.data_schemas.sample_analysis_api_v2.vitrinite_reflectance_data_model_1_0_0 import VitriniteReflectanceModel100
 from app.models.data_schemas.sample_analysis_api_v2.xrd_data_model_1_0_0 import XrdModel100
+from app.models.data_schemas.sample_analysis_api_v2.xrd_data_model_1_1_0 import XrdModel110
 from app.models.data_schemas.sample_analysis_api_v2.pdp_data_model_1_0_0 import PdpModel100
 from app.models.data_schemas.sample_analysis_api_v2.crushed_rock_analysis_data_model_1_0_0 import CrushedRockAnalysisModel100
 from app.models.data_schemas.sample_analysis_api_v2.mining_geotech_logging_data_model_1_0_0 import MiningGeotechLoggingModel100
+from app.models.data_schemas.sample_analysis_api_v2.proppant_embedment_data_model_1_0_0 import ProppantEmbedmentModel100
+from app.models.data_schemas.sample_analysis_api_v2.roller_oven_test_data_model_1_0_0 import RollerOvenTestModel100
+from app.models.data_schemas.sample_analysis_api_v2.saturation_test_data_model_1_0_0 import SaturationTestModel100
 
 RCA_MODELS = {
     ContentSchemaVersion.V_1_0_0: RoutineCoreAnalysisModel100,
@@ -73,9 +83,11 @@ TRANSPORT_TEST_MODELS = {
 }
 COMPOSITIONAL_ANALYSIS_MODELS = {
     ContentSchemaVersion.V_1_0_0: AtmosphericFlashAndCompositionalAnalysisModel100,
+    ContentSchemaVersion.V_1_1_0: AtmosphericFlashAndCompositionalAnalysisModel110,
 }
 ATMOSPHERIC_FLASH_MODELS = {
     ContentSchemaVersion.V_1_0_0: AtmosphericFlashAndCompositionalAnalysisModel100,
+    ContentSchemaVersion.V_1_1_0: AtmosphericFlashAndCompositionalAnalysisModel110,
 }
 MSS_MODELS = {
     ContentSchemaVersion.V_1_0_0: MultiStageSeparatorModel100,
@@ -94,12 +106,14 @@ INTERFACIAL_TENSION_MODELS = {
 }
 VLE_MODELS = {
     ContentSchemaVersion.V_1_0_0: VaporLiquidEquilibriumModel100,
+    ContentSchemaVersion.V_2_0_0: VaporLiquidEquilibriumModel200,
 }
 MCM_MODELS = {
     ContentSchemaVersion.V_1_0_0: MultipleContactMiscibilityModel100,
 }
 SLIMTUBE_MODELS = {
     ContentSchemaVersion.V_1_0_0: SlimtubeModel100,
+    ContentSchemaVersion.V_2_0_0: SlimtubeModel200,
 }
 EXTRACTION_MODELS = {
     ContentSchemaVersion.V_1_0_0: ExtractionModel100,
@@ -161,6 +175,9 @@ TRIAXIAL_TEST_MODELS = {
 CAP_PRESSURE_MODELS = {
     ContentSchemaVersion.V_1_0_0: CapillaryPressureModel100
 }
+CAP_SUCTION_TIME_MODELS = {
+    ContentSchemaVersion.V_1_0_0: CapillarySuctionTimeModel100
+}
 WETTABILITY_INDEX_MODELS = {
     ContentSchemaVersion.V_1_0_0: WettabilityIndexModel100
 }
@@ -171,7 +188,8 @@ EDS_MAPPING_MODELS = {
     ContentSchemaVersion.V_1_0_0: EdsMappingModel100
 }
 XRF_MODELS = {
-    ContentSchemaVersion.V_1_0_0: XrfModel100
+    ContentSchemaVersion.V_1_0_0: XrfModel100,
+    ContentSchemaVersion.V_1_1_0: XrfModel110,
 }
 TENSILE_STRENGTH_MODELS = {
     ContentSchemaVersion.V_1_0_0: TensileStrengthModel100
@@ -181,18 +199,29 @@ VITRINITE_REFLECTANCE_MODELS = {
 }
 XRD_MODELS = {
     ContentSchemaVersion.V_1_0_0: XrdModel100,
+    ContentSchemaVersion.V_1_1_0: XrdModel110,
 }
 PDP_MODELS = {
     ContentSchemaVersion.V_1_0_0: PdpModel100,
 }
 STO_MODELS = {
     ContentSchemaVersion.V_1_0_0: StockTankOilAnalysisModel100,
+    ContentSchemaVersion.V_1_1_0: StockTankOilAnalysisModel110,
 }
 CRUSHED_ROCK_ANALYSIS_MODELS = {
     ContentSchemaVersion.V_1_0_0: CrushedRockAnalysisModel100,
 }
 MINING_GEOTECH_LOGGING_MODELS = {
     ContentSchemaVersion.V_1_0_0: MiningGeotechLoggingModel100,
+}
+PROPPANT_EMBEDMENT_MODELS = {
+    ContentSchemaVersion.V_1_0_0: ProppantEmbedmentModel100,
+}
+ROLLER_OVEN_TEST_MODELS = {
+    ContentSchemaVersion.V_1_0_0: RollerOvenTestModel100
+}
+SATURATION_TEST_MODELS = {
+    ContentSchemaVersion.V_1_0_0: SaturationTestModel100,
 }
 
 common_relative_paths_api_v2 = CommonRelativePathsV2()
@@ -231,6 +260,7 @@ PATH_TO_DATA_MODEL_VERSIONS_API_V2 = {
     common_relative_paths_api_v2.CEC_CONTENT: CEC_CONTENT_MODELS,
     common_relative_paths_api_v2.TRIAXIAL_TEST: TRIAXIAL_TEST_MODELS,
     common_relative_paths_api_v2.CAP_PRESSURE: CAP_PRESSURE_MODELS,
+    common_relative_paths_api_v2.CAP_SUCTION_TIME: CAP_SUCTION_TIME_MODELS,
     common_relative_paths_api_v2.WETTABILITY_INDEX: WETTABILITY_INDEX_MODELS,
     common_relative_paths_api_v2.TEC: TEC_MODELS,
     common_relative_paths_api_v2.EDS_MAPPING: EDS_MAPPING_MODELS,
@@ -242,4 +272,7 @@ PATH_TO_DATA_MODEL_VERSIONS_API_V2 = {
     common_relative_paths_api_v2.STO: STO_MODELS,
     common_relative_paths_api_v2.CRUSHED_ROCK_ANALYSIS: CRUSHED_ROCK_ANALYSIS_MODELS,
     common_relative_paths_api_v2.MINING_GEOTECH_LOGGING: MINING_GEOTECH_LOGGING_MODELS,
+    common_relative_paths_api_v2.PROPPANT_EMBEDMENT: PROPPANT_EMBEDMENT_MODELS,
+    common_relative_paths_api_v2.ROLLER_OVEN_TEST: ROLLER_OVEN_TEST_MODELS,
+    common_relative_paths_api_v2.SATURATION_TEST: SATURATION_TEST_MODELS,
 }

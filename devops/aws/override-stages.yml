@@ -29,7 +29,7 @@ aws_test_py:
     - echo $ACCESS_TOKEN | wc -c
   script:
     - >-
-      pytest -n 3
+      pytest -n 3 --maxfail=5
       ./tests/integration/tests
       --ddms-base-url $AWS_BASE_URL
       --url-prefix ${URL_PREFIX}

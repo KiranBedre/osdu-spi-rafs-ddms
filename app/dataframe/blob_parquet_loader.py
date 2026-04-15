@@ -58,6 +58,22 @@ class BlobParquetLoader(object):
         ]
         return await asyncio.gather(*tasks)
 
+    def _apply_filters(
+        self,
+        blob_data: bytes,
+        blob_id: str,
+        object_name: str,
+        df_filter_processor: Optional[FilterProcessor],
+    ) -> pd.DataFrame:
+        """Apply filters to parquet content or read raw."""
+        if not df_filter_processor:
+            return pq.read_table(pa.BufferReader(blob_data)).to_pandas()
+        processor = df_filter_processor.get_filters_without_aggregation()
+        try:
+            return processor.apply_filters_from_bytes(blob_data)
+        except (ValueError, KeyError, RuntimeError) as err:
+            return self._handle_filter_error(err, blob_id, object_name).df
+
     def _handle_filter_error(
         self,
         err: Exception,
@@ -94,14 +110,7 @@ class BlobParquetLoader(object):
         )
         try:
             blob = await blob_storage_service.get_blob(blob_metadata=blob_metadata)
-            if df_filter_processor:
-                df_filter_processor = df_filter_processor.get_filters_without_aggregation()
-                try:  # noqa: WPS505
-                    df = df_filter_processor.apply_filters_from_bytes(blob.blob_data)
-                except (ValueError, KeyError, RuntimeError) as err:
-                    return self._handle_filter_error(err, blob_id, blob_metadata.object_name)
-            else:
-                df = pq.read_table(pa.BufferReader(blob.blob_data)).to_pandas()
+            df = self._apply_filters(blob.blob_data, blob_id, blob_metadata.object_name, df_filter_processor)
             error_msg = None
         except NotFoundException as u_exc:
             object_name = blob_metadata.object_name

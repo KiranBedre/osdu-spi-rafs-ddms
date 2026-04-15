@@ -84,6 +84,33 @@ async def test_samplesanalysis_content_schema_wrong_type():
     assert response.json()["reason"] == "Model not found for type 'wrong-type-name',  version '1.0.0'."
 
 
+ANALYSIS_TYPES_WITH_EXTRA_VERSIONS = [
+    (path.replace(PREFIX_TO_STRIP, ""), version)
+    for path, versions in ALL_PATHS_TO_DATA_MODEL.items()
+    if path.startswith(PREFIX_TO_STRIP)
+    for version in versions
+    if version != "1.0.0"
+]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("analysistype, version", ANALYSIS_TYPES_WITH_EXTRA_VERSIONS)
+async def test_samplesanalysis_content_schema_extra_versions_success(analysistype, version):
+    """Tests successful retrieval of the schema for each valid analysis_type with versions beyond 1.0.0"""
+    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+        response = await client.get(
+            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
+            headers={**TEST_HEADERS, "Accept": f"application/json;version={version}"},
+        )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.headers["content-type"] == "application/json"
+
+    model_key = f"{PREFIX_TO_STRIP}{analysistype}"
+    expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key][version].schema()
+    assert response.json() == expected_schema
+
+
 SINGLE_CONTENT_TYPE_SCHEMA_ENDPOINTS = [
     (
         SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2,

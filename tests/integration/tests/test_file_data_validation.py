@@ -29,7 +29,7 @@ from tests.integration.config import (
 
 @pytest.mark.parametrize(
     "measurements_file, dataset_prefix, analysis_type", [
-        (DataFiles.NMR_DATA, DatasetPrefix.NMR, SamplesAnalysisTypes.NMR),
+        (DataFiles.NMR_DATA_V1, DatasetPrefix.NMR, SamplesAnalysisTypes.NMR),
     ],
 )
 def test_validate_file_data_content(
@@ -53,7 +53,7 @@ def test_validate_file_data_content(
         record_data["id"],
         content_id,
         analysis_type,
-        json=False,
+        raw=True,
         headers={CONTENT_TYPE: "application/x-parquet"}
     ).content
 

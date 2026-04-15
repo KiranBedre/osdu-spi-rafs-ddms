@@ -33,7 +33,7 @@ gc-acceptance-test-python:
     - pip install -r requirements.txt
     - pip install -r requirements-tests.in
     - >-
-      pytest -n auto tests/integration/tests
+      pytest -n auto --maxfail=5 tests/integration/tests
       --ddms-base-url ${DDMS_BASE_URL}
       --url-prefix ${URL_PREFIX}
       --partition ${DATA_PARTITION_ID}

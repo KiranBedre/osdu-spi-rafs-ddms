@@ -25,7 +25,7 @@ class ApiWorker(object):
     def __init__(self, host: str, url_prefix: str, data_partition: str, token: str) -> None:
         self.storage = APIStorage(data_partition, token)
         self.legal = APILegal(data_partition, token)
-        self.sar_v2 = SamplesAnalysesReportV2Core(host, url_prefix, data_partition, token)
+        self.sar = SamplesAnalysesReportV2Core(host, url_prefix, data_partition, token)
         self.masterdata = MasterDataV2Core(host, url_prefix, data_partition, token)
         self.sample_analysis = SamplesAnalysis(host, url_prefix, data_partition, token)
         self.saturation_function_set = SaturationFunctionSet(host, url_prefix, data_partition, token)

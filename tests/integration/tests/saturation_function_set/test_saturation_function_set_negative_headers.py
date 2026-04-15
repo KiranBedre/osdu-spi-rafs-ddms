@@ -20,7 +20,7 @@ from starlette import status
 from app.resources.common_headers import AUTHORIZATION, CONTENT_TYPE, DATA_PARTITION_ID
 from tests.integration.config import (
     DataFiles,
-    SCHEMA_VERSION,
+    SchemaVersions,
     Endpoints,
 )
 
@@ -41,7 +41,7 @@ def test_sfs_negative_missing_authorization_header(api, tests_data, endpoint, ar
     if endpoint == "post_record":
         kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET))]
     elif endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 
@@ -69,7 +69,7 @@ def test_sfs_negative_invalid_authorization_header(api, tests_data, endpoint, ar
     if endpoint == "post_record":
         kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET))]
     elif endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 
@@ -99,7 +99,7 @@ def test_sfs_negative_invalid_access_token_authorization_header(
     if endpoint == "post_record":
         kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET))]
     elif endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 
@@ -130,7 +130,7 @@ def test_sfs_negative_missing_data_partition_id_header(
     if endpoint == "post_record":
         kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET))]
     elif endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 
@@ -160,7 +160,7 @@ def test_sfs_negative_missing_content_type_header(api, tests_data, endpoint, arg
     if endpoint == "post_record":
         kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET))]
     elif endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 
@@ -188,7 +188,7 @@ def test_sfs_negative_unsupported_content_type_header(api, tests_data, endpoint,
     if endpoint == "post_record":
         kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET))]
     elif endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 
@@ -214,7 +214,7 @@ def test_sfs_negative_missing_accept_header(api, tests_data, endpoint, args, rec
     }
 
     if endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 
@@ -240,11 +240,11 @@ def test_sfs_negative_unsupported_application_accept_header(api, tests_data, end
     }
 
     if endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 
-    response = method(schema_version_header=f"application/xml;version={SCHEMA_VERSION}", *call_args, **kwargs)
+    response = method(schema_version_header=f"application/xml;version={SchemaVersions.DEFAULT}", *call_args, **kwargs)
 
     # Assert
     assert response.status_code == 406
@@ -266,7 +266,7 @@ def test_sfs_negative_unsupported_schema_format_accept_header(api, tests_data, e
     }
 
     if endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 
@@ -292,7 +292,7 @@ def test_sfs_negative_unsupported_schema_version_accept_header(api, tests_data, 
     }
 
     if endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
 

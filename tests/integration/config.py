@@ -16,7 +16,7 @@ from pathlib import Path
 
 CONFIG = {}
 
-SCHEMA_VERSION = "1.0.0"
+WPC_VERSION = "1.0.0"
 PARQUET_HEADERS = {"Content-Type": "application/x-parquet"}
 ACCEPT_HEADERS = "*/*;version={version}"
 
@@ -24,16 +24,61 @@ DATA_DIR = Path("tests", "integration", "data")
 TEST_DATA_STORE = {}
 
 
+class SchemaVersions:
+    V1_0_0 = "1.0.0"
+    V1_1_0 = "1.1.0"
+    V2_0_0 = "2.0.0"
+    DEFAULT = V1_0_0
+
+
 class DataFiles:
     # v2
     OSDU_GENERIC_RECORD = "v2/osdu_generic_record.json"
     SAMPLE = "v2/sample.json"
-    SAMPLE_ANALYSIS = "v2/samplesanalysis.json"
-    SAR_V2 = "v2/sar.json"
-    NMR_DATA = "v2/NMR/nmr_data.json"
+    SAR = "v2/sample_analyses/sar.json"
+    SAMPLE_ANALYSIS = "v2/samples_analysis/samples_analysis.json"
+    SAMPLE_ANALYSIS_TYPES = "v2/samples_analysis/samples_analysis_types.json"
+
+    CAPILLARY_SUCTION_TIME_DATA_V1 = "v2/samples_analysis/capillary_suction_time_data.1.0.0.json"
+    CAPILLARY_SUCTION_TIME_SCHEMA_V1 = "v2/samples_analysis/capillary_suction_time_schema.1.0.0.json"
+
+    COMPOSITIONAL_ANALYSIS_DATA_V1_1 = "v2/samples_analysis/compositional_analysis_data.1.1.0.json"
+    COMPOSITIONAL_ANALYSIS_SCHEMA_V1_1 = "v2/samples_analysis/compositional_analysis_schema.1.1.0.json"
+
+    NMR_DATA_V1 = "v2/samples_analysis/nmr_data.1.0.0.json"
+
+    PROPPANT_EMBEDMENT_DATA_V1 = "v2/samples_analysis/proppant_embedment_data.1.0.0.json"
+    PROPPANT_EMBEDMENT_SCHEMA_V1 = "v2/samples_analysis/proppant_embedment_schema.1.0.0.json"
+
+    RELATIVE_PERMEABILITY_DATA_V1 = "v2/samples_analysis/relative_permeability_data.1.0.0.json"
+    RELATIVE_PERMEABILITY_SCHEMA_V1 = "v2/samples_analysis/relative_permeability_schema.1.0.0.json"
+
+    ROLLER_OVEN_TEST_DATA_V1 = "v2/samples_analysis/roller_oven_test_data.1.0.0.json"
+    ROLLER_OVEN_TEST_SCHEMA_V1 = "v2/samples_analysis/roller_oven_test_schema.1.0.0.json"
+
+    SATURATION_TEST_DATA_V1 = "v2/samples_analysis/saturation_test_data.1.0.0.json"
+    SATURATION_TEST_SCHEMA_V1 = "v2/samples_analysis/saturation_test_schema.1.0.0.json"
+
+    SLIM_TUBE_DATA_V1 = "v2/samples_analysis/slimtube_data.1.0.0.json"
+    SLIM_TUBE_DATA_V2 = "v2/samples_analysis/slimtube_data.2.0.0.json"
+    SLIM_TUBE_SCHEMA_V1 = "v2/samples_analysis/slimtube_schema.1.0.0.json"
+    SLIM_TUBE_SCHEMA_V2 = "v2/samples_analysis/slimtube_schema.2.0.0.json"
+
+    STOCK_TANK_OIL_DATA_V1_1 = "v2/samples_analysis/stock_tank_oil_data.1.1.0.json"
+    STOCK_TANK_OIL_SCHEMA_V1_1 = "v2/samples_analysis/stock_tank_oil_schema.1.1.0.json"
+
+    VLE_DATA_V2 = "v2/samples_analysis/vle_data.2.0.0.json"
+    VLE_SCHEMA_V2 = "v2/samples_analysis/vle_schema.2.0.0.json"
+
+    XRD_DATA_V1_1 = "v2/samples_analysis/xrd_data.1.1.0.json"
+    XRD_SCHEMA_V1_1 = "v2/samples_analysis/xrd_schema.1.1.0.json"
+
+    XRF_DATA_V1_1 = "v2/samples_analysis/xrf_data.1.1.0.json"
+    XRF_SCHEMA_V1_1 = "v2/samples_analysis/xrf_schema.1.1.0.json"
+
     SATURATION_FUNCTION_SET = "v2/saturation_function_set/sfs.json"
-    SATURATION_FUNCTION_SET_DATA = "v2/saturation_function_set/sfs_data.json"
-    SATURATION_FUNCTION_SET_DATA_RECORDS_FORMAT = "v2/saturation_function_set/sfs_data_records_format.json"
+    SATURATION_FUNCTION_SET_DATA_V1 = "v2/saturation_function_set/sfs_data.json"
+    SATURATION_FUNCTION_SET_DATA_V1_RECORDS_FORMAT = "v2/saturation_function_set/sfs_data_records_format.json"
     SATURATION_FUNCTION_SET_SCHEMA = "v2/saturation_function_set/sfs_schema.json"
 
 
@@ -51,18 +96,151 @@ class DataTypes:
     # v2
     MASTER_DATA = "masterdata"
     SAMPLE_ANALYSIS = "sample_analysis"
-    SAR_V2 = "sar_v2"
+    SAR = "sar"
     SAMPLE = "sample"
     SATURATION_FUNCTION_SET = "saturation_function_set"
 
 
 class SamplesAnalysisTypes:  # Custom values
+    CAPILLARY_SUCTION_TIME = "capillarysuctiontime"
+    CCE = "constantcompositionexpansion"
+    COMPOSITIONAL_ANALYSIS = "compositionalanalysis"
+    FRACTIONATION = "fractionation"
     NMR = "nmr"
+    PROPPANT_EMBEDMENT = "proppantembed"
+    RELATIVE_PERMEABILITY = "relativepermeability"
+    ROLLER_OVEN_TEST = "rolleroventest"
+    SATURATION_TEST = "saturationtest"
+    SLIM_TUBE = "slimtube"
+    STOCK_TANK_OIL = "stocktankoilanalysis"
+    VLE = "vaporliquidequilibrium"
+    XRD = "xrd"
+    XRF = "xrf"
 
 
 class DatasetPrefix:
     # v2
+    CAPILLARY_SUCTION_TIME = "capillarysuctiontime"
+    CCE = "constantcompositionexpansion"
+    COMPOSITIONAL_ANALYSIS = "compositionalanalysis"
+    FRACTIONATION = "fractionation"
     NMR = "nmr"
+    PROPPANT_EMBEDMENT = "proppantembed"
+    RELATIVE_PERMEABILITY = "relativepermeability"
+    ROLLER_OVEN_TEST = "rolleroventest"
+    SATURATION_TEST = "saturationtest"
+    SLIM_TUBE = "slimtube"
+    STOCK_TANK_OIL = "stocktankoilanalysis"
+    VLE = "vaporliquidequilibrium"
+    XRD = "xrd"
+    XRF = "xrf"
+
+
+class VersionedDataFiles:
+    VALUES = {
+        (SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME, SchemaVersions.V1_0_0): DataFiles.CAPILLARY_SUCTION_TIME_DATA_V1,
+
+        (
+            SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
+            SchemaVersions.V1_1_0,
+        ): DataFiles.COMPOSITIONAL_ANALYSIS_DATA_V1_1,
+
+        (SamplesAnalysisTypes.NMR, SchemaVersions.V1_0_0): DataFiles.NMR_DATA_V1,
+
+        (SamplesAnalysisTypes.PROPPANT_EMBEDMENT, SchemaVersions.V1_0_0): DataFiles.PROPPANT_EMBEDMENT_DATA_V1,
+
+        (SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_0_0): DataFiles.RELATIVE_PERMEABILITY_DATA_V1,
+
+        (SamplesAnalysisTypes.ROLLER_OVEN_TEST, SchemaVersions.V1_0_0): DataFiles.ROLLER_OVEN_TEST_DATA_V1,
+
+        (SamplesAnalysisTypes.SATURATION_TEST, SchemaVersions.V1_0_0): DataFiles.SATURATION_TEST_DATA_V1,
+
+        (SamplesAnalysisTypes.SLIM_TUBE, SchemaVersions.V1_0_0): DataFiles.SLIM_TUBE_DATA_V1,
+        (SamplesAnalysisTypes.SLIM_TUBE, SchemaVersions.V2_0_0): DataFiles.SLIM_TUBE_DATA_V2,
+
+        (SamplesAnalysisTypes.STOCK_TANK_OIL, SchemaVersions.V1_1_0): DataFiles.STOCK_TANK_OIL_DATA_V1_1,
+
+        (SamplesAnalysisTypes.VLE, SchemaVersions.V2_0_0): DataFiles.VLE_DATA_V2,
+
+        (SamplesAnalysisTypes.XRD, SchemaVersions.V1_1_0): DataFiles.XRD_DATA_V1_1,
+
+        (SamplesAnalysisTypes.XRF, SchemaVersions.V1_1_0): DataFiles.XRF_DATA_V1_1,
+
+        (DataTypes.SATURATION_FUNCTION_SET, SchemaVersions.V1_0_0): DataFiles.SATURATION_FUNCTION_SET_DATA_V1,
+    }
+
+
+class SamplesAnalysisConfig:
+    _VALUES = {
+        SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME: {
+            "samples_analysis_type": "FluidSensitivity.CapillarySuctionTime",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.CCE: {
+            "samples_analysis_type": "PVT.ConstantCompositionExpansion",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS: {
+            "samples_analysis_type": "PVT.CompositionalAnalysis",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.FRACTIONATION: {
+            "samples_analysis_type": "Fractionation.SARA",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.NMR: {
+            "samples_analysis_type": "NMR",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.PROPPANT_EMBEDMENT : {
+            "samples_analysis_type": "Geomechanics.ProppantEmbedment",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.RELATIVE_PERMEABILITY: {
+            "samples_analysis_type": "RelativePermeability.SteadyState",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.ROLLER_OVEN_TEST: {
+            "samples_analysis_type": "FluidSensitivity.RollerOvenTest",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.SATURATION_TEST: {
+            "samples_analysis_type": "PVT.SaturationTest",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.SLIM_TUBE: {
+            "samples_analysis_type": "PVT.SlimTube",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.STOCK_TANK_OIL: {
+            "samples_analysis_type": "PVT.StockTankOilCharacterization",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.VLE: {
+            "samples_analysis_type": "PVT.VaporLiquidEquilibria",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.XRD: {
+            "samples_analysis_type": "Mineralogy.XRD",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.XRF: {
+            "samples_analysis_type": "ElementalComposition.XRF",
+            "parent_report_id": "sar_record_id",
+        },
+    }
+
+
+    @classmethod
+    def get(cls, analysis_type):
+        entry = cls._VALUES[analysis_type]
+        parent_id = TEST_DATA_STORE.get(entry["parent_report_id"], "")
+        if not parent_id:
+            raise RuntimeError(f"Missing parent report ID for {analysis_type}")
+        return {
+            "samples_analysis_type": entry["samples_analysis_type"],
+            "parent_report_id": parent_id,
+        }
 
 
 class Endpoints:
@@ -80,49 +258,49 @@ class Endpoints:
         ("soft_delete_record", ("record_id",)),
     ]
 
-    RECORD_ID_ENDPOINTS = [
+    RECORD_ID_ENDPOINTS = (
         "get_record",
         "get_record_versions",
         "get_record_version",
         "soft_delete_record",
         "post_data",
         "get_data",
-    ]
+    )
 
-    ENDPOINTS_WITH_FILTERS = [
+    ENDPOINTS_WITH_FILTERS = (
         "get_data",
         "search_records",
         "search_data",
-    ]
+    )
 
-    ORIENT_ENDPOINTS = [
+    ORIENT_ENDPOINTS = (
         "get_data",
         "search_data",
-    ]
+    )
 
-    SEARCH_ENDPOINTS = [
+    SEARCH_ENDPOINTS = (
         "search_records",
         "search_data",
-    ]
+    )
 
-    CONTENT_TYPE_ENDPOINTS = [
+    CONTENT_TYPE_ENDPOINTS = (
         "post_record",
         "post_data",
         "get_data",
-    ]
+    )
 
-    ACCEPT_ENDPOINTS = [
+    ACCEPT_ENDPOINTS = (
         "post_data",
         "get_data",
         "get_schema",
         "search_records",
         "search_data",
-    ]
+    )
 
-    RETURN_DATA_ENDPOINTS = {
+    RETURN_DATA_ENDPOINTS = (
         "get_data",
         "search_data",
-    }
+    )
 
     RECORD_ID_ENDPOINTS_ARGS = []
     ENDPOINTS_WITH_FILTERS_ARGS = []

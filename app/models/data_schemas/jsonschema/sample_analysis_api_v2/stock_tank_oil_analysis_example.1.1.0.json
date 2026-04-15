@@ -1,0 +1,125 @@
+[
+  {
+    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
+    "SampleID": "opendes:master-data--Sample:Sample-33F:",
+    "Meta": [
+      {
+        "kind": "Unit",
+        "name": "degree Fahrenheit",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:degF:",
+        "propertyNames": [
+          "Stock Tank Temperature "
+        ]
+      }
+    ],
+    "FluidConditionsID": "opendes:reference-data--SampleTestCondition:InitialReservoir:1",
+    "PhasesPresentID": "opendes:reference-data--FluidPhasesPresent:Wellstream:",
+    "StockTankPressure": 8,
+    "StockTankTemperature": 5,
+    "MolecularWeight": 5,
+    "DensityAtTemperature": [
+      {
+        "Value": 8,
+        "Temperature": 2
+      },
+      {
+        "Value": 4,
+        "Temperature": 8
+      },
+      {
+        "Value": 10,
+        "Temperature": 7
+      },
+      {
+        "Value": 6,
+        "Temperature": 7
+      },
+      {
+        "Value": 1,
+        "Temperature": 5
+      },
+      {
+        "Value": 2,
+        "Temperature": 2
+      },
+      {
+        "Value": 4,
+        "Temperature": 9
+      }
+    ],
+    "OilAPIGravity": 9,
+    "WatsonKFactor": 4,
+    "PourPoint": 10,
+    "FlashPoint": 2,
+    "NitrogenBase": 9,
+    "TotalSulphurContent": 6,
+    "AsphalteneContent": 10,
+    "WaxContent": 1,
+    "ParaffinContent": 4,
+    "WaxAppearanceTemperature": 8,
+    "CloudPoint": 8,
+    "MeltingPoint": 2,
+    "WaterContent": 1,
+    "TotalAcidNumber": 8,
+    "MercaptanSulfur": 2,
+    "PenetrationGrade": 9,
+    "SofteningPoint": 3,
+    "SmokingPoint": 6,
+    "FreezingPoint": 5,
+    "AnilinePoint": 10,
+    "SaltContent": 6,
+    "WaterSedimentContent": 9,
+    "ViscosityAtTemperature": [
+      {
+        "DynamicViscosity": 3,
+        "Temperature": 8
+      },
+      {
+        "DynamicViscosity": 5,
+        "Temperature": 8
+      },
+      {
+        "DynamicViscosity": 10,
+        "Temperature": 4
+      },
+      {
+        "DynamicViscosity": 6,
+        "Temperature": 4
+      },
+      {
+        "DynamicViscosity": 3,
+        "Temperature": 6
+      },
+      {
+        "DynamicViscosity": 8,
+        "Temperature": 4
+      }
+    ],
+    "ElementalAnalysis": [
+      {
+        "ElementID": "opendes:reference-data--Elements:S:",
+        "Value": 2,
+        "ElementalAnalysisMethodID": "opendes:reference-data--ElementalAnalysisMethod:NAA:"
+      },
+      {
+        "ElementID": "opendes:reference-data--Elements:S:",
+        "Value": 9,
+        "ElementalAnalysisMethodID": "opendes:reference-data--ElementalAnalysisMethod:NAA:"
+      },
+      {
+        "ElementID": "opendes:reference-data--Elements:S:",
+        "Value": 4,
+        "ElementalAnalysisMethodID": "opendes:reference-data--ElementalAnalysisMethod:NAA:"
+      }
+    ],
+    "FractionationAnalysisID": [
+      "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
+      "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
+      "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
+      "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:"
+    ],
+    "ReidVaporPressure": 9,
+    "CarbonResidue": 6,
+    "RefractiveIndex": 4
+  }
+]

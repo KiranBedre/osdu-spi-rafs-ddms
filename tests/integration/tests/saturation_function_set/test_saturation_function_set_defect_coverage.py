@@ -173,7 +173,7 @@ def test_sfs_versions_with_special_characters_in_record_id(api, helper, spec_cha
 def test_sfs_add_data_with_special_characters_in_record_id(api, helper, tests_data, spec_char_record_id):
     """Upload bulk data and verify retrieval in JSON for record_id with special characters."""
     # Prepare and upload dataset payload
-    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA))
+    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
     data_payload["data"][0][0] = f"{spec_char_record_id}:"
     encoded_record_id = urllib.parse.quote(spec_char_record_id)
     post_response = api.saturation_function_set.post_data(encoded_record_id, data_payload)

@@ -1,0 +1,82 @@
+[
+  {
+    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:Example_WPC:",
+    "SampleID": "opendes:master-data--Sample:Example_Sample:",
+    "Meta": [
+      {
+        "kind": "Unit",
+        "name": "gram",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:g:",
+        "propertyNames": [
+          "InitialSampleWeight",
+          "FinalSampleWeight",
+          "SampleContainerWeight",
+          "FinalTotalWeight"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "degree Fahrenheit",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:degF:",
+        "propertyNames": [
+          "RollingTemperature"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "hour",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:h:",
+        "propertyNames": [
+          "RollingTime"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "millilitre",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:mL:",
+        "propertyNames": [
+          "TestFluidVolume"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "percent",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:%:",
+        "propertyNames": [
+          "TotalClay",
+          "RecoveryPercent",
+          "DisaggregationPercent"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "unitless",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:Euc:",
+        "propertyNames": [
+          "SieveMeshSize"
+        ]
+      }
+    ],
+    "TotalClay": 45.2,
+    "WellFluidsReportID": "opendes:work-product-component--WellFluidsReport:Example_Report:",
+    "TestFluidVolume": 350.0,
+    "RollingTemperature": 150.0,
+    "RollingTime": 16.0,
+    "SieveMeshSize": 35,
+    "MeshSizeTypeID": "opendes:reference-data--MeshSizeType:US:",
+    "InitialSampleWeight": 20.0,
+    "FinalSampleWeight": 17.4,
+    "SampleContainerWeight": 5.5,
+    "FinalTotalWeight": 22.9,
+    "RecoveryPercent": 87.0,
+    "DisaggregationPercent": 13.0,
+    "Remarks": [
+      {
+        "RemarkSequenceNumber": 1,
+        "Remark": "Sample showed good inhibition with the KCl-polymer mud system.",
+        "RemarkSource": "Lab Technician A",
+        "RemarkDate": "2025-01-15"
+      }
+    ]
+  }
+]

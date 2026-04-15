@@ -1,0 +1,602 @@
+{
+  "x-osdu-license": "Copyright 2025, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "x-osdu-review-status": "Mature",
+  "$id": "stock_tank_oil_analysis.1.1.0.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Stock Tank Oil Data Schema",
+  "description": "The result of running a Crude Assay. For representative samples of Stock Tank Oil, an additional set of stock tank oil (STO) analysis tests may be conducted to provide measurements of viscosity (at temperature), pour point, cloud point, wax appearance temperature, paraffin content, Reid vapor pressure, total acid number, total sulfur, molecular weight, water content, and the amounts of lead, nickel, vanadium and elemental sulfur present. Note that in OSDU, StockTankOilCharacterization does not include SARA and High Temperature GC; those have their own SampleAnalysisTypes. Also, other forms of Elemental Composition are captured in the Elemental Composition Family.",
+  "type": "object",
+  "properties": {
+    "SamplesAnalysisID": {
+      "type": "string",
+      "title": "Samples Analysis ID",
+      "description": "The OSDU Identifier for this SamplesAnalysis.",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "work-product-component",
+          "EntityType": "SamplesAnalysis"
+        }
+      ]
+    },
+    "SampleID": {
+      "type": "string",
+      "title": "Sample ID",
+      "description": "The OSDU Identifier for the Sample associated with this analysis.",
+      "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "master-data",
+          "EntityType": "Sample"
+        }
+      ]
+    },
+    "Meta": {
+      "type": "array",
+      "title": "Meta",
+      "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+      "example": "",
+      "items": {
+        "x-osdu-license": "Copyright 2022, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+        "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractMetaItem.1.0.0.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "x-osdu-schema-source": "osdu:wks:AbstractMetaItem:1.0.0",
+        "title": "Frame of Reference Meta Data Item",
+        "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+        "oneOf": [
+          {
+            "title": "FrameOfReferenceUOM",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "UOM Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                "const": "Unit"
+              },
+              "name": {
+                "title": "UOM Unit Symbol",
+                "description": "The unit symbol or name of the unit.",
+                "type": "string",
+                "example": "ft[US]"
+              },
+              "persistableReference": {
+                "title": "UOM Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                "type": "string",
+                "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}"
+              },
+              "unitOfMeasureID": {
+                "description": "SRN to unit of measure reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "UnitOfMeasure"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "UOM Property Names",
+                "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "HorizontalDeflection.EastWest",
+                  "HorizontalDeflection.NorthSouth"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceCRS",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "CRS Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                "const": "CRS"
+              },
+              "name": {
+                "title": "CRS Name",
+                "description": "The name of the CRS.",
+                "type": "string",
+                "example": "WGS 84 / UTM zone 15N"
+              },
+              "persistableReference": {
+                "title": "CRS Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                "type": "string",
+                "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}"
+              },
+              "coordinateReferenceSystemID": {
+                "description": "SRN to CRS reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "CoordinateReferenceSystem"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "CRS Property Names",
+                "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "KickOffPosition.X",
+                  "KickOffPosition.Y"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceDateTime",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "DateTime Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                "const": "DateTime"
+              },
+              "name": {
+                "title": "DateTime Name",
+                "description": "The name of the DateTime format and reference.",
+                "type": "string",
+                "example": "UTC"
+              },
+              "persistableReference": {
+                "title": "DateTime Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                "type": "string",
+                "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}"
+              },
+              "propertyNames": {
+                "title": "DateTime Property Names",
+                "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Acquisition.StartTime",
+                  "Acquisition.EndTime"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceAzimuthReference",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "AzimuthReference Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                "const": "AzimuthReference"
+              },
+              "name": {
+                "title": "AzimuthReference Name",
+                "description": "The name of the CRS or the symbol/name of the unit.",
+                "type": "string",
+                "example": "TrueNorth"
+              },
+              "persistableReference": {
+                "title": "AzimuthReference Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                "type": "string",
+                "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}"
+              },
+              "propertyNames": {
+                "title": "AzimuthReference Property Names",
+                "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Bearing"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          }
+        ],
+        "x-osdu-inheriting-from-kind": []
+      }
+    },
+    "FluidConditionsID": {
+      "type": "string",
+      "title": "Fluid Conditions ID",
+      "description": "Identifies the testing condition of the sample fluid, e.g. InitialReservoir, CurrentReservoir, StockTank, InitialSaturation (References SampleTestCondition).",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleTestCondition:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "SampleTestCondition"
+        }
+      ]
+    },
+    "PhasesPresentID": {
+      "type": "string",
+      "title": "Phases Present ID",
+      "description": "Identifies the phases of fluid present in the sample, e.g. SeparatorLiquid, FlashedOil, OilWithMud, Gas, ReservoirFluid (references FluidPhasesPresent).",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidPhasesPresent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "FluidPhasesPresent"
+        }
+      ]
+    },
+    "StockTankPressure": {
+      "type": "number",
+      "title": "Stock Tank Pressure",
+      "description": "Pressure recorded within the stock tank.",
+      "x-osdu-frame-of-reference": "UOM:pressure"
+    },
+    "StockTankTemperature": {
+      "type": "number",
+      "title": "Stock Tank Temperature",
+      "description": "Temperature recorded within the stock tank.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "MolecularWeight": {
+      "type": "number",
+      "title": "Molecular Weight",
+      "description": "The average molecular weight of the sample.",
+      "x-osdu-frame-of-reference": "UOM:molecular weight"
+    },
+    "DensityAtTemperature": {
+      "type": "array",
+      "title": "Density At Temperature",
+      "description": "Fluid Density at specified temperatures.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Density At Temperature",
+        "description": "Fluid Density at indicated temperature",
+        "properties": {
+          "Value": {
+            "type": "number",
+            "title": "Value",
+            "description": "The density value at the indicated temperature.",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          },
+          "Temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "description": "The temperature at which density was recorded.",
+            "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "OilAPIGravity": {
+      "type": "number",
+      "title": "Oil API Gravity",
+      "description": "A measure of how heavy or light a petroleum liquid is compared to water. It is expressed in degrees API (\u00b0API) and is calculated using the following formula:\nAPI gravity=(141.5/Specific Gravity)\u2212131.5",
+      "x-osdu-frame-of-reference": "UOM:API gravity"
+    },
+    "WatsonKFactor": {
+      "type": "number",
+      "title": "Watson K Factor",
+      "description": "Characterizes crude oils based on their boiling points and molecular weights. It is primarily a measure used to estimate certain properties of petroleum fractions.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "PourPoint": {
+      "type": "number",
+      "title": "Pour Point",
+      "description": "The temperature below which the liquid loses its flow characteristics, ASTM D97",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "FlashPoint": {
+      "type": "number",
+      "title": "Flash Point",
+      "description": "Flash point measurement as determined by an ASTM (American Society for Testing and Materials) standard test. The flash point of a substance is the lowest temperature at which it can vaporize to form an ignitable mixture in air.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "NitrogenBase": {
+      "type": "number",
+      "title": "Nitrogen Base",
+      "description": "The basic organic nitrogen in the sample, as determined by potentiometric titration (ASTM UOP269-10).",
+      "x-osdu-frame-of-reference": "UOM:mass per mass"
+    },
+    "TotalSulphurContent": {
+      "type": "number",
+      "title": "TotalSulphur Content",
+      "description": "The total sulphur content in the sample.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "AsphalteneContent": {
+      "type": "number",
+      "title": "Asphaltene Content",
+      "description": "The asphaltene content in the sample.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "WaxContent": {
+      "type": "number",
+      "title": "Wax Content",
+      "description": "The amount or percentage of wax present in a sample",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "ParrafinContent": {
+      "type": "number",
+      "title": "Parrafin Content",
+      "description": "DEPRECATED: use ParaffinContent instead.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless",
+      "deprecated": true
+    },
+    "ParaffinContent": {
+      "type": "number",
+      "title": "Paraffin Content",
+      "description": "The amount of paraffin present in the sample.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "WaxAppearanceTemperature": {
+      "type": "number",
+      "title": "Wax Appearance Temperature",
+      "description": "The temperature at which wax crystals first begin to form in a petroleum fluid. It marks the onset of wax precipitation.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "CloudPoint": {
+      "type": "number",
+      "title": "Cloud Point",
+      "description": "The temperature below which a transparent solution undergoes either a liquid-liquid phase separation to form an emulsion or a liquid-solid phase transition to form either a stable solution or a suspension that settles a precipitate",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "MeltingPoint": {
+      "type": "number",
+      "title": "Melting Point",
+      "description": "The temperature at which a substance changes from its solid state to its liquid state.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "WaterContent": {
+      "type": "number",
+      "title": "Water Content",
+      "description": "The amount or percentage of water present in a sample",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "TotalAcidNumber": {
+      "type": "number",
+      "title": "Total Acid Number",
+      "description": "The quantity of acidic compounds present in a sample, also referred to as TAN.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "MercaptanSulfur": {
+      "type": "number",
+      "title": "Mercaptan Sulfur",
+      "description": "Mercaptan sulfur concentration",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "PenetrationGrade": {
+      "type": "number",
+      "title": "Penetration Grade",
+      "description": "The penetration grade",
+      "x-osdu-frame-of-reference": "UOM:length"
+    },
+    "SofteningPoint": {
+      "type": "number",
+      "title": "Softening Point",
+      "description": "The temperature at which a resin begins to flow.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "SmokingPoint": {
+      "type": "number",
+      "title": "Smoking Point",
+      "description": "The temperature at which an oil begins to produce a continuous visible smoke.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "FreezingPoint": {
+      "type": "number",
+      "title": "Freezing Point",
+      "description": "The temperature at which a substance changes from its liquid state to its solid state.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "AnilinePoint": {
+      "type": "number",
+      "title": "Aniline Point",
+      "description": "The minimum temperature at which equal volumes of aniline and lubricant oil are miscible, i.e. form a single phase upon mixing.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "SaltContent": {
+      "type": "number",
+      "title": "Salt Content",
+      "description": "The amount or percentage of sodium chloride present in a sample.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "WaterSedimentContent": {
+      "type": "number",
+      "title": "Water Sediment Content",
+      "description": "The amount or percentage of basic water and sediment present in a sample.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "ViscosityAtTemperature": {
+      "type": "array",
+      "title": "Viscosity At Temperature",
+      "description": "Fluid viscosity at indicated temperature.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Viscosity At Temperature",
+        "description": "Fluid viscosity at indicated temperature",
+        "properties": {
+          "DynamicViscosity": {
+            "type": "number",
+            "title": "Dynamic Viscosity",
+            "description": "Also known as absolute viscosity, this measures a fluid's internal resistance to flow when an external force is applied. It quantifies the frictional forces between adjacent layers of fluid as they move relative to each other. The unit of dynamic viscosity is the Pascal-second (Pa\u00b7s) or poise (P).",
+            "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+          },
+          "Temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "description": "The temperature at which viscosity was recorded.",
+            "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "ElementalAnalysis": {
+      "type": "array",
+      "title": "Elemental Analysis",
+      "description": "Elemental analysis involves various techniques to determine the composition of a sample. Some commonly used methods are X-ray Fluorescence (XRF), Inductively Coupled Plasma Mass Spectrometry (ICP-MS), Atomic Absorption Spectroscopy (AAS), Inductively Coupled Plasma Optical Emission Spectroscopy (ICP-OES), Neutron Activation Analysis (NAA) and Combustion Analysis.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Element Analysis",
+        "description": "Elemental analysis involves various techniques to determine the composition of a sample. Some commonly used methods are X-ray Fluorescence (XRF), Inductively Coupled Plasma Mass Spectrometry (ICP-MS), Atomic Absorption Spectroscopy (AAS), Inductively Coupled Plasma Optical Emission Spectroscopy (ICP-OES), Neutron Activation Analysis (NAA) and Combustion Analysis.",
+        "properties": {
+          "ElementID": {
+            "type": "string",
+            "title": "Element ID",
+            "description": "The ID of the element detected.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-Elements:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "Elements"
+              }
+            ]
+          },
+          "Value": {
+            "type": "number",
+            "title": "Value",
+            "description": "The amount of this element.",
+            "x-osdu-frame-of-reference": "UOM:mass per mass"
+          },
+          "ElementalAnalysisMethodID": {
+            "type": "string",
+            "title": "Elemental Analysis Method ID",
+            "description": "The method used to detect this element.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-ElementalAnalysisMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "ElementalAnalysisMethod"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "FractionationAnalysisID": {
+      "type": "array",
+      "title": "Fractionation Analysis ID",
+      "description": "Identifier(s) for the specific Fractionation analysis where asphaltene content is captured.",
+      "items": {
+        "type": "string",
+        "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+        "x-osdu-relationship": [
+          {
+            "GroupType": "work-product-component",
+            "EntityType": "SamplesAnalysis"
+          }
+        ]
+      }
+    },
+    "ReidVaporPressure": {
+      "type": "number",
+      "title": "Reid Vapor Pressure",
+      "description": "A measure of the volatility of gasoline and other petroleum products. It is defined as the absolute vapor pressure exerted by a liquid at 37.8\u00b0C (100\u00b0F) in a closed container.",
+      "x-osdu-frame-of-reference": "UOM:pressure"
+    },
+    "CarbonResidue": {
+      "type": "number",
+      "title": "Carbon Residue",
+      "description": "Indicates the amount of carbonaceous material left after combustion, affecting refining processes.",
+      "x-osdu-frame-of-reference": "UOM:mass per mass"
+    },
+    "RefractiveIndex": {
+      "type": "number",
+      "title": "Refractive Index",
+      "description": "The refractive index of crude oil is a measure of how much light bends when it passes through the oil. This property depends on the density and composition of the crude oil. Generally, heavier crude oils with lower API gravity have higher refractive indices",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "Remarks": {
+      "type": "array",
+      "title": "Remarks",
+      "description": "Array object capturing remarks or additional information for this test step.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
+      "example": "",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "x-osdu-license": "Copyright 2023, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+        "x-osdu-review-status": "Accepted",
+        "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractRemark.1.0.0.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "x-osdu-schema-source": "osdu:wks:AbstractRemark:1.0.0",
+        "title": "AbstractRemark",
+        "description": "A remark object, pairing a remark text with a source, e.g. an author, and a date, which is typically included in an array. The RemarkSequenceNumber acts as unique key in this case.",
+        "type": "object",
+        "properties": {
+          "RemarkSequenceNumber": {
+            "type": "integer",
+            "title": "Remark Sequence Number",
+            "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+            "example": 1
+          },
+          "Remark": {
+            "type": "string",
+            "title": "Remark",
+            "description": "A descriptive comment for this remark."
+          },
+          "RemarkSource": {
+            "type": "string",
+            "title": "Remark Source",
+            "description": "The person, vendor, interpreter or other provider of information."
+          },
+          "RemarkDate": {
+            "type": "string",
+            "title": "Remark Date",
+            "description": "The date the remark was issued.",
+            "format": "date",
+            "x-osdu-frame-of-reference": "DateTime"
+          }
+        },
+        "x-osdu-inheriting-from-kind": [],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta"
+  ],
+  "additionalProperties": false
+}

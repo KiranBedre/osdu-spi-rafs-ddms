@@ -45,11 +45,11 @@ class DataValidator(object):
         """
         schema_errors = self._validate_schema(df, bulk_mode=bulk_mode)
         if schema_errors:
-            return schema_errors
+            return schema_errors  # noqa: ASYNC910
 
         data_integrity_errors = await self._validate_integrity(df)
         if data_integrity_errors:
-            return {
+            return {  # noqa: ASYNC910
                 "missing_records": list(data_integrity_errors),
             }
 
@@ -101,14 +101,14 @@ class DataValidator(object):
         :return: missing records
         :rtype: list
         """
-        df_string = df.to_string()
+        df_string = df.to_json()
         ids_to_check = find_osdu_ids_from_string(df_string)
 
         missing_records = set()
         for ids_to_check_batch in divide_chunks(list(ids_to_check), settings.storage_query_limit):
             missing_records.update(await self._find_missing_records(ids_to_check=ids_to_check_batch))
 
-        return missing_records
+        return missing_records  # noqa: ASYNC910
 
     def _get_excluded_records(self, records: Iterable, skip_types: Iterable) -> set:
         """Get excluded record ids from a list given skip types."""
@@ -170,11 +170,26 @@ class DataValidator(object):
         # Handle dict failure case
         if isinstance(failure_case, dict):
             return any(
-                pd.isna(field_value) and field_name not in required_fields
+                self._is_scalar_nan(field_value) and field_name not in required_fields
                 for field_name, field_value in failure_case.items()
             )
 
         return False
+
+    @staticmethod
+    def _is_scalar_nan(field_value) -> bool:
+        """Check if a value is a scalar NaN (not a list, dict, or array).
+
+        :param field_value: the value to check
+        :return: True only if value is a scalar NaN
+        :rtype: bool
+        """
+        if isinstance(field_value, (list, dict)):
+            return False
+        try:
+            return bool(pd.isna(field_value))
+        except (ValueError, TypeError):
+            return False
 
     def _get_required_fields(self) -> set:
         """Extract required field names from the Pydantic model.
@@ -229,6 +244,23 @@ class DataValidator(object):
 
         return getattr(dtype, "type", None)
 
+    @staticmethod
+    def _unwrap_pydantic_error(column, raw_failure):
+        """Unwrap pandera PydanticModel dtype errors.
+
+        Pandera sets column="failure_case" for PydanticModel dtype errors
+        and nests the row data inside the failure_case dict. Use "DataSchema"
+        as a consistent column name to match other PydanticModel error cases.
+
+        :param column: column name from pandera error
+        :param raw_failure: raw failure_case value from pandera error
+        :return: corrected (column, failure_case) tuple
+        :rtype: tuple
+        """
+        if column == "failure_case" and isinstance(raw_failure, dict):
+            return "DataSchema", raw_failure
+        return column, raw_failure
+
     def _collect_errors(self, error_cases: Iterable) -> dict:
         """Collect the errors.
 
@@ -241,7 +273,10 @@ class DataValidator(object):
         for error_case in error_cases:
             check = error_case.get("check", "")
             column = error_case.get("column", "")
-            failure_case = str(error_case.get("failure_case", ""))
+            raw_failure = error_case.get("failure_case", "")
+
+            column, raw_failure = self._unwrap_pydantic_error(column, raw_failure)
+            failure_case = str(raw_failure)
 
             if check not in {"column_in_dataframe", "column_in_schema"}:
                 check = "invalid_type" if "dtype" in check else "invalid_value"

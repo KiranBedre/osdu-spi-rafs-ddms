@@ -1,5 +1,5 @@
 {
-    "kind": "{schema_authority}:wks:work-product-component--SaturationFunctionSet:{schema_version}",
+    "kind": "{schema_authority}:wks:work-product-component--SaturationFunctionSet:{wpc_version}",
     "acl": {
         "viewers": [
             "{acl_viewers}"

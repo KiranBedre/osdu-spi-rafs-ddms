@@ -42,8 +42,12 @@ ARG pip_version=25.2
 ARG setuptools_version=70.0.0
 ARG uvicorn_version=0.23.2
 
-# Update package list and install dependencies in one layer
-RUN apt update
+# Update package list and upgrade vulnerable packages
+# CVE-2026-28390: openssl DoS - upgrade libssl3t64
+RUN apt-get update \
+    && apt-get upgrade -y libssl3t64 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app/requirements.txt
 

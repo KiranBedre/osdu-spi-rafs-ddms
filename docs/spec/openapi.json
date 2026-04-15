@@ -587,6 +587,7 @@
             }
           },
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysis</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysis:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -721,6 +722,7 @@
             }
           },
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysis</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysis:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -963,6 +965,7 @@
         "operationId": "soft_delete_record_api_rafs_ddms_v2_fluidmodel__record_id__delete",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--FluidModel</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--FluidModel:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:simple_id</code><br><br><code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -1019,6 +1022,7 @@
         "operationId": "get_record_api_rafs_ddms_v2_fluidmodel__record_id__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--FluidModel</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--FluidModel:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:simple_id</code><br><br><code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -1085,6 +1089,7 @@
         "operationId": "get_record_versions_api_rafs_ddms_v2_fluidmodel__record_id__versions_get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--FluidModel</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--FluidModel:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:simple_id</code><br><br><code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -1151,6 +1156,7 @@
         "operationId": "get_record_specific_version_api_rafs_ddms_v2_fluidmodel__record_id__versions__version__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--FluidModel</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--FluidModel:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:simple_id</code><br><br><code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -1782,6 +1788,7 @@
         "operationId": "soft_delete_record_api_rafs_ddms_v2_masterdata__record_id__delete",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>master-data--Sample</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:master-data--Sample:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:master-data--Sample:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/masterdata/osdu:master-data--Sample:simple_id</code><br><br><code>osdu:master-data--Sample:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/masterdata/osdu:master-data--Sample:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -1838,6 +1845,7 @@
         "operationId": "get_record_api_rafs_ddms_v2_masterdata__record_id__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>master-data--Sample</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:master-data--Sample:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:master-data--Sample:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/masterdata/osdu:master-data--Sample:simple_id</code><br><br><code>osdu:master-data--Sample:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/masterdata/osdu:master-data--Sample:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -1904,6 +1912,7 @@
         "operationId": "get_record_versions_api_rafs_ddms_v2_masterdata__record_id__versions_get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>master-data--Sample</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:master-data--Sample:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:master-data--Sample:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/masterdata/osdu:master-data--Sample:simple_id</code><br><br><code>osdu:master-data--Sample:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/masterdata/osdu:master-data--Sample:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -1970,6 +1979,7 @@
         "operationId": "get_record_specific_version_api_rafs_ddms_v2_masterdata__record_id__versions__version__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>master-data--Sample</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:master-data--Sample:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:master-data--Sample:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/masterdata/osdu:master-data--Sample:simple_id</code><br><br><code>osdu:master-data--Sample:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/masterdata/osdu:master-data--Sample:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -2554,6 +2564,7 @@
         "operationId": "soft_delete_record_api_rafs_ddms_v2_reservoirsimulationrockphysicsmodel__record_id__delete",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--ReservoirSimulationRockPhysicsModel</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code><br><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -2610,6 +2621,7 @@
         "operationId": "get_record_api_rafs_ddms_v2_reservoirsimulationrockphysicsmodel__record_id__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--ReservoirSimulationRockPhysicsModel</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code><br><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -2676,6 +2688,7 @@
         "operationId": "post_data_single_content_type_api_rafs_ddms_v2_reservoirsimulationrockphysicsmodel__record_id__data_post",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--ReservoirSimulationRockPhysicsModel</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code><br><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -2910,6 +2923,7 @@
             }
           },
           {
+            "description": "OSDU record identifier for a <code>work-product-component--ReservoirSimulationRockPhysicsModel</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code><br><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -3031,6 +3045,7 @@
         "operationId": "get_record_versions_api_rafs_ddms_v2_reservoirsimulationrockphysicsmodel__record_id__versions_get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--ReservoirSimulationRockPhysicsModel</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code><br><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -3097,6 +3112,7 @@
         "operationId": "get_record_specific_version_api_rafs_ddms_v2_reservoirsimulationrockphysicsmodel__record_id__versions__version__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--ReservoirSimulationRockPhysicsModel</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:simple_id</code><br><br><code>osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/reservoirsimulationrockphysicsmodel/osdu:work-product-component--ReservoirSimulationRockPhysicsModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -3305,6 +3321,7 @@
         "operationId": "soft_delete_record_api_rafs_ddms_v2_samplesanalysesreport__record_id__delete",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysesReport</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysesReport:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysesReport:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysesreport/osdu:work-product-component--SamplesAnalysesReport:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysesReport:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysesreport/osdu:work-product-component--SamplesAnalysesReport:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -3361,6 +3378,7 @@
         "operationId": "get_record_api_rafs_ddms_v2_samplesanalysesreport__record_id__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysesReport</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysesReport:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysesReport:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysesreport/osdu:work-product-component--SamplesAnalysesReport:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysesReport:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysesreport/osdu:work-product-component--SamplesAnalysesReport:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -3427,6 +3445,7 @@
         "operationId": "get_source_data_api_rafs_ddms_v2_samplesanalysesreport__record_id__source_get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysesReport</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysesReport:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysesReport:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysesreport/osdu:work-product-component--SamplesAnalysesReport:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysesReport:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysesreport/osdu:work-product-component--SamplesAnalysesReport:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -3499,6 +3518,7 @@
         "operationId": "get_record_versions_api_rafs_ddms_v2_samplesanalysesreport__record_id__versions_get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysesReport</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysesReport:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysesReport:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysesreport/osdu:work-product-component--SamplesAnalysesReport:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysesReport:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysesreport/osdu:work-product-component--SamplesAnalysesReport:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -3565,6 +3585,7 @@
         "operationId": "get_record_specific_version_api_rafs_ddms_v2_samplesanalysesreport__record_id__versions__version__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysesReport</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysesReport:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysesReport:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysesreport/osdu:work-product-component--SamplesAnalysesReport:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysesReport:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysesreport/osdu:work-product-component--SamplesAnalysesReport:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -3770,7 +3791,7 @@
     },
     "/api/rafs-ddms/v2/samplesanalysis/analysistypes": {
       "get": {
-        "description": "Get available types.",
+        "description": "Get available types.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "get_types_api_rafs_ddms_v2_samplesanalysis_analysistypes_get",
         "parameters": [
           {
@@ -3817,6 +3838,11 @@
             "description": "Validation Error"
           }
         },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "summary": "Get Types",
         "tags": [
           "samplesanalysis"
@@ -4231,6 +4257,7 @@
         "operationId": "soft_delete_record_api_rafs_ddms_v2_samplesanalysis__record_id__delete",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysis</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysis:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -4287,6 +4314,7 @@
         "operationId": "get_record_api_rafs_ddms_v2_samplesanalysis__record_id__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysis</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysis:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -4362,6 +4390,7 @@
             }
           },
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysis</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysis:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -4547,6 +4576,7 @@
             }
           },
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysis</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysis:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -4668,6 +4698,7 @@
         "operationId": "get_record_versions_api_rafs_ddms_v2_samplesanalysis__record_id__versions_get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysis</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysis:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -4734,6 +4765,7 @@
         "operationId": "get_record_specific_version_api_rafs_ddms_v2_samplesanalysis__record_id__versions__version__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SamplesAnalysis</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SamplesAnalysis:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:simple_id</code><br><br><code>osdu:work-product-component--SamplesAnalysis:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/samplesanalysis/osdu:work-product-component--SamplesAnalysis:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -5354,6 +5386,7 @@
         "operationId": "soft_delete_record_api_rafs_ddms_v2_saturationfunctionset__record_id__delete",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SaturationFunctionSet</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SaturationFunctionSet:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:simple_id</code><br><br><code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -5410,6 +5443,7 @@
         "operationId": "get_record_api_rafs_ddms_v2_saturationfunctionset__record_id__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SaturationFunctionSet</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SaturationFunctionSet:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:simple_id</code><br><br><code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -5476,6 +5510,7 @@
         "operationId": "post_data_single_content_type_api_rafs_ddms_v2_saturationfunctionset__record_id__data_post",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SaturationFunctionSet</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SaturationFunctionSet:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:simple_id</code><br><br><code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -5672,6 +5707,7 @@
             }
           },
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SaturationFunctionSet</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SaturationFunctionSet:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:simple_id</code><br><br><code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -5793,6 +5829,7 @@
         "operationId": "get_record_versions_api_rafs_ddms_v2_saturationfunctionset__record_id__versions_get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SaturationFunctionSet</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SaturationFunctionSet:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:simple_id</code><br><br><code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,
@@ -5859,6 +5896,7 @@
         "operationId": "get_record_specific_version_api_rafs_ddms_v2_saturationfunctionset__record_id__versions__version__get",
         "parameters": [
           {
+            "description": "OSDU record identifier for a <code>work-product-component--SaturationFunctionSet</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--SaturationFunctionSet:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:simple_id</code><br><br><code>osdu:work-product-component--SaturationFunctionSet:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/saturationfunctionset/osdu:work-product-component--SaturationFunctionSet:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
             "in": "path",
             "name": "record_id",
             "required": true,

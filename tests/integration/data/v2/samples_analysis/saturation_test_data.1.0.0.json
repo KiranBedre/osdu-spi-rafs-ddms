@@ -1,0 +1,53 @@
+{
+  "columns":[
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta",
+    "TestNumber",
+    "Temperature",
+    "SaturationPressure",
+    "SaturationPressureTypeID",
+    "SourceAnalysisID",
+    "Remarks"
+  ],
+  "index":[
+    0
+  ],
+  "data":[
+    [
+      "{data_partition_id}:work-product-component--SamplesAnalysis:SaturationTestV100:",
+      "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+      [
+        {
+          "kind":"Unit",
+          "name":"degree Fahrenheit",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:degF:",
+          "propertyNames":[
+            "Temperature"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"pound-force per square inch",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:psi:",
+          "propertyNames":[
+            "SaturationPressure"
+          ]
+        }
+      ],
+      "Test number 1",
+      250.0,
+      3500.0,
+      "{data_partition_id}:reference-data--SaturationPressureType:BubblePoint:",
+      "{data_partition_id}:work-product-component--SamplesAnalysis:Example_CCE_WPC:",
+      [
+        {
+          "RemarkSequenceNumber":1,
+          "Remark":"Bubble point determined from constant composition expansion test.",
+          "RemarkSource":"Laboratory Analyst",
+          "RemarkDate":"2025-01-15"
+        }
+      ]
+    ]
+  ]
+}
