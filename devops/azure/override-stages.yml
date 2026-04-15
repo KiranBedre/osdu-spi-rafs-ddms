@@ -179,7 +179,7 @@ azure_test_py:
     - !reference [.get_azure_access_token, script]
   script:
     - >-
-      time pytest -n 3
+      time pytest -n 3 --maxfail=5
       --junitxml=integration_tests_report.xml
       --cov=app
       --cov-report=xml:coverage.xml

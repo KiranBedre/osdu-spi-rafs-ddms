@@ -175,7 +175,7 @@ cimpl-test-python:
   script:
     - |
       echo "🚀 Running integration tests against ${CIMPL_TENANT}.${CIMPL_DOMAIN}"
-      time pytest -n auto --alluredir=allure-results --dist=loadscope \
+      time pytest -n auto --maxfail=5 --alluredir=allure-results --dist=loadscope \
         --junitxml=integration_tests_report.xml \
         --cov=app \
         --cov-report=xml:coverage.xml \
@@ -250,7 +250,7 @@ cimpl-dev2-test-python:
   script:
     - |
       echo "🚀 Running integration tests against ${CIMPL_TENANT}.${CIMPL_DOMAIN}"
-      time pytest -n 3 \
+      time pytest -n 3 --maxfail=5 \
         --junitxml=integration_tests_report.xml \
         --cov=app \
         --cov-report=xml:coverage.xml \
