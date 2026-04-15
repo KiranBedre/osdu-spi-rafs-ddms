@@ -855,6 +855,16 @@ async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
             [build_get_test_data("x-parquet", cappressure_mock_objects.TEST_DATA)],
         ),
         (
+            TestContentPathsApiV2.CAP_PRESSURE,
+            cappressure_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", cappressure_mock_objects.TEST_DATA_V2)],
+        ),
+        (
             TestContentPathsApiV2.CAP_SUCTION_TIME,
             capillary_suction_time_mock_objects.TEST_DATASET_RECORD_ID,
             "get_record",
@@ -1385,6 +1395,15 @@ async def test_get_content_parquet_data(
             cappressure_mock_objects.TEST_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.CAP_PRESSURE}/{cappressure_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", cappressure_mock_objects.TEST_DATA_V2)],
+            cappressure_mock_objects.TEST_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.CAP_SUCTION_TIME}/{capillary_suction_time_mock_objects.TEST_DATASET_RECORD_ID}",
             None,
             "get_record",
@@ -1790,6 +1809,15 @@ async def test_get_content_parquet_data(
             cappressure_mock_objects.TEST_AGGREGATED_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.CAP_PRESSURE}/{cappressure_mock_objects.TEST_DATASET_RECORD_ID}",
+            cappressure_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", cappressure_mock_objects.TEST_DATA_V2)],
+            cappressure_mock_objects.TEST_AGGREGATED_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.WETTABILITY_INDEX}/{wettability_index_mock_objects.TEST_DATASET_RECORD_ID}",
             wettability_index_mock_objects.TEST_PARAMS_AGGREGATION,
             "get_record",
@@ -2175,6 +2203,15 @@ async def test_get_content_parquet_data(
             "download_file",
             [build_get_test_data("x-parquet", cappressure_mock_objects.TEST_DATA)],
             cappressure_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.CAP_PRESSURE}/{cappressure_mock_objects.TEST_DATASET_RECORD_ID}",
+            cappressure_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", cappressure_mock_objects.TEST_DATA_V2)],
+            cappressure_mock_objects.TEST_FILTERED_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.WETTABILITY_INDEX}/{wettability_index_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -4094,6 +4131,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.CAP_PRESSURE,
+            cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            cappressure_mock_objects.TEST_DATA_V2,
+            cappressure_mock_objects.TEST_DATASET_RECORD_ID,
+            cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
+        ),
+        (
             TestContentPathsApiV2.CAP_SUCTION_TIME,
             capillary_suction_time_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             capillary_suction_time_mock_objects.TEST_DATA,
@@ -4508,6 +4552,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.CAP_PRESSURE,
+            cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            cappressure_mock_objects.TEST_DATA_V2,
+            cappressure_mock_objects.TEST_DATASET_RECORD_ID,
+            cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
+        ),
+        (
             TestContentPathsApiV2.CAP_SUCTION_TIME,
             capillary_suction_time_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             capillary_suction_time_mock_objects.TEST_DATA,
@@ -4845,6 +4896,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
         (
             TestContentPathsApiV2.CAP_PRESSURE,
             cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            cappressure_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.CAP_PRESSURE,
+            cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             cappressure_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
@@ -5216,6 +5272,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             cappressure_mock_objects.TEST_DATA,
             cappressure_mock_objects.TEST_DATASET_RECORD_ID,
             cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.CAP_PRESSURE,
+            cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            cappressure_mock_objects.TEST_DATA_V2,
+            cappressure_mock_objects.TEST_DATASET_RECORD_ID,
+            cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.CAP_SUCTION_TIME,
@@ -5632,6 +5695,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             cappressure_mock_objects.TEST_DATA,
             cappressure_mock_objects.TEST_DATASET_RECORD_ID,
             cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.CAP_PRESSURE,
+            cappressure_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            cappressure_mock_objects.TEST_DATA_V2,
+            cappressure_mock_objects.TEST_DATASET_RECORD_ID,
+            cappressure_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.CAP_SUCTION_TIME,

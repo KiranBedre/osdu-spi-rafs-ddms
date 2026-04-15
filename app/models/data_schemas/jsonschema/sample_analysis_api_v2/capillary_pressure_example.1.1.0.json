@@ -1,0 +1,142 @@
+[
+  {
+    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:CapillaryPressure_WPC:",
+    "SampleID": "opendes:master-data--Sample:CapillaryPressure_Sample:",
+    "Meta": [
+      {
+        "kind": "Unit",
+        "name": "metre",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:m:",
+        "propertyNames": [
+          "MeanDistanceImbibition",
+          "MeanDistanceDrainage"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "millidarcy",
+        "persistableReference": "",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:mD:",
+        "propertyNames": [
+          "ForcedImbibition.Endpoints.EffectivePermeabilityOfInjectionFluid",
+          "ForcedDrainage.Endpoints.EffectivePermeabilityOfInjectionFluid"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "cubic metre per cubic metre",
+        "persistableReference": "",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:m3%2Fm3:",
+        "propertyNames": [
+          "ForcedImbibition.Endpoints.RelativePermeabilityOfInjectionFluid",
+          "ForcedDrainage.Endpoints.RelativePermeabilityOfInjectionFluid"
+        ]
+      }
+    ],
+    "DesaturationMethodID": "opendes:reference-data--DesaturationMethod:Centrifuge:",
+    "MeanDistanceImbibition": 13.924,
+    "MeanDistanceDrainage": 7.134,
+    "FluidSystemAnalysisTypeID": "opendes:reference-data--FluidSystemAnalysisType:GasBrine:",
+    "ReferencePermeability": [
+      {
+        "Value": 430,
+        "PermeabilityMeasurementTypeID": "opendes:reference-data--PermeabilityMeasurementType:Klinkenberg:"
+      },
+      {
+        "Value": 628,
+        "PermeabilityMeasurementTypeID": "opendes:reference-data--PermeabilityMeasurementType:Klinkenberg:"
+      }
+    ],
+    "WaterViscosity": 0.942,
+    "WaterDensity": 1.122,
+    "BrineSalinity": 202436,
+    "OilViscosity": 3.175,
+    "OilDensity": 0.822,
+    "OilTypeID": "opendes:reference-data--DisplacedFluidType:LiveCrudeOil:",
+    "GasTypeID": "opendes:reference-data--SampleInjectionFluidType:GasUnspecified:",
+    "WaterTypeID": "opendes:reference-data--SampleInjectionFluidType:DIWater:",
+    "InitialConditions": {
+      "Pressure": 0,
+      "Temperature": 60
+    },
+    "ForcedImbibition": {
+      "InjectionFluidID": "opendes:reference-data--SampleInjectionFluidType:Water:",
+      "WOGnCycleNotationID": "opendes:reference-data--WOGnCycleNotation:Water:",
+      "InitialWaterSaturation": 0.124,
+      "SpontaneousImbibition": 0.159,
+      "Endpoints": {
+        "ResidualFluidSaturation": 0.148,
+        "EffectivePermeabilityOfResidualFluid": 551,
+        "RelativePermeabilityOfResidualFluid": 1.283,
+        "EffectivePermeabilityOfInjectionFluid": 620.5,
+        "RelativePermeabilityOfInjectionFluid": 0.95
+      },
+      "TestData": [
+        {
+          "StepNumber": 1,
+          "StartTime": 0,
+          "RotationalSpeed": 504,
+          "Pressure": {
+            "Value": -0.0535565480334989,
+            "PressureMeasurementTypeID": null
+          },
+          "CalculatedProperties": {
+            "PoreThroatSizeDistribution": [],
+            "BondNumber": 0.00000283493814740805,
+            "CapillaryPressure": -0.0526270077133465
+          },
+          "PhaseInjectedVolume": 5.34080593143082,
+          "PhaseSaturation": 0.753912674717305,
+          "TransientData": [
+            {
+              "Time": 1.06666666455567,
+              "RotationalSpeed": 504,
+              "ProductionProfile": 0.823899970952814
+            }
+          ]
+        }
+      ],
+      "EndTime": 60268
+    },
+    "ForcedDrainage": {
+      "InjectionFluidID": "opendes:reference-data--SampleInjectionFluidType:Water:",
+      "WOGnCycleNotationID": "opendes:reference-data--WOGnCycleNotation:Water:",
+      "InitialWaterSaturation": 0.124,
+      "SpontaneousImbibition": 0.159,
+      "Endpoints": {
+        "ResidualFluidSaturation": 0.148,
+        "EffectivePermeabilityOfResidualFluid": 551,
+        "RelativePermeabilityOfResidualFluid": 1.283,
+        "EffectivePermeabilityOfInjectionFluid": 580.0,
+        "RelativePermeabilityOfInjectionFluid": 0.92
+      },
+      "TestData": [
+        {
+          "StepNumber": 1,
+          "StartTime": 0,
+          "RotationalSpeed": 697,
+          "Pressure": {
+            "Value": 0.0542312740120338,
+            "PressureMeasurementTypeID": null
+          },
+          "CalculatedProperties": {
+            "PoreThroatSizeDistribution": [],
+            "BondNumber": 0.00000277790354252137,
+            "CapillaryPressure": 0.0542312740120338
+          },
+          "PhaseInjectedVolume": 5.56602556668755,
+          "PhaseSaturation": 0.16277222776521,
+          "TransientData": [
+            {
+              "Time": 0,
+              "RotationalSpeed": 707,
+              "ProductionProfile": 3.39807670006266
+            }
+          ]
+        }
+      ],
+      "EndTime": 60268
+    },
+    "AppliedOverBurdenStress": null
+  }
+]

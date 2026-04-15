@@ -1,0 +1,1316 @@
+{
+  "x-osdu-license": "Copyright 2025, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "x-osdu-review-status": "Mature",
+  "$id": "capillary_pressure.1.1.0.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Capillary Pressure Data Schema",
+  "description": "Capillary Pressure defines the fluid distribution within a porous media.  It measures the difference in pressure across the interface between two phases, which are typically oil/water, gas/water or gas/oil.",
+  "type": "object",
+  "x-osdu-virtual-properties": {
+    "data.VirtualProperties.DefaultName": {
+      "type": "string",
+      "priority": [
+        {
+          "path": "data.Name"
+        }
+      ]
+    }
+  },
+  "properties": {
+    "SamplesAnalysisID": {
+      "type": "string",
+      "title": "Sample Analysis ID",
+      "description": "The OSDU Identifier for this SamplesAnalysis.",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "work-product-component",
+          "EntityType": "SamplesAnalysis"
+        }
+      ]
+    },
+    "SampleID": {
+      "type": "string",
+      "title": "Sample ID",
+      "description": "The OSDU Identifier for the Sample associated with this analysis.",
+      "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "master-data",
+          "EntityType": "Sample"
+        }
+      ]
+    },
+    "Meta": {
+      "type": "array",
+      "title": "Meta",
+      "description": "Object",
+      "example": "",
+      "items": {
+        "x-osdu-license": "Copyright 2022, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+        "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractMetaItem.1.0.0.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "x-osdu-schema-source": "osdu:wks:AbstractMetaItem:1.0.0",
+        "title": "Frame of Reference Meta Data Item",
+        "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+        "oneOf": [
+          {
+            "title": "FrameOfReferenceUOM",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "UOM Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                "const": "Unit"
+              },
+              "name": {
+                "title": "UOM Unit Symbol",
+                "description": "The unit symbol or name of the unit.",
+                "type": "string",
+                "example": "ft[US]"
+              },
+              "persistableReference": {
+                "title": "UOM Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                "type": "string",
+                "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}"
+              },
+              "unitOfMeasureID": {
+                "description": "SRN to unit of measure reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "UnitOfMeasure"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "UOM Property Names",
+                "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "HorizontalDeflection.EastWest",
+                  "HorizontalDeflection.NorthSouth"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceCRS",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "CRS Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                "const": "CRS"
+              },
+              "name": {
+                "title": "CRS Name",
+                "description": "The name of the CRS.",
+                "type": "string",
+                "example": "WGS 84 / UTM zone 15N"
+              },
+              "persistableReference": {
+                "title": "CRS Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                "type": "string",
+                "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}"
+              },
+              "coordinateReferenceSystemID": {
+                "description": "SRN to CRS reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "CoordinateReferenceSystem"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "CRS Property Names",
+                "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "KickOffPosition.X",
+                  "KickOffPosition.Y"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceDateTime",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "DateTime Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                "const": "DateTime"
+              },
+              "name": {
+                "title": "DateTime Name",
+                "description": "The name of the DateTime format and reference.",
+                "type": "string",
+                "example": "UTC"
+              },
+              "persistableReference": {
+                "title": "DateTime Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                "type": "string",
+                "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}"
+              },
+              "propertyNames": {
+                "title": "DateTime Property Names",
+                "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Acquisition.StartTime",
+                  "Acquisition.EndTime"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceAzimuthReference",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "AzimuthReference Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                "const": "AzimuthReference"
+              },
+              "name": {
+                "title": "AzimuthReference Name",
+                "description": "The name of the CRS or the symbol/name of the unit.",
+                "type": "string",
+                "example": "TrueNorth"
+              },
+              "persistableReference": {
+                "title": "AzimuthReference Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                "type": "string",
+                "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}"
+              },
+              "propertyNames": {
+                "title": "AzimuthReference Property Names",
+                "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Bearing"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          }
+        ],
+        "x-osdu-inheriting-from-kind": []
+      }
+    },
+    "SaturationProcessMethodID": {
+      "type": "string",
+      "title": "Saturation Process Method ID",
+      "description": "SaturationProcessMethod, intended to be paired with SampleAnalysisType for Capillary Pressure Subfamilies.  e.g. PrimaryDrainage, PrimaryImbibition, SecondaryDrainage, SecondaryImbibition, TertiaryDrainage.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationProcessMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "SaturationProcessMethod"
+        }
+      ]
+    },
+    "FluidSystemAnalysisTypeID": {
+      "type": "string",
+      "title": "Fluid System Analysis Type ID",
+      "description": "Identifier for the Fluid System (e.g. oil-brine) that is present in this sample.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSystemAnalysisType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "FluidSystemAnalysisType"
+        }
+      ]
+    },
+    "ForcedImbibition": {
+      "type": "object",
+      "title": "Forced Imbibition",
+      "description": "Array Object containing the test steps for this analysis.",
+      "properties": {
+        "InitialWaterSaturation": {
+          "type": "number",
+          "title": "Initial Water Saturation",
+          "description": "Water Saturation of the sample at initial pressure and temperature conditions.",
+          "x-osdu-frame-of-reference": "UOM:volume per volume"
+        },
+        "TestData": {
+          "type": "array",
+          "title": "Test Data",
+          "description": "The permeability value acting as a reference for this experiment.",
+          "x-osdu-indexing": {
+            "type": "nested"
+          },
+          "items": {
+            "type": "object",
+            "title": "Test Data",
+            "description": "Array Object containing the test steps for this analysis.",
+            "properties": {
+              "TransientData": {
+                "type": "array",
+                "title": "Transient Data",
+                "description": "Object containing volume measurements over time for centrifuge and porous plate analyses.",
+                "x-osdu-indexing": {
+                  "type": "nested"
+                },
+                "items": {
+                  "type": "object",
+                  "title": "Transient Data",
+                  "description": "Object containing volume measurements over time for centrifuge and porous plate analyses.",
+                  "properties": {
+                    "ProductionProfile": {
+                      "type": "number",
+                      "title": "Production Profile",
+                      "description": "Production of displaced phase as function of time in a centrifuge or porous plate experiment.",
+                      "x-osdu-frame-of-reference": "UOM:volume"
+                    },
+                    "Time": {
+                      "type": "number",
+                      "title": "Time",
+                      "description": "The time at which this production profile value was measured.",
+                      "x-osdu-frame-of-reference": "UOM:time"
+                    },
+                    "RotationalSpeed": {
+                      "type": "number",
+                      "title": "Rotational Speed",
+                      "description": "The rotational speed of the centrifuge, measured as rotations per minute (RPM) or equivalent.",
+                      "x-osdu-frame-of-reference": "UOM:angular velocity"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "Permeability": {
+                "type": "object",
+                "title": "Permeability",
+                "description": "Quantifies the ability for fluids or gas to flow through a sample.",
+                "properties": {
+                  "Value": {
+                    "type": "number",
+                    "title": "Value",
+                    "description": "The numeric value of this permeability measurement.",
+                    "x-osdu-frame-of-reference": "UOM:permeability rock"
+                  },
+                  "PermeabilityMeasurementTypeID": {
+                    "type": "string",
+                    "title": "Permeability Measurement Type ID",
+                    "description": "The OSDU reference-data ID corresponding to the type of permeability being measured.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "PermeabilityMeasurementType"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "Porosity": {
+                "type": "object",
+                "title": "Porosity",
+                "description": "The amount of pore space relative to the volume of a sample.",
+                "properties": {
+                  "Value": {
+                    "type": "number",
+                    "title": "Value",
+                    "description": "The numeric value of this porosity measurement.",
+                    "x-osdu-frame-of-reference": "UOM:volume per volume"
+                  },
+                  "PorosityMeasurementTypeID": {
+                    "type": "string",
+                    "title": "Porosity Measurement Type ID",
+                    "description": "The OSDU reference-data ID corresponding to the type of porosity being measured.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "PorosityMeasurementType"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "Pressure": {
+                "type": "object",
+                "title": "Pressure",
+                "description": "The value and unit of measure of the pressure of the sample environment.",
+                "properties": {
+                  "Value": {
+                    "type": "number",
+                    "title": "Value",
+                    "description": "The numeric value of this pressure measurement.",
+                    "x-osdu-frame-of-reference": "UOM:pressure"
+                  },
+                  "PressureMeasurementTypeID": {
+                    "type": "string",
+                    "title": "Pressure Measurement Type ID",
+                    "description": "The OSDU reference-data ID corresponding to the type of pressure being measured.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PressureMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "PressureMeasurementType"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "Temperature": {
+                "type": "number",
+                "title": "Temperature",
+                "description": "The value and unit of measure of the temperature of the sample environment.",
+                "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+              },
+              "InterfacialTension": {
+                "type": "number",
+                "title": "Interfacial Tension",
+                "description": "The force that holds the surface of a particular phase together.",
+                "x-osdu-frame-of-reference": "UOM:pressure"
+              },
+              "StepNumber": {
+                "type": "number",
+                "title": "Step Number",
+                "description": "Number assigned to identify this specific step in the sequence of steps of the analysis.",
+                "x-osdu-frame-of-reference": "UOM:non-dimensional"
+              },
+              "CapillaryPressure": {
+                "type": "number",
+                "title": "Capillary Pressure",
+                "description": "A measure of the difference in pressure across the interface between two phases, which are typically oil/water, gas/water or gas/oil.",
+                "x-osdu-frame-of-reference": "UOM:pressure"
+              },
+              "PhaseSaturation": {
+                "type": "number",
+                "title": "Phase Saturation",
+                "description": "The saturation of the sample for this step.",
+                "x-osdu-frame-of-reference": "UOM:volume per volume"
+              },
+              "PhaseInjectedVolume": {
+                "type": "number",
+                "title": "Phase Injected Volume",
+                "description": "The volume and type of fluid injected into the sample for this step.  This volume is identical to the volume of fluid produced from the sample.",
+                "x-osdu-frame-of-reference": "UOM:volume"
+              },
+              "Remarks": {
+                "x-osdu-license": "Copyright 2023, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+                "x-osdu-review-status": "Accepted",
+                "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractRemark.1.0.0.json",
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "x-osdu-schema-source": "osdu:wks:AbstractRemark:1.0.0",
+                "title": "Remarks",
+                "description": "Additional notes or observations relevant to the specific test step.",
+                "type": "object",
+                "properties": {
+                  "RemarkSequenceNumber": {
+                    "type": "integer",
+                    "title": "Remark Sequence Number",
+                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                    "example": 1
+                  },
+                  "Remark": {
+                    "type": "string",
+                    "title": "Remark",
+                    "description": "A descriptive comment for this remark."
+                  },
+                  "RemarkSource": {
+                    "type": "string",
+                    "title": "Remark Source",
+                    "description": "The person, vendor, interpreter or other provider of information."
+                  },
+                  "RemarkDate": {
+                    "type": "string",
+                    "title": "Remark Date",
+                    "description": "The date the remark was issued.",
+                    "format": "date",
+                    "x-osdu-frame-of-reference": "DateTime"
+                  }
+                },
+                "x-osdu-inheriting-from-kind": [],
+                "additionalProperties": false
+              },
+              "CalculatedProperties": {
+                "type": "object",
+                "title": "Calculated Properties",
+                "description": "Object containing calculated properties such as averages, Jfunction, and height above free water level.",
+                "properties": {
+                  "PoreThroatRadius": {
+                    "type": "number",
+                    "title": "Pore Throat Radius",
+                    "description": "PoreThroatRadius is the conversion of the capillary pressure using interfacial tension and the wettability angle ( PTR = 2 x sigma cos (theta) / Capillary pressure )",
+                    "x-osdu-frame-of-reference": "UOM:length"
+                  },
+                  "PoreThroatMedianRadius": {
+                    "type": "number",
+                    "title": "Pore Throat Median Radius",
+                    "description": "This is the P50 (median) of the Pore Throat Radius distribution.",
+                    "x-osdu-frame-of-reference": "UOM:length"
+                  },
+                  "EndFaceEstimationMethodID": {
+                    "type": "string",
+                    "title": "End Face Estimation Method ID",
+                    "description": "The method used to calculate the end face phase saturation, e.g. HasslerBrunner,\nForbes.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-EndFaceEstimationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "EndFaceEstimationMethod"
+                      }
+                    ]
+                  },
+                  "EndFacePhaseSaturation": {
+                    "type": "number",
+                    "title": "End Face Phase Saturation",
+                    "description": "Calculated saturation of the end face of the sample in a centrifuge experiment.",
+                    "x-osdu-frame-of-reference": "UOM:volume per volume"
+                  },
+                  "JFunction": {
+                    "type": "number",
+                    "title": "J Function",
+                    "description": "Conversion of normalized capillary pressure using porosity and permeability [ J = PC / ( sigma x cos wettability ) x SQRT( permeability / porosity ) ]",
+                    "x-osdu-frame-of-reference": "UOM:non-dimensional"
+                  },
+                  "CapillaryPressure": {
+                    "type": "number",
+                    "title": "Capillary Pressure",
+                    "description": "A measure of the difference in pressure across the interface between two phases, which are typically oil/water, gas/water or gas/oil.",
+                    "x-osdu-frame-of-reference": "UOM:pressure"
+                  },
+                  "NormalizedPermeabilityDistributionFunction": {
+                    "type": "number",
+                    "title": "Normalized Permeability Distribution Function",
+                    "description": "The computation of a permeability obtained from the contribution of the different pore throats as they are filled during the experiment. related to HPMI or MICP only.",
+                    "x-osdu-frame-of-reference": "UOM:dimensionless"
+                  },
+                  "PoreThroatSizeDistribution": {
+                    "type": "array",
+                    "title": "Pore Throat Size Distribution",
+                    "description": "The distribution of pore throat size during the experiment.",
+                    "x-osdu-indexing": {
+                      "type": "nested"
+                    },
+                    "x-osdu-frame-of-reference": "UOM:length",
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "MeanHydraulicRadius": {
+                    "type": "number",
+                    "title": "Mean Hydraulic Radius",
+                    "description": "Term used for for SQRT( permeability / porosity ) which is homogeneous to a length (mD ~ m^2)",
+                    "x-osdu-frame-of-reference": "UOM:length"
+                  },
+                  "CumulativePhaseSaturation": {
+                    "type": "number",
+                    "title": "Cumulative Phase Saturation",
+                    "description": "This is the computed saturation for the cumulative volume that is normalized to the volume at the end of the experiment.",
+                    "x-osdu-frame-of-reference": "UOM:volume per volume"
+                  },
+                  "PhaseSaturationFrequency": {
+                    "type": "number",
+                    "title": "Phase Saturation Frequency",
+                    "description": "This is the frequency plot of the portion of porosity filled at each pressure step.",
+                    "x-osdu-frame-of-reference": "UOM:dimensionless"
+                  },
+                  "BondNumber": {
+                    "type": "number",
+                    "title": "Bond Number",
+                    "description": "A dimensionless number that characterizes the relative importance of gravitational forces to capillary forces within a fluid system.",
+                    "x-osdu-frame-of-reference": "UOM:dimensionless"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "RotationalSpeed": {
+                "type": "number",
+                "title": "rotational Speed",
+                "description": "The rotational speed of the centrifuge, measured as rotations per minute (RPM) or equivalent.",
+                "x-osdu-frame-of-reference": "UOM:angular velocity"
+              },
+              "StartTime": {
+                "type": "number",
+                "title": "Start Time",
+                "description": "Timestamp at which this step is initiated.",
+                "x-osdu-frame-of-reference": "DateTime"
+              },
+              "CumulativeIntrusion": {
+                "type": "number",
+                "title": "Cumulative Intrusion",
+                "description": "The accumulated intrusion at this test step, typically reported as mL/gram.",
+                "x-osdu-frame-of-reference": "UOM:volume per mass"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "Endpoints": {
+          "type": "object",
+          "title": "Endpoints",
+          "description": "The type of permeability measurement being used as a reference value for this experiment.",
+          "properties": {
+            "CapillaryPressureMax": {
+              "type": "number",
+              "title": "Capillary Pressure Maximum",
+              "description": "Maximum capillary pressure recorded during the analysis of the sample",
+              "x-osdu-frame-of-reference": "UOM:pressure"
+            },
+            "PhaseSaturationAtCapillaryPressureMax": {
+              "type": "number",
+              "title": "Phase Saturation At Capillary Pressure Maximum",
+              "description": "Saturation at the maximum capillary pressure of this phase of the experiment.",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            },
+            "LowestPhaseSaturationAvg": {
+              "type": "number",
+              "title": "Lowest Phase Saturation Average",
+              "description": "Lowest phase saturation achieved averaged over entire core plug or composite, only applicable for centrifuge & coreflood",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            },
+            "MinCapPressureRecorded": {
+              "type": "number",
+              "title": "Minimum Capillary Pressure Recorded",
+              "description": "Minimum pressure from which Sor can be obtained.",
+              "x-osdu-frame-of-reference": "UOM:pressure"
+            },
+            "ResidualFluidSaturation": {
+              "type": "number",
+              "title": "Residual Fluid Saturation",
+              "description": "The saturation of residual fluid after forced imbibition or drainage.",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            },
+            "EffectivePermeabilityOfResidualFluid": {
+              "type": "number",
+              "title": "Effective Permeability Of Residual Fluid",
+              "description": "The effective permeability of the residual fluid at the end of the imbibition or drainage phase.",
+              "x-osdu-frame-of-reference": "UOM:permeability rock"
+            },
+            "RelativePermeabilityOfResidualFluid": {
+              "type": "number",
+              "title": "Relative Permeability Of Residual Fluid",
+              "description": "The relative permeability of the residual fluid at the end of the imbibition or drainage phase.",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            },
+            "EffectivePermeabilityOfInjectionFluid": {
+              "type": "number",
+              "title": "Effective Permeability Of Injection Fluid",
+              "description": "The effective permeability of the injection fluid at the start of the imbibition or drainage phase.",
+              "x-osdu-frame-of-reference": "UOM:permeability rock"
+            },
+            "RelativePermeabilityOfInjectionFluid": {
+              "type": "number",
+              "title": "Relative Permeability Of Injection Fluid",
+              "description": "The relative permeability of the injection fluid at the start of the imbibition or drainage phase.",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            }
+          },
+          "additionalProperties": false
+        },
+        "InjectionFluidID": {
+          "type": "string",
+          "title": "Injection Fluid Type ID",
+          "description": "The injection fluid used during this phase of the experiment.",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+          "x-osdu-relationship": [
+            {
+              "GroupType": "reference-data",
+              "EntityType": "SampleInjectionFluidType"
+            }
+          ]
+        },
+        "SpontaneousImbibition": {
+          "type": "number",
+          "title": "Spontaneous Imbibition",
+          "description": "The fraction of injection fluid imbibed spontaneously prior to forced injection.",
+          "x-osdu-frame-of-reference": "UOM:volume per volume"
+        },
+        "WOGnCycleNotationID": {
+          "type": "string",
+          "title": "Water Oil Gas Number ID",
+          "description": "The WOGn notation description of this capillary pressure cycle.",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WOGnCycleNotation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+          "x-osdu-relationship": [
+            {
+              "GroupType": "reference-data",
+              "EntityType": "WOGnCycleNotation"
+            }
+          ]
+        },
+        "EndTime": {
+          "type": "number",
+          "title": "End Time",
+          "description": "Overall duration of the test.",
+          "x-osdu-frame-of-reference": "UOM:time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ForcedDrainage": {
+      "type": "object",
+      "title": "Forced Drainage",
+      "description": "Array Object containing the test steps for this analysis.",
+      "properties": {
+        "InitialWaterSaturation": {
+          "type": "number",
+          "title": "Initial Water Saturation",
+          "description": "Water Saturation of the sample at initial pressure and temperature conditions.",
+          "x-osdu-frame-of-reference": "UOM:volume per volume"
+        },
+        "TestData": {
+          "type": "array",
+          "title": "Test Data",
+          "description": "The permeability value acting as a reference for this experiment.",
+          "x-osdu-indexing": {
+            "type": "nested"
+          },
+          "items": {
+            "type": "object",
+            "title": "Test Data",
+            "description": "Array Object containing the test steps for this analysis.",
+            "properties": {
+              "TransientData": {
+                "type": "array",
+                "title": "Transient Data",
+                "description": "Object containing volume measurements over time for centrifuge and porous plate analyses.",
+                "x-osdu-indexing": {
+                  "type": "nested"
+                },
+                "items": {
+                  "type": "object",
+                  "title": "Transient Data",
+                  "description": "Object containing volume measurements over time for centrifuge and porous plate analyses.",
+                  "properties": {
+                    "ProductionProfile": {
+                      "type": "number",
+                      "title": "Production Profile",
+                      "description": "Production of displaced phase as function of time in a centrifuge or porous plate experiment.",
+                      "x-osdu-frame-of-reference": "UOM:volume"
+                    },
+                    "Time": {
+                      "type": "number",
+                      "title": "Time",
+                      "description": "The time at which this production profile value was measured.",
+                      "x-osdu-frame-of-reference": "UOM:time"
+                    },
+                    "RotationalSpeed": {
+                      "type": "number",
+                      "title": "Rotational Speed",
+                      "description": "The rotational speed of the centrifuge, measured as rotations per minute (RPM) or equivalent.",
+                      "x-osdu-frame-of-reference": "UOM:angular velocity"
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "Permeability": {
+                "type": "object",
+                "title": "Permeability",
+                "description": "Quantifies the ability for fluids or gas to flow through a sample.",
+                "properties": {
+                  "Value": {
+                    "type": "number",
+                    "title": "Value",
+                    "description": "The numeric value of this permeability measurement.",
+                    "x-osdu-frame-of-reference": "UOM:permeability rock"
+                  },
+                  "PermeabilityMeasurementTypeID": {
+                    "type": "string",
+                    "title": "Permeability Measurement Type ID",
+                    "description": "The OSDU reference-data ID corresponding to the type of permeability being measured.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "PermeabilityMeasurementType"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "Porosity": {
+                "type": "object",
+                "title": "Porosity",
+                "description": "The amount of pore space relative to the volume of a sample.",
+                "properties": {
+                  "Value": {
+                    "type": "number",
+                    "title": "Value",
+                    "description": "The numeric value of this porosity measurement.",
+                    "x-osdu-frame-of-reference": "UOM:volume per volume"
+                  },
+                  "PorosityMeasurementTypeID": {
+                    "type": "string",
+                    "title": "Porosity Measurement Type ID",
+                    "description": "The OSDU reference-data ID corresponding to the type of porosity being measured.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "PorosityMeasurementType"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "Pressure": {
+                "type": "object",
+                "title": "Pressure",
+                "description": "The value and unit of measure of the pressure of the sample environment.",
+                "properties": {
+                  "Value": {
+                    "type": "number",
+                    "title": "Value",
+                    "description": "The numeric value of this pressure measurement.",
+                    "x-osdu-frame-of-reference": "UOM:pressure"
+                  },
+                  "PressureMeasurementTypeID": {
+                    "type": "string",
+                    "title": "Pressure Measurement Type ID",
+                    "description": "The OSDU reference-data ID corresponding to the type of pressure being measured.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PressureMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "PressureMeasurementType"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "Temperature": {
+                "type": "number",
+                "title": "Temperature",
+                "description": "The value and unit of measure of the temperature of the sample environment.",
+                "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+              },
+              "InterfacialTension": {
+                "type": "number",
+                "title": "Interfacial Tension",
+                "description": "The force that holds the surface of a particular phase together.",
+                "x-osdu-frame-of-reference": "UOM:pressure"
+              },
+              "StepNumber": {
+                "type": "number",
+                "title": "Step Number",
+                "description": "Number assigned to identify this specific step in the sequence of steps of the analysis.",
+                "x-osdu-frame-of-reference": "UOM:non-dimensional"
+              },
+              "CapillaryPressure": {
+                "type": "number",
+                "title": "Capillary Pressure",
+                "description": "A measure of the difference in pressure across the interface between two phases, which are typically oil/water, gas/water or gas/oil.",
+                "x-osdu-frame-of-reference": "UOM:pressure"
+              },
+              "PhaseSaturation": {
+                "type": "number",
+                "title": "Phase Saturation",
+                "description": "The saturation of the sample for this step.",
+                "x-osdu-frame-of-reference": "UOM:volume per volume"
+              },
+              "PhaseInjectedVolume": {
+                "type": "number",
+                "title": "Phase Injected Volume",
+                "description": "The volume and type of fluid injected into the sample for this step.  This volume is identical to the volume of fluid produced from the sample.",
+                "x-osdu-frame-of-reference": "UOM:volume"
+              },
+              "Remarks": {
+                "x-osdu-license": "Copyright 2023, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+                "x-osdu-review-status": "Accepted",
+                "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractRemark.1.0.0.json",
+                "$schema": "http://json-schema.org/draft-07/schema#",
+                "x-osdu-schema-source": "osdu:wks:AbstractRemark:1.0.0",
+                "title": "Remarks",
+                "description": "Additional notes or observations relevant to the specific test step.",
+                "type": "object",
+                "properties": {
+                  "RemarkSequenceNumber": {
+                    "type": "integer",
+                    "title": "Remark Sequence Number",
+                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                    "example": 1
+                  },
+                  "Remark": {
+                    "type": "string",
+                    "title": "Remark",
+                    "description": "A descriptive comment for this remark."
+                  },
+                  "RemarkSource": {
+                    "type": "string",
+                    "title": "Remark Source",
+                    "description": "The person, vendor, interpreter or other provider of information."
+                  },
+                  "RemarkDate": {
+                    "type": "string",
+                    "title": "Remark Date",
+                    "description": "The date the remark was issued.",
+                    "format": "date",
+                    "x-osdu-frame-of-reference": "DateTime"
+                  }
+                },
+                "x-osdu-inheriting-from-kind": [],
+                "additionalProperties": false
+              },
+              "CalculatedProperties": {
+                "type": "object",
+                "title": "Calculated Properties",
+                "description": "Object containing calculated properties such as averages, Jfunction, and height above free water level.",
+                "properties": {
+                  "PoreThroatRadius": {
+                    "type": "number",
+                    "title": "Pore Throat Radius",
+                    "description": "PoreThroatRadius is the conversion of the capillary pressure using interfacial tension and the wettability angle ( PTR = 2 x sigma cos (theta) / Capillary pressure )",
+                    "x-osdu-frame-of-reference": "UOM:length"
+                  },
+                  "PoreThroatMedianRadius": {
+                    "type": "number",
+                    "title": "Pore Throat Median Radius",
+                    "description": "This is the P50 (median) of the Pore Throat Radius distribution.",
+                    "x-osdu-frame-of-reference": "UOM:length"
+                  },
+                  "EndFaceEstimationMethodID": {
+                    "type": "string",
+                    "title": "End Face Estimation Method ID",
+                    "description": "The method used to calculate the end face phase saturation, e.g. HasslerBrunner,\nForbes.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-EndFaceEstimationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "EndFaceEstimationMethod"
+                      }
+                    ]
+                  },
+                  "EndFacePhaseSaturation": {
+                    "type": "number",
+                    "title": "End Face Phase Saturation",
+                    "description": "Calculated saturation of the end face of the sample in a centrifuge experiment.",
+                    "x-osdu-frame-of-reference": "UOM:volume per volume"
+                  },
+                  "JFunction": {
+                    "type": "number",
+                    "title": "J Function",
+                    "description": "Conversion of normalized capillary pressure using porosity and permeability [ J = PC / ( sigma x cos wettability ) x SQRT( permeability / porosity ) ]",
+                    "x-osdu-frame-of-reference": "UOM:non-dimensional"
+                  },
+                  "CapillaryPressure": {
+                    "type": "number",
+                    "title": "Capillary Pressure",
+                    "description": "A measure of the difference in pressure across the interface between two phases, which are typically oil/water, gas/water or gas/oil.",
+                    "x-osdu-frame-of-reference": "UOM:pressure"
+                  },
+                  "NormalizedPermeabilityDistributionFunction": {
+                    "type": "number",
+                    "title": "Normalized Permeability Distribution Function",
+                    "description": "The computation of a permeability obtained from the contribution of the different pore throats as they are filled during the experiment. related to HPMI or MICP only.",
+                    "x-osdu-frame-of-reference": "UOM:dimensionless"
+                  },
+                  "PoreThroatSizeDistribution": {
+                    "type": "array",
+                    "title": "Pore Throat Size Distribution",
+                    "description": "The distribution of pore throat size during the experiment.",
+                    "x-osdu-indexing": {
+                      "type": "nested"
+                    },
+                    "x-osdu-frame-of-reference": "UOM:length",
+                    "items": {
+                      "type": "number"
+                    }
+                  },
+                  "MeanHydraulicRadius": {
+                    "type": "number",
+                    "title": "Mean Hydraulic Radius",
+                    "description": "Term used for for SQRT( permeability / porosity ) which is homogeneous to a length (mD ~ m^2)",
+                    "x-osdu-frame-of-reference": "UOM:length"
+                  },
+                  "CumulativePhaseSaturation": {
+                    "type": "number",
+                    "title": "Cumulative Phase Saturation",
+                    "description": "This is the computed saturation for the cumulative volume that is normalized to the volume at the end of the experiment.",
+                    "x-osdu-frame-of-reference": "UOM:volume per volume"
+                  },
+                  "PhaseSaturationFrequency": {
+                    "type": "number",
+                    "title": "Phase Saturation Frequency",
+                    "description": "This is the frequency plot of the portion of porosity filled at each pressure step.",
+                    "x-osdu-frame-of-reference": "UOM:dimensionless"
+                  },
+                  "BondNumber": {
+                    "type": "number",
+                    "title": "Bond Number",
+                    "description": "A dimensionless number that characterizes the relative importance of gravitational forces to capillary forces within a fluid system.",
+                    "x-osdu-frame-of-reference": "UOM:dimensionless"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "RotationalSpeed": {
+                "type": "number",
+                "title": "rotational Speed",
+                "description": "The rotational speed of the centrifuge, measured as rotations per minute (RPM) or equivalent.",
+                "x-osdu-frame-of-reference": "UOM:angular velocity"
+              },
+              "StartTime": {
+                "type": "number",
+                "title": "Start Time",
+                "description": "Timestamp at which this step is initiated.",
+                "x-osdu-frame-of-reference": "DateTime"
+              },
+              "CumulativeIntrusion": {
+                "type": "number",
+                "title": "Cumulative Intrusion",
+                "description": "The accumulated intrusion at this test step, typically reported as mL/gram.",
+                "x-osdu-frame-of-reference": "UOM:volume per mass"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "Endpoints": {
+          "type": "object",
+          "title": "Endpoints",
+          "description": "The type of permeability measurement being used as a reference value for this experiment.",
+          "properties": {
+            "CapillaryPressureMax": {
+              "type": "number",
+              "title": "Capillary Pressure Maximum",
+              "description": "Maximum capillary pressure recorded during the analysis of the sample",
+              "x-osdu-frame-of-reference": "UOM:pressure"
+            },
+            "PhaseSaturationAtCapillaryPressureMax": {
+              "type": "number",
+              "title": "Phase Saturation At Capillary Pressure Maximum",
+              "description": "Saturation at the maximum capillary pressure of this phase of the experiment.",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            },
+            "LowestPhaseSaturationAvg": {
+              "type": "number",
+              "title": "Lowest Phase Saturation Average",
+              "description": "Lowest phase saturation achieved averaged over entire core plug or composite, only applicable for centrifuge & coreflood",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            },
+            "MinCapPressureRecorded": {
+              "type": "number",
+              "title": "Minimum Capillary Pressure Recorded",
+              "description": "Minimum pressure from which Sor can be obtained.",
+              "x-osdu-frame-of-reference": "UOM:pressure"
+            },
+            "ResidualFluidSaturation": {
+              "type": "number",
+              "title": "Residual Fluid Saturation",
+              "description": "The saturation of residual fluid after forced imbibition or drainage.",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            },
+            "EffectivePermeabilityOfResidualFluid": {
+              "type": "number",
+              "title": "Effective Permeability Of Residual Fluid",
+              "description": "The effective permeability of the residual fluid at the end of the imbibition or drainage phase.",
+              "x-osdu-frame-of-reference": "UOM:permeability rock"
+            },
+            "RelativePermeabilityOfResidualFluid": {
+              "type": "number",
+              "title": "Relative Permeability Of Residual Fluid",
+              "description": "The relative permeability of the residual fluid at the end of the imbibition or drainage phase.",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            },
+            "EffectivePermeabilityOfInjectionFluid": {
+              "type": "number",
+              "title": "Effective Permeability Of Injection Fluid",
+              "description": "The effective permeability of the injection fluid at the start of the imbibition or drainage phase.",
+              "x-osdu-frame-of-reference": "UOM:permeability rock"
+            },
+            "RelativePermeabilityOfInjectionFluid": {
+              "type": "number",
+              "title": "Relative Permeability Of Injection Fluid",
+              "description": "The relative permeability of the injection fluid at the start of the imbibition or drainage phase.",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            }
+          },
+          "additionalProperties": false
+        },
+        "InjectionFluidID": {
+          "type": "string",
+          "title": "Injection Fluid Type ID",
+          "description": "The injection fluid used during this phase of the experiment.",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+          "x-osdu-relationship": [
+            {
+              "GroupType": "reference-data",
+              "EntityType": "SampleInjectionFluidType"
+            }
+          ]
+        },
+        "SpontaneousImbibition": {
+          "type": "number",
+          "title": "Spontaneous Imbibition",
+          "description": "The fraction of injection fluid imbibed spontaneously prior to forced injection.",
+          "x-osdu-frame-of-reference": "UOM:volume per volume"
+        },
+        "WOGnCycleNotationID": {
+          "type": "string",
+          "title": "Water Oil Gas Number Cycle Notation ID",
+          "description": "The WOGn notation description of this capillary pressure cycle.",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WOGnCycleNotation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+          "x-osdu-relationship": [
+            {
+              "GroupType": "reference-data",
+              "EntityType": "WOGnCycleNotation"
+            }
+          ]
+        },
+        "EndTime": {
+          "type": "number",
+          "title": "End Time",
+          "description": "Overall duration of the test.",
+          "x-osdu-frame-of-reference": "UOM:time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "InitialOilSaturation": {
+      "type": "number",
+      "title": "Initial Oil Saturation",
+      "description": "Oil Saturation of the sample at initial pressure and temperature conditions.",
+      "x-osdu-frame-of-reference": "UOM:volume per volume"
+    },
+    "InitialGasSaturation": {
+      "type": "number",
+      "title": "Initial Gas Saturation",
+      "description": "Gas Saturation of the sample at initial pressure and temperature conditions.",
+      "x-osdu-frame-of-reference": "UOM:volume per volume"
+    },
+    "BrineSalinity": {
+      "type": "number",
+      "title": "Brine Salinity",
+      "description": "The concentration of salt within brine which may be called saturant or saturant brine.",
+      "x-osdu-frame-of-reference": "UOM:mass per volume"
+    },
+    "InitialConditions": {
+      "x-osdu-license": "Copyright 2024, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+      "x-osdu-review-status": "Accepted",
+      "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractPTCondition.1.1.0.json",
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "x-osdu-schema-source": "osdu:wks:AbstractPTCondition:1.1.0",
+      "title": "Initial Conditions",
+      "description": "The pressure and temperature condition of the sample when the secondary phase is introduced.",
+      "type": "object",
+      "properties": {
+        "Pressure": {
+          "type": "number",
+          "title": "Pressure",
+          "description": "The recorded absolute pressure condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit Pa (Pascal).",
+          "example": "1 bar",
+          "x-osdu-frame-of-reference": "UOM:pressure"
+        },
+        "Temperature": {
+          "type": "number",
+          "title": "Temperature",
+          "description": "The recorded temperature condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit K (Kelvin).",
+          "example": "15 degC",
+          "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+        },
+        "IsStandardConditions": {
+          "type": "boolean",
+          "title": "Is Standard Conditions",
+          "description": "To capture when Measurement have been made at Standard Conditions (25°C / 100 kPa)\nMutually Exclusive with Pressure/Temperature.\nCapture"
+        },
+        "NonStandardConditionsReference": {
+          "type": "string",
+          "title": "Non Standard Conditions Reference",
+          "description": "Open Text Box to capture the P & T Reference when measurements are made at non standard conditions (such as \"Reservoir\", \"Tank\",…)"
+        }
+      },
+      "required": [
+        "Pressure",
+        "Temperature"
+      ],
+      "x-osdu-inheriting-from-kind": [],
+      "additionalProperties": false
+    },
+    "AppliedOverBurdenStress": {
+      "type": "number",
+      "title": "Applied Over Burden Stress",
+      "description": "Pressure applied on the sample with sleeve(s) prior to the capillary pressure experiment, also known as Net Overburden Pressure (NOBP), or Net confining stress (NCS).",
+      "x-osdu-frame-of-reference": "UOM:pressure"
+    },
+    "DesaturationMethodID": {
+      "type": "string",
+      "title": "Desaturation Method ID",
+      "description": "The method by which the sample was desaturated.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DesaturationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "DesaturationMethod"
+        }
+      ]
+    },
+    "MeanDistanceImbibition": {
+      "type": "number",
+      "title": "Mean Distance Imbibition",
+      "description": "The average length of the arm of the centrifuge for the imbibition phase of the experiment.",
+      "x-osdu-frame-of-reference": "UOM:length"
+    },
+    "MeanDistanceDrainage": {
+      "type": "number",
+      "title": "Mean Distance Drainage",
+      "description": "The average length of the arm of the centrifuge for the drainage phase of the experiment.",
+      "x-osdu-frame-of-reference": "UOM:length"
+    },
+    "ReferencePermeability": {
+      "type": "array",
+      "title": "Reference Permeability",
+      "description": "e.g. gas permeability kg, gas permeability at minimum liquid saturation kg@Slmin, oil permeability ko, water permeability kw, etc",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Reference Permeability",
+        "description": "e.g. gas permeability kg, gas permeability at minimum liquid saturation kg@Slmin, oil permeability ko, water permeability kw, etc",
+        "properties": {
+          "Value": {
+            "type": "number",
+            "title": "Value",
+            "description": "The permeability value acting as a reference for this experiment.",
+            "x-osdu-frame-of-reference": "UOM:permeability rock"
+          },
+          "PermeabilityMeasurementTypeID": {
+            "type": "string",
+            "title": "Permeability Measurement Type ID",
+            "description": "The type of permeability measurement being used as a reference value for this experiment.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "PermeabilityMeasurementType"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "WaterViscosity": {
+      "type": "number",
+      "title": "Water Viscosity",
+      "description": "A measure of the water's internal resistance to flow.",
+      "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+    },
+    "WaterDensity": {
+      "type": "number",
+      "title": "Water Density",
+      "description": "The mass per volume of water in the sample.",
+      "x-osdu-frame-of-reference": "UOM:mass per volume"
+    },
+    "OilViscosity": {
+      "type": "number",
+      "title": "Oil Viscosity",
+      "description": "A measure of the oil’s internal resistance to flow.",
+      "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+    },
+    "OilDensity": {
+      "type": "number",
+      "title": "Oil Density",
+      "description": "The mass per volume of oil in the sample.",
+      "x-osdu-frame-of-reference": "UOM:mass per volume"
+    },
+    "GasViscosity": {
+      "type": "number",
+      "title": "Gas Viscosity",
+      "description": "A measure of the gas’s internal resistance to flow.",
+      "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+    },
+    "GasDensity": {
+      "type": "number",
+      "title": "Gas Density",
+      "description": "The mass per volume of gas in the sample.",
+      "x-osdu-frame-of-reference": "UOM:mass per volume"
+    },
+    "OilTypeID": {
+      "type": "string",
+      "title": "Oil Type ID",
+      "description": "Identifies the type of oil used in the experiment.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacedFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "DisplacedFluidType"
+        }
+      ]
+    },
+    "GasTypeID": {
+      "type": "string",
+      "title": "Gas Type ID",
+      "description": "Identifies the type of gas used in the experiment.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "SampleInjectionFluidType"
+        }
+      ]
+    },
+    "WaterTypeID": {
+      "type": "string",
+      "title": "Water Type ID",
+      "description": "Identifies the type of gas used in the experiment.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "SampleInjectionFluidType"
+        }
+      ]
+    }
+  },
+  "required": [
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta"
+  ],
+  "additionalProperties": false
+}
