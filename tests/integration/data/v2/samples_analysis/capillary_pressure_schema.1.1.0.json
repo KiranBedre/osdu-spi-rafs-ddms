@@ -1,0 +1,956 @@
+{
+    "title": "CapillaryPressureModel110",
+    "type": "object",
+    "properties": {
+        "SamplesAnalysisID": {
+            "title": "Sample Analysis ID",
+            "description": "The OSDU Identifier for this SamplesAnalysis.",
+            "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "SampleID": {
+            "title": "Sample ID",
+            "description": "The OSDU Identifier for the Sample associated with this analysis.",
+            "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "Meta": {
+            "title": "Meta",
+            "description": "Object",
+            "example": "",
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/Meta"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta1"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta2"
+                    },
+                    {
+                        "$ref": "#/definitions/Meta3"
+                    }
+                ]
+            }
+        },
+        "SaturationProcessMethodID": {
+            "title": "Saturation Process Method ID",
+            "description": "SaturationProcessMethod, intended to be paired with SampleAnalysisType for Capillary Pressure Subfamilies.  e.g. PrimaryDrainage, PrimaryImbibition, SecondaryDrainage, SecondaryImbibition, TertiaryDrainage.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationProcessMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "FluidSystemAnalysisTypeID": {
+            "title": "Fluid System Analysis Type ID",
+            "description": "Identifier for the Fluid System (e.g. oil-brine) that is present in this sample.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSystemAnalysisType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "ForcedImbibition": {
+            "title": "Forced Imbibition",
+            "description": "Array Object containing the test steps for this analysis.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ForcedImbibition"
+                }
+            ]
+        },
+        "ForcedDrainage": {
+            "title": "Forced Drainage",
+            "description": "Array Object containing the test steps for this analysis.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ForcedDrainage"
+                }
+            ]
+        },
+        "InitialOilSaturation": {
+            "title": "Initial Oil Saturation",
+            "description": "Oil Saturation of the sample at initial pressure and temperature conditions.",
+            "type": "number"
+        },
+        "InitialGasSaturation": {
+            "title": "Initial Gas Saturation",
+            "description": "Gas Saturation of the sample at initial pressure and temperature conditions.",
+            "type": "number"
+        },
+        "BrineSalinity": {
+            "title": "Brine Salinity",
+            "description": "The concentration of salt within brine which may be called saturant or saturant brine.",
+            "type": "number"
+        },
+        "InitialConditions": {
+            "title": "Initial Conditions",
+            "description": "The pressure and temperature condition of the sample when the secondary phase is introduced.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/InitialConditions"
+                }
+            ]
+        },
+        "AppliedOverBurdenStress": {
+            "title": "Applied Over Burden Stress",
+            "description": "Pressure applied on the sample with sleeve(s) prior to the capillary pressure experiment, also known as Net Overburden Pressure (NOBP), or Net confining stress (NCS).",
+            "type": "number"
+        },
+        "DesaturationMethodID": {
+            "title": "Desaturation Method ID",
+            "description": "The method by which the sample was desaturated.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DesaturationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "MeanDistanceImbibition": {
+            "title": "Mean Distance Imbibition",
+            "description": "The average length of the arm of the centrifuge for the imbibition phase of the experiment.",
+            "type": "number"
+        },
+        "MeanDistanceDrainage": {
+            "title": "Mean Distance Drainage",
+            "description": "The average length of the arm of the centrifuge for the drainage phase of the experiment.",
+            "type": "number"
+        },
+        "ReferencePermeability": {
+            "title": "Reference Permeability",
+            "description": "e.g. gas permeability kg, gas permeability at minimum liquid saturation kg@Slmin, oil permeability ko, water permeability kw, etc",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ReferencePermeabilityItem"
+            }
+        },
+        "WaterViscosity": {
+            "title": "Water Viscosity",
+            "description": "A measure of the water's internal resistance to flow.",
+            "type": "number"
+        },
+        "WaterDensity": {
+            "title": "Water Density",
+            "description": "The mass per volume of water in the sample.",
+            "type": "number"
+        },
+        "OilViscosity": {
+            "title": "Oil Viscosity",
+            "description": "A measure of the oil’s internal resistance to flow.",
+            "type": "number"
+        },
+        "OilDensity": {
+            "title": "Oil Density",
+            "description": "The mass per volume of oil in the sample.",
+            "type": "number"
+        },
+        "GasViscosity": {
+            "title": "Gas Viscosity",
+            "description": "A measure of the gas’s internal resistance to flow.",
+            "type": "number"
+        },
+        "GasDensity": {
+            "title": "Gas Density",
+            "description": "The mass per volume of gas in the sample.",
+            "type": "number"
+        },
+        "OilTypeID": {
+            "title": "Oil Type ID",
+            "description": "Identifies the type of oil used in the experiment.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacedFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "GasTypeID": {
+            "title": "Gas Type ID",
+            "description": "Identifies the type of gas used in the experiment.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "WaterTypeID": {
+            "title": "Water Type ID",
+            "description": "Identifies the type of gas used in the experiment.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        }
+    },
+    "required": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Meta"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "Meta": {
+            "title": "Meta",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "UOM Reference Kind",
+                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                    "default": "Unit",
+                    "const": "Unit",
+                    "enum": [
+                        "Unit"
+                    ],
+                    "type": "string"
+                },
+                "name": {
+                    "title": "UOM Unit Symbol",
+                    "description": "The unit symbol or name of the unit.",
+                    "example": "ft[US]",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "UOM Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+                    "type": "string"
+                },
+                "unitOfMeasureID": {
+                    "title": "Unitofmeasureid",
+                    "description": "SRN to unit of measure reference.",
+                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "UOM Property Names",
+                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "HorizontalDeflection.EastWest",
+                        "HorizontalDeflection.NorthSouth"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "Meta1": {
+            "title": "Meta1",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "CRS Reference Kind",
+                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                    "default": "CRS",
+                    "const": "CRS",
+                    "enum": [
+                        "CRS"
+                    ],
+                    "type": "string"
+                },
+                "name": {
+                    "title": "CRS Name",
+                    "description": "The name of the CRS.",
+                    "example": "WGS 84 / UTM zone 15N",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "CRS Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
+                    "type": "string"
+                },
+                "coordinateReferenceSystemID": {
+                    "title": "Coordinatereferencesystemid",
+                    "description": "SRN to CRS reference.",
+                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "CRS Property Names",
+                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "KickOffPosition.X",
+                        "KickOffPosition.Y"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "Meta2": {
+            "title": "Meta2",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "DateTime Reference Kind",
+                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                    "default": "DateTime",
+                    "const": "DateTime",
+                    "enum": [
+                        "DateTime"
+                    ],
+                    "type": "string"
+                },
+                "name": {
+                    "title": "DateTime Name",
+                    "description": "The name of the DateTime format and reference.",
+                    "example": "UTC",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "DateTime Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "DateTime Property Names",
+                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Acquisition.StartTime",
+                        "Acquisition.EndTime"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "Meta3": {
+            "title": "Meta3",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "AzimuthReference Reference Kind",
+                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                    "default": "AzimuthReference",
+                    "const": "AzimuthReference",
+                    "enum": [
+                        "AzimuthReference"
+                    ],
+                    "type": "string"
+                },
+                "name": {
+                    "title": "AzimuthReference Name",
+                    "description": "The name of the CRS or the symbol/name of the unit.",
+                    "example": "TrueNorth",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "AzimuthReference Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "AzimuthReference Property Names",
+                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Bearing"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "TransientDatum": {
+            "title": "TransientDatum",
+            "type": "object",
+            "properties": {
+                "ProductionProfile": {
+                    "title": "Production Profile",
+                    "description": "Production of displaced phase as function of time in a centrifuge or porous plate experiment.",
+                    "type": "number"
+                },
+                "Time": {
+                    "title": "Time",
+                    "description": "The time at which this production profile value was measured.",
+                    "type": "number"
+                },
+                "RotationalSpeed": {
+                    "title": "Rotational Speed",
+                    "description": "The rotational speed of the centrifuge, measured as rotations per minute (RPM) or equivalent.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Permeability": {
+            "title": "Permeability",
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "title": "Value",
+                    "description": "The numeric value of this permeability measurement.",
+                    "type": "number"
+                },
+                "PermeabilityMeasurementTypeID": {
+                    "title": "Permeability Measurement Type ID",
+                    "description": "The OSDU reference-data ID corresponding to the type of permeability being measured.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Porosity": {
+            "title": "Porosity",
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "title": "Value",
+                    "description": "The numeric value of this porosity measurement.",
+                    "type": "number"
+                },
+                "PorosityMeasurementTypeID": {
+                    "title": "Porosity Measurement Type ID",
+                    "description": "The OSDU reference-data ID corresponding to the type of porosity being measured.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Pressure": {
+            "title": "Pressure",
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "title": "Value",
+                    "description": "The numeric value of this pressure measurement.",
+                    "type": "number"
+                },
+                "PressureMeasurementTypeID": {
+                    "title": "Pressure Measurement Type ID",
+                    "description": "The OSDU reference-data ID corresponding to the type of pressure being measured.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PressureMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Remarks": {
+            "title": "Remarks",
+            "type": "object",
+            "properties": {
+                "RemarkSequenceNumber": {
+                    "title": "Remark Sequence Number",
+                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                    "example": 1,
+                    "type": "integer"
+                },
+                "Remark": {
+                    "title": "Remark",
+                    "description": "A descriptive comment for this remark.",
+                    "type": "string"
+                },
+                "RemarkSource": {
+                    "title": "Remark Source",
+                    "description": "The person, vendor, interpreter or other provider of information.",
+                    "type": "string"
+                },
+                "RemarkDate": {
+                    "title": "Remark Date",
+                    "description": "The date the remark was issued.",
+                    "type": "string",
+                    "format": "date"
+                }
+            },
+            "additionalProperties": false
+        },
+        "CalculatedProperties": {
+            "title": "CalculatedProperties",
+            "type": "object",
+            "properties": {
+                "PoreThroatRadius": {
+                    "title": "Pore Throat Radius",
+                    "description": "PoreThroatRadius is the conversion of the capillary pressure using interfacial tension and the wettability angle ( PTR = 2 x sigma cos (theta) / Capillary pressure )",
+                    "type": "number"
+                },
+                "PoreThroatMedianRadius": {
+                    "title": "Pore Throat Median Radius",
+                    "description": "This is the P50 (median) of the Pore Throat Radius distribution.",
+                    "type": "number"
+                },
+                "EndFaceEstimationMethodID": {
+                    "title": "End Face Estimation Method ID",
+                    "description": "The method used to calculate the end face phase saturation, e.g. HasslerBrunner,\nForbes.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-EndFaceEstimationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "EndFacePhaseSaturation": {
+                    "title": "End Face Phase Saturation",
+                    "description": "Calculated saturation of the end face of the sample in a centrifuge experiment.",
+                    "type": "number"
+                },
+                "JFunction": {
+                    "title": "J Function",
+                    "description": "Conversion of normalized capillary pressure using porosity and permeability [ J = PC / ( sigma x cos wettability ) x SQRT( permeability / porosity ) ]",
+                    "type": "number"
+                },
+                "CapillaryPressure": {
+                    "title": "Capillary Pressure",
+                    "description": "A measure of the difference in pressure across the interface between two phases, which are typically oil/water, gas/water or gas/oil.",
+                    "type": "number"
+                },
+                "NormalizedPermeabilityDistributionFunction": {
+                    "title": "Normalized Permeability Distribution Function",
+                    "description": "The computation of a permeability obtained from the contribution of the different pore throats as they are filled during the experiment. related to HPMI or MICP only.",
+                    "type": "number"
+                },
+                "PoreThroatSizeDistribution": {
+                    "title": "Pore Throat Size Distribution",
+                    "description": "The distribution of pore throat size during the experiment.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "MeanHydraulicRadius": {
+                    "title": "Mean Hydraulic Radius",
+                    "description": "Term used for for SQRT( permeability / porosity ) which is homogeneous to a length (mD ~ m^2)",
+                    "type": "number"
+                },
+                "CumulativePhaseSaturation": {
+                    "title": "Cumulative Phase Saturation",
+                    "description": "This is the computed saturation for the cumulative volume that is normalized to the volume at the end of the experiment.",
+                    "type": "number"
+                },
+                "PhaseSaturationFrequency": {
+                    "title": "Phase Saturation Frequency",
+                    "description": "This is the frequency plot of the portion of porosity filled at each pressure step.",
+                    "type": "number"
+                },
+                "BondNumber": {
+                    "title": "Bond Number",
+                    "description": "A dimensionless number that characterizes the relative importance of gravitational forces to capillary forces within a fluid system.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "TestDatum": {
+            "title": "TestDatum",
+            "type": "object",
+            "properties": {
+                "TransientData": {
+                    "title": "Transient Data",
+                    "description": "Object containing volume measurements over time for centrifuge and porous plate analyses.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TransientDatum"
+                    }
+                },
+                "Permeability": {
+                    "title": "Permeability",
+                    "description": "Quantifies the ability for fluids or gas to flow through a sample.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Permeability"
+                        }
+                    ]
+                },
+                "Porosity": {
+                    "title": "Porosity",
+                    "description": "The amount of pore space relative to the volume of a sample.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Porosity"
+                        }
+                    ]
+                },
+                "Pressure": {
+                    "title": "Pressure",
+                    "description": "The value and unit of measure of the pressure of the sample environment.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Pressure"
+                        }
+                    ]
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "The value and unit of measure of the temperature of the sample environment.",
+                    "type": "number"
+                },
+                "InterfacialTension": {
+                    "title": "Interfacial Tension",
+                    "description": "The force that holds the surface of a particular phase together.",
+                    "type": "number"
+                },
+                "StepNumber": {
+                    "title": "Step Number",
+                    "description": "Number assigned to identify this specific step in the sequence of steps of the analysis.",
+                    "type": "number"
+                },
+                "CapillaryPressure": {
+                    "title": "Capillary Pressure",
+                    "description": "A measure of the difference in pressure across the interface between two phases, which are typically oil/water, gas/water or gas/oil.",
+                    "type": "number"
+                },
+                "PhaseSaturation": {
+                    "title": "Phase Saturation",
+                    "description": "The saturation of the sample for this step.",
+                    "type": "number"
+                },
+                "PhaseInjectedVolume": {
+                    "title": "Phase Injected Volume",
+                    "description": "The volume and type of fluid injected into the sample for this step.  This volume is identical to the volume of fluid produced from the sample.",
+                    "type": "number"
+                },
+                "Remarks": {
+                    "title": "Remarks",
+                    "description": "Additional notes or observations relevant to the specific test step.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Remarks"
+                        }
+                    ]
+                },
+                "CalculatedProperties": {
+                    "title": "Calculated Properties",
+                    "description": "Object containing calculated properties such as averages, Jfunction, and height above free water level.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/CalculatedProperties"
+                        }
+                    ]
+                },
+                "RotationalSpeed": {
+                    "title": "rotational Speed",
+                    "description": "The rotational speed of the centrifuge, measured as rotations per minute (RPM) or equivalent.",
+                    "type": "number"
+                },
+                "StartTime": {
+                    "title": "Start Time",
+                    "description": "Timestamp at which this step is initiated.",
+                    "type": "number"
+                },
+                "CumulativeIntrusion": {
+                    "title": "Cumulative Intrusion",
+                    "description": "The accumulated intrusion at this test step, typically reported as mL/gram.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Endpoints": {
+            "title": "Endpoints",
+            "type": "object",
+            "properties": {
+                "CapillaryPressureMax": {
+                    "title": "Capillary Pressure Maximum",
+                    "description": "Maximum capillary pressure recorded during the analysis of the sample",
+                    "type": "number"
+                },
+                "PhaseSaturationAtCapillaryPressureMax": {
+                    "title": "Phase Saturation At Capillary Pressure Maximum",
+                    "description": "Saturation at the maximum capillary pressure of this phase of the experiment.",
+                    "type": "number"
+                },
+                "LowestPhaseSaturationAvg": {
+                    "title": "Lowest Phase Saturation Average",
+                    "description": "Lowest phase saturation achieved averaged over entire core plug or composite, only applicable for centrifuge & coreflood",
+                    "type": "number"
+                },
+                "MinCapPressureRecorded": {
+                    "title": "Minimum Capillary Pressure Recorded",
+                    "description": "Minimum pressure from which Sor can be obtained.",
+                    "type": "number"
+                },
+                "ResidualFluidSaturation": {
+                    "title": "Residual Fluid Saturation",
+                    "description": "The saturation of residual fluid after forced imbibition or drainage.",
+                    "type": "number"
+                },
+                "EffectivePermeabilityOfResidualFluid": {
+                    "title": "Effective Permeability Of Residual Fluid",
+                    "description": "The effective permeability of the residual fluid at the end of the imbibition or drainage phase.",
+                    "type": "number"
+                },
+                "RelativePermeabilityOfResidualFluid": {
+                    "title": "Relative Permeability Of Residual Fluid",
+                    "description": "The relative permeability of the residual fluid at the end of the imbibition or drainage phase.",
+                    "type": "number"
+                },
+                "EffectivePermeabilityOfInjectionFluid": {
+                    "title": "Effective Permeability Of Injection Fluid",
+                    "description": "The effective permeability of the injection fluid at the start of the imbibition or drainage phase.",
+                    "type": "number"
+                },
+                "RelativePermeabilityOfInjectionFluid": {
+                    "title": "Relative Permeability Of Injection Fluid",
+                    "description": "The relative permeability of the injection fluid at the start of the imbibition or drainage phase.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ForcedImbibition": {
+            "title": "ForcedImbibition",
+            "type": "object",
+            "properties": {
+                "InitialWaterSaturation": {
+                    "title": "Initial Water Saturation",
+                    "description": "Water Saturation of the sample at initial pressure and temperature conditions.",
+                    "type": "number"
+                },
+                "TestData": {
+                    "title": "Test Data",
+                    "description": "The permeability value acting as a reference for this experiment.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TestDatum"
+                    }
+                },
+                "Endpoints": {
+                    "title": "Endpoints",
+                    "description": "The type of permeability measurement being used as a reference value for this experiment.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Endpoints"
+                        }
+                    ]
+                },
+                "InjectionFluidID": {
+                    "title": "Injection Fluid Type ID",
+                    "description": "The injection fluid used during this phase of the experiment.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "SpontaneousImbibition": {
+                    "title": "Spontaneous Imbibition",
+                    "description": "The fraction of injection fluid imbibed spontaneously prior to forced injection.",
+                    "type": "number"
+                },
+                "WOGnCycleNotationID": {
+                    "title": "Water Oil Gas Number ID",
+                    "description": "The WOGn notation description of this capillary pressure cycle.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WOGnCycleNotation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "EndTime": {
+                    "title": "End Time",
+                    "description": "Overall duration of the test.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "TestDatum1": {
+            "title": "TestDatum1",
+            "type": "object",
+            "properties": {
+                "TransientData": {
+                    "title": "Transient Data",
+                    "description": "Object containing volume measurements over time for centrifuge and porous plate analyses.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TransientDatum"
+                    }
+                },
+                "Permeability": {
+                    "title": "Permeability",
+                    "description": "Quantifies the ability for fluids or gas to flow through a sample.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Permeability"
+                        }
+                    ]
+                },
+                "Porosity": {
+                    "title": "Porosity",
+                    "description": "The amount of pore space relative to the volume of a sample.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Porosity"
+                        }
+                    ]
+                },
+                "Pressure": {
+                    "title": "Pressure",
+                    "description": "The value and unit of measure of the pressure of the sample environment.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Pressure"
+                        }
+                    ]
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "The value and unit of measure of the temperature of the sample environment.",
+                    "type": "number"
+                },
+                "InterfacialTension": {
+                    "title": "Interfacial Tension",
+                    "description": "The force that holds the surface of a particular phase together.",
+                    "type": "number"
+                },
+                "StepNumber": {
+                    "title": "Step Number",
+                    "description": "Number assigned to identify this specific step in the sequence of steps of the analysis.",
+                    "type": "number"
+                },
+                "CapillaryPressure": {
+                    "title": "Capillary Pressure",
+                    "description": "A measure of the difference in pressure across the interface between two phases, which are typically oil/water, gas/water or gas/oil.",
+                    "type": "number"
+                },
+                "PhaseSaturation": {
+                    "title": "Phase Saturation",
+                    "description": "The saturation of the sample for this step.",
+                    "type": "number"
+                },
+                "PhaseInjectedVolume": {
+                    "title": "Phase Injected Volume",
+                    "description": "The volume and type of fluid injected into the sample for this step.  This volume is identical to the volume of fluid produced from the sample.",
+                    "type": "number"
+                },
+                "Remarks": {
+                    "title": "Remarks",
+                    "description": "Additional notes or observations relevant to the specific test step.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Remarks"
+                        }
+                    ]
+                },
+                "CalculatedProperties": {
+                    "title": "Calculated Properties",
+                    "description": "Object containing calculated properties such as averages, Jfunction, and height above free water level.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/CalculatedProperties"
+                        }
+                    ]
+                },
+                "RotationalSpeed": {
+                    "title": "rotational Speed",
+                    "description": "The rotational speed of the centrifuge, measured as rotations per minute (RPM) or equivalent.",
+                    "type": "number"
+                },
+                "StartTime": {
+                    "title": "Start Time",
+                    "description": "Timestamp at which this step is initiated.",
+                    "type": "number"
+                },
+                "CumulativeIntrusion": {
+                    "title": "Cumulative Intrusion",
+                    "description": "The accumulated intrusion at this test step, typically reported as mL/gram.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "ForcedDrainage": {
+            "title": "ForcedDrainage",
+            "type": "object",
+            "properties": {
+                "InitialWaterSaturation": {
+                    "title": "Initial Water Saturation",
+                    "description": "Water Saturation of the sample at initial pressure and temperature conditions.",
+                    "type": "number"
+                },
+                "TestData": {
+                    "title": "Test Data",
+                    "description": "The permeability value acting as a reference for this experiment.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TestDatum1"
+                    }
+                },
+                "Endpoints": {
+                    "title": "Endpoints",
+                    "description": "The type of permeability measurement being used as a reference value for this experiment.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Endpoints"
+                        }
+                    ]
+                },
+                "InjectionFluidID": {
+                    "title": "Injection Fluid Type ID",
+                    "description": "The injection fluid used during this phase of the experiment.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "SpontaneousImbibition": {
+                    "title": "Spontaneous Imbibition",
+                    "description": "The fraction of injection fluid imbibed spontaneously prior to forced injection.",
+                    "type": "number"
+                },
+                "WOGnCycleNotationID": {
+                    "title": "Water Oil Gas Number Cycle Notation ID",
+                    "description": "The WOGn notation description of this capillary pressure cycle.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WOGnCycleNotation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "EndTime": {
+                    "title": "End Time",
+                    "description": "Overall duration of the test.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "InitialConditions": {
+            "title": "InitialConditions",
+            "type": "object",
+            "properties": {
+                "Pressure": {
+                    "title": "Pressure",
+                    "description": "The recorded absolute pressure condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit Pa (Pascal).",
+                    "example": "1 bar",
+                    "type": "number"
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "The recorded temperature condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit K (Kelvin).",
+                    "example": "15 degC",
+                    "type": "number"
+                },
+                "IsStandardConditions": {
+                    "title": "Is Standard Conditions",
+                    "description": "To capture when Measurement have been made at Standard Conditions (25°C / 100 kPa)\nMutually Exclusive with Pressure/Temperature.\nCapture",
+                    "type": "boolean"
+                },
+                "NonStandardConditionsReference": {
+                    "title": "Non Standard Conditions Reference",
+                    "description": "Open Text Box to capture the P & T Reference when measurements are made at non standard conditions (such as \"Reservoir\", \"Tank\",…)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Pressure",
+                "Temperature"
+            ],
+            "additionalProperties": false
+        },
+        "ReferencePermeabilityItem": {
+            "title": "ReferencePermeabilityItem",
+            "type": "object",
+            "properties": {
+                "Value": {
+                    "title": "Value",
+                    "description": "The permeability value acting as a reference for this experiment.",
+                    "type": "number"
+                },
+                "PermeabilityMeasurementTypeID": {
+                    "title": "Permeability Measurement Type ID",
+                    "description": "The type of permeability measurement being used as a reference value for this experiment.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}
