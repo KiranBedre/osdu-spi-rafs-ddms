@@ -25,7 +25,7 @@
         "DateModified": "2020-12-16T11:46:20.163Z",
         "DocumentLanguage": "English",
         "SampleIDs": [
-            "{data_partition_id}:master-data--Sample:dd76cf6c-226f-5636-ad1b-1ca0f8249cc10:"
+            "{data_partition_id}:master-data--Sample:SampleAnalysisReportSample:"
         ],
         "ReportSampleIdentifiers": [
             "45H"

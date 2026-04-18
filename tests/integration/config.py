@@ -39,6 +39,9 @@ class DataFiles:
     SAMPLE_ANALYSIS = "v2/samples_analysis/samples_analysis.json"
     SAMPLE_ANALYSIS_TYPES = "v2/samples_analysis/samples_analysis_types.json"
 
+    CAPILLARY_PRESSURE_DATA_V1_1 = "v2/samples_analysis/capillary_pressure_data.1.1.0.json"
+    CAPILLARY_PRESSURE_SCHEMA_V1_1 = "v2/samples_analysis/capillary_pressure_schema.1.1.0.json"
+
     CAPILLARY_SUCTION_TIME_DATA_V1 = "v2/samples_analysis/capillary_suction_time_data.1.0.0.json"
     CAPILLARY_SUCTION_TIME_SCHEMA_V1 = "v2/samples_analysis/capillary_suction_time_schema.1.0.0.json"
 
@@ -102,6 +105,7 @@ class DataTypes:
 
 
 class SamplesAnalysisTypes:  # Custom values
+    CAPILLARY_PRESSURE = "capillarypressure"
     CAPILLARY_SUCTION_TIME = "capillarysuctiontime"
     CCE = "constantcompositionexpansion"
     COMPOSITIONAL_ANALYSIS = "compositionalanalysis"
@@ -120,6 +124,7 @@ class SamplesAnalysisTypes:  # Custom values
 
 class DatasetPrefix:
     # v2
+    CAPILLARY_PRESSURE = "capillarypressure"
     CAPILLARY_SUCTION_TIME = "capillarysuctiontime"
     CCE = "constantcompositionexpansion"
     COMPOSITIONAL_ANALYSIS = "compositionalanalysis"
@@ -138,6 +143,8 @@ class DatasetPrefix:
 
 class VersionedDataFiles:
     VALUES = {
+        (SamplesAnalysisTypes.CAPILLARY_PRESSURE, SchemaVersions.V1_1_0): DataFiles.CAPILLARY_PRESSURE_DATA_V1_1,
+
         (SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME, SchemaVersions.V1_0_0): DataFiles.CAPILLARY_SUCTION_TIME_DATA_V1,
 
         (
@@ -174,6 +181,10 @@ class SamplesAnalysisConfig:
     _VALUES = {
         SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME: {
             "samples_analysis_type": "FluidSensitivity.CapillarySuctionTime",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.CAPILLARY_PRESSURE: {
+            "samples_analysis_type": "CapillaryPressure",
             "parent_report_id": "sar_record_id",
         },
         SamplesAnalysisTypes.CCE: {

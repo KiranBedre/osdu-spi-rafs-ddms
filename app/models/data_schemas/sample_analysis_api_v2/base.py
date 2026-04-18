@@ -55,6 +55,7 @@ from app.models.data_schemas.sample_analysis_api_v2.eds_mapping_data_model_1_0_0
 from app.models.data_schemas.sample_analysis_api_v2.xrf_data_model_1_0_0 import XrfModel100
 from app.models.data_schemas.sample_analysis_api_v2.xrf_data_model_1_1_0 import XrfModel110
 from app.models.data_schemas.sample_analysis_api_v2.capillary_pressure_data_model_1_0_0 import CapillaryPressureModel100
+from app.models.data_schemas.sample_analysis_api_v2.capillary_pressure_data_model_1_1_0 import CapillaryPressureModel110
 from app.models.data_schemas.sample_analysis_api_v2.capillary_suction_time_data_model_1_0_0 import CapillarySuctionTimeModel100
 from app.models.data_schemas.sample_analysis_api_v2.stock_tank_oil_analysis_data_model_1_0_0 import StockTankOilAnalysisModel100
 from app.models.data_schemas.sample_analysis_api_v2.stock_tank_oil_analysis_data_model_1_1_0 import StockTankOilAnalysisModel110
@@ -173,7 +174,8 @@ TRIAXIAL_TEST_MODELS = {
     ContentSchemaVersion.V_1_0_0: TriaxialModel100
 }
 CAP_PRESSURE_MODELS = {
-    ContentSchemaVersion.V_1_0_0: CapillaryPressureModel100
+    ContentSchemaVersion.V_1_0_0: CapillaryPressureModel100,
+    ContentSchemaVersion.V_1_1_0: CapillaryPressureModel110,
 }
 CAP_SUCTION_TIME_MODELS = {
     ContentSchemaVersion.V_1_0_0: CapillarySuctionTimeModel100

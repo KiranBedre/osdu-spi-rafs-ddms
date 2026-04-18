@@ -23,7 +23,7 @@ from tests.integration.config import (
 
 
 def test_get_samples_analysis_types(api, tests_data, helper):
-    """Verify created record can be retrieved unchanged via GET."""
+    """Verify retrieve samples analysis types unchanged via GET."""
 
     # Retrieve sample analysis types
     gotten_response = api.sample_analysis.get_analysis_types()
