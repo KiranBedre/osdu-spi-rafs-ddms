@@ -420,6 +420,10 @@
                     "URL": "https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/app/models/data_schemas/jsonschema/api_v2/capillary_pressure.1.0.0.json"
                 },
                 {
+                    "ContentType": "capillarypressure",
+                    "URL": "https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/app/models/data_schemas/jsonschema/api_v2/capillary_pressure.1.1.0.json"
+                },
+                {
                     "ContentType": "capillarysuctiontime",
                     "URL": "https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/app/models/data_schemas/jsonschema/api_v2/capillary_suction_time.1.0.0.json"
                 },

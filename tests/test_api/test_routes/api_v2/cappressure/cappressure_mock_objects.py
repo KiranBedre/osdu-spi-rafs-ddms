@@ -27,23 +27,28 @@ dir_path = os.path.dirname(os.path.abspath(__file__))
 TEST_DATASET_RECORD_ID = "opendes:dataset--File.Generic:capillarypressuredata-12345:1234"
 TEST_DDMS_URN = f"urn://rafs-v2/capillarypressuredata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}"
 TEST_SCHEMA_VERSION = "1.0.0"
-TEST_DDMS_URN_WITH_VERSION = f"urn://rafs-v2/capillarypressuredata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
+TEST_DDMS_URN_WITH_VERSION = (
+    f"urn://rafs-v2/capillarypressuredata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
+)
 RECORD_DATA = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN],
         },
     },
 }
 RECORD_DATA_WITH_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION],
         },
     },
 }
 RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [f"{TEST_DDMS_URN}/2.0.0"],
         },
@@ -110,3 +115,56 @@ INCORRECT_SCHEMA_TEST_DATA = {
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
 INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting TestData in index row 0
 EXPECTED_ERROR_REASON = "Data error: 24 columns passed, passed data had 23 columns"
+
+# V1.1.0 mock objects
+TEST_SCHEMA_VERSION_V2 = "1.1.0"
+TEST_DDMS_URN_WITH_VERSION_V2 = f"{TEST_DDMS_URN}/{TEST_SCHEMA_VERSION_V2}"
+RECORD_DATA_WITH_SCHEMA_VERSION_V2 = {
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
+        "data": {
+            "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION_V2],
+        },
+    },
+}
+with open(f"{dir_path}/cappressure_orient_split_v2.json") as fp:
+    TEST_DATA_V2 = json.load(fp)
+
+TEST_AGGREGATED_DATA_V2 = {
+    "columns": [
+        "SampleID",
+    ],
+    "index": [
+        "count",
+    ],
+    "data": [
+        [
+            1,
+        ],
+    ],
+}
+
+TEST_FILTERED_DATA_V2 = {
+    "columns": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "DesaturationMethodID",
+    ],
+    "index": [
+        0,
+    ],
+    "data": [
+        [
+            "opendes:work-product-component--SamplesAnalysis:CapillaryPressure_WPC:",
+            "opendes:master-data--Sample:CapillaryPressure_Sample:",
+            "opendes:reference-data--DesaturationMethod:Centrifuge:",
+        ],
+    ],
+}
+
+INCORRECT_DATAFRAME_TEST_DATA_V2 = copy.deepcopy(TEST_DATA_V2)
+INCORRECT_DATAFRAME_TEST_DATA_V2["data"][0].pop()
+TEST_DATA_COLUMNS_V2 = len(TEST_DATA_V2["data"][0])
+EXPECTED_ERROR_REASON_V2 = (
+    f"Data error: {TEST_DATA_COLUMNS_V2} columns passed, passed data had {TEST_DATA_COLUMNS_V2 - 1} columns"
+)
