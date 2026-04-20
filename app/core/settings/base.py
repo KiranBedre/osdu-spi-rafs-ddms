@@ -13,7 +13,7 @@
 #  limitations under the License.
 
 from enum import Enum
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseSettings
 
@@ -44,6 +44,10 @@ class BaseAppSettings(BaseSettings):
     request_timeout: float = 15.0  # request timeout in seconds
 
     release_version: str = None  # Not the same as version (api version)
+
+    otel_exporter_otlp_endpoint: Optional[str] = None
+
+    otel_service_name: str = "rafs-ddms"
 
     class Config(object):
         env_file = ".env"
