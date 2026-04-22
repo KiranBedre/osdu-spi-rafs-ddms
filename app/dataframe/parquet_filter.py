@@ -60,7 +60,7 @@ def apply_filters_from_df(
                 field=df_filter.valid_rows_filter.field,
             )
         if df_filter.valid_columns_filter:
-            query_df = query_df.project(df_filter.valid_columns_filter.colums)
+            query_df = query_df.project(df_filter.valid_columns_filter.columns)
         if df_filter.valid_columns_aggregation:
             query_df = query_df.aggregate(
                 df_filter.valid_columns_aggregation.column,
