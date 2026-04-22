@@ -33,7 +33,7 @@ from app.dev.services import partition
 from app.resources.errors import FilterValidationError
 
 
-async def validate_multiple_nested_filters(
+def validate_multiple_nested_filters(
     model: BaseModel = Depends(get_data_model),
     columns_filter: Optional[str] = Query(
         default=None,
@@ -104,12 +104,15 @@ async def validate_multiple_nested_filters(
         raw_rows_multiple_filter=rows_multiple_filter,
     )
     try:
-        any([
-            df_filter.valid_columns_aggregation,
-            df_filter.valid_columns_filter,
-            df_filter.valid_rows_filter,
-            df_filter.valid_rows_multiple_filter,
-        ])
+        any(
+            [
+                df_filter.valid_columns_aggregation,
+                df_filter.valid_columns_filter,
+                df_filter.valid_rows_filter,
+                df_filter.valid_rows_multiple_filter,
+            ],
+        )
+        df_filter.validate_combination()
     except FilterValidationError as exc:
         logger.error(f"Query parameters are invalid: {exc}")
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
@@ -118,7 +121,7 @@ async def validate_multiple_nested_filters(
     return df_filter
 
 
-async def get_search_wks_parameters(
+def get_search_wks_parameters(
     metadata: Optional[str] = Query(
         default=None,
         description="A valid json object with property name and value.",
@@ -149,7 +152,7 @@ async def get_validated_partition(
     partition_service: partition.PartitionService = Depends(get_async_partition_service),
 ) -> str:
     if settings.local_dev_mode or settings.allow_indexing_by_end_user:
-        return partition
+        return partition  # noqa: ASYNC910
     if not await partition_service.partition_exist(partition):
         err_msg = f"Partition '{partition}' does not exist"
         logger.error(err_msg)

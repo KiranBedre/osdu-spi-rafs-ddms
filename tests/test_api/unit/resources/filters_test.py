@@ -30,8 +30,7 @@ class NestedModel(BaseModel):
     nested_field: str
 
 
-class Field3(NestedModel):
-    ...
+class Field3(NestedModel): ...
 
 
 class MockModel(BaseModel):
@@ -60,27 +59,35 @@ def test_valid_columns_filter_invalid_columns(raw_columns_filter):
     assert re.match(r"Invalid columns: {'.*'}. Select one of {.+}", str(exc_info.value))
 
 
-@pytest.mark.parametrize("operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")])
+@pytest.mark.parametrize(
+    "operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")]
+)
 def test_valid_rows_filter(operator_name, operator_value):
     expected_rows_filter = RowsFilter("Field1", operator_value, "value1")
     validator = DataFrameFilterValidator(MockModel, raw_rows_filter=f"Field1,{operator_name},value1")
     assert validator.valid_rows_filter == expected_rows_filter
 
 
-@pytest.mark.parametrize("operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")])
+@pytest.mark.parametrize(
+    "operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")]
+)
 def test_valid_rows_filter_with_nested_field(operator_name, operator_value):
     expected_rows_filter = RowsFilter("Field3", operator_value, "value1", "nested_field")
     nested_validator = DataFrameFilterValidator(
-        MockModelSameNestedName, raw_rows_filter=f"Field3.nested_field,{operator_name},value1",
+        MockModelSameNestedName,
+        raw_rows_filter=f"Field3.nested_field,{operator_name},value1",
     )
     assert nested_validator.valid_rows_filter == expected_rows_filter
 
 
-@pytest.mark.parametrize("operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")])
+@pytest.mark.parametrize(
+    "operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")]
+)
 def test_valid_rows_filter_with_nested_field_different_name(operator_name, operator_value):
     expected_rows_filter = RowsFilter("Field3", operator_value, "value1", "nested_field")
     nested_validator = DataFrameFilterValidator(
-        MockModel, raw_rows_filter=f"Field3.nested_field,{operator_name},value1",
+        MockModel,
+        raw_rows_filter=f"Field3.nested_field,{operator_name},value1",
     )
     assert nested_validator.valid_rows_filter == expected_rows_filter
 
@@ -103,7 +110,8 @@ def test_valid_columns_aggregation(aggregation_func):
 def test_valid_columns_aggregation_with_nested_field(aggregation_func):
     expected_columns_aggregation = ColumnsAggregation("Field3", aggregation_func, "nested_field")
     nested_validator = DataFrameFilterValidator(
-        MockModel, raw_columns_aggregation=f"Field3.nested_field,{aggregation_func}",
+        MockModel,
+        raw_columns_aggregation=f"Field3.nested_field,{aggregation_func}",
     )
     assert nested_validator.valid_columns_aggregation == expected_columns_aggregation
 
@@ -124,7 +132,9 @@ def test_valid_columns_aggregation_invalid_operator():
 
 def test_invalid_aggregatiom_dotted_colums():
     nested_aggregation_validator = DataFrameFilterValidator(
-        MockModel, raw_columns_aggregation="Field3.,mean", raw_rows_filter="Field3.,eq,test",
+        MockModel,
+        raw_columns_aggregation="Field3.,mean",
+        raw_rows_filter="Field3.,eq,test",
     )
 
     with pytest.raises(FilterValidationError) as exc_info:
@@ -134,3 +144,35 @@ def test_invalid_aggregatiom_dotted_colums():
     with pytest.raises(FilterValidationError) as exc_info:
         nested_aggregation_validator.valid_rows_filter
     assert str(exc_info.value) == "Field '' does not exist in column 'Field3'. Available fields: ['nested_field']"
+
+
+def test_validate_combination_conflict():
+    validator = DataFrameFilterValidator(
+        MockModel,
+        raw_columns_filter="Field1,Field2",
+        raw_columns_aggregation="Field3,mean",
+    )
+    with pytest.raises(FilterValidationError) as exc_info:
+        validator.validate_combination()
+    assert "Filter conflict" in str(exc_info.value)
+    assert "Field3" in str(exc_info.value)
+    assert "columns_filter" in str(exc_info.value)
+
+
+def test_validate_combination_no_conflict():
+    validator = DataFrameFilterValidator(
+        MockModel,
+        raw_columns_filter="Field1,Field3",
+        raw_columns_aggregation="Field3,mean",
+    )
+    validator.validate_combination()  # should not raise
+
+
+def test_validate_combination_only_filter():
+    validator = DataFrameFilterValidator(MockModel, raw_columns_filter="Field1,Field2")
+    validator.validate_combination()  # should not raise
+
+
+def test_validate_combination_only_aggregation():
+    validator = DataFrameFilterValidator(MockModel, raw_columns_aggregation="Field1,mean")
+    validator.validate_combination()  # should not raise
