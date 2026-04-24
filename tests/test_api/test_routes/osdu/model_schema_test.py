@@ -49,6 +49,7 @@ async def test_samplesanalysis_content_schema_success(analysistype):
 
     assert response.status_code == status.HTTP_200_OK
     assert response.headers["content-type"] == "application/json"
+    assert response.headers.get("Deprecation") == "true"
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
     expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key]["1.0.0"].schema()
@@ -84,30 +85,82 @@ async def test_samplesanalysis_content_schema_wrong_type():
     assert response.json()["reason"] == "Model not found for type 'wrong-type-name',  version '1.0.0'."
 
 
-ANALYSIS_TYPES_WITH_EXTRA_VERSIONS = [
-    (path.replace(PREFIX_TO_STRIP, ""), version)
+VALID_ANALYSIS_TYPES_V2_0_0 = [
+    path.replace(PREFIX_TO_STRIP, "")
     for path, versions in ALL_PATHS_TO_DATA_MODEL.items()
-    if path.startswith(PREFIX_TO_STRIP)
-    for version in versions
-    if version != "1.0.0"
+    if path.startswith(PREFIX_TO_STRIP) and "2.0.0" in versions
 ]
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("analysistype, version", ANALYSIS_TYPES_WITH_EXTRA_VERSIONS)
-async def test_samplesanalysis_content_schema_extra_versions_success(analysistype, version):
-    """Tests successful retrieval of the schema for each valid analysis_type with versions beyond 1.0.0"""
+@pytest.mark.parametrize("analysistype", VALID_ANALYSIS_TYPES_V2_0_0)
+async def test_samplesanalysis_content_schema_v2_success(analysistype):
+    """Tests successful retrieval of the schema for each valid analysis_type with version 2.0.0"""
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
         response = await client.get(
             f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
-            headers={**TEST_HEADERS, "Accept": f"application/json;version={version}"},
+            headers={**TEST_HEADERS, "Accept": "application/json;version=2.0.0"},
         )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.headers["content-type"] == "application/json"
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key][version].schema()
+    expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key]["2.0.0"].schema()
+    assert response.json() == expected_schema
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("analysistype", VALID_ANALYSIS_TYPES_V1_0_0[:1])
+async def test_samplesanalysis_content_schema_via_content_schema_version_param(analysistype):
+    """Tests schema retrieval using ?content_schema_version= query parameter"""
+    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+        response = await client.get(
+            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema?content_schema_version=1.0.0",
+            headers={**TEST_HEADERS},
+        )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert "Deprecation" not in response.headers
+
+    model_key = f"{PREFIX_TO_STRIP}{analysistype}"
+    expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key]["1.0.0"].schema()
+    assert response.json() == expected_schema
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("analysistype", VALID_ANALYSIS_TYPES_V2_0_0)
+async def test_samplesanalysis_content_schema_v2_via_content_schema_version_param(analysistype):
+    """Tests v2.0.0 schema retrieval using ?content_schema_version= query parameter"""
+    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+        response = await client.get(
+            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema?content_schema_version=2.0.0",
+            headers={**TEST_HEADERS},
+        )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert "Deprecation" not in response.headers
+
+    model_key = f"{PREFIX_TO_STRIP}{analysistype}"
+    expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key]["2.0.0"].schema()
+    assert response.json() == expected_schema
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("analysistype", VALID_ANALYSIS_TYPES_V1_0_0[:1])
+async def test_content_schema_version_param_takes_precedence_over_accept_header(analysistype):
+    """Tests that ?content_schema_version= takes precedence over the deprecated Accept header"""
+    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+        response = await client.get(
+            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema?content_schema_version=1.0.0",
+            headers={**TEST_HEADERS, "Accept": "application/json;version=0.0.0"},
+        )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert "Deprecation" not in response.headers
+
+    model_key = f"{PREFIX_TO_STRIP}{analysistype}"
+    expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key]["1.0.0"].schema()
     assert response.json() == expected_schema
 
 
@@ -162,6 +215,7 @@ async def test_single_content_type_schema_wrong_version(endpoint_path, _, expect
             )
     print(f"DEBUG RESPONSE: {response.json()}")
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json()[
-        "reason"
-    ] == f"Model not found for type '{expected_content_type_in_error}',  version '{invalid_version}'. Available versions: {{'1.0.0'}}."
+    assert (
+        response.json()["reason"]
+        == f"Model not found for type '{expected_content_type_in_error}',  version '{invalid_version}'. Available versions: {{'1.0.0'}}."
+    )
