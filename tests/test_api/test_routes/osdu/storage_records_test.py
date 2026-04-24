@@ -211,7 +211,8 @@ def with_patched_storage_samplesanalysis_existing_parent():
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "storage_method,path,record_id", [
+    "storage_method,path,record_id",
+    [
         (
             "get_record",
             f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
@@ -237,7 +238,8 @@ async def test_get_record_not_found(storage_method, path, record_id, with_patche
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "storage_method,path,record_id", [
+    "storage_method,path,record_id",
+    [
         (
             "get_record",
             f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
@@ -264,18 +266,60 @@ async def test_get_record_version_not_found(storage_method, path, record_id, wit
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "storage_method,path,record_id", [
+    "path,record_id,version",
+    [
         (
-            "get_record_versions", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            f"{API_VERSION_V2}/samplesanalysis",
+            storage_mock_objects.TEST_SAMPLESANALYSIS_ID,
+            12345678901234567890,
+        ),
+        (
+            f"{API_VERSION_V2}/samplesanalysis",
+            storage_mock_objects.TEST_SAMPLESANALYSIS_ID,
+            0,
+        ),
+        (
+            f"{API_VERSION_V2}/saturationfunctionset",
+            storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
+            12345678901234567890,
+        ),
+        (
+            f"{API_VERSION_V2}/saturationfunctionset",
+            storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
+            0,
+        ),
+    ],
+)
+async def test_get_record_version_invalid_version(path, record_id, version):
+    with storage_override():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(
+                f"/api/os-rafs-ddms/{path}/{record_id}/versions/{version}",
+                headers=TEST_HEADERS,
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    storage_record_service_mock.get_record.assert_not_called()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "storage_method,path,record_id",
+    [
+        (
+            "get_record_versions",
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
             storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
         ),
         (
-            "get_record_versions", f"{API_VERSION_V2}/samplesanalysesreport",
+            "get_record_versions",
+            f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
         ("get_record_versions", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
         (
-            "get_record_versions", f"{API_VERSION_V2}/saturationfunctionset",
+            "get_record_versions",
+            f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
         ("get_record_versions", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
@@ -283,7 +327,9 @@ async def test_get_record_version_not_found(storage_method, path, record_id, wit
     ],
 )
 async def test_get_record_versions_not_found(
-    storage_method, path, record_id,
+    storage_method,
+    path,
+    record_id,
     with_patched_storage_raises_404,
 ):
     with storage_override():
@@ -299,18 +345,22 @@ async def test_get_record_versions_not_found(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "storage_method,path,record_id", [
+    "storage_method,path,record_id",
+    [
         (
-            "soft_delete_record", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            "soft_delete_record",
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
             storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
         ),
         (
-            "soft_delete_record", f"{API_VERSION_V2}/samplesanalysesreport",
+            "soft_delete_record",
+            f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
         ("soft_delete_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
         (
-            "soft_delete_record", f"{API_VERSION_V2}/saturationfunctionset",
+            "soft_delete_record",
+            f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
         ("soft_delete_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
@@ -318,7 +368,9 @@ async def test_get_record_versions_not_found(
     ],
 )
 async def test_delete_record_not_found(
-    storage_method, path, record_id,
+    storage_method,
+    path,
+    record_id,
     with_patched_storage_raises_404,
 ):
     with storage_override():
@@ -334,7 +386,8 @@ async def test_delete_record_not_found(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "path", [
+    "path",
+    [
         (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}"),
         (f"{API_VERSION_V2}/samplesanalysesreport"),
         (f"{API_VERSION_V2}/samplesanalysis"),
@@ -362,7 +415,8 @@ async def test_post_record_no_kind(path):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "path", [
+    "path",
+    [
         (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}"),
         (f"{API_VERSION_V2}/samplesanalysesreport"),
         (f"{API_VERSION_V2}/samplesanalysis"),
@@ -385,59 +439,72 @@ async def test_post_record_invalid_payload_type(path):
     "storage_method,path,osdu_record,schema",
     [
         (
-            "upsert_records", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            "upsert_records",
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
             storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
             storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_SCHEMA,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/samplesanalysesreport",
+            "upsert_records",
+            f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
             storage_mock_objects.SAMPLES_ANALYSES_REPORT_SCHEMA,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/samplesanalysis",
+            "upsert_records",
+            f"{API_VERSION_V2}/samplesanalysis",
             storage_mock_objects.SAMPLESANALYSIS_RECORD_V2,
             storage_mock_objects.SAMPLES_ANALYSIS_SCHEMA,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/saturationfunctionset",
+            "upsert_records",
+            f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
             storage_mock_objects.SATURATION_FUNCTION_SET_SCHEMA,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/fluidmodel",
+            "upsert_records",
+            f"{API_VERSION_V2}/fluidmodel",
             storage_mock_objects.FLUID_MODEL_RECORD,
             storage_mock_objects.FLUID_MODEL_SCHEMA,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_RECORD,
             storage_mock_objects.SAMPLE_SCHEMA,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.GENERIC_FACILITY_RECORD,
             storage_mock_objects.GENERIC_FACILITY_RECORD.schema(),
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
             storage_mock_objects.SAMPLE_ACQUISITION_JOB_SCHEMA,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
             storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_SCHEMA,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_CONTAINER_RECORD,
             storage_mock_objects.SAMPLE_CONTAINER_SCHEMA,
         ),
     ],
 )
 async def test_post_record_success_with_jsonschema(
-    storage_method, path, osdu_record, schema,
+    storage_method,
+    path,
+    osdu_record,
+    schema,
     with_patched_storage_created_200,
     with_patched_schema_get_success,
 ):
@@ -543,44 +610,54 @@ async def test_post_samplesanalysis_success(
     "storage_method,path,osdu_record",
     [
         (
-            "upsert_records", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            "upsert_records",
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
             storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/samplesanalysesreport",
+            "upsert_records",
+            f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
         ),
         ("upsert_records", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.SAMPLESANALYSIS_RECORD_V2),
         (
-            "upsert_records", f"{API_VERSION_V2}/saturationfunctionset",
+            "upsert_records",
+            f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/fluidmodel",
+            "upsert_records",
+            f"{API_VERSION_V2}/fluidmodel",
             storage_mock_objects.FLUID_MODEL_RECORD,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_RECORD,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_CONTAINER_RECORD,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.GENERIC_FACILITY_RECORD,
         ),
         (
-            "upsert_records", f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.GENERIC_SITE_RECORD,
         ),
     ],
@@ -614,54 +691,78 @@ async def test_post_record_no_id(
     "storage_method,path,osdu_record,record_id",
     [
         (
-            "get_record", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            "get_record",
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
             storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
             storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
+            "get_record",
+            f"{API_VERSION_V2}/samplesanalysesreport",
+            storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
+            "get_record",
+            f"{API_VERSION_V2}/samplesanalysis",
+            storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
             storage_mock_objects.TEST_SAMPLESANALYSIS_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/saturationfunctionset",
+            storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.FLUID_MODEL_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/fluidmodel",
+            storage_mock_objects.FLUID_MODEL_RECORD,
             storage_mock_objects.TEST_FLUID_MODEL_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_RECORD,
             storage_mock_objects.TEST_SAMPLE_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
             storage_mock_objects.TEST_SAMPLE_ACQUISITION_JOB_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
             storage_mock_objects.TEST_SAMPLE_CHAIN_OF_CUSTODY_EVENT_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_CONTAINER_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CONTAINER_RECORD,
             storage_mock_objects.TEST_SAMPLE_CONTAINER_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.GENERIC_FACILITY_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_FACILITY_RECORD,
             storage_mock_objects.TEST_GENERIC_FACILITY_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.GENERIC_SITE_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_SITE_RECORD,
             storage_mock_objects.TEST_GENERIC_SITE_ID,
         ),
     ],
 )
 async def test_get_record_success(
-    storage_method, path, osdu_record, record_id,
+    storage_method,
+    path,
+    osdu_record,
+    record_id,
     with_patched_storage_get_success_200,
 ):
     with storage_override():
@@ -678,61 +779,86 @@ async def test_get_record_success(
     "storage_method,path,osdu_record,record_id",
     [
         (
-            "get_record", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            "get_record",
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
             storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
             storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
+            "get_record",
+            f"{API_VERSION_V2}/samplesanalysesreport",
+            storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.SAMPLESANALYSIS_RECORD_V2,
+            "get_record",
+            f"{API_VERSION_V2}/samplesanalysis",
+            storage_mock_objects.SAMPLESANALYSIS_RECORD_V2,
             storage_mock_objects.TEST_SAMPLESANALYSIS_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/saturationfunctionset",
+            storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.FLUID_MODEL_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/fluidmodel",
+            storage_mock_objects.FLUID_MODEL_RECORD,
             storage_mock_objects.TEST_FLUID_MODEL_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_RECORD,
             storage_mock_objects.TEST_SAMPLE_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
             storage_mock_objects.TEST_SAMPLE_ACQUISITION_JOB_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
             storage_mock_objects.TEST_SAMPLE_CHAIN_OF_CUSTODY_EVENT_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.SAMPLE_CONTAINER_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.SAMPLE_CONTAINER_RECORD,
             storage_mock_objects.TEST_SAMPLE_CONTAINER_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.GENERIC_FACILITY_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_FACILITY_RECORD,
             storage_mock_objects.TEST_GENERIC_FACILITY_ID,
         ),
         (
-            "get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.GENERIC_SITE_RECORD,
+            "get_record",
+            f"{API_VERSION_V2}/masterdata",
+            storage_mock_objects.GENERIC_SITE_RECORD,
             storage_mock_objects.TEST_GENERIC_SITE_ID,
         ),
     ],
 )
 async def test_get_record_version_success(
-    storage_method, path, osdu_record, record_id,
+    storage_method,
+    path,
+    osdu_record,
+    record_id,
     with_patched_storage_get_success_200,
 ):
     with storage_override():
         test_version = 1234
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.get(
-                f"/api/os-rafs-ddms/{path}/{record_id}/versions/{test_version}", headers=TEST_HEADERS,
+                f"/api/os-rafs-ddms/{path}/{record_id}/versions/{test_version}",
+                headers=TEST_HEADERS,
             )
 
     assert response.status_code == status.HTTP_200_OK
@@ -742,27 +868,32 @@ async def test_get_record_version_success(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "storage_method,path,record_id", [
+    "storage_method,path,record_id",
+    [
         (
-            "get_record_versions", f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            "get_record_versions",
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
             storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
         ),
         (
-            "get_record_versions", f"{API_VERSION_V2}/samplesanalysesreport",
+            "get_record_versions",
+            f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
         ("get_record_versions", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
         (
-            "get_record_versions", f"{API_VERSION_V2}/saturationfunctionset",
+            "get_record_versions",
+            f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
         ("get_record_versions", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
         ("get_record_versions", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
-
     ],
 )
 async def test_get_record_versions_success(
-    storage_method, path, record_id,
+    storage_method,
+    path,
+    record_id,
     with_patched_storage_get_versions_success_200,
 ):
     with storage_override():
@@ -776,7 +907,8 @@ async def test_get_record_versions_success(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "storage_method,api_status_code,path", [
+    "storage_method,api_status_code,path",
+    [
         (
             "get_record",
             status.HTTP_401_UNAUTHORIZED,
@@ -813,19 +945,23 @@ async def test_get_record_versions_success(
             f"{API_VERSION_V2}/fluidmodel/{storage_mock_objects.TEST_FLUID_MODEL_ID}",
         ),
         (
-            "get_record_versions", status.HTTP_401_UNAUTHORIZED,
+            "get_record_versions",
+            status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/samplesanalysesreport/{storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID}/versions",
         ),
         (
-            "get_record_versions", status.HTTP_401_UNAUTHORIZED,
+            "get_record_versions",
+            status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/samplesanalysis/{storage_mock_objects.TEST_SAMPLESANALYSIS_ID}/versions",
         ),
         (
-            "get_record_versions", status.HTTP_401_UNAUTHORIZED,
+            "get_record_versions",
+            status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/saturationfunctionset/{storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID}/versions",
         ),
         (
-            "get_record_versions", status.HTTP_401_UNAUTHORIZED,
+            "get_record_versions",
+            status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/fluidmodel/{storage_mock_objects.TEST_FLUID_MODEL_ID}/versions",
         ),
         (
@@ -854,7 +990,8 @@ async def test_get_record_versions_success(
             f"{API_VERSION_V2}/masterdata/{storage_mock_objects.TEST_SAMPLE_ID}",
         ),
         (
-            "get_record_versions", status.HTTP_401_UNAUTHORIZED,
+            "get_record_versions",
+            status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/masterdata/{storage_mock_objects.TEST_SAMPLE_ID}/versions",
         ),
         (
@@ -865,7 +1002,9 @@ async def test_get_record_versions_success(
     ],
 )
 async def test_get_record_auth_errors_from_storage(
-    storage_method, api_status_code, path,
+    storage_method,
+    api_status_code,
+    path,
     with_patched_storage_raises_40x,
 ):
     with storage_override():
@@ -877,7 +1016,8 @@ async def test_get_record_auth_errors_from_storage(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "path", [
+    "path",
+    [
         (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/record_id"),
         (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/record_id/versions"),
         (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/record_id/versions/1234"),
@@ -909,35 +1049,44 @@ async def test_get_record_auth_errors(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "storage_method,api_status_code,path", [
+    "storage_method,api_status_code,path",
+    [
         (
-            "soft_delete_record", status.HTTP_401_UNAUTHORIZED,
+            "soft_delete_record",
+            status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/{storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID}",
         ),
         (
-            "soft_delete_record", status.HTTP_401_UNAUTHORIZED,
+            "soft_delete_record",
+            status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/samplesanalysesreport/{storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID}",
         ),
         (
-            "soft_delete_record", status.HTTP_401_UNAUTHORIZED,
+            "soft_delete_record",
+            status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/samplesanalysis/{storage_mock_objects.TEST_SAMPLESANALYSIS_ID}",
         ),
         (
-            "soft_delete_record", status.HTTP_401_UNAUTHORIZED,
+            "soft_delete_record",
+            status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/saturationfunctionset/{storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID}",
         ),
         (
-            "soft_delete_record", status.HTTP_401_UNAUTHORIZED,
+            "soft_delete_record",
+            status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/fluidmodel/{storage_mock_objects.TEST_FLUID_MODEL_ID}",
         ),
         (
-            "soft_delete_record", status.HTTP_401_UNAUTHORIZED,
+            "soft_delete_record",
+            status.HTTP_401_UNAUTHORIZED,
             f"{API_VERSION_V2}/masterdata/{storage_mock_objects.TEST_SAMPLE_ID}",
         ),
     ],
 )
 async def test_delete_record_auth_errors_from_storage(
-    storage_method, api_status_code, path,
+    storage_method,
+    api_status_code,
+    path,
     with_patched_storage_raises_40x,
 ):
     with storage_override():
@@ -949,7 +1098,8 @@ async def test_delete_record_auth_errors_from_storage(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "path", [
+    "path",
+    [
         (f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}/record_id"),
         (f"{API_VERSION_V2}/samplesanalysesreport/record_id"),
         (f"{API_VERSION_V2}/samplesanalysis/record_id"),
@@ -972,53 +1122,78 @@ async def test_delete_record_auth_errors(
     "storage_method,api_status_code,path,osdu_record",
     [
         (
-            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            "upsert_records",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
             storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
         ),
         (
-            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/samplesanalysesreport",
+            "upsert_records",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
         ),
         (
-            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/samplesanalysis",
+            "upsert_records",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/samplesanalysis",
             storage_mock_objects.SAMPLESANALYSIS_RECORD_V2,
         ),
         (
-            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/saturationfunctionset",
+            "upsert_records",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/saturationfunctionset",
             storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
         ),
         (
-            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/fluidmodel",
+            "upsert_records",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/fluidmodel",
             storage_mock_objects.FLUID_MODEL_RECORD,
         ),
         (
-            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_RECORD,
         ),
         (
-            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_ACQUISITION_JOB_RECORD,
         ),
         (
-            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_CHAIN_OF_CUSTODY_EVENT_RECORD,
         ),
         (
-            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.SAMPLE_CONTAINER_RECORD,
         ),
         (
-            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.GENERIC_FACILITY_RECORD,
         ),
         (
-            "upsert_records", status.HTTP_401_UNAUTHORIZED, f"{API_VERSION_V2}/masterdata",
+            "upsert_records",
+            status.HTTP_401_UNAUTHORIZED,
+            f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.GENERIC_SITE_RECORD,
         ),
     ],
 )
 async def test_post_record_auth_errors_from_storage(
-    storage_method, api_status_code, path, osdu_record,
+    storage_method,
+    api_status_code,
+    path,
+    osdu_record,
     with_patched_storage_raises_40x,
     with_patched_schema_validate_success,
 ):
@@ -1072,7 +1247,8 @@ async def test_post_record_auth_errors_from_storage(
     ],
 )
 async def test_post_record_auth_errors(
-    path, osdu_record,
+    path,
+    osdu_record,
 ):
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
         response = await client.post(
@@ -1086,7 +1262,8 @@ async def test_post_record_auth_errors(
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "endpoint,record_id", [
+    "endpoint,record_id",
+    [
         (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.FLUID_MODEL_ENDPOINT_PATH_V2, TEST_WRONG_ID),
@@ -1106,7 +1283,8 @@ async def test_get_record_wrong_id_pattern(endpoint, record_id):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "endpoint,manifest", [
+    "endpoint,manifest",
+    [
         (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
         (storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
         (storage_mock_objects.FLUID_MODEL_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
@@ -1129,7 +1307,8 @@ async def test_post_record_wrong_kind(endpoint, manifest):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "endpoint,record_id", [
+    "endpoint,record_id",
+    [
         (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2, TEST_WRONG_ID),
         (storage_mock_objects.FLUID_MODEL_ENDPOINT_PATH_V2, TEST_WRONG_ID),
@@ -1153,45 +1332,54 @@ async def test_delete_record_wrong_id_pattern(endpoint, record_id):
     [
         (
             f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
-            storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD, "ResourceHomeRegionID",
+            storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_RECORD,
+            "ResourceHomeRegionID",
             storage_mock_objects.RESERVOIR_SIMULATION_ROCK_PHYSICS_SCHEMA,
         ),
         (
             f"{API_VERSION_V2}/samplesanalysesreport",
-            storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2, "ResourceHomeRegionID",
+            storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
+            "ResourceHomeRegionID",
             storage_mock_objects.SAMPLES_ANALYSES_REPORT_SCHEMA,
         ),
         (
             f"{API_VERSION_V2}/samplesanalysis",
-            storage_mock_objects.SAMPLESANALYSIS_RECORD_V2, "ResourceHomeRegionID",
+            storage_mock_objects.SAMPLESANALYSIS_RECORD_V2,
+            "ResourceHomeRegionID",
             storage_mock_objects.SAMPLES_ANALYSIS_SCHEMA,
         ),
         (
             f"{API_VERSION_V2}/saturationfunctionset",
-            storage_mock_objects.SATURATION_FUNCTION_SET_RECORD, "ResourceHomeRegionID",
+            storage_mock_objects.SATURATION_FUNCTION_SET_RECORD,
+            "ResourceHomeRegionID",
             storage_mock_objects.SATURATION_FUNCTION_SET_SCHEMA,
         ),
         (
             f"{API_VERSION_V2}/fluidmodel",
-            storage_mock_objects.FLUID_MODEL_RECORD, "ResourceHomeRegionID",
+            storage_mock_objects.FLUID_MODEL_RECORD,
+            "ResourceHomeRegionID",
             storage_mock_objects.FLUID_MODEL_SCHEMA,
         ),
         (
             f"{API_VERSION_V2}/masterdata",
-            storage_mock_objects.SAMPLE_RECORD, "ResourceHomeRegionID",
+            storage_mock_objects.SAMPLE_RECORD,
+            "ResourceHomeRegionID",
             storage_mock_objects.SAMPLE_SCHEMA,
         ),
     ],
 )
-async def test_post_record_invalid_field_type_jsonschema(path, osdu_record, field, schema, with_patched_schema_get_success):
+async def test_post_record_invalid_field_type_jsonschema(
+    path, osdu_record, field, schema, with_patched_schema_get_success
+):
     osdu_record_wrong_field_type = osdu_record.dict(exclude_none=True)
-    osdu_record_wrong_field_type.update({
-        "data":
+    osdu_record_wrong_field_type.update(
         {
-            field: "wrong_pattern",
-            "Parameters": [],
-        },
-    })
+            "data": {
+                field: "wrong_pattern",
+                "Parameters": [],
+            },
+        }
+    )
 
     with storage_override():
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
@@ -1201,6 +1389,7 @@ async def test_post_record_invalid_field_type_jsonschema(path, osdu_record, fiel
                 json=[osdu_record_wrong_field_type],
             )
     from loguru import logger
+
     logger.warning(response.json())
     assert response.json()["code"] == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert "'wrong_pattern' does not match" in response.json()["reason"][0]["errors"][0]

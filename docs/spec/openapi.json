@@ -1219,6 +1219,8 @@
             "name": "version",
             "required": true,
             "schema": {
+              "maximum": 9.223372036854776e+18,
+              "minimum": 1.0,
               "title": "Version",
               "type": "integer"
             }
@@ -2042,6 +2044,8 @@
             "name": "version",
             "required": true,
             "schema": {
+              "maximum": 9.223372036854776e+18,
+              "minimum": 1.0,
               "title": "Version",
               "type": "integer"
             }
@@ -3235,6 +3239,8 @@
             "name": "version",
             "required": true,
             "schema": {
+              "maximum": 9.223372036854776e+18,
+              "minimum": 1.0,
               "title": "Version",
               "type": "integer"
             }
@@ -3708,6 +3714,8 @@
             "name": "version",
             "required": true,
             "schema": {
+              "maximum": 9.223372036854776e+18,
+              "minimum": 1.0,
               "title": "Version",
               "type": "integer"
             }
@@ -4948,6 +4956,8 @@
             "name": "version",
             "required": true,
             "schema": {
+              "maximum": 9.223372036854776e+18,
+              "minimum": 1.0,
               "title": "Version",
               "type": "integer"
             }
@@ -6139,6 +6149,8 @@
             "name": "version",
             "required": true,
             "schema": {
+              "maximum": 9.223372036854776e+18,
+              "minimum": 1.0,
               "title": "Version",
               "type": "integer"
             }
