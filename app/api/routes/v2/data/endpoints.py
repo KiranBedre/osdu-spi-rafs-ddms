@@ -78,13 +78,13 @@ class BaseDataViewV2(BaseDataView):
             The previous meta-data with bulk data is available by their `versions`. <br> <br>\
             Use the `Content-Type` request header to specify payload and response formats \
                 (`application/json` and `application/parquet` are supported).<br>\
-            Use the `Accept` request header to specify content schema version \
-                (example header `Accept: */*;version=1.0.0` is supported).",
+            Use the `content_schema_version` query parameter to specify content schema version \
+                (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.",
         )
         self.description_template_get_data = APIDescriptionHelper.append_joined_roles(
             "Get the (`latest version`) bulk data for a given `{analysis_type}` object by record id. <br><br>\
-            Use the `Accept` request header to specify content schema version \
-                (example header `Accept: */*;version=1.0.0` is supported).<br><br>\
+            Use the `content_schema_version` query parameter to specify content schema version \
+                (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>\
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
                 query parameters can be used to manage data in response.<br><br>\
             Use the `orient` query parameter to select the JSON output format (`split` or `records`).",
