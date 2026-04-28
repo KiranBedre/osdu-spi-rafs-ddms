@@ -27,6 +27,7 @@ from starlette import status
 
 from app.api.dependencies.request import (
     get_content_schema_version,
+    get_response_mime_type,
     validate_bulkdata_content_type,
 )
 from app.api.dependencies.services import (
@@ -105,7 +106,7 @@ class BaseDataView(object):
             "Upload the bulk data for a given `{record_type}` object by record id.<br>\
             It creates a new version of the record. <br>\
             The previous meta-data with bulk data is available by their `versions`. <br> <br>\
-            Use the `Content-Type` request header to specify payload and response formats \
+            The `Content-Type` request header is **required** to specify payload format \
                 (`application/json` and `application/parquet` are supported).<br>\
             Use the `Accept` request header to specify content schema version \
                 (example header `Accept: */*;version=1.0.0` is supported).",
@@ -248,7 +249,7 @@ class BaseDataView(object):
         :rtype: Response
         """
         record = await storage_service.get_record(record_id)
-        mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
+        mime_type = get_response_mime_type(request)
         # Aggregation results only make sense in split format (index holds the function name)
         orient = "split" if df_filter.valid_columns_aggregation else orient
 
@@ -568,7 +569,6 @@ class BaseDataView(object):
             dependencies=[
                 Depends(validate_record_id),
                 Depends(validate_dataset_id),
-                Depends(validate_bulkdata_content_type),
             ],
         )
 

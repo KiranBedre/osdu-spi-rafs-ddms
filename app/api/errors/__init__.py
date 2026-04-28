@@ -27,4 +27,7 @@ from app.api.errors.osdu_api_error import (  # noqa: F401
     osdu_api_http_error_handler,
     osdu_api_httpx_error_handler,
 )
+from app.api.errors.unsupported_media_type_error import (  # noqa: F401
+    unsupported_media_type_error_handler,
+)
 from app.api.errors.validation_error import http422_error_handler  # noqa: F401

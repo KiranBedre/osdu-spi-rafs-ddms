@@ -19,7 +19,7 @@ from starlette.responses import Response
 
 from app.exceptions import exceptions
 
-SUPPORTED_MIME_TYPES: Final[tuple] = ("application/json", "*/*")
+SUPPORTED_MIME_TYPES: Final[tuple] = ("application/json", "application/x-parquet", "*/*")
 
 _DEPRECATED_PARAM_MSG = (
     "Specifying schema version via the Accept header is deprecated. Use ?content_schema_version= instead."

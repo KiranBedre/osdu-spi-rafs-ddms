@@ -258,7 +258,15 @@ def _headers_json(version="1.0.0"):
 
 
 def _headers_parquet(version="1.0.0"):
-    return {**TEST_HEADERS_PARQUET, "Accept": f"*/*;version={version}"}
+    return {**TEST_HEADERS_PARQUET, "Accept": f"application/x-parquet;version={version}"}
+
+
+def _headers_parquet_accept_only(version="1.0.0"):
+    return {
+        "data-partition-id": "opendes",
+        "Authorization": "Bearer token",
+        "Accept": f"application/x-parquet;version={version}",
+    }
 
 
 @pytest.mark.parametrize(
@@ -331,67 +339,68 @@ async def test_get_content_data_no_data(data_endpoint_path, dataset_id):
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path,dataset_id",
+    "data_endpoint_path",
     [
-        (TestContentPathsApiV2.RCA, BulkDatasetIdV2.RCA),
-        (TestContentPathsApiV2.CCE, BulkDatasetIdV2.CCE),
-        (TestContentPathsApiV2.DIFF_LIB, BulkDatasetIdV2.DIFF_LIB),
-        (TestContentPathsApiV2.TRANSPORT_TEST, BulkDatasetIdV2.TRANSPORT_TEST),
-        (TestContentPathsApiV2.COMPOSITIONAL_ANALYSIS, BulkDatasetIdV2.COMPOSITIONAL_ANALYSIS),
-        (TestContentPathsApiV2.ATMOSPHERIC_FLASH, BulkDatasetIdV2.ATMOSPHERIC_FLASH),
-        (TestContentPathsApiV2.MSS, BulkDatasetIdV2.MSS),
-        (TestContentPathsApiV2.SWELLING, BulkDatasetIdV2.SWELLING),
-        (TestContentPathsApiV2.CVD, BulkDatasetIdV2.CVD),
-        (TestContentPathsApiV2.WATER_ANALYSIS, BulkDatasetIdV2.WATER_ANALYSIS),
-        (TestContentPathsApiV2.INTERFACIAL_TENSION, BulkDatasetIdV2.INTERFACIAL_TENSION),
-        (TestContentPathsApiV2.VLE, BulkDatasetIdV2.VLE),
-        (TestContentPathsApiV2.MCM, BulkDatasetIdV2.MCM),
-        (TestContentPathsApiV2.SLIMTUBE, BulkDatasetIdV2.SLIMTUBE),
-        (TestContentPathsApiV2.EXTRACTION, BulkDatasetIdV2.EXTRACTION),
-        (TestContentPathsApiV2.FRACTIONATION, BulkDatasetIdV2.FRACTIONATION),
-        (TestContentPathsApiV2.RELATIVE_PERMEABILITY, BulkDatasetIdV2.RELATIVE_PERMEABILITY),
-        (TestContentPathsApiV2.ROCK_COMPRESSIBILITY, BulkDatasetIdV2.ROCK_COMPRESSIBILITY),
-        (TestContentPathsApiV2.NMR, BulkDatasetIdV2.NMR),
-        (TestContentPathsApiV2.MULTIPLE_SALINITY, BulkDatasetIdV2.MULTIPLE_SALINITY),
-        (TestContentPathsApiV2.GCMS_ALKANES, BulkDatasetIdV2.GCMS_ALKANES),
-        (TestContentPathsApiV2.GCMS_AROMATICS, BulkDatasetIdV2.GCMS_AROMATICS),
-        (TestContentPathsApiV2.GCMS_RATIOS, BulkDatasetIdV2.GCMS_RATIOS),
-        (TestContentPathsApiV2.GAS_CHROMATOGRAPHY, BulkDatasetIdV2.GAS_CHROMATOGRAPHY),
-        (TestContentPathsApiV2.GAS_COMPOSITION, BulkDatasetIdV2.GAS_COMPOSITION),
-        (TestContentPathsApiV2.ISOTOPE_ANALYSIS, BulkDatasetIdV2.ISOTOPE_ANALYSIS),
-        (TestContentPathsApiV2.BULK_PYROLYSIS, BulkDatasetIdV2.BULK_PYROLYSIS),
-        (TestContentPathsApiV2.CORE_GAMMA, BulkDatasetIdV2.CORE_GAMMA),
-        (TestContentPathsApiV2.MINING_GEOTECH_LOGGING, BulkDatasetIdV2.MINING_GEOTECH_LOGGING),
-        (TestContentPathsApiV2.UNIAXIAL_TEST, BulkDatasetIdV2.UNIAXIAL_TEST),
-        (TestContentPathsApiV2.GCMSMS_ANALYSIS, BulkDatasetIdV2.GCMSMS_ANALYSIS),
-        (TestContentPathsApiV2.CEC_CONTENT, BulkDatasetIdV2.CEC_CONTENT),
-        (TestContentPathsApiV2.ELECTRICAL_PROPERTIES, BulkDatasetIdV2.ELECTRICAL_PROPERTIES),
-        (TestContentPathsApiV2.TRIAXIAL_TEST, BulkDatasetIdV2.TRIAXIAL_TEST),
-        (TestContentPathsApiV2.PROPPANT_EMBEDMENT, BulkDatasetIdV2.PROPPANT_EMBEDMENT),
-        (TestContentPathsApiV2.CAP_PRESSURE, BulkDatasetIdV2.CAP_PRESSURE),
-        (TestContentPathsApiV2.WETTABILITY_INDEX, BulkDatasetIdV2.WETTABILITY_INDEX),
-        (TestContentPathsApiV2.TEC, BulkDatasetIdV2.TEC),
-        (TestContentPathsApiV2.EDS_MAPPING, BulkDatasetIdV2.EDS_MAPPING),
-        (TestContentPathsApiV2.XRF, BulkDatasetIdV2.XRF),
-        (TestContentPathsApiV2.TENSILE_STRENGTH, BulkDatasetIdV2.TENSILE_STRENGTH),
-        (TestContentPathsApiV2.VITRINITE_REFLECTANCE, BulkDatasetIdV2.VITRINITE_REFLECTANCE),
-        (TestContentPathsApiV2.XRD, BulkDatasetIdV2.XRD),
-        (TestContentPathsApiV2.PDP, BulkDatasetIdV2.PDP),
-        (TestContentPathsApiV2.STO, BulkDatasetIdV2.STO),
-        (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, BulkDatasetIdV2.CRUSHED_ROCK_ANALYSIS),
-        (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, BulkDatasetIdV2.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL),
-        (TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL, BulkDatasetIdV2.SATURATION_FUNCTION_SET_MODEL),
-        (TestContentPathsApiV2.ROLLER_OVEN_TEST, BulkDatasetIdV2.ROLLER_OVEN_TEST),
-        (TestContentPathsApiV2.SATURATION_TEST, BulkDatasetIdV2.SATURATION_TEST),
+        TestContentPathsApiV2.RCA,
+        TestContentPathsApiV2.CCE,
+        TestContentPathsApiV2.DIFF_LIB,
+        TestContentPathsApiV2.TRANSPORT_TEST,
+        TestContentPathsApiV2.COMPOSITIONAL_ANALYSIS,
+        TestContentPathsApiV2.ATMOSPHERIC_FLASH,
+        TestContentPathsApiV2.MSS,
+        TestContentPathsApiV2.SWELLING,
+        TestContentPathsApiV2.CVD,
+        TestContentPathsApiV2.WATER_ANALYSIS,
+        TestContentPathsApiV2.INTERFACIAL_TENSION,
+        TestContentPathsApiV2.VLE,
+        TestContentPathsApiV2.MCM,
+        TestContentPathsApiV2.SLIMTUBE,
+        TestContentPathsApiV2.EXTRACTION,
+        TestContentPathsApiV2.FRACTIONATION,
+        TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+        TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
+        TestContentPathsApiV2.NMR,
+        TestContentPathsApiV2.MULTIPLE_SALINITY,
+        TestContentPathsApiV2.GCMS_ALKANES,
+        TestContentPathsApiV2.GCMS_AROMATICS,
+        TestContentPathsApiV2.GCMS_RATIOS,
+        TestContentPathsApiV2.GAS_CHROMATOGRAPHY,
+        TestContentPathsApiV2.GAS_COMPOSITION,
+        TestContentPathsApiV2.ISOTOPE_ANALYSIS,
+        TestContentPathsApiV2.BULK_PYROLYSIS,
+        TestContentPathsApiV2.CORE_GAMMA,
+        TestContentPathsApiV2.MINING_GEOTECH_LOGGING,
+        TestContentPathsApiV2.UNIAXIAL_TEST,
+        TestContentPathsApiV2.GCMSMS_ANALYSIS,
+        TestContentPathsApiV2.CEC_CONTENT,
+        TestContentPathsApiV2.ELECTRICAL_PROPERTIES,
+        TestContentPathsApiV2.TRIAXIAL_TEST,
+        TestContentPathsApiV2.PROPPANT_EMBEDMENT,
+        TestContentPathsApiV2.CAP_PRESSURE,
+        TestContentPathsApiV2.WETTABILITY_INDEX,
+        TestContentPathsApiV2.TEC,
+        TestContentPathsApiV2.EDS_MAPPING,
+        TestContentPathsApiV2.XRF,
+        TestContentPathsApiV2.TENSILE_STRENGTH,
+        TestContentPathsApiV2.VITRINITE_REFLECTANCE,
+        TestContentPathsApiV2.XRD,
+        TestContentPathsApiV2.PDP,
+        TestContentPathsApiV2.STO,
+        TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS,
+        TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+        TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+        TestContentPathsApiV2.ROLLER_OVEN_TEST,
+        TestContentPathsApiV2.SATURATION_TEST,
     ],
 )
 @pytest.mark.asyncio
-async def test_get_data_no_content_header(data_endpoint_path, dataset_id):
+async def test_post_data_no_content_header(data_endpoint_path):
     with services_overrides():
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
-            response = await client.get(
-                f"{data_endpoint_path}/{dataset_id}",
+            response = await client.post(
+                data_endpoint_path,
                 headers={"data-partition-id": "opendes"},
+                content=b"{}",
             )
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -400,75 +409,148 @@ async def test_get_data_no_content_header(data_endpoint_path, dataset_id):
 
 
 @pytest.mark.parametrize(
-    "data_endpoint_path,dataset_id",
+    "data_endpoint_path",
     [
-        (TestContentPathsApiV2.RCA, BulkDatasetIdV2.RCA),
-        (TestContentPathsApiV2.CCE, BulkDatasetIdV2.CCE),
-        (TestContentPathsApiV2.DIFF_LIB, BulkDatasetIdV2.DIFF_LIB),
-        (TestContentPathsApiV2.TRANSPORT_TEST, BulkDatasetIdV2.TRANSPORT_TEST),
-        (TestContentPathsApiV2.COMPOSITIONAL_ANALYSIS, BulkDatasetIdV2.COMPOSITIONAL_ANALYSIS),
-        (TestContentPathsApiV2.ATMOSPHERIC_FLASH, BulkDatasetIdV2.ATMOSPHERIC_FLASH),
-        (TestContentPathsApiV2.MSS, BulkDatasetIdV2.MSS),
-        (TestContentPathsApiV2.SWELLING, BulkDatasetIdV2.SWELLING),
-        (TestContentPathsApiV2.CVD, BulkDatasetIdV2.CVD),
-        (TestContentPathsApiV2.WATER_ANALYSIS, BulkDatasetIdV2.WATER_ANALYSIS),
-        (TestContentPathsApiV2.INTERFACIAL_TENSION, BulkDatasetIdV2.INTERFACIAL_TENSION),
-        (TestContentPathsApiV2.VLE, BulkDatasetIdV2.VLE),
-        (TestContentPathsApiV2.MCM, BulkDatasetIdV2.MCM),
-        (TestContentPathsApiV2.SLIMTUBE, BulkDatasetIdV2.SLIMTUBE),
-        (TestContentPathsApiV2.EXTRACTION, BulkDatasetIdV2.EXTRACTION),
-        (TestContentPathsApiV2.FRACTIONATION, BulkDatasetIdV2.FRACTIONATION),
-        (TestContentPathsApiV2.RELATIVE_PERMEABILITY, BulkDatasetIdV2.RELATIVE_PERMEABILITY),
-        (TestContentPathsApiV2.ROCK_COMPRESSIBILITY, BulkDatasetIdV2.ROCK_COMPRESSIBILITY),
-        (TestContentPathsApiV2.NMR, BulkDatasetIdV2.NMR),
-        (TestContentPathsApiV2.MULTIPLE_SALINITY, BulkDatasetIdV2.MULTIPLE_SALINITY),
-        (TestContentPathsApiV2.GCMS_ALKANES, BulkDatasetIdV2.GCMS_ALKANES),
-        (TestContentPathsApiV2.GCMS_AROMATICS, BulkDatasetIdV2.GCMS_AROMATICS),
-        (TestContentPathsApiV2.GCMS_RATIOS, BulkDatasetIdV2.GCMS_RATIOS),
-        (TestContentPathsApiV2.GAS_CHROMATOGRAPHY, BulkDatasetIdV2.GAS_CHROMATOGRAPHY),
-        (TestContentPathsApiV2.GAS_COMPOSITION, BulkDatasetIdV2.GAS_COMPOSITION),
-        (TestContentPathsApiV2.ISOTOPE_ANALYSIS, BulkDatasetIdV2.ISOTOPE_ANALYSIS),
-        (TestContentPathsApiV2.BULK_PYROLYSIS, BulkDatasetIdV2.BULK_PYROLYSIS),
-        (TestContentPathsApiV2.CORE_GAMMA, BulkDatasetIdV2.CORE_GAMMA),
-        (TestContentPathsApiV2.MINING_GEOTECH_LOGGING, BulkDatasetIdV2.MINING_GEOTECH_LOGGING),
-        (TestContentPathsApiV2.UNIAXIAL_TEST, BulkDatasetIdV2.UNIAXIAL_TEST),
-        (TestContentPathsApiV2.GCMSMS_ANALYSIS, BulkDatasetIdV2.GCMSMS_ANALYSIS),
-        (TestContentPathsApiV2.CEC_CONTENT, BulkDatasetIdV2.CEC_CONTENT),
-        (TestContentPathsApiV2.ELECTRICAL_PROPERTIES, BulkDatasetIdV2.ELECTRICAL_PROPERTIES),
-        (TestContentPathsApiV2.TRIAXIAL_TEST, BulkDatasetIdV2.TRIAXIAL_TEST),
-        (TestContentPathsApiV2.PROPPANT_EMBEDMENT, BulkDatasetIdV2.PROPPANT_EMBEDMENT),
-        (TestContentPathsApiV2.CAP_PRESSURE, BulkDatasetIdV2.CAP_PRESSURE),
-        (TestContentPathsApiV2.WETTABILITY_INDEX, BulkDatasetIdV2.WETTABILITY_INDEX),
-        (TestContentPathsApiV2.TEC, BulkDatasetIdV2.TEC),
-        (TestContentPathsApiV2.EDS_MAPPING, BulkDatasetIdV2.EDS_MAPPING),
-        (TestContentPathsApiV2.XRF, BulkDatasetIdV2.XRF),
-        (TestContentPathsApiV2.TENSILE_STRENGTH, BulkDatasetIdV2.TENSILE_STRENGTH),
-        (TestContentPathsApiV2.VITRINITE_REFLECTANCE, BulkDatasetIdV2.VITRINITE_REFLECTANCE),
-        (TestContentPathsApiV2.XRD, BulkDatasetIdV2.XRD),
-        (TestContentPathsApiV2.PDP, BulkDatasetIdV2.PDP),
-        (TestContentPathsApiV2.STO, BulkDatasetIdV2.STO),
-        (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, BulkDatasetIdV2.CRUSHED_ROCK_ANALYSIS),
-        (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, BulkDatasetIdV2.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL),
-        (TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL, BulkDatasetIdV2.SATURATION_FUNCTION_SET_MODEL),
-        (TestContentPathsApiV2.ROLLER_OVEN_TEST, BulkDatasetIdV2.ROLLER_OVEN_TEST),
-        (TestContentPathsApiV2.SATURATION_TEST, BulkDatasetIdV2.SATURATION_TEST),
+        TestContentPathsApiV2.RCA,
+        TestContentPathsApiV2.CCE,
+        TestContentPathsApiV2.DIFF_LIB,
+        TestContentPathsApiV2.TRANSPORT_TEST,
+        TestContentPathsApiV2.COMPOSITIONAL_ANALYSIS,
+        TestContentPathsApiV2.ATMOSPHERIC_FLASH,
+        TestContentPathsApiV2.MSS,
+        TestContentPathsApiV2.SWELLING,
+        TestContentPathsApiV2.CVD,
+        TestContentPathsApiV2.WATER_ANALYSIS,
+        TestContentPathsApiV2.INTERFACIAL_TENSION,
+        TestContentPathsApiV2.VLE,
+        TestContentPathsApiV2.MCM,
+        TestContentPathsApiV2.SLIMTUBE,
+        TestContentPathsApiV2.EXTRACTION,
+        TestContentPathsApiV2.FRACTIONATION,
+        TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+        TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
+        TestContentPathsApiV2.NMR,
+        TestContentPathsApiV2.MULTIPLE_SALINITY,
+        TestContentPathsApiV2.GCMS_ALKANES,
+        TestContentPathsApiV2.GCMS_AROMATICS,
+        TestContentPathsApiV2.GCMS_RATIOS,
+        TestContentPathsApiV2.GAS_CHROMATOGRAPHY,
+        TestContentPathsApiV2.GAS_COMPOSITION,
+        TestContentPathsApiV2.ISOTOPE_ANALYSIS,
+        TestContentPathsApiV2.BULK_PYROLYSIS,
+        TestContentPathsApiV2.CORE_GAMMA,
+        TestContentPathsApiV2.MINING_GEOTECH_LOGGING,
+        TestContentPathsApiV2.UNIAXIAL_TEST,
+        TestContentPathsApiV2.GCMSMS_ANALYSIS,
+        TestContentPathsApiV2.CEC_CONTENT,
+        TestContentPathsApiV2.ELECTRICAL_PROPERTIES,
+        TestContentPathsApiV2.TRIAXIAL_TEST,
+        TestContentPathsApiV2.PROPPANT_EMBEDMENT,
+        TestContentPathsApiV2.CAP_PRESSURE,
+        TestContentPathsApiV2.WETTABILITY_INDEX,
+        TestContentPathsApiV2.TEC,
+        TestContentPathsApiV2.EDS_MAPPING,
+        TestContentPathsApiV2.XRF,
+        TestContentPathsApiV2.TENSILE_STRENGTH,
+        TestContentPathsApiV2.VITRINITE_REFLECTANCE,
+        TestContentPathsApiV2.XRD,
+        TestContentPathsApiV2.PDP,
+        TestContentPathsApiV2.STO,
+        TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS,
+        TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+        TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+        TestContentPathsApiV2.ROLLER_OVEN_TEST,
+        TestContentPathsApiV2.SATURATION_TEST,
     ],
 )
 @pytest.mark.asyncio
-async def test_get_data_wrong_content_header(data_endpoint_path, dataset_id):
+async def test_post_data_wrong_content_header(data_endpoint_path):
+    with services_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                data_endpoint_path,
+                headers={"Content-Type": "wrong-type", "data-partition-id": "opendes"},
+                content=b"{}",
+            )
+
+    assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    expected = {
+        "code": status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+        "reason": "The provided content-type is not supported. Please provide one of the next supported content types: ['application/json', 'application/x-parquet']",
+    }
+    assert response.json() == expected
+
+
+@pytest.mark.parametrize(
+    "data_endpoint_path,dataset_id",
+    [
+        (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID),
+        (
+            TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+            saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_get_data_no_content_type_does_not_return_400(data_endpoint_path, dataset_id):
+    """GET data without Content-Type must NOT return 400 Content-Type validation error.
+
+    Content-Type is irrelevant for GET requests; response format is
+    negotiated via the Accept header instead.  This test proves that the
+    Content-Type validation dependency is no longer attached to GET routes.
+    The 404 response (dataset not found in mock) is expected and acceptable –
+    it confirms the request passed header validation and reached business logic.
+    """
     with services_overrides():
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.get(
                 f"{data_endpoint_path}/{dataset_id}",
-                headers={"Content-Type": "wrong-type", "data-partition-id": "opendes"},
+                headers={
+                    "data-partition-id": "opendes",
+                    "Authorization": "Bearer token",
+                    "Accept": "*/*;version=1.0.0",
+                    # No Content-Type header on purpose
+                },
             )
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    expected = {
-        "code": status.HTTP_400_BAD_REQUEST,
-        "reason": "The provided content-type is not supported. Please provide one of the next supported content types: ['application/json', 'application/x-parquet']",
-    }
-    assert response.json() == expected
+    assert response.status_code != status.HTTP_400_BAD_REQUEST, "GET must not fail with 400 due to missing Content-Type"
+    if response.status_code == status.HTTP_400_BAD_REQUEST:
+        assert "Content-Type" not in response.json().get("reason", "")
+
+
+@pytest.mark.parametrize(
+    "data_endpoint_path,dataset_id",
+    [
+        (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+    ],
+)
+@pytest.mark.asyncio
+async def test_get_data_accept_parquet_does_not_return_content_type_error(data_endpoint_path, dataset_id):
+    """GET data with Accept: application/x-parquet must NOT return a Content-Type 400 error.
+
+    This proves the Accept header MIME type is accepted for content negotiation.
+    A 404 response (dataset not found in mock) is acceptable – it means the
+    request reached business logic and was not blocked by header validation.
+    """
+    with services_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(
+                f"{data_endpoint_path}/{dataset_id}",
+                headers={
+                    "data-partition-id": "opendes",
+                    "Authorization": "Bearer token",
+                    "Accept": "application/x-parquet;version=1.0.0",
+                    # No Content-Type header on purpose
+                },
+            )
+
+    assert (
+        response.status_code != status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    ), "GET must not fail with 415 Unsupported Media Type"
+    assert response.status_code != status.HTTP_400_BAD_REQUEST, "GET must not fail with 400 due to missing Content-Type"
 
 
 @pytest.mark.parametrize(
@@ -1047,6 +1129,80 @@ async def test_get_content_parquet_data(
     expected_df = pq.read_table(pa.BufferReader(blobs[0])).to_pandas()
     actual_df = pq.read_table(pa.BufferReader(response.content)).to_pandas()
     pd.testing.assert_frame_equal(expected_df, actual_df, check_like=True)
+
+
+@pytest.mark.parametrize(
+    "data_endpoint_path,dataset_id,storage_method,osdu_records,dataset_method,blobs",
+    [
+        (
+            TestContentPathsApiV2.RCA,
+            rca_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", rca_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.CCE,
+            cce_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [cce_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", cce_mock_objects.TEST_DATA)],
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_get_data_accept_negotiation_returns_parquet(
+    data_endpoint_path,
+    dataset_id,
+    storage_method,
+    osdu_records,
+    dataset_method,
+    blobs,
+    with_patched_services_success,
+):
+    """Accept: application/x-parquet without Content-Type header must return parquet response.
+
+    Verifies that response format is negotiated via the Accept header, not
+    Content-Type.  Content-Type is absent on purpose — GET requests carry no
+    body, so the server must not rely on it for output selection.
+    """
+    version = _version_from_urn(osdu_records[0]["data"]["DDMSDatasets"][0])
+    with services_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(
+                f"{data_endpoint_path}/{dataset_id}",
+                headers=_headers_parquet_accept_only(version),
+            )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.headers["content-type"].startswith("application/x-parquet")
+    expected_df = pq.read_table(pa.BufferReader(blobs[0])).to_pandas()
+    actual_df = pq.read_table(pa.BufferReader(response.content)).to_pandas()
+    pd.testing.assert_frame_equal(expected_df, actual_df, check_like=True)
+
+
+@pytest.mark.parametrize(
+    "data_endpoint_path,dataset_id",
+    [
+        (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+    ],
+)
+@pytest.mark.asyncio
+async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, dataset_id):
+    """Accept header with unsupported MIME type must return 406 Not Acceptable."""
+    with services_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(
+                f"{data_endpoint_path}/{dataset_id}",
+                headers={
+                    "data-partition-id": "opendes",
+                    "Authorization": "Bearer token",
+                    "Accept": "application/xml;version=1.0.0",
+                },
+            )
+    assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
 
 
 @pytest.mark.parametrize(

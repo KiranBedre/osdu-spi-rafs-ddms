@@ -1,6 +1,24 @@
 {
   "components": {
     "schemas": {
+      "BadRequestResponse": {
+        "properties": {
+          "code": {
+            "default": 400,
+            "title": "Code",
+            "type": "integer"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "BadRequestResponse",
+        "type": "object"
+      },
       "HTTPValidationError": {
         "properties": {
           "errors": {
@@ -72,6 +90,24 @@
           "skipped_record_count"
         ],
         "title": "StorageUpsertResponse",
+        "type": "object"
+      },
+      "UnsupportedMediaTypeResponse": {
+        "properties": {
+          "code": {
+            "default": 415,
+            "title": "Code",
+            "type": "integer"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "UnsupportedMediaTypeResponse",
         "type": "object"
       },
       "ValidationError": {
@@ -2772,7 +2808,7 @@
     },
     "/api/rafs-ddms/v2/reservoirsimulationrockphysicsmodel/{record_id}/data": {
       "post": {
-        "description": "Upload the bulk data for a given `{analysis_type}` object by record id.<br>            It creates a new version of the record. <br>            The previous meta-data with bulk data is available by their `versions`. <br> <br>            Use the `Content-Type` request header to specify payload and response formats                 (`application/json` and `application/parquet` are supported).<br>            Use the `content_schema_version` query parameter to specify content schema version                 (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Upload the bulk data for a given `{analysis_type}` object by record id.<br>            It creates a new version of the record. <br>            The previous meta-data with bulk data is available by their `versions`. <br> <br>            The `Content-Type` request header is **required** to specify payload format                 (`application/json` and `application/parquet` are supported).<br>            Use the `content_schema_version` query parameter to specify content schema version                 (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "post_data_single_content_type_api_rafs_ddms_v2_reservoirsimulationrockphysicsmodel__record_id__data_post",
         "parameters": [
           {
@@ -2984,6 +3020,26 @@
               }
             },
             "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnsupportedMediaTypeResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
           },
           "422": {
             "content": {
@@ -4529,7 +4585,7 @@
     },
     "/api/rafs-ddms/v2/samplesanalysis/{record_id}/data/{analysis_type}": {
       "post": {
-        "description": "Upload the bulk data for a given `{analysis_type}` object by record id.<br>            It creates a new version of the record. <br>            The previous meta-data with bulk data is available by their `versions`. <br> <br>            Use the `Content-Type` request header to specify payload and response formats                 (`application/json` and `application/parquet` are supported).<br>            Use the `content_schema_version` query parameter to specify content schema version                 (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Upload the bulk data for a given `{analysis_type}` object by record id.<br>            It creates a new version of the record. <br>            The previous meta-data with bulk data is available by their `versions`. <br> <br>            The `Content-Type` request header is **required** to specify payload format                 (`application/json` and `application/parquet` are supported).<br>            Use the `content_schema_version` query parameter to specify content schema version                 (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "post_data_v2_api_rafs_ddms_v2_samplesanalysis__record_id__data__analysis_type__post",
         "parameters": [
           {
@@ -4692,6 +4748,26 @@
               }
             },
             "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnsupportedMediaTypeResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
           },
           "422": {
             "content": {
@@ -5720,7 +5796,7 @@
     },
     "/api/rafs-ddms/v2/saturationfunctionset/{record_id}/data": {
       "post": {
-        "description": "Upload the bulk data for a given `{analysis_type}` object by record id.<br>            It creates a new version of the record. <br>            The previous meta-data with bulk data is available by their `versions`. <br> <br>            Use the `Content-Type` request header to specify payload and response formats                 (`application/json` and `application/parquet` are supported).<br>            Use the `content_schema_version` query parameter to specify content schema version                 (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Upload the bulk data for a given `{analysis_type}` object by record id.<br>            It creates a new version of the record. <br>            The previous meta-data with bulk data is available by their `versions`. <br> <br>            The `Content-Type` request header is **required** to specify payload format                 (`application/json` and `application/parquet` are supported).<br>            Use the `content_schema_version` query parameter to specify content schema version                 (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "post_data_single_content_type_api_rafs_ddms_v2_saturationfunctionset__record_id__data_post",
         "parameters": [
           {
@@ -5894,6 +5970,26 @@
               }
             },
             "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnsupportedMediaTypeResponse"
+                }
+              }
+            },
+            "description": "Unsupported Media Type"
           },
           "422": {
             "content": {

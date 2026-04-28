@@ -19,6 +19,7 @@ from requests.exceptions import HTTPError
 from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
 
+from app.api.errors import unsupported_media_type_error_handler  # noqa: WPS318
 from app.api.errors import (
     data_validation_http_error_handler,
     http422_error_handler,
@@ -40,6 +41,7 @@ from app.exceptions.exceptions import (
     InvalidBodyException,
     InvalidHeaderException,
     OsduApiException,
+    UnsupportedMediaTypeException,
 )
 from app.middleware.correlation_id_middleware import CorrelationIDMiddleware
 from app.middleware.tracing_middleware import TracingMiddleware
@@ -53,6 +55,7 @@ EXCEPTIONS_AND_HANDLERS = (
     (HTTPStatusError, osdu_api_httpx_error_handler),
     (InvalidBodyException, invalid_body_error_handler),
     (InvalidHeaderException, invalid_header_error_handler),
+    (UnsupportedMediaTypeException, unsupported_media_type_error_handler),
     (DataValidationException, data_validation_http_error_handler),
     (OsduApiException, osdu_api_custom_exc_handler),
 )
