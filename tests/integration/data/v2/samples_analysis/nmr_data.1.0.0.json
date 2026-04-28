@@ -515,7 +515,7 @@
                       "Permeability": [
                           {
                               "Value": 4740,
-                              "PermeabilityMeasurementTypeID": "{data_partition_id}:reference-data--PermeabilityMeasurementType:Gas:"
+                              "PermeabilityMeasurementTypeID": "{data_partition_id}:reference-data--PermeabilityMeasurementType:Klinkenberg:"
                           }
                       ],
                       "NMRT2Swirr": 8.7,
