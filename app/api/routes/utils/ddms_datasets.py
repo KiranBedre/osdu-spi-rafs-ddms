@@ -19,6 +19,7 @@ from fastapi.responses import JSONResponse, Response
 from loguru import logger
 from starlette import status
 
+from app.api.dependencies.request import get_response_mime_type
 from app.api.routes.utils.records import (
     find_object_name_from_type,
     find_object_name_index,
@@ -150,7 +151,7 @@ async def get_parquet_data(
     """
     record_id, version = get_id_version(record_id)
     record = await storage_service.get_record(record_id, version)
-    mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
+    mime_type = get_response_mime_type(request)
     # Aggregation results only make sense in split format (index holds the function name)
     orient = "split" if df_filter.valid_columns_aggregation else orient
 

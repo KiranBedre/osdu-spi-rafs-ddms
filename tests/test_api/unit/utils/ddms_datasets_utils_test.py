@@ -36,7 +36,11 @@ def mock_blob():
     return Blob(
         blob_data=b"parquetdata",
         blob_metadata=BlobMetadata(
-            "analysis_family", "analysis_type", "1.0.0", "123456789", SupportedMimeTypes.PARQUET,
+            "analysis_family",
+            "analysis_type",
+            "1.0.0",
+            "123456789",
+            SupportedMimeTypes.PARQUET,
         ),
     )
 
@@ -44,7 +48,11 @@ def mock_blob():
 @pytest.fixture
 def mock_blob_metadata():
     return BlobMetadata(
-        "analysis_family", "analysis_type", "1.0.0", "123456789", SupportedMimeTypes.PARQUET,
+        "analysis_family",
+        "analysis_type",
+        "1.0.0",
+        "123456789",
+        SupportedMimeTypes.PARQUET,
     )
 
 
@@ -135,12 +143,14 @@ async def test_upsert_parquet_data(
 
 
 @pytest.mark.asyncio
-async def test_get_parquet_data_success(mock_blob, mock_blob_metadata, mock_blob_storage_service, mock_storage_service, mock_settings, monkeypatch):
+async def test_get_parquet_data_success(
+    mock_blob, mock_blob_metadata, mock_blob_storage_service, mock_storage_service, mock_settings, monkeypatch
+):
     monkeypatch.setattr("app.core.config.get_app_settings", lambda: mock_settings)
 
     # Mock request and inputs
     mock_request = MagicMock()
-    mock_request.headers = {"content-type": "application/x-parquet"}
+    mock_request.headers = {"Accept": "application/x-parquet"}
     mock_record = {
         "data": {"DDMSDatasets": ["urn://rafs/wpc_id/analysis_family/analysis_type/1.0.0/123456789"]},
     }

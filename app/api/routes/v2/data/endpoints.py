@@ -52,6 +52,7 @@ from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.core.settings.app import AppSettings
+from app.models.schemas.errors import BadRequestResponse, UnsupportedMediaTypeResponse
 from app.providers.dependencies.blob_storage import (
     Blob,
     BlobMetadata,
@@ -76,7 +77,7 @@ class BaseDataViewV2(BaseDataView):
             "Upload the bulk data for a given `{analysis_type}` object by record id.<br>\
             It creates a new version of the record. <br>\
             The previous meta-data with bulk data is available by their `versions`. <br> <br>\
-            Use the `Content-Type` request header to specify payload and response formats \
+            The `Content-Type` request header is **required** to specify payload format \
                 (`application/json` and `application/parquet` are supported).<br>\
             Use the `content_schema_version` query parameter to specify content schema version \
                 (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.",
@@ -289,7 +290,6 @@ class BaseDataViewV2(BaseDataView):
             dependencies=[
                 Depends(validate_record_id),
                 Depends(validate_content_id),
-                Depends(validate_bulkdata_content_type),
             ],
         )
 
@@ -318,6 +318,10 @@ class BaseDataViewV2(BaseDataView):
                 Depends(validate_record_id),
                 Depends(validate_bulkdata_content_type),
             ],
+            responses={
+                status.HTTP_400_BAD_REQUEST: {"model": BadRequestResponse},
+                status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {"model": UnsupportedMediaTypeResponse},
+            },
         )
 
 
@@ -623,7 +627,6 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             dependencies=[
                 Depends(validate_record_id),
                 Depends(validate_content_id),
-                Depends(validate_bulkdata_content_type),
             ],
         )
 
@@ -652,4 +655,8 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
                 Depends(validate_record_id),
                 Depends(validate_bulkdata_content_type),
             ],
+            responses={
+                status.HTTP_400_BAD_REQUEST: {"model": BadRequestResponse},
+                status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {"model": UnsupportedMediaTypeResponse},
+            },
         )

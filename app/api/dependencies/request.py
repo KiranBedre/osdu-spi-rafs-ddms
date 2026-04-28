@@ -74,7 +74,7 @@ def validate_content_type(request: Request, supported_types: List[str]) -> None:
         supported_content_types = f"Please provide one of the next supported content types: {supported_types}"
         reason = f"The provided content-type is not supported. {supported_content_types}"
         logger.debug(reason)
-        raise exceptions.InvalidHeaderException(detail=reason)
+        raise exceptions.UnsupportedMediaTypeException(detail=reason)
 
 
 def validate_bulkdata_content_type(request: Request) -> None:
@@ -151,6 +151,47 @@ def get_content_schema_version(
     logger.debug(f"Schema version (from deprecated Accept header): {parsed}")
     set_deprecation_headers(response)
     return parsed
+
+
+def get_response_mime_type(request: Request) -> SupportedMimeTypes:
+    """Determine response MIME type from the Accept header.
+
+    Iterates comma-separated media ranges in the Accept header, strips
+    quality and extension parameters, and returns the first supported
+    MIME type.  Defaults to JSON when the header is absent or ``*/*``.
+    Raises 406 if an explicit unsupported MIME type is requested.
+
+    :param request: request
+    :type request: Request
+    :return: resolved MIME type (JSON or PARQUET)
+    :rtype: SupportedMimeTypes
+    :raises exceptions.NotAcceptableException: if Accept specifies only
+        unsupported MIME types
+    """
+    accept_header = request.headers.get(ACCEPT, "")
+    if not accept_header or accept_header.strip() == "*/*":
+        logger.debug("Response MIME type defaulting to application/json")
+        return SupportedMimeTypes.JSON
+
+    for media_range in accept_header.split(","):
+        mime_part = media_range.split(";")[0].strip().lower()
+        if mime_part in {"*/*", ""}:
+            logger.debug("Response MIME type defaulting to application/json")
+            return SupportedMimeTypes.JSON
+        mime_type = SupportedMimeTypes.find_by_mime_type(mime_part)
+        if mime_type is not None:
+            logger.debug(f"Response MIME type from Accept header: {mime_type.mime_type}")
+            return mime_type
+
+    first_mime = accept_header.split(",")[0].split(";")[0].strip()
+    supported = "('application/json', 'application/x-parquet', '*/*')"
+    reason = (
+        "Not Acceptable."
+        + f" The requested media type '{first_mime}' is not supported."
+        + f" Supported types are: {supported}."
+    )
+    logger.debug(reason)
+    raise exceptions.NotAcceptableException(detail=reason)
 
 
 def get_correlation_id(request: Request):

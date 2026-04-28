@@ -297,7 +297,6 @@ class Endpoints:
     CONTENT_TYPE_ENDPOINTS = (
         "post_record",
         "post_data",
-        "get_data",
     )
 
     ACCEPT_ENDPOINTS = (
