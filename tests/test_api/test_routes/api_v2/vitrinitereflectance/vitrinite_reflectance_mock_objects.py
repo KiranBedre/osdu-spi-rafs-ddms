@@ -29,21 +29,24 @@ TEST_DDMS_URN = f"urn://rafs-v2/vitrinitereflectancedata/{TEST_SAMPLESANALYSIS_I
 TEST_SCHEMA_VERSION = "1.0.0"
 TEST_DDMS_URN_WITH_VERSION = f"{TEST_DDMS_URN}/{TEST_SCHEMA_VERSION}"
 RECORD_DATA = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN],
         },
     },
 }
 RECORD_DATA_WITH_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION],
         },
     },
 }
 RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [f"{TEST_DDMS_URN}/2.0.0"],
         },
@@ -84,7 +87,7 @@ TEST_FILTERED_DATA = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--Sample:sample_test:",
         ],
     ],
@@ -99,7 +102,7 @@ INCORRECT_SCHEMA_TEST_DATA = {
     "index": [0],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:1:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--:1:",  # Incorrect master-data value
         ],
     ],
@@ -108,4 +111,6 @@ INCORRECT_SCHEMA_TEST_DATA = {
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
 INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting TensileStrength in index row 0
 TEST_DATA_COLUMNS = len(TEST_DATA["data"][0])
-EXPECTED_ERROR_REASON = f"Data error: {TEST_DATA_COLUMNS} columns passed, passed data had {TEST_DATA_COLUMNS - 1} columns"
+EXPECTED_ERROR_REASON = (
+    f"Data error: {TEST_DATA_COLUMNS} columns passed, passed data had {TEST_DATA_COLUMNS - 1} columns"
+)

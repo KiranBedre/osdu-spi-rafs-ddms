@@ -11,7 +11,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:Multiple_Salinity_Example:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       [
         {
           "kind":"Unit",

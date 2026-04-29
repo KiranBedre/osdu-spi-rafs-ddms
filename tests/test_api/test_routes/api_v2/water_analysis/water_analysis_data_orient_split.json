@@ -13,7 +13,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:WaterAnalysis_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:WaterAnalysis_Sample:",
       [
         {

@@ -56,7 +56,7 @@ TEST_PARAMS_AGGREGATION = {
 }
 TEST_PARAMS_FILTERS = {
     "columns_filter": "SamplesAnalysisID",
-    "rows_filter": "SamplesAnalysisID,eq,opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
+    "rows_filter": "SamplesAnalysisID,eq,partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
 }
 
 with open(f"{dir_path}/sto_orient_split.json") as fp:
@@ -85,7 +85,7 @@ TEST_FILTERED_DATA = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
         ],
     ],
 }
@@ -151,7 +151,7 @@ TEST_FILTERED_DATA_V2 = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
         ],
     ],
 }

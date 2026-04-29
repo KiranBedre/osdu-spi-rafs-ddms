@@ -85,11 +85,13 @@ GenericSchemasView(
         "path": "/data/schema",
         "mapping": MAPS_TO_DATA_MODEL["v2"][RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR],
         "param_extractor": infer_content_type_from_url,
-        "description": " ".join([
-            "Get the (`content schema`) for `{ReservoirSimulationRockPhysicsModel}`. <br><br>",
-            "Use the `Accept` request header to specify content schema version ",
-            "(example header `Accept: application/json;version=1.0.0` is supported).",
-        ]),
+        "description": " ".join(
+            [
+                "Get the (`content schema`) for `{ReservoirSimulationRockPhysicsModel}`. <br><br>",
+                "Use the `Accept` request header to specify content schema version ",
+                "(example header `Accept: application/json;version=1.0.0` is supported).",
+            ],
+        ),
     },
 )
 
@@ -97,4 +99,5 @@ DynamicContentTypeDataViewV2(
     router=rsrp_router,
     id_regex_str=RSRP_ID_REGEX_STR,
     single_content_type=RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR,
+    record_id_column="ReservoirSimulationRockPhysicsID",
 )

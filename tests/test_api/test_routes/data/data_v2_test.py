@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import copy as _copy
 import json
 from contextlib import contextmanager
 from unittest.mock import create_autospec, patch
@@ -6793,3 +6794,130 @@ async def test_invalid_data_json_payload(path, payloads):
         print(body)
         assert ["code", "reason"] == list(body.keys())
         assert body["reason"].startswith("Data error:")
+
+
+# Issue #678 — SamplesAnalysisID mismatch validation
+
+_MISMATCHED_SAMPLESANALYSIS_ID = "opendes:work-product-component--SamplesAnalysis:wrong-record:"
+
+
+def _rca_data_with_samples_analysis_id(samples_analysis_id):
+    """Return a copy of RCA test data with the given SamplesAnalysisID."""
+    data = _copy.deepcopy(rca_mock_objects.TEST_DATA)
+    col_idx = data["columns"].index("SamplesAnalysisID")
+    for row in data["data"]:
+        row[col_idx] = samples_analysis_id
+    return data
+
+
+@pytest.mark.asyncio
+async def test_post_data_rejects_mismatched_samplesanalysis_id():
+    """Issue #678: SamplesAnalysisID in payload must match record_id in URL."""
+    payload = _rca_data_with_samples_analysis_id(_MISMATCHED_SAMPLESANALYSIS_ID)
+    with post_overrides(
+        rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION, rca_mock_objects.TEST_DATASET_RECORD_ID, payload
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.RCA,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    body = response.json()
+    assert body["reason"] == "Data validation failed."
+    assert "Invalid value" in body["errors"]
+    assert any("SamplesAnalysisID" in entry for entry in body["errors"]["Invalid value"])
+
+
+@pytest.mark.asyncio
+async def test_post_data_null_samplesanalysis_id_not_mismatch_error():
+    """Issue #678: null SamplesAnalysisID triggers schema error (required field),
+    NOT an ID mismatch error — null values are excluded from mismatch validation."""
+    payload = _rca_data_with_samples_analysis_id(None)
+    with post_overrides(
+        rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION, rca_mock_objects.TEST_DATASET_RECORD_ID, payload
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.RCA,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    body = response.json()
+    assert body["reason"] == "Data validation failed."
+    # Must be a schema error — not an ID mismatch
+    assert "Invalid value" not in body.get("errors", {}) or not any(
+        "SamplesAnalysisID" in entry for entry in body["errors"].get("Invalid value", [])
+    )
+
+
+# Issue #678 — SaturationFunctionSetID and ReservoirSimulationRockPhysicsID mismatch validation
+
+_MISMATCHED_SFS_ID = "opendes:work-product-component--SaturationFunctionSet:wrong-record:"
+_MISMATCHED_RSRPM_ID = "opendes:work-product-component--ReservoirSimulationRockPhysicsModel:wrong-record:"
+
+
+def _sfs_data_with_id(value):
+    data = _copy.deepcopy(saturation_function_set_mock_objects.TEST_DATA)
+    col_idx = data["columns"].index("SaturationFunctionSetID")
+    for row in data["data"]:
+        row[col_idx] = value
+    return data
+
+
+def _rsrpm_data_with_id(value):
+    data = _copy.deepcopy(res_sim_rock_physics_mock_objects.TEST_DATA)
+    col_idx = data["columns"].index("ReservoirSimulationRockPhysicsID")
+    for row in data["data"]:
+        row[col_idx] = value
+    return data
+
+
+@pytest.mark.asyncio
+async def test_post_sfs_data_rejects_mismatched_id():
+    """Issue #678: SaturationFunctionSetID in payload must match record_id in URL."""
+    payload = _sfs_data_with_id(_MISMATCHED_SFS_ID)
+    with post_overrides(
+        saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID,
+        payload,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    body = response.json()
+    assert body["reason"] == "Data validation failed."
+    assert "Invalid value" in body["errors"]
+    assert any("SaturationFunctionSetID" in entry for entry in body["errors"]["Invalid value"])
+
+
+@pytest.mark.asyncio
+async def test_post_rsrpm_data_rejects_mismatched_id():
+    """Issue #678: ReservoirSimulationRockPhysicsID in payload must match record_id in URL."""
+    payload = _rsrpm_data_with_id(_MISMATCHED_RSRPM_ID)
+    with post_overrides(
+        res_sim_rock_physics_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID,
+        payload,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    body = response.json()
+    assert body["reason"] == "Data validation failed."
+    assert "Invalid value" in body["errors"]
+    assert any("ReservoirSimulationRockPhysicsID" in entry for entry in body["errors"]["Invalid value"])

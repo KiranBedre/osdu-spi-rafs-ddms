@@ -10,7 +10,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:NMR_Test_Example:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:88Y:",
       [
         {

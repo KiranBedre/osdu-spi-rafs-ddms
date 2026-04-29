@@ -27,23 +27,28 @@ dir_path = os.path.dirname(os.path.abspath(__file__))
 TEST_DATASET_RECORD_ID = "opendes:dataset--File.Generic:electricalpropertiesdata-12345:1234"
 TEST_DDMS_URN = f"urn://rafs-v2/electricalpropertiesdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}"
 TEST_SCHEMA_VERSION = "1.0.0"
-TEST_DDMS_URN_WITH_VERSION = f"urn://rafs-v2/electricalpropertiesdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
+TEST_DDMS_URN_WITH_VERSION = (
+    f"urn://rafs-v2/electricalpropertiesdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
+)
 RECORD_DATA = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN],
         },
     },
 }
 RECORD_DATA_WITH_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION],
         },
     },
 }
 RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [f"{TEST_DDMS_URN}/2.0.0"],
         },
@@ -54,7 +59,7 @@ TEST_PARAMS_AGGREGATION = {
 }
 TEST_PARAMS_FILTERS = {
     "columns_filter": "SamplesAnalysisID,SampleID,BrineConcentration,FormationResistivityFactor",
-    "rows_filter": "SamplesAnalysisID,eq,opendes:work-product-component--SamplesAnalysis:Example_WPC:",
+    "rows_filter": "SamplesAnalysisID,eq,partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
 }
 
 with open(f"{dir_path}/electricalproperties_test_data_orient_split.json") as fp:
@@ -86,7 +91,7 @@ TEST_FILTERED_DATA = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:Example_WPC:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--Sample:Example_Sample:",
             1.23,
             1.23,
@@ -103,7 +108,7 @@ INCORRECT_SCHEMA_TEST_DATA = {
     "index": [0],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:electricalproperties-test:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--:1:",  # Incorrect master-data value
         ],
     ],

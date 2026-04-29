@@ -12,7 +12,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:test:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:test:",
       "opendes:reference-data--BulkPyrolysisMethod:HAWK:",
       [

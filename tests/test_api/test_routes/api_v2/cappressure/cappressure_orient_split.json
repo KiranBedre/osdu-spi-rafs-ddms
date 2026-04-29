@@ -30,7 +30,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:CapillaryPressure_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:CapillaryPressure_Sample:",
       [
         {

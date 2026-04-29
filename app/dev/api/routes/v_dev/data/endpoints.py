@@ -208,7 +208,7 @@ class BaseDataViewDev(BaseDataView):
         settings: AppSettings = get_app_settings()
         analysis_family = get_family_type_from_url(request.url.path)
 
-        parquet_file = await self._get_validated_payload(request, model, storage_service)
+        parquet_file = await self._get_validated_payload(request, model, storage_service, record_id)
         blob_metadata = BlobMetadata(
             analysis_family=analysis_family,
             analysis_type=analysis_type,
