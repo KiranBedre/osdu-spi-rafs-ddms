@@ -24,6 +24,9 @@ from app.core.helpers.cache.redis_client_factory import RedisClientFactory
 from app.providers.config import AzureConfig
 from app.providers.dependencies.az.redis_credential_provider import AzureRedisCredentialProvider
 
+# Azure Managed Redis uses port 10000 and only supports a single logical database (db=0).
+# Azure Cache for Redis uses port 6380 and supports multiple logical databases.
+AZURE_MANAGED_REDIS_PORT = 10000
 
 class AzureRedisClientFactory(RedisClientFactory):
     """Azure-specific Redis client factory with Entra ID authentication.
@@ -41,6 +44,37 @@ class AzureRedisClientFactory(RedisClientFactory):
         """
         super().__init__(config, use_index_database)
         self.azure_config = get_provider_config()
+
+    @property
+    def _is_amr(self) -> bool:
+        """Return True if the configured port indicates Azure Managed Redis.
+
+        :rtype: bool
+        """
+        return self.config.redis_port == AZURE_MANAGED_REDIS_PORT
+
+    def _get_database(self) -> int:
+        """Return 0 for AMR (single-database constraint), or delegate to base.
+
+        :rtype: int
+        """
+        if self._is_amr:
+            return 0
+        return super()._get_database()
+
+    def get_key_prefix(self) -> str:
+        """Return a key prefix to simulate namespace isolation on AMR.
+
+        When using AMR with a non-zero cache database, keys are prefixed with
+        ``db{n}:`` (e.g. ``db13:``) to avoid collisions in the single shared
+        key-space. The index database connection is never prefixed.
+
+        :return: Prefix string, or empty string if not needed
+        :rtype: str
+        """
+        if self._is_amr and not self.use_index_database:
+            return f"db{self.config.redis_database}:"
+        return ""
 
     async def create_client(self) -> Redis:
         """Create Redis client with Entra credential provider for auto-refresh.
@@ -98,12 +132,11 @@ class AzureRedisClientFactory(RedisClientFactory):
         :param connection_kwargs: Additional connection keyword arguments
         :return: Dictionary of pool parameters
         """
-        database = self.config.redis_index_database if self.use_index_database else self.config.redis_database
 
         pool_params = {
             "host": self.config.redis_hostname,
             "port": self.config.redis_port,
-            "db": database,
+            "db": self._get_database(),
             "credential_provider": credential_provider,
             "decode_responses": False,
             "socket_connect_timeout": self.azure_config.redis_socket_connect_timeout,

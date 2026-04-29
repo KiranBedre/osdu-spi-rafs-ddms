@@ -32,13 +32,44 @@ from app.providers.dependencies.redis_factory import get_redis_factory
 class LoggingRedisBackend(RedisBackend):
     """Redis backend with logging for cache hits and misses."""
 
+    def __init__(self, redis: Redis, key_prefix: str = ""):
+        """Initialize the backend.
+
+        :param Redis redis: connected Redis client
+        :param str key_prefix: optional prefix prepended to every key, used to
+            simulate logical database isolation when the Redis server does not
+            support multiple databases
+        """
+        super().__init__(redis)
+        self._key_prefix = key_prefix
+
+    def _apply_prefix(self, key: str) -> str:
+        """Prepend the key prefix if one is configured.
+
+        :param str key: original key
+        :return str: prefixed key, or original if no prefix is set
+        """
+        if not self._key_prefix:
+            return key
+        return f"{self._key_prefix}{key}"
+
+    def _apply_optional_prefix(self, key: Optional[str]) -> Optional[str]:
+        """Prepend the key prefix to an optional key.
+
+        :param Optional[str] key: original key, may be None
+        :return Optional[str]: prefixed key, or None if key is None
+        """
+        if key is None:
+            return None
+        return self._apply_prefix(key)
+
     async def get(self, key: str) -> Optional[bytes]:
         """Get value from cache with logging.
 
         :param str key: cache key
         :return Optional[bytes]: cached value or None
         """
-        cached_data = await super().get(key)
+        cached_data = await super().get(self._apply_prefix(key))
         if cached_data is not None:
             logger.debug(f"Cache HIT for key: {key}")
         else:
@@ -51,7 +82,7 @@ class LoggingRedisBackend(RedisBackend):
         :param str key: cache key
         :return tuple: (ttl, value) where ttl is time-to-live in seconds and value is cached data
         """
-        ttl, cached_data = await super().get_with_ttl(key)
+        ttl, cached_data = await super().get_with_ttl(self._apply_prefix(key))
 
         if cached_data is not None:
             logger.debug(f"Cache HIT for key: {key}, TTL: {ttl}s")
@@ -67,7 +98,7 @@ class LoggingRedisBackend(RedisBackend):
         :param bytes value: value to cache
         :param Optional[int] expire: expiration time in seconds
         """
-        await super().set(key, value, expire)
+        await super().set(self._apply_prefix(key), value, expire)
         logger.debug(f"Cache SET for key: {key}, expire: {expire}s")
 
     async def clear(self, namespace: Optional[str] = None, key: Optional[str] = None) -> int:
@@ -77,7 +108,7 @@ class LoggingRedisBackend(RedisBackend):
         :param Optional[str] key: specific key to clear
         :return int: number of keys deleted
         """
-        deleted_count = await super().clear(namespace, key)
+        deleted_count = await super().clear(self._apply_optional_prefix(namespace), self._apply_optional_prefix(key))
         logger.debug(f"Cache CLEAR: deleted {deleted_count} keys (namespace={namespace}, key={key})")
         return deleted_count
 
@@ -108,8 +139,14 @@ class RedisCacheBackend(BaseCacheBackend):
         # Validate the connection
         await self._validate_redis_connection(redis_client)
 
+        # Retrieve any key prefix needed to simulate logical database isolation
+        # on providers that do not support multiple databases natively.
+        key_prefix = factory.get_key_prefix()
+        if key_prefix:
+            logger.info(f"Redis cache backend will use key prefix '{key_prefix}' for namespace isolation")
+
         logger.info("Redis cache backend initialized with provider-specific client")
-        return LoggingRedisBackend(redis_client)
+        return LoggingRedisBackend(redis_client, key_prefix=key_prefix)
 
     async def _validate_redis_connection(self, redis_client: Redis) -> None:
         """Validate Redis connection by pinging the server.

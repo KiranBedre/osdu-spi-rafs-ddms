@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from redis.exceptions import (
@@ -48,6 +48,7 @@ async def test_get_backend(mock_get_redis_factory):
     mock_redis_client = AsyncMock()
     mock_factory = AsyncMock()
     mock_factory.create_client.return_value = mock_redis_client
+    mock_factory.get_key_prefix = MagicMock(return_value="")
     mock_get_redis_factory.return_value = mock_factory
 
     # Create backend and get the fastapi-cache backend
@@ -62,3 +63,37 @@ async def test_get_backend(mock_get_redis_factory):
 
     # Verify ping was called for validation
     mock_redis_client.ping.assert_called_once()
+
+
+@pytest.mark.asyncio
+@patch("app.core.helpers.cache.backends.redis_cache.get_redis_factory")
+async def test_get_backend_passes_key_prefix_to_logging_backend(mock_get_redis_factory):
+    """Test that get_backend wires the factory key prefix into LoggingRedisBackend."""
+    mock_redis_client = AsyncMock()
+    mock_factory = AsyncMock()
+    mock_factory.create_client.return_value = mock_redis_client
+    mock_factory.get_key_prefix = MagicMock(return_value="db13:")
+    mock_get_redis_factory.return_value = mock_factory
+
+    backend = RedisCacheBackend()
+    result = await backend.get_backend()
+
+    mock_factory.get_key_prefix.assert_called_once()
+    assert result._key_prefix == "db13:"
+
+
+@pytest.mark.asyncio
+@patch("app.core.helpers.cache.backends.redis_cache.get_redis_factory")
+async def test_get_backend_with_empty_prefix(mock_get_redis_factory):
+    """Test that an empty prefix from the factory results in no prefix on the backend."""
+    mock_redis_client = AsyncMock()
+    mock_factory = AsyncMock()
+    mock_factory.create_client.return_value = mock_redis_client
+    mock_factory.get_key_prefix = MagicMock(return_value="")
+    mock_get_redis_factory.return_value = mock_factory
+
+    backend = RedisCacheBackend()
+    result = await backend.get_backend()
+
+    assert result._key_prefix == ""
+
