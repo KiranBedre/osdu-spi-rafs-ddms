@@ -91,7 +91,7 @@ TEST_FILTERED_DATA = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:ProppantEmbedmentTest_WPC:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--Sample:ProppantEmbedmentTest_Sample:",
             "Example Lithology Description",
             12345.6,
@@ -109,7 +109,7 @@ INCORRECT_SCHEMA_TEST_DATA = {
     "index": [0],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:1:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--:1:",  # Incorrect master-data value
         ],
     ],

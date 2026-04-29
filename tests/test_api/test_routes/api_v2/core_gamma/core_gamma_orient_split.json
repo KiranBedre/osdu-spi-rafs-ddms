@@ -10,7 +10,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:CoreGamma_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:CoreGamma_Sample:",
       [
         {

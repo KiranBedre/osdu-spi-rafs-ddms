@@ -10,7 +10,7 @@
   ],
   "data":[
     [
-      "partition:work-product-component--SaturationFunctionSet:uuid:12345",
+      "partition:work-product-component--SaturationFunctionSet:saturation_function_set_test_id:",
       [
         {
           "kind":"Unit",

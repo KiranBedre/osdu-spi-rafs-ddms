@@ -26,23 +26,28 @@ dir_path = os.path.dirname(os.path.abspath(__file__))
 TEST_DATASET_RECORD_ID = "opendes:dataset--File.Generic:tecdata-123:1234"
 TEST_DDMS_URN = f"urn://rafs-v2/tecdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}"
 TEST_SCHEMA_VERSION = "1.0.0"
-TEST_DDMS_URN_WITH_VERSION = f"urn://rafs-v2/tecdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
+TEST_DDMS_URN_WITH_VERSION = (
+    f"urn://rafs-v2/tecdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
+)
 RECORD_DATA = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN],
         },
     },
 }
 RECORD_DATA_WITH_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION],
         },
     },
 }
 RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [f"{TEST_DDMS_URN}/2.0.0"],
         },
@@ -86,7 +91,7 @@ TEST_FILTERED_DATA = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:TEC_WPC:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--Sample:TEC_Sample:",
             "Test Fluid",
             1.23,
@@ -109,7 +114,7 @@ INCORRECT_SCHEMA_TEST_DATA = {
     "index": [0],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:1:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--:1:",  # Incorrect master-data value
         ],
     ],

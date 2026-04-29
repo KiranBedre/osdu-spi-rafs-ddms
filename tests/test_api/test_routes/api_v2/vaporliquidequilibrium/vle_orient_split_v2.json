@@ -33,7 +33,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:VLE_WPC_001:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:VLE_Sample_001:",
       [
         {
@@ -187,12 +187,12 @@
           ]
         }
       ],
-      "opendes:work-product-component--SamplesAnalysis:VLE_VaporTransport_001:",
-      "opendes:work-product-component--SamplesAnalysis:AtmFlash_VaporPhase_001:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       2.5,
       0.18,
       52.3,
-      "opendes:work-product-component--SamplesAnalysis:VLE_LiquidTransport_001:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       [
         {
           "ComponentNameID":"opendes:reference-data--SampleOrganicCompositionComponent:C7plus:",
@@ -208,7 +208,7 @@
           ]
         }
       ],
-      "opendes:work-product-component--SamplesAnalysis:AtmFlash_LiquidPhase_001:"
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:"
     ]
   ]
 }

@@ -25,7 +25,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:TriaxialTest_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:TriaxialTest_Sample:",
       [
         {

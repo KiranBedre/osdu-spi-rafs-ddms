@@ -10,7 +10,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:WettabilityIndex_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:WettabilityIndex_Sample:",
       [
         {

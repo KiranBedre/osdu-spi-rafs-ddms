@@ -12,7 +12,7 @@
   ],
   "data":[
     [
-      "partition:work-product-component--ReservoirSimulationRockPhysicsModel:uuid:12345",
+      "partition:work-product-component--ReservoirSimulationRockPhysicsModel:reservoirsimulationrockphysics_test_id:",
       [
         {
           "kind":"Unit",
@@ -33,7 +33,7 @@
       }
     ],
     [
-      "partition:work-product-component--ReservoirSimulationRockPhysicsModel:uuid:67890",
+      "partition:work-product-component--ReservoirSimulationRockPhysicsModel:reservoirsimulationrockphysics_test_id:",
       [
         {
           "kind":"Unit",
@@ -78,7 +78,7 @@
       }
     ],
     [
-      "partition:work-product-component--ReservoirSimulationRockPhysicsModel:uuid:24680",
+      "partition:work-product-component--ReservoirSimulationRockPhysicsModel:reservoirsimulationrockphysics_test_id:",
       [
         {
           "kind":"Unit",

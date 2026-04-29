@@ -14,7 +14,7 @@
 
 import io
 import uuid
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 import pyarrow
@@ -88,6 +88,8 @@ def _cast_float_columns(df: pd.DataFrame, model: type) -> None:
 
 
 class BaseDataView(object):
+    _record_id_column: str = "SamplesAnalysisID"
+
     def __init__(
         self,
         router: APIRouter,
@@ -205,7 +207,7 @@ class BaseDataView(object):
         api_version = get_api_version_from_url(request.url.path)
         logger.info(f"Post data for api version: {api_version}")
 
-        parquet_file = await self._get_validated_payload(request, model, storage_service)
+        parquet_file = await self._get_validated_payload(request, model, storage_service, record_id)
 
         return await self._upsert_dataset(
             request,
@@ -351,12 +353,39 @@ class BaseDataView(object):
             self._handle_validation_exception(v_exc)
             raise  # unreachable; satisfies async checkpoint analysis
 
+    def _validate_record_id_column(
+        self,
+        df: pd.DataFrame,
+        record_id: str,
+        column_name: str,
+    ) -> None:
+        """Validate that ID column values in bulk data match the record_id from the URL.
+
+        :param df: dataframe with bulk data
+        :type df: pd.DataFrame
+        :param record_id: record id from URL path
+        :type record_id: str
+        :param column_name: name of the ID column to validate
+        :type column_name: str
+        """
+        if column_name not in df.columns:
+            return
+        base_record_id, _ = get_id_version(record_id)
+        col = df[column_name].dropna()
+        col_base_ids = col.map(lambda sid: get_id_version(str(sid))[0])
+        mismatched = col[col_base_ids != base_record_id].unique().tolist()
+        if mismatched:
+            self._handle_errors(
+                {"invalid_value": [{column_name: str(sid)} for sid in mismatched]},
+            )
+
     @with_gc_collect
     async def _get_validated_payload(
         self,
         request: Request,
         model: BaseModel,
         storage_service: storage.StorageService,
+        record_id: Optional[str] = None,
     ) -> bytes:
         """Validates payload and returns the parquet file.
 
@@ -366,6 +395,8 @@ class BaseDataView(object):
         :type model: BaseModel
         :param storage_service: storage service instance
         :type storage_service: storage.StorageService
+        :param record_id: record id from URL path (used to validate SamplesAnalysisID)
+        :type record_id: Optional[str]
         :raises exceptions.InvalidDatasetException: when is not possible
             to convert to parquet
         :raises exceptions.DataValidationException: when validation
@@ -387,6 +418,9 @@ class BaseDataView(object):
         errors = await data_validator.validate(df, bulk_mode=True)
         if errors:
             self._handle_errors(errors)
+
+        if record_id:
+            self._validate_record_id_column(df, record_id, self._record_id_column)
 
         if not parquet_file:
             try:

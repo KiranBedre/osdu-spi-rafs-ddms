@@ -21,7 +21,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:Example_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:Example_Sample:",
       [
         {

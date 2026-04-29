@@ -217,7 +217,7 @@ class BaseDataViewV2(BaseDataView):
         settings: AppSettings = get_app_settings()
         analysis_family = get_family_type_from_url(request.url.path)
 
-        parquet_file = await self._get_validated_payload(request, model, storage_service)
+        parquet_file = await self._get_validated_payload(request, model, storage_service, record_id)
         blob_metadata = BlobMetadata(
             analysis_family=analysis_family,
             analysis_type=analysis_type,
@@ -331,9 +331,12 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         router: APIRouter,
         id_regex_str: str,
         single_content_type: Optional[str] = None,
+        record_id_column: Optional[str] = None,
         **kwargs,
     ) -> None:
         self._single_content_type = single_content_type
+        if record_id_column is not None:
+            self._record_id_column = record_id_column
         super().__init__(router, id_regex_str, **kwargs)
 
     @cache(expire=CACHE_DEFAULT_TTL, coder=ResponseCoder, key_builder=key_builder_using_token)

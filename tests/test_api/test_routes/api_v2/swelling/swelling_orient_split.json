@@ -13,7 +13,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:Example_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:Example_Sample:",
       [
         {
@@ -39,9 +39,9 @@
           "CumulativeGasOfTotalFluidMolePercent":1.23,
           "IsothermalCompressibilityAtSaturationPressure":1.23,
           "ViscosityAtSaturationPressure":1.23,
-          "TransportTestID":"opendes:work-product-component--SamplesAnalysis:Example_WPC:",
-          "ConstantCompositionExpansionID":"opendes:work-product-component--SamplesAnalysis:Example_WPC:",
-          "AtmosphericFlashAndCompositionalAnalysisID":"opendes:work-product-component--SamplesAnalysis:Example_WPC:"
+          "TransportTestID":"partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+          "ConstantCompositionExpansionID":"partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+          "AtmosphericFlashAndCompositionalAnalysisID":"partition:work-product-component--SamplesAnalysis:samplesanalysis_test:"
         }
       ],
       [

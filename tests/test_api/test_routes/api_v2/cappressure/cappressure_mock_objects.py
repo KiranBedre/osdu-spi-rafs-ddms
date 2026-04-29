@@ -59,7 +59,7 @@ TEST_PARAMS_AGGREGATION = {
 }
 TEST_PARAMS_FILTERS = {
     "columns_filter": "SamplesAnalysisID,SampleID,DesaturationMethodID",
-    "rows_filter": "SamplesAnalysisID,eq,opendes:work-product-component--SamplesAnalysis:CapillaryPressure_WPC:",
+    "rows_filter": "SamplesAnalysisID,eq,partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
 }
 
 with open(f"{dir_path}/cappressure_orient_split.json") as fp:
@@ -90,7 +90,7 @@ TEST_FILTERED_DATA = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:CapillaryPressure_WPC:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--Sample:CapillaryPressure_Sample:",
             "opendes:reference-data--DesaturationMethod:Centrifuge:",
         ],
@@ -106,7 +106,7 @@ INCORRECT_SCHEMA_TEST_DATA = {
     "index": [0],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:cappressure-test:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--:1:",  # Incorrect master-data value
         ],
     ],
@@ -155,7 +155,7 @@ TEST_FILTERED_DATA_V2 = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:CapillaryPressure_WPC:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--Sample:CapillaryPressure_Sample:",
             "opendes:reference-data--DesaturationMethod:Centrifuge:",
         ],

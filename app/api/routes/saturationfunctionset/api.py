@@ -94,4 +94,5 @@ DynamicContentTypeDataViewV2(
     router=sfs_record_router_v2,
     id_regex_str=SFS_ID_REGEX_STR,
     single_content_type=SATURATION_FUNCTION_SET_STR,
+    record_id_column="SaturationFunctionSetID",
 )

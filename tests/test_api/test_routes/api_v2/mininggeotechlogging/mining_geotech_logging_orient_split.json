@@ -10,7 +10,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:MiningGeotechLogging_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:MiningGeotechLogging_Sample:",
       [
         {

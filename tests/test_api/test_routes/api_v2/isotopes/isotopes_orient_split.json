@@ -11,7 +11,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:IsotopeAnalysis_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:IsotopeAnalysis_Sample:",
       [
         {
