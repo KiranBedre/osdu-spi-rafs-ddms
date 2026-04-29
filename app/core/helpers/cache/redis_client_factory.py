@@ -46,14 +46,6 @@ class RedisClientFactory(object):
         self.config = config
         self.use_index_database = use_index_database
 
-    def _get_database(self) -> int:
-        """Determine the Redis database number to use.
-
-        :return: Database number based on use_index_database flag
-        :rtype: int
-        """
-        return self.config.redis_index_database if self.use_index_database else self.config.redis_database
-
     def get_key_prefix(self) -> str:
         """Return key prefix for namespace isolation.
 
@@ -65,6 +57,14 @@ class RedisClientFactory(object):
         :rtype: str
         """
         return ""
+
+    def _get_database(self) -> int:
+        """Determine the Redis database number to use.
+
+        :return: Database number based on use_index_database flag
+        :rtype: int
+        """
+        return self.config.redis_index_database if self.use_index_database else self.config.redis_database
 
     async def create_client(self) -> Redis:
         """Create Redis client with password authentication.

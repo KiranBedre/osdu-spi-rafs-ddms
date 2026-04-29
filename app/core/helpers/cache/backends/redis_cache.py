@@ -43,26 +43,6 @@ class LoggingRedisBackend(RedisBackend):
         super().__init__(redis)
         self._key_prefix = key_prefix
 
-    def _apply_prefix(self, key: str) -> str:
-        """Prepend the key prefix if one is configured.
-
-        :param str key: original key
-        :return str: prefixed key, or original if no prefix is set
-        """
-        if not self._key_prefix:
-            return key
-        return f"{self._key_prefix}{key}"
-
-    def _apply_optional_prefix(self, key: Optional[str]) -> Optional[str]:
-        """Prepend the key prefix to an optional key.
-
-        :param Optional[str] key: original key, may be None
-        :return Optional[str]: prefixed key, or None if key is None
-        """
-        if key is None:
-            return None
-        return self._apply_prefix(key)
-
     async def get(self, key: str) -> Optional[bytes]:
         """Get value from cache with logging.
 
@@ -111,6 +91,26 @@ class LoggingRedisBackend(RedisBackend):
         deleted_count = await super().clear(self._apply_optional_prefix(namespace), self._apply_optional_prefix(key))
         logger.debug(f"Cache CLEAR: deleted {deleted_count} keys (namespace={namespace}, key={key})")
         return deleted_count
+
+    def _apply_prefix(self, key: str) -> str:
+        """Prepend the key prefix if one is configured.
+
+        :param str key: original key
+        :return str: prefixed key, or original if no prefix is set
+        """
+        if not self._key_prefix:
+            return key
+        return f"{self._key_prefix}{key}"
+
+    def _apply_optional_prefix(self, key: Optional[str]) -> Optional[str]:
+        """Prepend the key prefix to an optional key.
+
+        :param Optional[str] key: original key, may be None
+        :return Optional[str]: prefixed key, or None if key is None
+        """
+        if key is None:
+            return None
+        return self._apply_prefix(key)
 
 
 class RedisCacheBackend(BaseCacheBackend):
