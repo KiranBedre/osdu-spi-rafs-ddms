@@ -1,0 +1,50 @@
+[
+  {
+    "id": "namespace:work-product-component--DepthShift:depth-shift-1",
+    "kind": "osdu:wks:work-product-component--DepthShift:1.0.0",
+    "acl": {
+      "viewers": [
+        "data.default.viewers@osdu.example.com"
+      ],
+      "owners": [
+        "data.default.owners@osdu.example.com"
+      ]
+    },
+    "legal": {
+      "legaltags": [
+        "opendes-public-usa-dataset-1"
+      ],
+      "otherRelevantDataCountries": [
+        "US"
+      ],
+      "status": "compliant"
+    },
+    "data": {
+      "WellboreID": "namespace:master-data--Wellbore:wellbore-001:",
+      "VerticalReferenceRecordID": "namespace:work-product-component--WellLog:well-log-001:",
+      "VerticalReferenceRecordCurveIDs": [
+        "GR"
+      ],
+      "DepthShiftTypeID": "namespace:reference-data--DepthShiftType:Manual:",
+      "ShiftedSamplingDomainTypeID": "namespace:reference-data--WellLogSamplingDomainType:Depth:",
+      "DepthShiftedSamples": [
+        {
+          "SampleID": "namespace:master-data--Sample:sample-001:",
+          "Usage": "Primary"
+        }
+      ],
+      "AuthorID": {
+        "Name": "Depth Shift Analyst",
+        "EmailAddress": "analyst@company.com"
+      },
+      "Remarks": [
+        {
+          "RemarkSequenceNumber": 1,
+          "Remark": "Depth shift generated using gamma ray alignment.",
+          "RemarkDate": "2020-02-13"
+        }
+      ],
+      "ExtensionProperties": {}
+    }
+  }
+]

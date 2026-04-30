@@ -222,6 +222,7 @@ def with_patched_storage_samplesanalysis_existing_parent():
         ("get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
         ("get_record", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
         ("get_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
+        ("get_record", f"{API_VERSION_V2}/depthshift", storage_mock_objects.TEST_DEPTH_SHIFT_ID),
         ("get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
     ],
 )
@@ -249,6 +250,7 @@ async def test_get_record_not_found(storage_method, path, record_id, with_patche
         ("get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
         ("get_record", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
         ("get_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
+        ("get_record", f"{API_VERSION_V2}/depthshift", storage_mock_objects.TEST_DEPTH_SHIFT_ID),
         ("get_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
     ],
 )
@@ -323,6 +325,7 @@ async def test_get_record_version_invalid_version(path, record_id, version):
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
         ("get_record_versions", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
+        ("get_record_versions", f"{API_VERSION_V2}/depthshift", storage_mock_objects.TEST_DEPTH_SHIFT_ID),
         ("get_record_versions", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
     ],
 )
@@ -364,6 +367,7 @@ async def test_get_record_versions_not_found(
             storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
         ),
         ("soft_delete_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
+        ("soft_delete_record", f"{API_VERSION_V2}/depthshift", storage_mock_objects.TEST_DEPTH_SHIFT_ID),
         ("soft_delete_record", f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
     ],
 )
@@ -393,6 +397,7 @@ async def test_delete_record_not_found(
         (f"{API_VERSION_V2}/samplesanalysis"),
         (f"{API_VERSION_V2}/saturationfunctionset"),
         (f"{API_VERSION_V2}/fluidmodel"),
+        (f"{API_VERSION_V2}/depthshift"),
         (f"{API_VERSION_V2}/masterdata"),
     ],
 )
@@ -422,6 +427,7 @@ async def test_post_record_no_kind(path):
         (f"{API_VERSION_V2}/samplesanalysis"),
         (f"{API_VERSION_V2}/saturationfunctionset"),
         (f"{API_VERSION_V2}/fluidmodel"),
+        (f"{API_VERSION_V2}/depthshift"),
         (f"{API_VERSION_V2}/masterdata"),
     ],
 )
@@ -467,6 +473,12 @@ async def test_post_record_invalid_payload_type(path):
             f"{API_VERSION_V2}/fluidmodel",
             storage_mock_objects.FLUID_MODEL_RECORD,
             storage_mock_objects.FLUID_MODEL_SCHEMA,
+        ),
+        (
+            "upsert_records",
+            f"{API_VERSION_V2}/depthshift",
+            storage_mock_objects.DEPTH_SHIFT_RECORD,
+            storage_mock_objects.DEPTH_SHIFT_SCHEMA,
         ),
         (
             "upsert_records",

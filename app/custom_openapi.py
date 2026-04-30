@@ -65,6 +65,7 @@ def _route_record_id_info() -> dict:
             "reservoirsimulationrockphysicsmodel",
         ),
         "fluidmodel": ("work-product-component--FluidModel", "fluidmodel"),
+        "depthshift": ("work-product-component--DepthShift", "depthshift"),
     }
 
 

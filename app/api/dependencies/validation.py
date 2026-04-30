@@ -364,6 +364,24 @@ async def validate_fluid_model_v2_payload(
     return records
 
 
+async def validate_depth_shift_v2_payload(
+    records_list: List[OsduStorageRecord],
+    storage_service: StorageService = Depends(get_async_storage_service),
+    schema_service: SchemaService = Depends(get_async_schema_service),
+):
+    records = await validate_osdu_wks_records(
+        records_list,
+        schema_service,
+        [osdu_models_base.DEPTH_SHIFT_KIND],
+    )
+    await validate_referential_integrity(
+        records,
+        [],
+        storage_service,
+    )
+    return records
+
+
 def raise_model_not_found(
     analysis_type: str,
     content_schema_version: str,
@@ -383,7 +401,7 @@ def raise_model_not_found(
         [
             f"Model not found for type '{analysis_type}', ",
             f"version '{content_schema_version}'.",
-        ],
+        ]
     )
     if available_versions:
         message = f"{message} Available versions: {available_versions}."
@@ -502,7 +520,7 @@ def validate_filters(
                 sql_filter.valid_columns_aggregation,
                 sql_filter.valid_columns_filter,
                 sql_filter.valid_rows_filter,
-            ],
+            ]
         )
         sql_filter.validate_combination()
     except FilterValidationError as exc:

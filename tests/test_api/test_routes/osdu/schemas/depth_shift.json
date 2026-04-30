@@ -1,0 +1,22 @@
+{
+  "$id": "https://schema.osdu.opengroup.org/json/work-product-component/DepthShift.1.0.0.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "x-osdu-schema-source": "osdu:wks:work-product-component--DepthShift:1.0.0",
+  "title": "DepthShift",
+  "type": "object",
+  "properties": {
+    "DepthShiftTypeID": {
+      "type": "string"
+    },
+    "ReferenceDatumID": {
+      "type": "string"
+    },
+    "ParentModelID": {
+      "type": "string"
+    },
+    "DatePublished": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}
