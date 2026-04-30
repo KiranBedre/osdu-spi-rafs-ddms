@@ -58,14 +58,6 @@ class RedisClientFactory(object):
         """
         return ""
 
-    def _get_database(self) -> int:
-        """Determine the Redis database number to use.
-
-        :return: Database number based on use_index_database flag
-        :rtype: int
-        """
-        return self.config.redis_index_database if self.use_index_database else self.config.redis_database
-
     async def create_client(self) -> Redis:
         """Create Redis client with password authentication.
 
@@ -92,3 +84,11 @@ class RedisClientFactory(object):
                 error_msg = f"Redis client error: {exc_msg}"
                 logger.error(error_msg)
                 await asyncio.sleep(WAIT_FOR_REDIS)
+
+    def _get_database(self) -> int:
+        """Determine the Redis database number to use.
+
+        :return: Database number based on use_index_database flag
+        :rtype: int
+        """
+        return self.config.redis_index_database if self.use_index_database else self.config.redis_database
