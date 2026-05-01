@@ -72,6 +72,8 @@ SATURATION_FUNCTION_SET_TYPE = "work-product-component--SaturationFunctionSet"
 SATURATION_FUNCTION_SET_ID = "saturation_function_set_test_id"
 FLUID_MODEL_TYPE = "work-product-component--FluidModel"
 FLUID_MODEL_ID = "fluid_model_test_id"
+DEPTH_SHIFT_TYPE = "work-product-component--DepthShift"
+DEPTH_SHIFT_ID = "depth_shift_test_id"
 FILE_GENERIC_TYPE = "dataset--File.Generic"
 TEST_DATASET_UID = "1"
 
@@ -105,6 +107,8 @@ TEST_SATURATION_FUNCTION_SET_ID = f"{PARTITION}:{SATURATION_FUNCTION_SET_TYPE}:{
 TEST_SATURATION_FUNCTION_SET_KIND = f"{SCHEMA_AUTHORITY}:wks:{SATURATION_FUNCTION_SET_TYPE}:{KindVersion.V_1_0_0}"
 TEST_FLUID_MODEL_ID = f"{PARTITION}:{FLUID_MODEL_TYPE}:{FLUID_MODEL_ID}"
 TEST_FLUID_MODEL_KIND = f"{SCHEMA_AUTHORITY}:wks:{FLUID_MODEL_TYPE}:{KindVersion.V_1_0_0}"
+TEST_DEPTH_SHIFT_ID = f"{PARTITION}:{DEPTH_SHIFT_TYPE}:{DEPTH_SHIFT_ID}"
+TEST_DEPTH_SHIFT_KIND = f"{SCHEMA_AUTHORITY}:wks:{DEPTH_SHIFT_TYPE}:{KindVersion.V_1_0_0}"
 TEST_ACL = Acl(viewers=["viewers@domain.com"], owners=["owners@domain.com"])
 TEST_LEGAL = Legal(legaltags=["legaltag"], otherRelevantDataCountries=["US"], status="compliant")
 TEST_WRONG_ID = "partition:entity-type:id"
@@ -342,6 +346,40 @@ FLUID_MODEL_RECORD = OsduStorageRecord(
     },
 )
 
+DEPTH_SHIFT_RECORD = OsduStorageRecord(
+    id=TEST_DEPTH_SHIFT_ID,
+    kind=TEST_DEPTH_SHIFT_KIND,
+    acl=TEST_ACL,
+    legal=TEST_LEGAL,
+    data={
+        "WellboreID": "namespace:master-data--Wellbore:wellbore-001:",
+        "VerticalReferenceRecordID": "namespace:work-product-component--WellLog:well-log-001:",
+        "VerticalReferenceRecordCurveIDs": [
+            "GR",
+        ],
+        "DepthShiftTypeID": "namespace:reference-data--DepthShiftType:Manual:",
+        "ShiftedSamplingDomainTypeID": "namespace:reference-data--WellLogSamplingDomainType:Depth:",
+        "DepthShiftedSamples": [
+            {
+                "SampleID": "namespace:master-data--Sample:sample-001:",
+                "Usage": "Primary",
+            },
+        ],
+        "AuthorID": {
+            "Name": "Depth Shift Analyst",
+            "EmailAddress": "analyst@company.com",
+        },
+        "Remarks": [
+            {
+                "RemarkSequenceNumber": 1,
+                "Remark": "Depth shift generated using gamma ray alignment.",
+                "RemarkDate": "2020-02-13",
+            },
+        ],
+        "ExtensionProperties": {},
+    },
+)
+
 
 def build_storage_service_response_200(
     record_count: int = 1,
@@ -389,6 +427,7 @@ SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/s
 SAMPLESANALYSIS_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/samplesanalysis"
 SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/saturationfunctionset"
 FLUID_MODEL_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/fluidmodel"
+DEPTH_SHIFT_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/depthshift"
 MASTER_DATA_ENDPOINT_PATH_V2 = f"/api/os-rafs-ddms/{API_VERSION_V2}/masterdata"
 
 # data endpoints v2
@@ -539,6 +578,10 @@ with open(f"{dir_path}/schemas/saturation_function_set.json") as fp:
 with open(f"{dir_path}/schemas/fluid_model.json") as fp:
     FLUID_MODEL_SCHEMA = json.load(fp)
     FLUID_MODEL_SCHEMA["definitions"] = WPC_DEFINITIONS
+
+with open(f"{dir_path}/schemas/depth_shift.json") as fp:
+    DEPTH_SHIFT_SCHEMA = json.load(fp)
+    DEPTH_SHIFT_SCHEMA["definitions"] = WPC_DEFINITIONS
 
 with open(f"{dir_path}/schemas/md_definitions.json") as fp:
     MD_DEFINITIONS = json.load(fp)

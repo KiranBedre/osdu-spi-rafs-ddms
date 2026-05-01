@@ -245,7 +245,9 @@ async def validate_osdu_wks_records(
                 tasks.append(
                     group.create_task(
                         schema_service.validate(
-                            record=record_dict, schema_id=record_dict["kind"], optional_id=f"record_at_index_{index}",
+                            record=record_dict,
+                            schema_id=record_dict["kind"],
+                            optional_id=f"record_at_index_{index}",
                         ),
                     ),
                 )
@@ -362,6 +364,24 @@ async def validate_fluid_model_v2_payload(
     return records
 
 
+async def validate_depth_shift_v2_payload(
+    records_list: List[OsduStorageRecord],
+    storage_service: StorageService = Depends(get_async_storage_service),
+    schema_service: SchemaService = Depends(get_async_schema_service),
+):
+    records = await validate_osdu_wks_records(
+        records_list,
+        schema_service,
+        [osdu_models_base.DEPTH_SHIFT_KIND],
+    )
+    await validate_referential_integrity(
+        records,
+        [],
+        storage_service,
+    )
+    return records
+
+
 def raise_model_not_found(
     analysis_type: str,
     content_schema_version: str,
@@ -377,10 +397,12 @@ def raise_model_not_found(
     :type available_versions: Iterable, optional
     :raises HTTPException: Raises HTTP 404 Not found.
     """
-    message = " ".join([
-        f"Model not found for type '{analysis_type}', ",
-        f"version '{content_schema_version}'.",
-    ])
+    message = " ".join(
+        [
+            f"Model not found for type '{analysis_type}', ",
+            f"version '{content_schema_version}'.",
+        ],
+    )
     if available_versions:
         message = f"{message} Available versions: {available_versions}."
 
@@ -493,11 +515,13 @@ async def validate_filters(
         raw_columns_aggregation=columns_aggregation,
     )
     try:
-        any([
-            sql_filter.valid_columns_aggregation,
-            sql_filter.valid_columns_filter,
-            sql_filter.valid_rows_filter,
-        ])
+        any(
+            [
+                sql_filter.valid_columns_aggregation,
+                sql_filter.valid_columns_filter,
+                sql_filter.valid_rows_filter,
+            ],
+        )
     except FilterValidationError as exc:
         logger.debug(f"Query parameters are invalid: {exc}")
         raise UnprocessableContentException(detail=str(exc))

@@ -113,7 +113,7 @@ The following software have components provided under the terms of this license:
 - azure-keyvault (from https://github.com/Azure/azure-sdk-for-python, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault)
 - azure-keyvault-certificates (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-certificates)
 - azure-keyvault-keys (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-keys)
-- azure-keyvault-secrets (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-secrets)
+- azure-keyvault-secrets (from https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/keyvault/azure-keyvault-secrets, https://pypi.org/project/azure-keyvault-secrets/)
 - azure-storage-blob (from <https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/storage/azure-storage-blob>, https://github.com/Azure/azure-sdk-for-python/tree/main/sdk/storage/azure-storage-blob)
 - backports.tarfile (from https://pypi.org/project/backports.tarfile/)
 - botocore (from <https://github.com/boto/botocore>, https://github.com/boto/botocore)
