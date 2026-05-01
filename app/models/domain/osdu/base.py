@@ -43,3 +43,5 @@ RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND = f"{settings.schema_authority}:wks
 SATURATION_FUNCTION_SET_KIND = f"{settings.schema_authority}:wks:work-product-component--SaturationFunctionSet:1.0.0"
 
 FLUID_MODEL_KIND = f"{settings.schema_authority}:wks:work-product-component--FluidModel:1.0.0"
+
+DEPTH_SHIFT_KIND = f"{settings.schema_authority}:wks:work-product-component--DepthShift:1.0.0"

@@ -805,6 +805,396 @@
         ]
       }
     },
+    "/api/rafs-ddms/v2/depthshift": {
+      "post": {
+        "description": "Create or update `DepthShift` record(s).<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "operationId": "post_records_api_rafs_ddms_v2_depthshift_post",
+        "parameters": [
+          {
+            "description": "Specifies the proper data partition id",
+            "examples": {
+              "example": {
+                "value": "opendes"
+              }
+            },
+            "in": "header",
+            "name": "data-partition-id",
+            "required": true,
+            "schema": {
+              "description": "Specifies the proper data partition id",
+              "title": "data-partition-id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "examples": {
+                "example": {
+                  "value": [
+                    {
+                      "acl": {
+                        "owners": [
+                          "data.default.owners@osdu.example.com"
+                        ],
+                        "viewers": [
+                          "data.default.viewers@osdu.example.com"
+                        ]
+                      },
+                      "data": {
+                        "AuthorID": {
+                          "EmailAddress": "analyst@company.com",
+                          "Name": "Depth Shift Analyst"
+                        },
+                        "DepthShiftTypeID": "namespace:reference-data--DepthShiftType:Manual:",
+                        "DepthShiftedSamples": [
+                          {
+                            "SampleID": "namespace:master-data--Sample:sample-001:",
+                            "Usage": "Primary"
+                          }
+                        ],
+                        "ExtensionProperties": {},
+                        "Remarks": [
+                          {
+                            "Remark": "Depth shift generated using gamma ray alignment.",
+                            "RemarkDate": "2020-02-13",
+                            "RemarkSequenceNumber": 1
+                          }
+                        ],
+                        "ShiftedSamplingDomainTypeID": "namespace:reference-data--WellLogSamplingDomainType:Depth:",
+                        "VerticalReferenceRecordCurveIDs": [
+                          "GR"
+                        ],
+                        "VerticalReferenceRecordID": "namespace:work-product-component--WellLog:well-log-001:",
+                        "WellboreID": "namespace:master-data--Wellbore:wellbore-001:"
+                      },
+                      "id": "namespace:work-product-component--DepthShift:depth-shift-1",
+                      "kind": "osdu:wks:work-product-component--DepthShift:1.0.0",
+                      "legal": {
+                        "legaltags": [
+                          "opendes-public-usa-dataset-1"
+                        ],
+                        "otherRelevantDataCountries": [
+                          "US"
+                        ],
+                        "status": "compliant"
+                      }
+                    }
+                  ]
+                }
+              },
+              "schema": {
+                "items": {
+                  "type": "object"
+                },
+                "title": "Request Records",
+                "type": "array"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageUpsertResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Post Records",
+        "tags": [
+          "depthshift"
+        ]
+      }
+    },
+    "/api/rafs-ddms/v2/depthshift/{record_id}": {
+      "delete": {
+        "description": "Delete the `DepthShift` object by record id.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "operationId": "soft_delete_record_api_rafs_ddms_v2_depthshift__record_id__delete",
+        "parameters": [
+          {
+            "description": "OSDU record identifier for a <code>work-product-component--DepthShift</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--DepthShift:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--DepthShift:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/depthshift/osdu:work-product-component--DepthShift:simple_id</code><br><br><code>osdu:work-product-component--DepthShift:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/depthshift/osdu:work-product-component--DepthShift:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[\\w\\-\\.]+:work-product-component--DepthShift:[\\w\\-\\.\\:\\%]+$",
+              "title": "Record Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Specifies the proper data partition id",
+            "examples": {
+              "example": {
+                "value": "opendes"
+              }
+            },
+            "in": "header",
+            "name": "data-partition-id",
+            "required": true,
+            "schema": {
+              "description": "Specifies the proper data partition id",
+              "title": "data-partition-id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Soft Delete Record",
+        "tags": [
+          "depthshift"
+        ]
+      },
+      "get": {
+        "description": "Get the latest version of `DepthShift` object by record id.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "operationId": "get_record_api_rafs_ddms_v2_depthshift__record_id__get",
+        "parameters": [
+          {
+            "description": "OSDU record identifier for a <code>work-product-component--DepthShift</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--DepthShift:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--DepthShift:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/depthshift/osdu:work-product-component--DepthShift:simple_id</code><br><br><code>osdu:work-product-component--DepthShift:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/depthshift/osdu:work-product-component--DepthShift:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[\\w\\-\\.]+:work-product-component--DepthShift:[\\w\\-\\.\\:\\%]+$",
+              "title": "Record Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Specifies the proper data partition id",
+            "examples": {
+              "example": {
+                "value": "opendes"
+              }
+            },
+            "in": "header",
+            "name": "data-partition-id",
+            "required": true,
+            "schema": {
+              "description": "Specifies the proper data partition id",
+              "title": "data-partition-id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Record Api Rafs Ddms V2 Depthshift  Record Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Record",
+        "tags": [
+          "depthshift"
+        ]
+      }
+    },
+    "/api/rafs-ddms/v2/depthshift/{record_id}/versions": {
+      "get": {
+        "description": "Get a list of `DepthShift` object versions by record id.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "operationId": "get_record_versions_api_rafs_ddms_v2_depthshift__record_id__versions_get",
+        "parameters": [
+          {
+            "description": "OSDU record identifier for a <code>work-product-component--DepthShift</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--DepthShift:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--DepthShift:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/depthshift/osdu:work-product-component--DepthShift:simple_id</code><br><br><code>osdu:work-product-component--DepthShift:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/depthshift/osdu:work-product-component--DepthShift:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[\\w\\-\\.]+:work-product-component--DepthShift:[\\w\\-\\.\\:\\%]+$",
+              "title": "Record Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Specifies the proper data partition id",
+            "examples": {
+              "example": {
+                "value": "opendes"
+              }
+            },
+            "in": "header",
+            "name": "data-partition-id",
+            "required": true,
+            "schema": {
+              "description": "Specifies the proper data partition id",
+              "title": "data-partition-id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Record Versions Api Rafs Ddms V2 Depthshift  Record Id  Versions Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Record Versions",
+        "tags": [
+          "depthshift"
+        ]
+      }
+    },
+    "/api/rafs-ddms/v2/depthshift/{record_id}/versions/{version}": {
+      "get": {
+        "description": "Get the given version of `DepthShift` object.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "operationId": "get_record_specific_version_api_rafs_ddms_v2_depthshift__record_id__versions__version__get",
+        "parameters": [
+          {
+            "description": "OSDU record identifier for a <code>work-product-component--DepthShift</code> entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code> characters (e.g., <code>osdu:work-product-component--DepthShift:7&#37;2F12-A-7&#37;20D_Sample_249</code>), the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC 3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--DepthShift:simple_id</code>&nbsp;&nbsp;→&nbsp; <code>/v2/depthshift/osdu:work-product-component--DepthShift:simple_id</code><br><br><code>osdu:work-product-component--DepthShift:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp; <code>/v2/depthshift/osdu:work-product-component--DepthShift:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code> →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>",
+            "in": "path",
+            "name": "record_id",
+            "required": true,
+            "schema": {
+              "pattern": "^[\\w\\-\\.]+:work-product-component--DepthShift:[\\w\\-\\.\\:\\%]+$",
+              "title": "Record Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "version",
+            "required": true,
+            "schema": {
+              "title": "Version",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Specifies the proper data partition id",
+            "examples": {
+              "example": {
+                "value": "opendes"
+              }
+            },
+            "in": "header",
+            "name": "data-partition-id",
+            "required": true,
+            "schema": {
+              "description": "Specifies the proper data partition id",
+              "title": "data-partition-id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Record Specific Version Api Rafs Ddms V2 Depthshift  Record Id  Versions  Version  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Record Specific Version",
+        "tags": [
+          "depthshift"
+        ]
+      }
+    },
     "/api/rafs-ddms/v2/fluidmodel": {
       "post": {
         "description": "Create or update `FluidModel` record(s).<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
