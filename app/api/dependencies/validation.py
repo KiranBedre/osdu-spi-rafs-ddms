@@ -401,7 +401,7 @@ def raise_model_not_found(
         [
             f"Model not found for type '{analysis_type}', ",
             f"version '{content_schema_version}'.",
-        ]
+        ],
     )
     if available_versions:
         message = f"{message} Available versions: {available_versions}."
@@ -520,7 +520,7 @@ def validate_filters(
                 sql_filter.valid_columns_aggregation,
                 sql_filter.valid_columns_filter,
                 sql_filter.valid_rows_filter,
-            ]
+            ],
         )
         sql_filter.validate_combination()
     except FilterValidationError as exc:
