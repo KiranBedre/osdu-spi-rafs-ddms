@@ -32,7 +32,11 @@ def mock_blob():
     return Blob(
         blob_data=b"parquetdata",
         blob_metadata=BlobMetadata(
-            "analysis_family", "analysis_type", "1.0.0", "123456789", SupportedMimeTypes.PARQUET,
+            "analysis_family",
+            "analysis_type",
+            "1.0.0",
+            "123456789",
+            SupportedMimeTypes.PARQUET,
         ),
     )
 
@@ -40,7 +44,11 @@ def mock_blob():
 @pytest.fixture
 def mock_blob_metadata():
     return BlobMetadata(
-        "analysis_family", "analysis_type", "1.0.0", "unused_uuid", SupportedMimeTypes.PARQUET,
+        "analysis_family",
+        "analysis_type",
+        "1.0.0",
+        "unused_uuid",
+        SupportedMimeTypes.PARQUET,
     )
 
 
@@ -62,7 +70,9 @@ def mock_settings():
 
 
 @pytest.mark.asyncio
-async def test_get_parquet_data_success(mock_blob, mock_blob_metadata, mock_blob_storage_service, mock_storage_service, mock_settings, monkeypatch):
+async def test_get_parquet_data_success(
+    mock_blob, mock_blob_metadata, mock_blob_storage_service, mock_storage_service, mock_settings, monkeypatch
+):
     monkeypatch.setattr("app.core.config.get_app_settings", lambda: mock_settings)
 
     # Mock request and inputs
@@ -98,5 +108,5 @@ async def test_get_parquet_data_success(mock_blob, mock_blob_metadata, mock_blob
     assert response.media_type == SupportedMimeTypes.PARQUET.mime_type
 
     # Ensure correct calls
-    mock_storage_service.get_record.assert_called_once_with("wpc_id", None)
+    mock_storage_service.get_record.assert_called_once_with("wpc_id")
     mock_blob_storage_service.get_blob.assert_awaited_once_with(mock_blob_metadata)

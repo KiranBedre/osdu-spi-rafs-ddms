@@ -20,7 +20,6 @@ from starlette import status
 from app.api.routes.utils.ddms_datasets import check_object_name_schema_version
 from app.api.routes.utils.records import (
     find_object_name_from_type,
-    get_id_version,
 )
 from app.dev.dataframe.multiple_nested_filter_processor import (
     DFMultipleNestedFilterProcessor,
@@ -59,8 +58,7 @@ async def get_parquet_data(
     :return: parquet data in proper format
     :rtype: Response
     """
-    record_id, version = get_id_version(record_id)
-    record = await storage_service.get_record(record_id, version)
+    record = await storage_service.get_record(record_id)
     mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
 
     ddms_datasets = record["data"].get("DDMSDatasets", [])
