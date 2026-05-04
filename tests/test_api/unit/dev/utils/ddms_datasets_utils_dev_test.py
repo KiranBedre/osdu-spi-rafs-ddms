@@ -98,5 +98,5 @@ async def test_get_parquet_data_success(mock_blob, mock_blob_metadata, mock_blob
     assert response.media_type == SupportedMimeTypes.PARQUET.mime_type
 
     # Ensure correct calls
-    mock_storage_service.get_record.assert_called_once_with("wpc_id", None)
+    mock_storage_service.get_record.assert_called_once_with("wpc_id")
     mock_blob_storage_service.get_blob.assert_awaited_once_with(mock_blob_metadata)
