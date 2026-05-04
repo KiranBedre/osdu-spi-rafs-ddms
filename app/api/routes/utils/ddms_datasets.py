@@ -24,7 +24,6 @@ from app.api.routes.utils.records import (
     find_object_name_index,
     find_schema_versions_for_object_name,
     generate_blob_urn,
-    get_id_version,
 )
 from app.core.config import get_app_settings
 from app.dataframe.parquet_filter import apply_filters_from_bytes
@@ -148,8 +147,7 @@ async def get_parquet_data(
     :return: parquet data in proper format
     :rtype: Response
     """
-    record_id, version = get_id_version(record_id)
-    record = await storage_service.get_record(record_id, version)
+    record = await storage_service.get_record(record_id)
     mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
     # Aggregation results only make sense in split format (index holds the function name)
     orient = "split" if df_filter.valid_columns_aggregation else orient
