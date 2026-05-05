@@ -97,3 +97,29 @@ async def test_get_backend_with_empty_prefix(mock_get_redis_factory):
 
     assert result._key_prefix == ""
 
+
+@pytest.mark.asyncio
+@patch("app.core.helpers.cache.backends.redis_cache.get_redis_factory")
+async def test_clear_with_namespace(mock_get_redis_factory):
+    """Test that clear(namespace=...) correctly applies the key prefix."""
+    mock_redis_client = AsyncMock()
+    mock_factory = AsyncMock()
+    mock_factory.create_client.return_value = mock_redis_client
+    mock_factory.get_key_prefix = MagicMock(return_value="db13:")
+    mock_get_redis_factory.return_value = mock_factory
+
+    backend = RedisCacheBackend()
+    logging_backend = await backend.get_backend()
+
+    # Mock the parent's clear method to capture what namespace it receives
+    with patch("fastapi_cache.backends.redis.RedisBackend.clear", new_callable=AsyncMock) as mock_parent_clear:
+        mock_parent_clear.return_value = 5
+        
+        # Clear with a namespace - should prefix the namespace
+        result = await logging_backend.clear(namespace="myns")
+
+        # Verify that the parent clear was called with the prefixed namespace "db13:myns"
+        # The parent RedisBackend.clear() will convert this to the pattern "db13:myns:*"
+        mock_parent_clear.assert_called_once_with("db13:myns", None)
+        assert result == 5
+

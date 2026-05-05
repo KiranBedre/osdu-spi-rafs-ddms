@@ -60,6 +60,7 @@ class TestAzureRedisClientFactoryIsAmr:
     def test_is_amr_false_for_arbitrary_port(self):
         assert _make_factory(port=6379)._is_amr is False
 
+
 class TestAzureRedisClientFactoryGetDatabase:
     """Tests for the _get_database() override."""
 
@@ -84,6 +85,7 @@ class TestAzureRedisClientFactoryGetDatabase:
         # redis_index_database defaults to 0
         assert factory._get_database() == 0
 
+
 class TestAzureRedisClientFactoryGetKeyPrefix:
     """Tests for the get_key_prefix() override."""
 
@@ -105,6 +107,7 @@ class TestAzureRedisClientFactoryGetKeyPrefix:
     def test_acr_index_connection_returns_empty_prefix(self):
         factory = _make_factory(port=ACR_PORT, use_index_database=True)
         assert factory.get_key_prefix() == ""
+
 
 class TestAzureRedisClientFactory:
     """Test cases for AzureRedisClientFactory."""
@@ -156,6 +159,7 @@ class TestAzureRedisClientFactory:
         assert pool_kwargs["credential_provider"] is mock_credential_provider
         assert pool_kwargs["host"] == config.redis_hostname
         assert pool_kwargs["port"] == config.redis_port
+        assert int(pool_kwargs["db"]) == 13
 
         mock_redis_class.assert_called_once_with(connection_pool=mock_pool)
         assert client is mock_redis
