@@ -46,6 +46,18 @@ class RedisClientFactory(object):
         self.config = config
         self.use_index_database = use_index_database
 
+    def get_key_prefix(self) -> str:
+        """Return key prefix for namespace isolation.
+
+        Base implementation returns an empty string (no prefix).
+        Subclasses may override this when the server does not support
+        multiple logical databases.
+
+        :return: Key prefix string, empty means no prefix applied
+        :rtype: str
+        """
+        return ""
+
     async def create_client(self) -> Redis:
         """Create Redis client with password authentication.
 
@@ -55,15 +67,13 @@ class RedisClientFactory(object):
         :return: Connected Redis client
         :rtype: Redis
         """
-        database = self.config.redis_index_database if self.use_index_database else self.config.redis_database
-
         while True:
             try:
                 redis_client = Redis(
                     host=self.config.redis_hostname,
                     port=self.config.redis_port,
                     password=self.config.redis_password,
-                    db=database,
+                    db=self._get_database(),
                     ssl=self.config.redis_ssl,
                 )
                 await redis_client.ping()
@@ -74,3 +84,11 @@ class RedisClientFactory(object):
                 error_msg = f"Redis client error: {exc_msg}"
                 logger.error(error_msg)
                 await asyncio.sleep(WAIT_FOR_REDIS)
+
+    def _get_database(self) -> int:
+        """Determine the Redis database number to use.
+
+        :return: Database number based on use_index_database flag
+        :rtype: int
+        """
+        return self.config.redis_index_database if self.use_index_database else self.config.redis_database
