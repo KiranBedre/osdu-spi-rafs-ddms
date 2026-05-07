@@ -138,6 +138,9 @@ class DataValidator(object):
         """
         # Get required fields from the Pydantic model
         required_fields = self._get_required_fields()
+        # Get Pydantic model and known fields once, before the loop
+        pydantic_model = self._get_pydantic_model()
+        known_fields = set(getattr(pydantic_model, "__fields__", {}).keys()) if pydantic_model else set()
 
         filtered_errors = []
 
@@ -145,7 +148,7 @@ class DataValidator(object):
             failure_case = error_case.get("failure_case", "")
 
             # Check if this error contains NaN in an optional field
-            if self._is_nan_in_optional_field(failure_case, required_fields):
+            if self._is_nan_in_optional_field(failure_case, required_fields, known_fields, pydantic_model):
                 logger.debug(f"Filtering NaN error for optional field in bulk mode: {failure_case}")
                 continue
 
@@ -154,27 +157,86 @@ class DataValidator(object):
 
         return filtered_errors
 
-    def _is_nan_in_optional_field(self, failure_case, required_fields: set) -> bool:
-        """Check if failure case is a NaN error in an optional field.
+    def _is_nan_in_optional_field(self, failure_case, required_fields: set, known_fields: set, pydantic_model) -> bool:
+        """Check if failure case is a NaN error in an optional field only.
+
+        Returns True only when the sole cause of failure is NaN values in
+        optional fields that are known to the schema. Returns False for:
+        - Extra (unknown) columns — those are real schema violations.
+        - Type/constraint violations that co-exist with optional NaN fields.
 
         :param failure_case: the failure case from pandera error
         :param required_fields: set of required field names
-        :return: True if this is a NaN error in an optional field
+            :param known_fields: set of field names defined in the Pydantic model
+            :param pydantic_model: the Pydantic model class, or None
+        :return: True only if this error is purely NaN in optional known fields
         :rtype: bool
         """
-        # Handle string representation of dict (e.g., "{'FieldName': nan}")
-        if isinstance(failure_case, str) and "nan" in failure_case.lower():
-            field_matches = re.findall(r"['\"](\w+)['\"]:\s*nan", failure_case)
-            return any(field not in required_fields for field in field_matches)
+        if isinstance(failure_case, str):
+            return self._is_str_nan_in_optional_field(failure_case, known_fields, required_fields)
 
-        # Handle dict failure case
         if isinstance(failure_case, dict):
-            return any(
-                self._is_scalar_nan(field_value) and field_name not in required_fields
-                for field_name, field_value in failure_case.items()
-            )
+            return self._is_dict_nan_in_optional_field(failure_case, known_fields, required_fields, pydantic_model)
 
         return False
+
+    def _is_str_nan_in_optional_field(self, failure_case: str, known_fields: set, required_fields: set) -> bool:
+        """Check string-form failure case (e.g. \"{'Field': nan}\") for optional NaN.
+
+        :param failure_case: string representation of the failure case
+        :param known_fields: set of field names defined in the Pydantic model
+        :param required_fields: set of required field names
+        :return: True if the only NaN fields are optional known fields
+        :rtype: bool
+        """
+        if "nan" not in failure_case.lower():
+            return False
+        field_matches = re.findall(r"['\"](\w+)['\"]:\s*nan", failure_case)
+        return (
+            bool(field_matches)
+            and all(field in known_fields for field in field_matches)
+            and all(field not in required_fields for field in field_matches)
+        )
+
+    def _is_dict_nan_in_optional_field(
+        self,
+        failure_case: dict,
+        known_fields: set,
+        required_fields: set,
+        pydantic_model,
+    ) -> bool:
+        """Check dict failure case (full row) for optional NaN only.
+
+        Rejects immediately if any field is unknown (extra-column violation).
+        Re-validates the row with NaN optional fields removed to ensure no
+        other constraint violations are masked.
+
+        :param failure_case: row dict from PydanticModel coerce error
+        :param known_fields: set of field names defined in the Pydantic model
+        :param required_fields: set of required field names
+        :param pydantic_model: the Pydantic model class, or None
+        :return: True only if removing NaN optional fields makes the row valid
+        :rtype: bool
+        """
+        if any(field_name not in known_fields for field_name in failure_case):
+            return False
+
+        cleaned = {
+            field_name: field_value
+            for field_name, field_value in failure_case.items()
+            if not (self._is_scalar_nan(field_value) and field_name not in required_fields)
+        }
+        # True when at least one NaN optional field was stripped; pydantic
+        # re-validation below may still set this to False.
+        validation_result = cleaned != failure_case
+
+        if pydantic_model:
+            try:
+                pydantic_model(**cleaned)
+            except ValueError:
+                validation_result = False
+
+        return validation_result
 
     @staticmethod
     def _is_scalar_nan(field_value) -> bool:
