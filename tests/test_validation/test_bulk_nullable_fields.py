@@ -114,8 +114,8 @@ async def test_bulk_records_all_null_optional_field_also_fails():
     test_df = pd.read_json(io.StringIO(BULK_RECORDS_ALL_NULL_OPTIONAL_FIELD), orient="split")
 
     # Verify that InitialConditions became NaN (float64)
-    assert test_df['InitialConditions'].dtype == 'float64', "All-null column should be float64"
-    assert all(pd.isna(test_df['InitialConditions'])), "All InitialConditions should be NaN"
+    assert test_df["InitialConditions"].dtype == "float64", "All-null column should be float64"
+    assert all(pd.isna(test_df["InitialConditions"])), "All InitialConditions should be NaN"
 
     mock_storage_service = await build_mock_get_storage_service(record_data=None, data_payload=test_df)()
     data_schema = build_data_schema(CapillaryPressureModel100)
@@ -142,8 +142,8 @@ async def test_single_record_with_null_optional_field_fails():
     test_df = test_df.head(1)
 
     # Verify that InitialConditions is NaN (float64)
-    assert test_df['InitialConditions'].dtype == 'float64', "Null converts to float64"
-    assert pd.isna(test_df['InitialConditions'].iloc[0]), "InitialConditions should be NaN"
+    assert test_df["InitialConditions"].dtype == "float64", "Null converts to float64"
+    assert pd.isna(test_df["InitialConditions"].iloc[0]), "InitialConditions should be NaN"
 
     mock_storage_service = await build_mock_get_storage_service(record_data=None, data_payload=test_df)()
     data_schema = build_data_schema(CapillaryPressureModel100)
@@ -168,7 +168,7 @@ async def test_records_with_null_optional_fields_relaxed_validation_passes():
     test_df = test_df.head(1)
 
     # Verify NaN
-    assert pd.isna(test_df['InitialConditions'].iloc[0]), "InitialConditions should be NaN"
+    assert pd.isna(test_df["InitialConditions"].iloc[0]), "InitialConditions should be NaN"
 
     mock_storage_service = await build_mock_get_storage_service(record_data=None, data_payload=test_df)()
     data_schema = build_data_schema(CapillaryPressureModel100)
@@ -206,7 +206,7 @@ async def test_required_field_with_nan_still_fails_in_bulk_mode():
     test_df = pd.read_json(io.StringIO(payload_missing_required), orient="split")
 
     # Verify that SamplesAnalysisID is NaN
-    assert pd.isna(test_df['SamplesAnalysisID'].iloc[0]), "SamplesAnalysisID should be NaN"
+    assert pd.isna(test_df["SamplesAnalysisID"].iloc[0]), "SamplesAnalysisID should be NaN"
 
     mock_storage_service = await build_mock_get_storage_service(record_data=None, data_payload=test_df)()
     data_schema = build_data_schema(CapillaryPressureModel100)
@@ -215,5 +215,90 @@ async def test_required_field_with_nan_still_fails_in_bulk_mode():
     # Should FAIL even with bulk_mode=True because SamplesAnalysisID is required
     errors = await data_validator.validate(test_df, bulk_mode=True)
     assert errors, "Required field with NaN should fail validation even in bulk mode"
-    assert "invalid_type" in errors or "invalid_value" in errors, \
-        f"Expected validation error for required field, got: {errors}"
+    assert (
+        "invalid_type" in errors or "invalid_value" in errors
+    ), f"Expected validation error for required field, got: {errors}"
+
+
+# ── Extra-column regression tests ────────────────────────────────────────────
+
+EXTRA_COLUMN_NULL_PAYLOAD = """{
+    "columns": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Meta",
+        "ExtraColumn"
+    ],
+    "index": [0],
+    "data": [
+        [
+            "osdu-dev:work-product-component--SamplesAnalysis:test-1:",
+            "osdu-dev:master-data--Sample:test-sample-1:",
+            [],
+            null
+        ]
+    ]
+}"""
+
+EXTRA_COLUMN_WITH_TYPE_VIOLATION_PAYLOAD = """{
+    "columns": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Meta",
+        "ExtraColumn",
+        "InitialConditions"
+    ],
+    "index": [0],
+    "data": [
+        [
+            12345,
+            "osdu-dev:master-data--Sample:test-sample-1:",
+            [],
+            null,
+            null
+        ]
+    ]
+}"""
+
+
+@pytest.mark.asyncio
+async def test_extra_column_with_null_value_rejected_in_bulk_mode():
+    """Extra column with null value must be rejected even in bulk_mode.
+
+    Previously, ExtraColumn: NaN satisfied _is_nan_in_optional_field because
+    ExtraColumn was not in required_fields — causing the error to be silently
+    dropped.
+    """
+    test_df = pd.read_json(io.StringIO(EXTRA_COLUMN_NULL_PAYLOAD), orient="split")
+
+    mock_storage_service = await build_mock_get_storage_service(record_data=None, data_payload=test_df)()
+    data_schema = build_data_schema(CapillaryPressureModel100)
+    data_validator = DataValidator(data_schema, mock_storage_service, API_VERSION_V2)
+
+    errors = await data_validator.validate(test_df, bulk_mode=True)
+    assert errors, "Extra column with null value must be rejected"
+    assert "invalid_type" in errors, f"Expected schema/type validation error, got: {errors}"
+    assert "ExtraColumn" in str(errors), f"Expected ExtraColumn to be surfaced in error details, got: {errors}"
+
+
+@pytest.mark.asyncio
+async def test_type_violation_not_hidden_by_extra_null_column_in_bulk_mode():
+    """Type violations must surface even when an extra null column is also present.
+
+    Previously, ExtraColumn: NaN caused the entire row error to be filtered,
+    hiding co-existing type violations (e.g. SamplesAnalysisID: int instead of str).
+    """
+    test_df = pd.read_json(io.StringIO(EXTRA_COLUMN_WITH_TYPE_VIOLATION_PAYLOAD), orient="split")
+
+    mock_storage_service = await build_mock_get_storage_service(record_data=None, data_payload=test_df)()
+    data_schema = build_data_schema(CapillaryPressureModel100)
+    data_validator = DataValidator(data_schema, mock_storage_service, API_VERSION_V2)
+
+    errors = await data_validator.validate(test_df, bulk_mode=True)
+    assert errors, "Type violation must not be hidden by an extra null column"
+    assert "invalid_type" in errors, f"Expected schema/type validation error, got: {errors}"
+    assert "ExtraColumn" in str(errors), f"Expected extra-column violation to be surfaced, got: {errors}"
+    assert (
+        "invalid_type" in errors or "invalid_value" in errors
+    ), f"Expected co-existing type/constraint error, got: {errors}"
+    assert "SamplesAnalysisID" in str(errors), f"Expected type violation field to be surfaced, got: {errors}"
