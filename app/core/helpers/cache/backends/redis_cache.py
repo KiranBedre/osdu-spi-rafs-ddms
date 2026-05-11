@@ -21,6 +21,7 @@ from redis.exceptions import (
     AuthenticationError,
     ConnectionError,
     ResponseError,
+    TimeoutError,
 )
 
 from app.core.config import get_app_settings
@@ -160,5 +161,5 @@ class RedisCacheBackend(BaseCacheBackend):
         try:
             logger.debug("Validating Redis connection...")
             await redis_client.ping()
-        except (AuthenticationError, ConnectionError, ResponseError):
+        except (AuthenticationError, ConnectionError, ResponseError, TimeoutError):
             raise CacheBackendError("Redis client can't be init. Redis host, port, password or db are wrong")

@@ -15,6 +15,8 @@
 """Azure-specific Redis client factory with Entra ID authentication."""
 
 from loguru import logger
+from azure.identity.aio import DefaultAzureCredential
+from azure.keyvault.secrets.aio import SecretClient
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool, SSLConnection
 
@@ -86,7 +88,7 @@ class AzureRedisClientFactory(RedisClientFactory):
             # Build pool parameters using credential provider
             # The credential_provider will be called automatically by Redis when needed.
             # No username/password needed
-            pool_params = self._build_pool_params(credential_provider, connection_class, connection_kwargs)
+            pool_params = await self._build_pool_params(credential_provider, connection_class, connection_kwargs)
             pool = ConnectionPool(**pool_params)
 
             return Redis(connection_pool=pool)
@@ -126,8 +128,44 @@ class AzureRedisClientFactory(RedisClientFactory):
         # Use default Connection class (will be set by ConnectionPool)
         return None, {}
 
-    def _build_pool_params(self, credential_provider, connection_class, connection_kwargs):
+    async def _resolve_redis_hostname(self) -> str:
+        """Return the Redis hostname, fetching it from AKV when not configured.
+
+        Reads ``config.redis_hostname`` first.  If it is ``None`` or blank the
+        method falls back to Azure Key Vault using the secret named by
+        ``azure_config.redis_hostname_secret_name`` (default ``"redis-hostname"``).
+
+        :return: Resolved Redis hostname
+        :rtype: str
+        :raises ValueError: if hostname is absent and AKV is not configured
+        """
+        try:
+            return self._get_hostname()
+        except ValueError:
+            pass
+
+        if not isinstance(self.azure_config, AzureConfig) or not self.azure_config.az_keyvault_url:
+            raise ValueError(
+                "Redis hostname is not set and az_keyvault_url is not configured for AKV fallback.",
+            )
+
+        secret_name = self.azure_config.redis_hostname_secret_name
+        akv_url = self.azure_config.az_keyvault_url
+        logger.info(f"Redis hostname not configured — fetching '{secret_name}' from AKV: {akv_url}")
+        async with DefaultAzureCredential() as credential:
+            async with SecretClient(
+                vault_url=akv_url,
+                credential=credential,
+            ) as kv_client:
+                secret = await kv_client.get_secret(secret_name)
+                hostname = secret.value
+                logger.info(f"Resolved Redis hostname from AKV: {hostname}")
+                return hostname
+
+    async def _build_pool_params(self, credential_provider, connection_class, connection_kwargs):
         """Build connection pool parameters.
+
+        Resolves the Redis hostname (from config or AKV) before building the parameters.
 
         :param credential_provider: Azure Redis credential provider instance
         :param connection_class: Connection class to use (or None for default)
@@ -135,8 +173,9 @@ class AzureRedisClientFactory(RedisClientFactory):
         :return: Dictionary of pool parameters
         """
 
+        hostname = await self._resolve_redis_hostname()
         pool_params = {
-            "host": self.config.redis_hostname,
+            "host": hostname,
             "port": self.config.redis_port,
             "db": self._get_database(),
             "credential_provider": credential_provider,
