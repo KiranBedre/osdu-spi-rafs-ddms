@@ -46,7 +46,6 @@ from app.exceptions.exceptions import (
 from app.middleware.correlation_id_middleware import CorrelationIDMiddleware
 from app.middleware.tracing_middleware import TracingMiddleware
 from app.providers.helpers.metric import init_metric
-from app.providers.helpers.tracing import initialize_tracer
 
 EXCEPTIONS_AND_HANDLERS = (
     (HTTPException, http_error_handler),
@@ -70,9 +69,6 @@ def get_application() -> FastAPI:
     settings = get_app_settings()
 
     settings.configure_logging()
-
-    # Initialize tracer before any middleware so the provider is registered first.
-    initialize_tracer(settings)
 
     application = FastAPI(**settings.fastapi_kwargs)
 

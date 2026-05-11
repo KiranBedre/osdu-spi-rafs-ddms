@@ -21,6 +21,8 @@ anyio==4.12.1
     #   -r requirements.in
     #   httpx
     #   starlette
+asgiref==3.11.1
+    # via opentelemetry-instrumentation-asgi
 async-lru==2.0.4
     # via -r requirements.in
 async-timeout==4.0.3
@@ -168,6 +170,10 @@ opentelemetry-exporter-otlp-proto-http==1.27.0
     # via -r requirements.in
 opentelemetry-instrumentation==0.48b0
     # via opentelemetry-instrumentation-httpx
+opentelemetry-instrumentation-asgi==0.48b0
+    # via opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-fastapi==0.48b0
+    # via -r requirements.in
 opentelemetry-instrumentation-httpx==0.48b0
     # via -r requirements.in
 opentelemetry-propagator-b3==1.27.0

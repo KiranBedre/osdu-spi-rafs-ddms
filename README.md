@@ -510,6 +510,11 @@ In other cases, all checks run automatically on commit.
 
 * [Google Deployment Instructions](./devops/gc/deploy)
 
+## OpenTelemetry Integration
+
+RAFS DDMS supports OpenTelemetry (OTEL) for distributed tracing, metrics, and log correlation.
+See the [Community Implementation (CI) deployment docs](./devops/core-plus/README.md#opentelemetry-integration) for full configuration details.
+
 ## Dedicated Blob Storage for Parquet Files
 
 A change request is underway to transition from using the Dataset service for storing Parquet files to a **dedicated blob storage** (bucket or container). This change is being rolled out in phases, with implementation details varying by cloud service provider (CSP).

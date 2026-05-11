@@ -28,3 +28,10 @@ data:
   REDIS_PORT: {{ .Values.data.redisRafsDdmsPort | quote }}
   REDIS_INDEX_ENABLE: {{ .Values.data.redisIndexEnable | quote }}
   RAFS_USE_BLOB_STORAGE: {{ .Values.data.RAFS_USE_BLOB_STORAGE | quote }}
+  
+  {{- if .Values.data.pythonToolOptions }}
+  PYTHON_TOOL_OPTIONS: {{ .Values.data.pythonToolOptions | quote }}
+  OTEL_SERVICE_NAME: {{ printf "%s-core-plus" .Values.conf.appName | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.data.otelExporterEndpoint | quote }}
+  OTEL_EXPORTER_OTLP_PROTOCOL: {{ .Values.data.otelExporterProtocol | quote }}
+  {{- end }}

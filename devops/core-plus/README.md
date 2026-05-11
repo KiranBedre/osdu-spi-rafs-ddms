@@ -155,6 +155,82 @@ Some values are injected automatically during the helm upgrade:
 
 This ensures that deployments are fully parameterized and environment-specific, without hardcoding values in values.yaml.
 
+## OpenTelemetry Integration
+
+RAFS DDMS supports OpenTelemetry (OTEL) for distributed tracing, metrics, and log correlation. The integration is based on the [opentelemetry-distro](https://pypi.org/project/opentelemetry-distro/) package, which is included in the container image and can be activated via runtime arguments — analogous to the Java agent approach used in other OSDU services (e.g. `JAVA_TOOL_OPTIONS=-javaagent:...` for Java services).
+
+This provides critical observability features:
+
+* **Distributed tracing:** Traces the path of requests as they travel across different services.
+* **Metrics:** Captures performance indicators and application-level metrics.
+* **Logs:** Correlates logs with traces and other telemetry data.
+
+Enabling the agent makes it significantly easier to monitor, debug, and manage the application in development and production environments.
+
+### Environment Variables
+
+| Variable | Example | Description | Required |
+|---|---|---|---|
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | `http://127.0.0.1:4318` | OpenTelemetry collector endpoint | no |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | `http/protobuf` | OpenTelemetry collector protocol. Python uses `http/protobuf` (port 4318); `grpc` requires the `grpcio` C-extension which is not bundled. | no |
+| `PYTHON_TOOL_OPTIONS` | `opentelemetry-instrument` | Extends runtime arguments to enable the OpenTelemetry agent. When set, the agent instruments the application automatically without code changes. | no |
+
+### Activation
+
+The agent is activated by setting the `PYTHON_TOOL_OPTIONS` environment variable to any non-empty value. When the variable is empty (default), the application starts without instrumentation.
+
+#### Per-worker TracerProvider initialisation
+
+Each uvicorn worker process creates its own `TracerProvider` and `OTLPSpanExporter` on startup.  This is intentional: after `os.fork()`, HTTP connection pools are shared between parent and child, which leads to silent export failures.  By creating a fresh exporter in every worker the problem is avoided.
+
+The startup sequence in `app/core/events.py`:
+
+| `restart_otel_span_processors()` result | Startup behaviour |
+|---|---|
+| `True` — export thread was restarted | Worker keeps the existing `TracerProvider`; no new init needed |
+| `False` — no live thread found (fresh fork, no provider yet, or agent owns fork recovery) | `initialize_tracer()` creates a fresh per-worker `TracerProvider` and `OTLPSpanExporter` |
+
+When `PYTHON_TOOL_OPTIONS` is set the `opentelemetry-instrument` agent instruments libraries (FastAPI, HTTPX) in the master process before fork.  Workers inherit the instrumentation patches but each worker calls `initialize_tracer()` to own its own export pipeline, so the agent's master-process provider is superseded per worker.
+
+In Helm deployments (`values.yaml`):
+
+```yaml
+data:
+  pythonToolOptions: "opentelemetry-instrument"
+  otelExporterEndpoint: "http://otel-collector.observability.svc.cluster.local:4318"
+  otelExporterProtocol: "http/protobuf"
+```
+
+For local testing with Docker:
+
+```bash
+docker run \
+  -e PYTHON_TOOL_OPTIONS="opentelemetry-instrument" \
+  -e OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4318" \
+  -e OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf" \
+  rafs-ddms:latest
+```
+
+### CI/CD Pipeline Variables
+
+OTEL is enabled via the `CIMPL_OTEL_PYTHON_TOOL_OPTIONS` CI variable defined in [override-stages.yml](./override-stages.yml):
+
+```yaml
+CIMPL_OTEL_PYTHON_TOOL_OPTIONS: opentelemetry-instrument
+```
+
+This value is passed to Helm during deployment:
+
+```yaml
+--set data.pythonToolOptions=$CIMPL_OTEL_PYTHON_TOOL_OPTIONS
+--set data.otelExporterEndpoint=$CIMPL_OTEL_PYTHON_EXPORTER_ENDPOINT
+--set data.otelExporterProtocol=$CIMPL_OTEL_PYTHON_EXPORTER_PROTOCOL
+```
+
+All three variables are defined locally in [override-stages.yml](./override-stages.yml) and hardcoded to use the HTTP/protobuf exporter on port 4318 (Python cannot use the gRPC exporter without adding `grpcio` as a C-extension dependency).
+
+---
+
 ## Cronjobs
 
 - Enabled by default (cronjobEnabled: true)
