@@ -20,6 +20,7 @@ from loguru import logger
 from app.core.helpers.cache_helper import clear_cache, init_cache
 from app.core.helpers.pandas_conf import init_pandas
 from app.core.settings.app import AppSettings
+from app.providers.helpers.tracing import initialize_tracer, restart_otel_span_processors
 
 
 def create_start_app_handler(
@@ -30,6 +31,14 @@ def create_start_app_handler(
     async def start_app() -> None:
         for setting in settings:
             logger.debug(f"App setting: {setting}")
+        # Each uvicorn worker must own a fresh TracerProvider and OTLPSpanExporter so
+        # that the HTTP connection pool is not shared across forked processes.
+        # restart_otel_span_processors() handles the case where a provider is already
+        # present with a live export thread (no-op).  When it returns False — either
+        # no provider yet or the agent's post-fork thread is running — initialize_tracer()
+        # creates a fresh per-worker provider regardless of what the master had.
+        if not restart_otel_span_processors():
+            initialize_tracer(settings)
         await init_cache(settings)
         await init_pandas()
 

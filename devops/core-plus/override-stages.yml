@@ -6,6 +6,13 @@ variables:
   REDIS_REPO: "docker.io/redis/redis-stack-server"
   REDIS_VERSION: "7.4.0-v8"
   CIMPL_IMAGE_CRONJOB_NAME: cimpl-rafs-ddms-cronjob
+  # Python equivalent of CIMPL_OTEL_JAVA_TOOL_OPTIONS for Java services.
+  # Set to "opentelemetry-instrument" to activate the OTEL agent at runtime.
+  CIMPL_OTEL_PYTHON_TOOL_OPTIONS: "opentelemetry-instrument"
+  # Python uses HTTP/protobuf exporter (port 4318). Java uses gRPC (port 4317).
+  # gRPC would require adding opentelemetry-exporter-otlp-proto-grpc + grpcio to requirements.
+  CIMPL_OTEL_PYTHON_EXPORTER_ENDPOINT: "http://otel-collector.observability.svc.cluster.local:4318"
+  CIMPL_OTEL_PYTHON_EXPORTER_PROTOCOL: "http/protobuf"
 
 .cimpl_get_version:
   script:
@@ -149,6 +156,9 @@ cimpl-deploy:
       --set data.googleCloudProject=$CIMPL_PROJECT
       --set data.bucketName=$CIMPL_POLICY_BUCKET
       --set data.subscriberPrivateKeyId=$CIMPL_SUBSCRIBER_PRIVATE_KEY_ID
+      --set data.pythonToolOptions=$CIMPL_OTEL_PYTHON_TOOL_OPTIONS
+      --set data.otelExporterEndpoint=$CIMPL_OTEL_PYTHON_EXPORTER_ENDPOINT
+      --set data.otelExporterProtocol=$CIMPL_OTEL_PYTHON_EXPORTER_PROTOCOL
       --set rosa=true
       $CIMPL_HELM_SETS
       $CIMPL_HELM_TIMEOUT
