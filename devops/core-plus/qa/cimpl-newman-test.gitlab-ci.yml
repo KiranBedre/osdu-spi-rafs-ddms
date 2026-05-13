@@ -24,8 +24,8 @@
     { newman run "$CI_PROJECT_DIR/$COLLECTION_JSON" \
         -e "$CI_PROJECT_DIR/$ENVIRONMENT" \
         --env-var "TENANT_ID=${CIMPL_TENANT}" \
-        --env-var "CLIENT_ID=${TEST_EPAM_OPENID_PROVIDER_CLIENT_ID}" \
-        --env-var "CLIENT_SECRET=${CIMPL_TEST_EPAM_OPENID_PROVIDER_CLIENT_SECRET}" \
+        --env-var "CLIENT_ID=${CIMPL_CLIENT_ID}" \
+        --env-var "CLIENT_SECRET=${CIMPL_CLIENT_SECRET}" \
         --reporters cli,allure \
         --insecure; echo $? > /tmp/newman_exit; } 2>&1 | tee "$CI_PROJECT_DIR/newman.log"
     NEWMAN_EXIT_CODE=$(cat /tmp/newman_exit)
