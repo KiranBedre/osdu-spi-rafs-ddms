@@ -52,8 +52,6 @@ azure-keyvault-secrets==4.10.0
     # via azure-keyvault
 azure-storage-blob==12.28.0
     # via -r requirements.in
-backports-tarfile==1.2.0
-    # via jaraco-context
 boto3==1.35.0
     # via -r requirements.in
 botocore==1.35.99
@@ -160,6 +158,8 @@ opentelemetry-api==1.27.0
     # via
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
     #   opentelemetry-instrumentation-httpx
     #   opentelemetry-propagator-b3
     #   opentelemetry-sdk
@@ -169,7 +169,10 @@ opentelemetry-exporter-otlp-proto-common==1.27.0
 opentelemetry-exporter-otlp-proto-http==1.27.0
     # via -r requirements.in
 opentelemetry-instrumentation==0.48b0
-    # via opentelemetry-instrumentation-httpx
+    # via
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
+    #   opentelemetry-instrumentation-httpx
 opentelemetry-instrumentation-asgi==0.48b0
     # via opentelemetry-instrumentation-fastapi
 opentelemetry-instrumentation-fastapi==0.48b0
@@ -188,10 +191,15 @@ opentelemetry-sdk==1.27.0
     #   opentelemetry-exporter-otlp-proto-http
 opentelemetry-semantic-conventions==0.48b0
     # via
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
     #   opentelemetry-instrumentation-httpx
     #   opentelemetry-sdk
 opentelemetry-util-http==0.48b0
-    # via opentelemetry-instrumentation-httpx
+    # via
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
+    #   opentelemetry-instrumentation-httpx
 packaging==25.0
     # via
     #   pandera
@@ -288,7 +296,7 @@ tzdata==2025.3
     # via
     #   pandas
     #   pendulum
-urllib3==2.6.3
+urllib3==2.7.0
     # via
     #   -r requirements.in
     #   botocore
