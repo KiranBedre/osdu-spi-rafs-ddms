@@ -133,8 +133,8 @@ def get_content_schema_version(
     :rtype: str
     """
     if content_schema_version is not None:
-        validate_version_format(content_schema_version, "?content_schema_version")
-        logger.debug(f"Schema version (from ?content_schema_version): {content_schema_version}")
+        validate_version_format(content_schema_version, "content_schema_version")
+        logger.debug(f"Schema version (from content_schema_version): {content_schema_version}")
         return content_schema_version
 
     accept_header = request.headers.get(ACCEPT)
@@ -142,8 +142,8 @@ def get_content_schema_version(
     if not accept_header:
         reason = (
             "No schema version provided."
-            + " Use the ?content_schema_version= query parameter (e.g. ?content_schema_version=1.0.0)."
-            + " The deprecated Accept header versioning is also still accepted."
+            + " Use the content_schema_version query parameter (e.g. ?content_schema_version=1.0.0)."
+            + " The deprecated Accept header versioning is also still accepted (e.g. Accept: */*;version=1.0.0)."
         )
         raise exceptions.NotAcceptableException(detail=reason)
 

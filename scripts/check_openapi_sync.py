@@ -3,7 +3,12 @@ import difflib
 import json
 from pathlib import Path
 
-from scripts.generate_openapi import DEFAULT_OUTPUT_PATH, configure_environment, load_openapi_schema
+from scripts.generate_openapi import (
+    DEFAULT_OUTPUT_PATH,
+    configure_environment,
+    load_openapi_schema,
+    mark_content_schema_version_required,
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -80,6 +85,7 @@ def main() -> int:
         return 1
 
     generated_schema = load_openapi_schema()
+    generated_schema = mark_content_schema_version_required(generated_schema)
 
     if committed_schema == generated_schema:
         print(f"OpenAPI spec is in sync: {spec_path}")
