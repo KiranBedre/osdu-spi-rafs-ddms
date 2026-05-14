@@ -40,7 +40,6 @@ _SETTINGS_STUB.AppSettings = MagicMock
 for _mod_name, _mod_stub in (
     ("fastapi_cache", MagicMock()),
     ("fastapi_cache.backends", MagicMock()),
-    ("fastapi_cache.backends.redis", MagicMock()),
     ("fastapi_cache.decorator", MagicMock()),
     ("pydantic_settings", MagicMock()),
     ("app.core.helpers.cache_helper", _CACHE_STUB),
@@ -50,8 +49,8 @@ for _mod_name, _mod_stub in (
 ):
     sys.modules.setdefault(_mod_name, _mod_stub)
 
-from app.providers.helpers.tracing import initialize_tracer, restart_otel_span_processors  # noqa: E402
 from app.core.events import create_start_app_handler  # noqa: E402
+from app.providers.helpers.tracing import initialize_tracer, restart_otel_span_processors  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -79,6 +78,7 @@ class _FakeBatchSpanProcessor(BatchSpanProcessor):
 # ---------------------------------------------------------------------------
 # initialize_tracer
 # ---------------------------------------------------------------------------
+
 
 def test_initialize_tracer_noop_when_no_endpoint():
     """initialize_tracer with no endpoint must not change the active tracer provider."""
@@ -149,6 +149,7 @@ def test_initialize_tracer_tolerates_httpx_already_instrumented():
 # restart_otel_span_processors
 # ---------------------------------------------------------------------------
 
+
 def test_restart_returns_false_when_no_sdk_provider():
     """restart_otel_span_processors must return False when no TracerProvider is active."""
     proxy = trace.ProxyTracerProvider()
@@ -208,6 +209,7 @@ def test_restart_returns_false_on_sdk_internal_error():
 # ---------------------------------------------------------------------------
 # events.py startup branching
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.asyncio
 async def test_startup_initializes_when_restart_returns_false(monkeypatch):
