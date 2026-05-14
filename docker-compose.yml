@@ -54,12 +54,19 @@ services:
     restart: "no"
     env_file:
       - .env
+    environment:
+      - DDMS_BASE_URL
+      - URL_PREFIX
+      - PARTITION
+      - ACCESS_TOKEN
+      - CLOUD_PROVIDER
+      - DOMAIN
     volumes:
       - ./tests/:/tests
       - ./client/:/client
     working_dir: /
     entrypoint: [ "bash", "-c",
-      "time pytest -n 1 --cov=app --cov-report=term ./tests/integration/tests --ddms-base-url \"${DDMS_BASE_URL}\" --url-prefix \"${URL_PREFIX}\" --partition \"${PARTITION}\" --bearer-token \"${ACCESS_TOKEN}\" --cloud-provider \"${CLOUD_PROVIDER}\" --domain \"${DOMAIN}\""]
+      "time pytest -n 1 --cov=app --cov-report=term ./tests/integration/tests --ddms-base-url \"$${DDMS_BASE_URL:-http://rafs:8080}\" --url-prefix \"$${URL_PREFIX}\" --partition \"$${PARTITION}\" --bearer-token \"$${ACCESS_TOKEN}\" --cloud-provider \"$${CLOUD_PROVIDER}\" --domain \"$${DOMAIN}\""]
     profiles: ["tests"]
     depends_on:
       - rafs

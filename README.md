@@ -220,18 +220,18 @@ To view cache logs, ensure your logging level is set to DEBUG in `tests/integrat
 
 ### Run with Docker
 
-Docker-compose it is meant to be used for local development/testing, not for production, be aware that docker-compose uses higher privileges for development and testing purposes, we wouldn't recommend to use the [docker-compose](./docker-compose.yml) file for production, only for developers to be able to add changes and test them in local as well as unit/integration tests to avoid having to install all the dependencies.
+Docker Compose is meant to be used for local development/testing, not for production. Be aware that Docker Compose uses higher privileges for development and testing purposes. We wouldn't recommend using the [docker-compose.yml](./docker-compose.yml) file for production, only for developers to add changes and test them locally as well as run unit/integration tests to avoid having to install all dependencies.
 We are using a distroless image as the default production docker image for an improved security experience.
 
-#### Docker Flavor Versions (docker-compose)
+#### Docker Compose Flavors
 
-* [Distroless - Dockerfile](./Dockerfile) is the default image to run with [docker-compose](./docker-compose.yml).  It is a balanced, production ready dockerfile which can be used to deploy an application as well as to develop on your local machine. It is a lean dockerfile (which is a best approach for production systems due lack of unneeded binaries and libraries) and this approach will be ideal to address security CVEs and to have lean version of RAFS DDMS.
-  * Distroless build around ~400MB, you can test it `docker-compose --profile distroless up distroless`
+* [Distroless - Dockerfile](./Dockerfile) is the default image to run with Docker Compose. It is a balanced, production-ready Dockerfile that can be used to deploy an application as well as develop on your local machine. It is a lean Dockerfile (best practice for production systems due to lack of unneeded binaries and libraries) and is ideal for addressing security CVEs and providing a lean version of RAFS DDMS.
+  * Distroless build around ~400MB. You can test it with: `docker compose --profile distroless up distroless`
 * [tests - Dockerfile_test](./Dockerfile.tests) Dockerfile definition which contains and install all dependencies needed for unit/integration tests.
 
-#### Quickly run docker-compose
+#### Quickly Run Docker Compose
 
-**WARNING** Docker-compose it is meant to be used for quick development/testing, not for production.
+**WARNING** Docker Compose is meant to be used for quick development/testing, not for production.
 
 ```bash
 OSDU_ENDPOINT=https://<osdu>.<fqdn>
@@ -247,7 +247,7 @@ SERVICE_HOST_SEARCH=${OSDU_ENDPOINT}/api/search/v2
 CACHE_ENABLE=False
 EOF
 
-docker-compose up
+docker compose up
 
 # Simple test
 curl localhost:8080/api/rafs-ddms/info
@@ -292,9 +292,9 @@ Use the `OPENAPI_PREFIX` value used for project settings.
 Unit tests
 
 ```shell
-docker-compose --profile tests run tests
-docker-compose --profile tests run --rm tests flake8 / --config=/setup.cfg
-docker-compose --profile tests run --rm tests flake8 /app --select T1
+docker compose --profile tests run tests
+docker compose --profile tests run --rm tests flake8 / --config=/setup.cfg
+docker compose --profile tests run --rm tests flake8 /app --select T1
 ```
 
 ### Run Cache Integration Tests
@@ -317,7 +317,7 @@ REDIS_PASSWORD=
 **Run cache tests:**
 
 ```shell
-docker-compose --profile tests up cache_tests
+docker compose --profile tests up cache_tests
 ```
 
 The cache tests verify:
@@ -336,10 +336,10 @@ All cache operations are logged at DEBUG level, providing visibility into cache 
 Using Docker [env substitution from shell](https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell) capabilities.
 
 ```shell
-# Start docker-compose 
-docker-compose up rafs
+# Start Docker Compose
+docker compose up rafs
 # Export needed envs for testing
-# Internal hostname in docker-compose (app)
+# Internal hostname in Docker Compose (rafs service)
 # Alternatively you can choose to test in remote env
 export DDMS_BASE_URL=http://rafs:8080
 export ACCESS_TOKEN=<access_token>
@@ -348,11 +348,11 @@ export URL_PREFIX=api/rafs-ddms
 export CLOUD_PROVIDER=<cloud-provider>
 export DOMAIN=<domain>
 # Run test
-docker-compose build tests
-docker-compose --profile tests run --rm integration
+docker compose build tests
+docker compose --profile tests run --rm integration
 
 # (Optional) Cleanup
-docker-compose down
+docker compose down
 ```
 
 ### Local running
