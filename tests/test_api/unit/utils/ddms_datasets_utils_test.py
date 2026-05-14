@@ -16,6 +16,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi.responses import JSONResponse
+from starlette.datastructures import Headers
 from starlette.responses import Response
 
 from app.api.routes.utils.ddms_datasets import (
@@ -150,7 +151,7 @@ async def test_get_parquet_data_success(
 
     # Mock request and inputs
     mock_request = MagicMock()
-    mock_request.headers = {"Accept": "application/x-parquet"}
+    mock_request.headers = Headers(headers={"Accept": "application/x-parquet"})
     mock_record = {
         "data": {"DDMSDatasets": ["urn://rafs/wpc_id/analysis_family/analysis_type/1.0.0/123456789"]},
     }

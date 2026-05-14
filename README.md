@@ -371,7 +371,25 @@ docker compose down
     pip install -r requirements-tests.in
     ````
 
-3. Run
+3. Set required environment variables
+
+   The integration tests use **two separate URL settings**:
+   - `DDMS_BASE_URL` — URL of the RAFS DDMS service (passed via `--ddms-base-url`)
+   - `SERVICE_HOST_LEGAL` — URL of the OSDU Legal service (e.g. `https://<host>/api/legal/v1`)
+   - `SERVICE_HOST_STORAGE` — URL of the OSDU Storage service (e.g. `https://<host>/api/storage/v2`)
+
+   `SERVICE_HOST_LEGAL` and `SERVICE_HOST_STORAGE` are **not** derived from `DDMS_BASE_URL`.
+   They must be set as environment variables or in a `.env` file (see `.env.example`).
+
+   ```bash
+   export SERVICE_HOST_LEGAL=https://<osdu-host>/api/legal/v1
+   export SERVICE_HOST_STORAGE=https://<osdu-host>/api/storage/v2
+   ```
+
+   If these are not set, legal tag creation will fail with 401/connection errors
+   against the wrong (or missing) endpoint regardless of what `DDMS_BASE_URL` is set to.
+
+4. Run
 
 * Run via Terminal:
 

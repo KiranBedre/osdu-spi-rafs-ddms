@@ -22,7 +22,7 @@ from app.exceptions import exceptions
 SUPPORTED_MIME_TYPES: Final[tuple] = ("application/json", "application/x-parquet", "*/*")
 
 _DEPRECATED_PARAM_MSG = (
-    "Specifying schema version via the Accept header is deprecated. Use ?content_schema_version= instead."
+    "Specifying schema version via the Accept header is deprecated. Use content_schema_version= instead."
 )
 _ACCEPT_VERSION_SUNSET = "Sun, 31 May 2026 00:00:00 GMT"  # M27 end of support
 
@@ -31,7 +31,7 @@ _VERSION_REGEX = r"^\d+\.\d+(?:\.\d+)?$"
 
 def validate_version_format(version: str, source: str) -> None:
     if not re.match(_VERSION_REGEX, version):
-        reason = "Invalid version format in {0}: '{1}'. Expected format: X.Y.Z (e.g. 1.0.0)".format(
+        reason = "Invalid version format in {0}: '{1}'. Expected format: major.minor.patch (e.g. 1.0.0)".format(
             source,
             version,
         )
@@ -43,22 +43,18 @@ def parse_version_from_accept_header(accept_header: str) -> str:
     mime_type = parts[0]
 
     if mime_type not in SUPPORTED_MIME_TYPES:
-        error_title = "Not Acceptable."
-        error_details = " ".join(
-            [
-                f"The requested media type '{mime_type}' is not supported.",
-                f"Supported types are: {SUPPORTED_MIME_TYPES}.",
-            ],
+        supported = str(list(SUPPORTED_MIME_TYPES))
+        error_details = "The requested media type '{0}' is not supported. Supported types are: {1}.".format(
+            mime_type,
+            supported,
         )
-        raise exceptions.NotAcceptableException(detail=f"{error_title} {error_details}")
+        raise exceptions.UnsupportedMediaTypeException(detail=error_details)
 
     version_match = re.search(r"version=(\d+\.\d+(?:\.\d+)?)", accept_header.lower().strip())
 
     if not version_match:
-        error_title = "No schema version specified or invalid schema format."
-        example_detail = "Example: --header 'Accept: */*;version=1.0.0'"
-        error_details = f"Check if the schema version is specified in the 'Accept' header. {example_detail}"
-        raise exceptions.NotAcceptableException(detail=f"{error_title} {error_details}")
+        error_details = "No schema version specified or invalid schema format. Use the content_schema_version query parameter (e.g. ?content_schema_version=1.0.0). The deprecated Accept header versioning is also still accepted (e.g. Accept: */*;version=1.0.0)."  # noqa: E501
+        raise exceptions.NotAcceptableException(detail=error_details)
 
     return version_match.group(1)
 

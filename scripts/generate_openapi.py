@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 from typing import Type
 
-
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_OUTPUT_PATH = REPO_ROOT / "docs" / "spec" / "openapi.json"
 FALLBACK_APP_NAME = "Rock and Fluid Sample DDMS"
@@ -93,6 +92,23 @@ def load_openapi_schema() -> dict:
     return app.openapi()
 
 
+def mark_content_schema_version_required(schema: dict) -> dict:
+    """Mark content_schema_version query parameter as required in all endpoints.
+
+    The parameter is optional in code to support the deprecated Accept header
+    versioning fallback, but it should be shown as required in the spec to
+    guide clients towards the preferred usage.
+    """
+    for path_item in schema.get("paths", {}).values():
+        for operation in path_item.values():
+            if not isinstance(operation, dict):
+                continue
+            for param in operation.get("parameters", []):
+                if param.get("name") == "content_schema_version" and param.get("in") == "query":
+                    param["required"] = True
+    return schema
+
+
 def write_openapi_schema(schema: dict, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
@@ -105,6 +121,7 @@ def main() -> int:
     args = parse_args()
     configure_environment(args)
     schema = load_openapi_schema()
+    schema = mark_content_schema_version_required(schema)
     output_path = Path(args.output).resolve()
     write_openapi_schema(schema, output_path)
     print(f"Generated OpenAPI spec: {output_path}")

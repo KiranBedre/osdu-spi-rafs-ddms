@@ -1191,8 +1191,8 @@ async def test_get_data_accept_negotiation_returns_parquet(
     ],
 )
 @pytest.mark.asyncio
-async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, dataset_id):
-    """Accept header with unsupported MIME type must return 406 Not Acceptable."""
+async def test_get_data_unsupported_accept_returns_415(data_endpoint_path, dataset_id):
+    """Accept header with unsupported MIME type must return 415 Unsupported Media Type."""
     with services_overrides():
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.get(
@@ -1203,7 +1203,7 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
                     "Accept": "application/xml;version=1.0.0",
                 },
             )
-    assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
+    assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
 
 
 @pytest.mark.parametrize(
@@ -3164,7 +3164,12 @@ async def test_get_data_json_data_no_content_schema_version(
             )
     expected_error = {
         "code": status.HTTP_406_NOT_ACCEPTABLE,
-        "reason": "No schema version specified or invalid schema format. Check if the schema version is specified in the 'Accept' header. Example: --header 'Accept: */*;version=1.0.0'",
+        "reason": (
+            "No schema version specified or invalid schema format."
+            " Use the content_schema_version query parameter (e.g. ?content_schema_version=1.0.0)."
+            " The deprecated Accept header versioning is also still accepted"
+            " (e.g. Accept: */*;version=1.0.0)."
+        ),
     }
 
     assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
@@ -3586,7 +3591,12 @@ async def test_get_data_json_data_improper_schema_version(
             )
     expected_error = {
         "code": status.HTTP_406_NOT_ACCEPTABLE,
-        "reason": "No schema version specified or invalid schema format. Check if the schema version is specified in the 'Accept' header. Example: --header 'Accept: */*;version=1.0.0'",
+        "reason": (
+            "No schema version specified or invalid schema format."
+            " Use the content_schema_version query parameter (e.g. ?content_schema_version=1.0.0)."
+            " The deprecated Accept header versioning is also still accepted"
+            " (e.g. Accept: */*;version=1.0.0)."
+        ),
     }
 
     assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE

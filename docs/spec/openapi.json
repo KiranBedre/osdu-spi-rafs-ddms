@@ -285,7 +285,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -491,7 +491,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -710,7 +710,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -825,7 +825,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -2680,7 +2680,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -2780,7 +2780,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -2946,7 +2946,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -3235,7 +3235,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -3530,7 +3530,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -4476,7 +4476,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -4651,7 +4651,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -4805,7 +4805,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -5021,7 +5021,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -5267,7 +5267,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -5668,7 +5668,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -5768,7 +5768,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -5934,7 +5934,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -6223,7 +6223,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
@@ -6480,7 +6480,7 @@
             "example": "1.0.0",
             "in": "query",
             "name": "content_schema_version",
-            "required": false,
+            "required": true,
             "schema": {
               "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
               "title": "Content Schema Version",
