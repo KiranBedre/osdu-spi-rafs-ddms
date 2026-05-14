@@ -36,6 +36,8 @@ class AzureConfig(BaseSettings):
 
     redis_health_check_interval: int = 30
 
+    redis_hostname_secret_name: str = "redis-hostname"
+
     redis_socket_connect_timeout: int = 5
 
     redis_socket_keepalive: bool = True
