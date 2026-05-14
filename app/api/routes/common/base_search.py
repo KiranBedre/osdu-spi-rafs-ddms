@@ -53,6 +53,16 @@ SEARCH_READ_BATCH_SIZE = 100  # max number of parquet files retrieved
 PaginationParametersType = Tuple[int, int, Optional[date], Optional[date]]
 
 
+def _coerce_mixed_type_columns(df: pd.DataFrame) -> pd.DataFrame:
+    # When datasets with mismatched column types are concatenated, pandas
+    # produces object-dtype columns containing mixed Python types (e.g. int + str).
+    # PyArrow rejects these during to_parquet(); cast such columns to str.
+    for col in df.select_dtypes(include="object").columns:
+        if df[col].map(type).nunique() > 1:
+            df[col] = df[col].astype(str)
+    return df
+
+
 class GenericSearchDataView(object):
     def __init__(
         self,
@@ -189,7 +199,7 @@ class GenericSearchDataView(object):
             )
 
         if mime_type == SupportedMimeTypes.PARQUET:
-            content_response = result_df.to_parquet() if result_df.any else b""
+            content_response = _coerce_mixed_type_columns(result_df).to_parquet() if result_df.any else b""
             response = Response(
                 content=content_response,
                 media_type=SupportedMimeTypes.PARQUET.mime_type,
