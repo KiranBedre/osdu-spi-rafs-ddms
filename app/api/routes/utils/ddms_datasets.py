@@ -177,7 +177,6 @@ async def get_parquet_data(
         logger.debug(f"Dataframe info: {df.size} elements; {df.columns}")
 
         if mime_type == SupportedMimeTypes.PARQUET:
-            df.astype(str)
             response = Response(content=df.to_parquet(), media_type=SupportedMimeTypes.PARQUET.mime_type)
         else:
             response = Response(
