@@ -13,8 +13,8 @@
 #  limitations under the License.
 
 import copy
-import pytest
 
+import pytest
 from starlette import status
 
 from tests.integration.config import (
@@ -51,33 +51,40 @@ SPECIFIC_INVALID_TYPE_DATA_V2_FIELDS = [
         "/data/0/11/0/SlimTubeTestVolumeSteps/0/CumulativeLiquidCompositionalAnalysis/0/LiquidComposition",
         "CumulativeLiquidCompositionalAnalysis.LiquidComposition",
     ),
-
 ]
 
 SPECIFIC_MISSING_REFERENCE_DATA_V2_FIELDS = [
     ("/data/0/0", f"{DATA_PARTITION_ID}:work-product-component--SamplesAnalysis:Dummy:"),
     ("/data/0/1", f"{DATA_PARTITION_ID}:master-data--Sample:DummySample:"),
     ("/data/0/2/0/unitOfMeasureID", f"{DATA_PARTITION_ID}:reference-data--UnitOfMeasure:DummyUnit:"),
-    ("/data/0/6/0/ColumnPermeabilityMeasurementMethodID",
-     f"{DATA_PARTITION_ID}:reference-data--PermeabilityMeasurementMethod:Dummy:"),
-    ("/data/0/6/0/ColumnPermeabilityFluidTypeID",
-     f"{DATA_PARTITION_ID}:reference-data--SampleInjectionFluidType:DummyFluid:"),
+    (
+        "/data/0/6/0/ColumnPermeabilityMeasurementMethodID",
+        f"{DATA_PARTITION_ID}:reference-data--PermeabilityMeasurementMethod:Dummy:",
+    ),
+    (
+        "/data/0/6/0/ColumnPermeabilityFluidTypeID",
+        f"{DATA_PARTITION_ID}:reference-data--SampleInjectionFluidType:DummyFluid:",
+    ),
     ("/data/0/7", f"{DATA_PARTITION_ID}:master-data--Sample:DummyGasInjected:"),
-    ("/data/0/8/0/VaporComposition/0/ComponentNameID",
-     f"{DATA_PARTITION_ID}:reference-data--SampleOrganicCompositionComponent:DummyComponent:"),
-    ("/data/0/10/0/ResidueCalculatedProperties/0/ComponentNameID",
-     f"{DATA_PARTITION_ID}:reference-data--SampleOrganicCompositionComponent:DummyComponent:"),
+    (
+        "/data/0/8/0/VaporComposition/0/ComponentNameID",
+        f"{DATA_PARTITION_ID}:reference-data--SampleOrganicCompositionComponent:DummyComponent:",
+    ),
+    (
+        "/data/0/10/0/ResidueCalculatedProperties/0/ComponentNameID",
+        f"{DATA_PARTITION_ID}:reference-data--SampleOrganicCompositionComponent:DummyComponent:",
+    ),
     (
         "/data/0/11/0/SlimTubeTestVolumeSteps/0/CumulativeLiquidCompositionalAnalysis/0/LiquidComposition/0/ComponentNameID",
-        f"{DATA_PARTITION_ID}:reference-data--SampleOrganicCompositionComponent:DummyComponent:"
+        f"{DATA_PARTITION_ID}:reference-data--SampleOrganicCompositionComponent:DummyComponent:",
     ),
     (
         "/data/0/11/0/SlimTubeTestVolumeSteps/0/IncrementalLiquidCompositionalAnalysis/0/LiquidComposition/0/ComponentNameID",
-        f"{DATA_PARTITION_ID}:reference-data--SampleOrganicCompositionComponent:DummyComponent:"
+        f"{DATA_PARTITION_ID}:reference-data--SampleOrganicCompositionComponent:DummyComponent:",
     ),
     (
         "/data/0/11/0/SlimTubeTestVolumeSteps/0/InstantaneousLiquidCompositionalAnalysis/0/LiquidComposition/0/ComponentNameID",
-        f"{DATA_PARTITION_ID}:reference-data--SampleOrganicCompositionComponent:DummyComponent:"
+        f"{DATA_PARTITION_ID}:reference-data--SampleOrganicCompositionComponent:DummyComponent:",
     ),
 ]
 
@@ -85,26 +92,34 @@ SPECIFIC_INVALID_REGEX_DATA_V2_FIELDS = [
     ("/data/0/0", f"{DATA_PARTITION_ID}:work-product-component-SamplesAnalysis:Dummy:"),
     ("/data/0/1", f"{DATA_PARTITION_ID}:master-data-Sample:DummySample:"),
     ("/data/0/2/0/unitOfMeasureID", f"{DATA_PARTITION_ID}:reference-data-UnitOfMeasure:DummyUnit:"),
-    ("/data/0/6/0/ColumnPermeabilityMeasurementMethodID",
-     f"{DATA_PARTITION_ID}:reference-data-PermeabilityMeasurementMethod:Dummy:"),
-    ("/data/0/6/0/ColumnPermeabilityFluidTypeID",
-     f"{DATA_PARTITION_ID}:reference-data-SampleInjectionFluidType:DummyFluid:"),
+    (
+        "/data/0/6/0/ColumnPermeabilityMeasurementMethodID",
+        f"{DATA_PARTITION_ID}:reference-data-PermeabilityMeasurementMethod:Dummy:",
+    ),
+    (
+        "/data/0/6/0/ColumnPermeabilityFluidTypeID",
+        f"{DATA_PARTITION_ID}:reference-data-SampleInjectionFluidType:DummyFluid:",
+    ),
     ("/data/0/7", f"{DATA_PARTITION_ID}:master-data-Sample:DummyGasInjected:"),
-    ("/data/0/8/0/VaporComposition/0/ComponentNameID",
-     f"{DATA_PARTITION_ID}:reference-data-SampleOrganicCompositionComponent:DummyComponent:"),
-    ("/data/0/10/0/ResidueCalculatedProperties/0/ComponentNameID",
-     f"{DATA_PARTITION_ID}:reference-data-SampleOrganicCompositionComponent:DummyComponent:"),
+    (
+        "/data/0/8/0/VaporComposition/0/ComponentNameID",
+        f"{DATA_PARTITION_ID}:reference-data-SampleOrganicCompositionComponent:DummyComponent:",
+    ),
+    (
+        "/data/0/10/0/ResidueCalculatedProperties/0/ComponentNameID",
+        f"{DATA_PARTITION_ID}:reference-data-SampleOrganicCompositionComponent:DummyComponent:",
+    ),
     (
         "/data/0/11/0/SlimTubeTestVolumeSteps/0/CumulativeLiquidCompositionalAnalysis/0/LiquidComposition/0/ComponentNameID",
-        f"{DATA_PARTITION_ID}:reference-data-SampleOrganicCompositionComponent:DummyComponent:"
+        f"{DATA_PARTITION_ID}:reference-data-SampleOrganicCompositionComponent:DummyComponent:",
     ),
     (
         "/data/0/11/0/SlimTubeTestVolumeSteps/0/IncrementalLiquidCompositionalAnalysis/0/LiquidComposition/0/ComponentNameID",
-        f"{DATA_PARTITION_ID}:reference-data-SampleOrganicCompositionComponent:DummyComponent:"
+        f"{DATA_PARTITION_ID}:reference-data-SampleOrganicCompositionComponent:DummyComponent:",
     ),
     (
         "/data/0/11/0/SlimTubeTestVolumeSteps/0/InstantaneousLiquidCompositionalAnalysis/0/LiquidComposition/0/ComponentNameID",
-        f"{DATA_PARTITION_ID}:reference-data-SampleOrganicCompositionComponent:DummyComponent:"
+        f"{DATA_PARTITION_ID}:reference-data-SampleOrganicCompositionComponent:DummyComponent:",
     ),
 ]
 
@@ -138,9 +153,7 @@ EXTRA_DATA_V2_FIELDS = [
 
 
 @pytest.mark.parametrize("field_path", GENERIC_MANDATORY_DATA_FIELDS)
-def test_slim_tube_negative_add_data_v2_missing_mandatory_generic_field(
-    api,tests_data, helper, field_path, record_id
-):
+def test_slim_tube_negative_add_data_v2_missing_mandatory_generic_field(api, tests_data, helper, field_path, record_id):
     """Reject data upload with missing mandatory structure field with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.SLIM_TUBE_DATA_V2))
     helper.delete_by_path(data_payload, field_path)
@@ -183,7 +196,7 @@ def test_slim_tube_negative_add_data_v2_missing_main_mandatory_column(
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_INVALID_TYPE_DATA_V2_FIELDS)
@@ -207,12 +220,12 @@ def test_slim_tube_negative_add_data_v2_invalid_type_specific_field(
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_MISSING_REFERENCE_DATA_V2_FIELDS)
 def test_slim_tube_negative_add_data_v2_missing_reference_specific_field(
-        api, tests_data, helper, field_path, value, record_id
+    api, tests_data, helper, field_path, value, record_id
 ):
     """Reject data upload when referenced record doesn't exist with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.SLIM_TUBE_DATA_V2))
@@ -237,7 +250,7 @@ def test_slim_tube_negative_add_data_v2_missing_reference_specific_field(
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_INVALID_REGEX_DATA_V2_FIELDS)
 def test_slim_tube_negative_add_data_v2_invalid_regex_specific_field(
-        api, tests_data, helper, field_path, value, record_id
+    api, tests_data, helper, field_path, value, record_id
 ):
     """Reject data upload when field doesn't match OSDU naming convention with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.SLIM_TUBE_DATA_V2))
@@ -256,7 +269,7 @@ def test_slim_tube_negative_add_data_v2_invalid_regex_specific_field(
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 def test_slim_tube_negative_add_data_v2_extra_main_field(api, tests_data, record_id):
@@ -278,7 +291,7 @@ def test_slim_tube_negative_add_data_v2_extra_main_field(api, tests_data, record
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", EXTRA_DATA_V2_FIELDS)
@@ -300,7 +313,7 @@ def test_slim_tube_negative_add_data_v2_extra_field(api, tests_data, helper, fie
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 def test_slim_tube_negative_add_data_v2_invalid_payload_format(api, tests_data, record_id):
@@ -319,5 +332,7 @@ def test_slim_tube_negative_add_data_v2_invalid_payload_format(api, tests_data, 
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert ("Data error: split format must be a JSON object, not wrapped in an array. Remove the outer [] brackets."
-            in body["reason"])
+    assert (
+        "Data error: split format must be a JSON object, not wrapped in an array. Remove the outer [] brackets."
+        in body["reason"]
+    )

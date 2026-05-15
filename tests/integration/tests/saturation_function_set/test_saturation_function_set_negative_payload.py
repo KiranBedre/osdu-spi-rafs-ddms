@@ -613,7 +613,7 @@ def test_sfs_negative_add_data_missing_main_mandatory_column(api, tests_data, he
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path", SPECIFIC_MANDATORY_DATA_FIELDS)
@@ -633,7 +633,7 @@ def test_sfs_negative_add_data_missing_specific_mandatory_field(api, tests_data,
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_INVALID_TYPE_DATA_FIELDS)
@@ -653,7 +653,7 @@ def test_sfs_negative_add_data_invalid_type_specific_field(api, tests_data, help
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_MISSING_REFERENCE_DATA_FIELDS)
@@ -694,7 +694,7 @@ def test_sfs_negative_add_data_invalid_regex_specific_field(api, tests_data, hel
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", EXTRA_DATA_FIELDS)
@@ -714,7 +714,7 @@ def test_sfs_negative_add_data_extra_field(api, tests_data, helper, field_path, 
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 def test_sfs_negative_create_record_invalid_payload_format(api, tests_data):
@@ -791,7 +791,7 @@ def test_sfs_negative_add_data_records_format_missing_specific_field(api, tests_
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_INVALID_TYPE_DATA_FIELDS_RECORDS_FORMAT)
@@ -813,7 +813,7 @@ def test_sfs_negative_add_data_records_format_invalid_type_specific_field(
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_MISSING_REFERENCE_DATA_FIELDS_RECORDS_FORMAT)
@@ -859,7 +859,7 @@ def test_sfs_negative_add_data_records_format_invalid_regex_specific_field(
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", EXTRA_DATA_FIELDS_RECORDS_FORMAT)
@@ -879,4 +879,4 @@ def test_sfs_negative_add_data_records_format_extra_field(api, tests_data, helpe
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
