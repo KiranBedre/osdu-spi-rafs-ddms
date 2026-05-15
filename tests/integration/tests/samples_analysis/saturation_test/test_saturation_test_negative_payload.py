@@ -13,8 +13,8 @@
 #  limitations under the License.
 
 import copy
-import pytest
 
+import pytest
 from starlette import status
 
 from tests.integration.config import (
@@ -72,7 +72,7 @@ EXTRA_DATA_V1_FIELDS = [
 
 @pytest.mark.parametrize("field_path", GENERIC_MANDATORY_DATA_FIELDS)
 def test_saturation_test_negative_add_data_v1_missing_mandatory_generic_field(
-    api,tests_data, helper, field_path, record_id
+    api, tests_data, helper, field_path, record_id
 ):
     """Reject data upload with missing mandatory structure field with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_TEST_DATA_V1))
@@ -116,7 +116,7 @@ def test_saturation_test_negative_add_data_v1_missing_main_mandatory_column(
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_INVALID_TYPE_DATA_V1_FIELDS)
@@ -140,12 +140,12 @@ def test_saturation_test_negative_add_data_v1_invalid_type_specific_field(
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_MISSING_REFERENCE_DATA_V1_FIELDS)
 def test_saturation_test_negative_add_data_v1_missing_reference_specific_field(
-        api, tests_data, helper, field_path, value, record_id
+    api, tests_data, helper, field_path, value, record_id
 ):
     """Reject data upload when referenced record doesn't exist with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_TEST_DATA_V1))
@@ -170,7 +170,7 @@ def test_saturation_test_negative_add_data_v1_missing_reference_specific_field(
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_INVALID_REGEX_DATA_V1_FIELDS)
 def test_saturation_test_negative_add_data_v1_invalid_regex_specific_field(
-        api, tests_data, helper, field_path, value, record_id
+    api, tests_data, helper, field_path, value, record_id
 ):
     """Reject data upload when field doesn't match OSDU naming convention with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_TEST_DATA_V1))
@@ -189,7 +189,7 @@ def test_saturation_test_negative_add_data_v1_invalid_regex_specific_field(
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 def test_saturation_test_negative_add_data_v1_extra_main_field(api, tests_data, record_id):
@@ -211,7 +211,7 @@ def test_saturation_test_negative_add_data_v1_extra_main_field(api, tests_data, 
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 @pytest.mark.parametrize("field_path,value", EXTRA_DATA_V1_FIELDS)
@@ -233,7 +233,7 @@ def test_saturation_test_negative_add_data_v1_extra_field(api, tests_data, helpe
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert "DataSchema" in body["errors"]["Invalid type"][0]
+    assert "field" in body["errors"]["Invalid type"][0]
 
 
 def test_saturation_test_negative_add_data_v1_invalid_payload_format(api, tests_data, record_id):
@@ -252,5 +252,7 @@ def test_saturation_test_negative_add_data_v1_invalid_payload_format(api, tests_
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert ("Data error: split format must be a JSON object, not wrapped in an array. Remove the outer [] brackets."
-            in body["reason"])
+    assert (
+        "Data error: split format must be a JSON object, not wrapped in an array. Remove the outer [] brackets."
+        in body["reason"]
+    )

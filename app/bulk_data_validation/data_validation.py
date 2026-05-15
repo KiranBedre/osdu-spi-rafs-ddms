@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import ast
 import re
 from dataclasses import dataclass
 from typing import Iterable
@@ -261,6 +262,68 @@ class DataValidator(object):
             return "DataSchema", raw_failure
         return column, raw_failure
 
+    @staticmethod
+    def _build_expected_desc(field_info) -> str:
+        """Build a human-readable expected-type description from a Pydantic FieldInfo.
+
+        :param field_info: Pydantic v1 FieldInfo object
+        :return: expected type description string
+        :rtype: str
+        """
+        regex = getattr(field_info.type_, "regex", None)
+        type_name = getattr(field_info.type_, "__name__", None)
+
+        if regex:
+            return f"pattern: {regex.pattern}"
+        if type_name in {"float", "int", "str", "bool", "date", "datetime"}:
+            return type_name
+        return str(field_info.outer_type_)
+
+    def _enrich_pydantic_error(self, raw_failure: str) -> list:
+        """Parse a PydanticModel failure_case string into field-level error dicts.
+
+        :param raw_failure: Python-repr dict string from pandera failure_case
+        :type raw_failure: str
+        :return: list of enriched error dicts with field, received, expected keys
+        :rtype: list
+        """
+        try:
+            failed_fields = ast.literal_eval(raw_failure)
+        except (ValueError, SyntaxError):
+            return [{"field": "DataSchema", "received": raw_failure, "expected": "unknown"}]
+
+        if not isinstance(failed_fields, dict):
+            return [{"field": "DataSchema", "received": raw_failure, "expected": "unknown"}]
+
+        pydantic_model = self._get_pydantic_model()
+        model_fields = getattr(pydantic_model, "__fields__", {}) if pydantic_model else {}
+
+        enriched = []
+        for field_name, received_val in failed_fields.items():
+            field_info = model_fields.get(field_name)
+            expected_desc = self._build_expected_desc(field_info) if field_info else "unknown"
+            enriched.append(
+                {
+                    "field": field_name,
+                    "received": received_val,
+                    "expected": expected_desc,
+                },
+            )
+        return enriched
+
+    @staticmethod
+    def _normalise_check(check: str) -> str:
+        """Map a pandera check name to a canonical error category key.
+
+        :param check: raw check name from pandera
+        :type check: str
+        :return: canonical check key
+        :rtype: str
+        """
+        if check in {"column_in_dataframe", "column_in_schema"}:
+            return check
+        return "invalid_type" if "dtype" in check else "invalid_value"
+
     def _collect_errors(self, error_cases: Iterable) -> dict:
         """Collect the errors.
 
@@ -271,20 +334,21 @@ class DataValidator(object):
         """
         errors = {}
         for error_case in error_cases:
-            check = error_case.get("check", "")
+            check = self._normalise_check(error_case.get("check", ""))
             column = error_case.get("column", "")
             raw_failure = error_case.get("failure_case", "")
 
             column, raw_failure = self._unwrap_pydantic_error(column, raw_failure)
-            failure_case = str(raw_failure)
 
-            if check not in {"column_in_dataframe", "column_in_schema"}:
-                check = "invalid_type" if "dtype" in check else "invalid_value"
+            if column == "DataSchema":
+                enriched_list = self._enrich_pydantic_error(str(raw_failure))
+                errors.setdefault(check, []).extend(enriched_list)
+                continue
 
             # If the check type is "column_in_dataframe" or "column_in_schema" the column name is in
             # "failure_case" field, otherwise it is in "column" and "failure_case" contains the field value
+            failure_case = str(raw_failure)
             failure_desc = {column: failure_case} if column else failure_case
-
             errors.setdefault(check, []).append(failure_desc)
 
         return errors
