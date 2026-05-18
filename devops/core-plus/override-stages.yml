@@ -38,6 +38,12 @@ variables:
         coverage_format: cobertura
         path: coverage.xml
 
+.cimpl_buildx_setup:
+  script:
+    - docker run --privileged --rm tonistiigi/binfmt --install all
+    - docker buildx create --driver docker-container --use
+    - docker buildx inspect --bootstrap
+
 .get_cimpl_access_token:
   script:
     - |
@@ -65,23 +71,27 @@ cimpl-containerize-gitlab:
   variables:
     CIMPL_BUILD_CONTEXT: "."
     CIMPL_BUILD_PATH: "./Dockerfile"
-  script: 
+  script:
     - !reference [.cimpl_get_version, script]
     - !reference [.cimpl_set_image_name, script]
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - !reference [.cimpl_buildx_setup, script]
     - >
-      docker build $EXTRA_TAG -f $CIMPL_BUILD_PATH
+      docker buildx build --provenance=false
+      --platform $CIMPL_SUPPORTED_PLATFORM
+      $EXTRA_TAG
+      -t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME
+      -f $CIMPL_BUILD_PATH
       --build-arg build_date="$CI_JOB_STARTED_AT"
       --build-arg commit_id="$CI_COMMIT_SHORT_SHA"
       --build-arg commit_branch="$CI_COMMIT_BRANCH"
       --build-arg commit_message="$CI_COMMIT_MESSAGE"
-      --build-arg release_version="$CIMPL_VERSION" $CIMPL_BUILD_CONTEXT
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME
-#  one time action    
-    # - docker pull $REDIS_REPO:$REDIS_VERSION 
+      --build-arg release_version="$CIMPL_VERSION"
+      --push $CIMPL_BUILD_CONTEXT
+#  one time action
+    # - docker pull $REDIS_REPO:$REDIS_VERSION
     # - docker tag $REDIS_REPO:$REDIS_VERSION $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_REDIS_NAME:$REDIS_VERSION
     # - docker push $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_REDIS_NAME:$REDIS_VERSION
-    - wait
 
 cimpl-cronjob-containerize-gitlab:
   extends:
@@ -93,18 +103,6 @@ cimpl-cronjob-containerize-gitlab:
     CIMPL_BUILD_CONTEXT: "./devops/core-plus/cronjob"
     CIMPL_BUILD_PATH: "./devops/core-plus/cronjob/Dockerfile"
     CIMPL_IMAGE_NAME: $CIMPL_IMAGE_CRONJOB_NAME
-  script: 
-    - !reference [.cimpl_get_version, script]
-    - !reference [.cimpl_set_image_name, script]
-    - >
-      docker build $EXTRA_TAG -f $CIMPL_BUILD_PATH
-      --build-arg build_date="$CI_JOB_STARTED_AT"
-      --build-arg commit_id="$CI_COMMIT_SHORT_SHA"
-      --build-arg commit_branch="$CI_COMMIT_BRANCH"
-      --build-arg commit_message="$CI_COMMIT_MESSAGE"
-      --build-arg release_version="$CIMPL_VERSION" $CIMPL_BUILD_CONTEXT
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME
 
 cimpl-helm-charts-gitlab:
   before_script:
