@@ -23,6 +23,14 @@ from app.exceptions.exceptions import OsduApiException
 
 OSDU_API_ERROR_DETAIL = "OSDU service API request failed."
 
+_PASSTHROUGH_CODES = frozenset((400, 401, 403, 404, 409, 422, 503, 504))
+
+
+def translate_upstream_status_code(upstream_code: int) -> int:
+    if upstream_code in _PASSTHROUGH_CODES:
+        return upstream_code
+    return status.HTTP_502_BAD_GATEWAY
+
 
 def get_reason(status_error: HTTPStatusError, detail: str) -> dict:
     """Get the reason object.
@@ -45,6 +53,22 @@ def get_reason(status_error: HTTPStatusError, detail: str) -> dict:
     return reason
 
 
+def _build_exception(
+    status_error: HTTPStatusError,
+    expected_codes: list[int],
+    detail: str,
+) -> Exception:
+    reason = get_reason(status_error, detail)
+    logger.error(reason)
+    if status_error.response.status_code not in expected_codes:
+        translated = translate_upstream_status_code(status_error.response.status_code)
+        return OsduApiException(
+            status_code=translated,
+            detail=json.dumps(reason),
+        )
+    return status_error
+
+
 def handle_core_services_http_status_error(expected_codes: list[int], detail: str = OSDU_API_ERROR_DETAIL):
     """Decorator to catch errors from osdu services, log them, and raise
     generic service exceptions if unexpected error received.
@@ -55,23 +79,17 @@ def handle_core_services_http_status_error(expected_codes: list[int], detail: st
     :type detail: str
     :raises OsduApiException: when error from OSDU service has
         unexpected status code
-    :raises status_error.response.raise_for_status: if status code is
-        expected
+    :raises HTTPStatusError: if status code is expected
     """
+
     def decorator(func):
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
             except HTTPStatusError as status_error:
-                reason = get_reason(status_error, detail)
-                logger.error(reason)
-                if status_error.response.status_code not in expected_codes:
-                    raise OsduApiException(
-                        status_code=status.HTTP_424_FAILED_DEPENDENCY,
-                        detail=json.dumps(reason),
-                    )
-                else:
-                    status_error.response.raise_for_status()
+                raise _build_exception(status_error, expected_codes, detail)
+
         return wrapper
+
     return decorator
