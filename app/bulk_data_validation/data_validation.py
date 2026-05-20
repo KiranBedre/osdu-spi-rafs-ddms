@@ -27,6 +27,8 @@ from app.services.storage import StorageService
 
 settings = get_app_settings()
 
+_MAX_RECEIVED_REPR_LEN = 200
+
 
 @dataclass
 class DataValidator(object):
@@ -364,10 +366,14 @@ class DataValidator(object):
         for field_name, received_val in failed_fields.items():
             field_info = model_fields.get(field_name)
             expected_desc = self._build_expected_desc(field_info) if field_info else "unknown"
+            received_repr = repr(received_val)
+            if len(received_repr) > _MAX_RECEIVED_REPR_LEN:
+                received_repr = received_repr[:_MAX_RECEIVED_REPR_LEN]
+                received_repr = f"{received_repr}...[truncated]"
             enriched.append(
                 {
                     "field": field_name,
-                    "received": received_val,
+                    "received": received_repr,
                     "expected": expected_desc,
                 },
             )

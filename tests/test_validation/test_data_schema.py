@@ -17,7 +17,7 @@ import io
 import pandas as pd
 import pytest
 
-from app.bulk_data_validation.data_validation import DataValidator
+from app.bulk_data_validation.data_validation import _MAX_RECEIVED_REPR_LEN, DataValidator
 from app.models.data_schemas.data_schema import build_data_schema
 from app.models.data_schemas.sample_analysis_api_v2.routine_core_analysis_data_model_1_0_0 import (
     RoutineCoreAnalysisModel100,
@@ -66,5 +66,21 @@ async def test_pydantic_model_validation_error_enriched():
     assert "invalid_type" in errors
     first_error = errors["invalid_type"][0]
     assert first_error["field"] == "SamplesAnalysisID"
-    assert first_error["received"] == bad_id
+    assert first_error["received"] == repr(bad_id)
     assert first_error["expected"].startswith("pattern: ")
+
+
+@pytest.mark.asyncio
+async def test_pydantic_model_validation_error_received_truncated():
+    mock_storage_service = StorageService(record_data=None)
+    rca_schema = build_data_schema(RoutineCoreAnalysisModel100)
+    data_validator = DataValidator(rca_schema, mock_storage_service, API_VERSION_V2)
+
+    long_val = "x" * 500
+    raw_failure = repr({"SamplesAnalysisID": long_val})
+    result = data_validator._enrich_pydantic_error(raw_failure)
+
+    assert len(result) == 1
+    assert result[0]["field"] == "SamplesAnalysisID"
+    assert result[0]["received"].endswith("...[truncated]")
+    assert len(result[0]["received"]) == _MAX_RECEIVED_REPR_LEN + len("...[truncated]")
