@@ -181,3 +181,56 @@ class TestAzureRedisClientFactory:
 
         mock_parent_create.assert_called_once()
         assert client is mock_redis
+
+
+class TestResolveRedisHostname:
+    """Tests for AzureRedisClientFactory._resolve_redis_hostname."""
+
+    @pytest.mark.asyncio
+    async def test_returns_config_hostname_when_set(self):
+        """Hostname from config is returned directly without an AKV call."""
+        config = _make_config(redis_hostname="myredis.redis.cache.windows.net")
+        factory = _make_factory()
+        factory.config = config
+        result = await factory._resolve_redis_hostname()
+        assert result == "myredis.redis.cache.windows.net"
+
+    @pytest.mark.asyncio
+    async def test_raises_when_hostname_absent_and_no_akv_url(self):
+        """ValueError is raised when hostname is None and AKV URL is not configured."""
+        config = _make_config(redis_hostname=None)
+        azure_config = AzureConfig(az_keyvault_url=None)
+
+        with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config):
+            factory = AzureRedisClientFactory(config)
+
+        with pytest.raises(ValueError, match="Redis hostname is not set"):
+            await factory._resolve_redis_hostname()
+
+    @pytest.mark.asyncio
+    async def test_fetches_from_akv_when_hostname_not_set(self):
+        """AKV is queried and its value returned when redis_hostname is None."""
+        config = _make_config(redis_hostname=None)
+        azure_config = AzureConfig(az_keyvault_url="https://my-kv.vault.azure.net/")
+
+        mock_secret = MagicMock()
+        mock_secret.value = "akv-resolved.redis.cache.windows.net"
+
+        mock_kv_client = AsyncMock()
+        mock_kv_client.get_secret = AsyncMock(return_value=mock_secret)
+        mock_kv_client.__aenter__ = AsyncMock(return_value=mock_kv_client)
+        mock_kv_client.__aexit__ = AsyncMock(return_value=None)
+
+        mock_credential = AsyncMock()
+        mock_credential.__aenter__ = AsyncMock(return_value=mock_credential)
+        mock_credential.__aexit__ = AsyncMock(return_value=None)
+
+        with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config), \
+             patch("app.providers.dependencies.az.redis_client_factory.DefaultAzureCredential", return_value=mock_credential), \
+             patch("app.providers.dependencies.az.redis_client_factory.SecretClient", return_value=mock_kv_client):
+
+            factory = AzureRedisClientFactory(config)
+            result = await factory._resolve_redis_hostname()
+
+        assert result == "akv-resolved.redis.cache.windows.net"
+        mock_kv_client.get_secret.assert_called_once_with(azure_config.redis_hostname_secret_name)

@@ -47,20 +47,3 @@ gc-acceptance-test-python:
     - if: '$GC == "1" && $GC_INT_TEST_TYPE == "python"'
       when: on_success
 
-gc-dev2-test-python:
-  script:
-    - curl https://community.opengroup.org/api/v4/projects/1410/packages/generic/gc_auth_token/master/gc_auth_token -o gc_auth_token
-    - chmod +x gc_auth_token
-    - export GOOGLE_APPLICATION_CREDENTIALS=$GC_INTEGRATION_TESTER_SA_FILE
-    - export GC_TOKEN=$(./gc_auth_token)
-    - pip install -r requirements.txt
-    - pip install -r requirements-tests.in
-    - >-
-      pytest -n auto tests/integration/tests
-      --ddms-base-url ${DDMS_BASE_URL}
-      --url-prefix ${URL_PREFIX}
-      --partition ${DATA_PARTITION_ID}
-      --bearer-token ${GC_TOKEN}
-      --cloud-provider ${CLOUD_PROVIDER}
-  # FIXME: should be deleted after int tests are configured correctly for GC implementation
-  allow_failure: true

@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Union
+from typing import Optional, Union
 
 from pydantic import BaseSettings
 from pydantic.types import conint
@@ -20,7 +20,7 @@ from pydantic.types import conint
 
 class RedisCacheConfig(BaseSettings):
     """Config with settings for redis instance."""
-    redis_hostname: str = "localhost"
+    redis_hostname: Optional[str] = None
 
     redis_password: str = None
 

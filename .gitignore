@@ -66,6 +66,7 @@ venv.bak/
 integration_env/
 
 .idea/
+.vs/
 .vscode/
 
 # Generated requirements

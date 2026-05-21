@@ -22,6 +22,7 @@ from redis.exceptions import (
     AuthenticationError,
     ConnectionError,
     ResponseError,
+    TimeoutError,
 )
 
 from app.core.helpers.cache.config import RedisCacheConfig
@@ -69,8 +70,9 @@ class RedisClientFactory(object):
         """
         while True:
             try:
+                hostname = self._get_hostname()
                 redis_client = Redis(
-                    host=self.config.redis_hostname,
+                    host=hostname,
                     port=self.config.redis_port,
                     password=self.config.redis_password,
                     db=self._get_database(),
@@ -79,11 +81,23 @@ class RedisClientFactory(object):
                 await redis_client.ping()
                 logger.debug("Redis client connected successfully")
                 return redis_client
-            except (AuthenticationError, ConnectionError, ResponseError) as exc:
+            except (AuthenticationError, ConnectionError, ResponseError, TimeoutError) as exc:
                 exc_msg = str(exc)
                 error_msg = f"Redis client error: {exc_msg}"
                 logger.error(error_msg)
                 await asyncio.sleep(WAIT_FOR_REDIS)
+
+    def _get_hostname(self) -> str:
+        """Return the configured Redis hostname.
+
+        :return: Stripped hostname string
+        :rtype: str
+        :raises ValueError: if ``redis_hostname`` is not set or blank
+        """
+        hostname = self.config.redis_hostname.strip() if self.config.redis_hostname else ""
+        if not hostname:
+            raise ValueError("Redis hostname is not configured, can't create Redis client.")
+        return hostname
 
     def _get_database(self) -> int:
         """Determine the Redis database number to use.
