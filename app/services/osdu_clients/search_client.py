@@ -65,7 +65,10 @@ class SearchServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             response = await client.post(SearchServicePaths.QUERY, json=query, headers=self.headers)
             logger.debug(f"{self.name}: query response: {response}")
@@ -81,7 +84,10 @@ class SearchServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             response = await client.post(SearchServicePaths.CURSOR_QUERY, json=query, headers=self.headers)
             logger.debug(f"{self.name}: query with cursor response: {response}")

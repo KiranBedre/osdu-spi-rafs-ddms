@@ -95,8 +95,9 @@ class TestRedisClientFactoryCreateClient:
 
         redis_instances = iter([mock_redis_fail, mock_redis_ok])
 
-        with patch("app.core.helpers.cache.redis_client_factory.Redis", side_effect=lambda **_: next(redis_instances)), \
-             patch("app.core.helpers.cache.redis_client_factory.asyncio.sleep", new_callable=AsyncMock) as mock_sleep:
+        with patch(
+            "app.core.helpers.cache.redis_client_factory.Redis", side_effect=lambda **_: next(redis_instances)
+        ), patch("app.core.helpers.cache.redis_client_factory.asyncio.sleep", new_callable=AsyncMock) as mock_sleep:
             client = await factory.create_client()
 
         mock_sleep.assert_called_once()

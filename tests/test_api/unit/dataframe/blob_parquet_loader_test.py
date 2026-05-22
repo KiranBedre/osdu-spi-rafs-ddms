@@ -12,9 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pandas as pd
+import pyarrow as pa
 import pytest
 
 from app.dataframe.blob_parquet_loader import BlobParquetLoader
@@ -82,8 +83,12 @@ async def test_read_parquet_files(blob_ids, blob_data, df_filter_processor, expe
 
 
 @pytest.mark.asyncio
-async def test_read_parquet_handles_pyarrow_exception():
+@patch("app.dataframe.blob_parquet_loader.pq.read_table")
+async def test_read_parquet_handles_pyarrow_exception(mock_read_table):
     blob_loader = BlobParquetLoader()
+
+    # Use ArrowMemoryError which inherits from pa.lib.ArrowException but not ValueError
+    mock_read_table.side_effect = pa.ArrowMemoryError("Mocked pyarrow failure")
 
     # Mock IBlobStorage
     mock_blob_storage_service = AsyncMock()
@@ -98,4 +103,5 @@ async def test_read_parquet_handles_pyarrow_exception():
     # Validate results
     assert result.content_id == "family4/type4/v4/uuid4"
     assert result.df.empty
+    assert result.error_msg is not None
     assert "PyArrowException" in result.error_msg

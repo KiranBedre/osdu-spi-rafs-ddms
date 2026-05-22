@@ -19,8 +19,11 @@ from app.exceptions.exceptions import InvalidBodyException
 from app.models.schemas.errors import BadRequestResponse
 
 
-async def invalid_body_error_handler(_: Request, exc: InvalidBodyException) -> JSONResponse:
-    return JSONResponse(
+async def invalid_body_error_handler(  # noqa: ASYNC910, ASYNC124
+    _: Request,
+    exc: InvalidBodyException,
+) -> JSONResponse:
+    return JSONResponse(  # noqa: ASYNC910
         BadRequestResponse.construct(reason=exc.detail).dict(),
         status_code=exc.status_code,
     )

@@ -16,7 +16,7 @@
 
 from typing import Tuple
 
-from azure.identity import DefaultAzureCredential
+from azure.identity import DefaultAzureCredential  # pylint: disable=no-name-in-module
 from loguru import logger
 from redis.credentials import CredentialProvider
 

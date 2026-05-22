@@ -58,23 +58,27 @@ def append_query_params(text_parts: list[str]) -> str:
 
 def get_search_description_template(entity_name: str) -> str:
     """Returns the standard description for search endpoints."""
-    return append_query_params([
-        f"Get `{entity_name}` records containing associated bulk data (`data.DDMSDatasets`).<br><br>",
-        "Use the `Accept` request header to specify content schema version",
-        "(example header `Accept: application/json;version=1.0.0` is supported).",
-    ])
+    return append_query_params(
+        [
+            f"Get `{entity_name}` records containing associated bulk data (`data.DDMSDatasets`).<br><br>",
+            "Use the `Accept` request header to specify content schema version",
+            "(example header `Accept: application/json;version=1.0.0` is supported).",
+        ]
+    )
 
 
 def get_search_data_description_template(entity_name: str) -> str:
     """Returns the standard description for search data endpoints."""
-    return append_query_params([
-        f"Get `{entity_name}` records bulk data content.<br><br>",
-        "Use the `Accept` request header to specify content schema version",
-        "(example header `Accept: application/json;version=1.0.0` is supported).<br><br>",
-        "Use the `Content-Type` request header to specify payload and response",
-        "formats (`application/json` and `application/parquet` are supported).<br><br>",
-        "Use the `orient` query parameter to select the JSON output format (`split` or `records`).",
-    ])
+    return append_query_params(
+        [
+            f"Get `{entity_name}` records bulk data content.<br><br>",
+            "Use the `Accept` request header to specify content schema version",
+            "(example header `Accept: application/json;version=1.0.0` is supported).<br><br>",
+            "Use the `Content-Type` request header to specify payload and response",
+            "formats (`application/json` and `application/parquet` are supported).<br><br>",
+            "Use the `orient` query parameter to select the JSON output format (`split` or `records`).",
+        ]
+    )
 
 
 class DynamicGenericSearchView(GenericSearchDataView):
@@ -99,6 +103,7 @@ class DynamicGenericSearchView(GenericSearchDataView):
         uses_orient = method_name == "get_search_data"
 
         if uses_orient:
+
             async def search_endpoint(  # noqa: WPS430
                 request: Request,
                 df_filter: DataFrameFilterValidator = Depends(filter_dep),
@@ -121,7 +126,9 @@ class DynamicGenericSearchView(GenericSearchDataView):
                     pagination_parameters=pagination_parameters,
                     orient=orient,
                 )
+
         else:
+
             async def search_endpoint(  # noqa: WPS430, WPS440
                 request: Request,
                 df_filter: DataFrameFilterValidator = Depends(filter_dep),

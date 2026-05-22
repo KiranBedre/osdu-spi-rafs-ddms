@@ -12,5 +12,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+
 class FilterValidationError(Exception):
     """Raised whenever a validation on filters fails."""

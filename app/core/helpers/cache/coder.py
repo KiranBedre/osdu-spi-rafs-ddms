@@ -12,11 +12,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import base64
 import json
 from typing import Any
 
 from fastapi import Response
-from fastapi_cache.coder import Coder, JsonCoder, PickleCoder
+from fastapi_cache.coder import Coder, JsonCoder
 
 from app.resources.mime_types import SupportedMimeTypes
 
@@ -24,17 +25,22 @@ from app.resources.mime_types import SupportedMimeTypes
 class ResponseCoder(Coder):
     @classmethod
     def encode(cls, response: Response) -> str:
-        """Encode to keep value in storage."""
+        """Encode to keep value in storage.
+
+        JSON responses are encoded with JsonCoder; all other responses use
+        base64 to avoid unsafe pickle deserialization.
+        """
         media_type = response.media_type
         if media_type == SupportedMimeTypes.JSON.mime_type:
-            coder = JsonCoder
+            encoded_content = JsonCoder.encode(response.body)
         else:
-            coder = PickleCoder
-        encoded_content = coder.encode(response.body)
-        return json.dumps({
-            "encoded_content": encoded_content,
-            "media_type": media_type,
-        })
+            encoded_content = base64.b64encode(response.body).decode("ascii")
+        return json.dumps(
+            {
+                "encoded_content": encoded_content,
+                "media_type": media_type,
+            }
+        )
 
     @classmethod
     def decode(cls, value_to_decode: str) -> Any:
@@ -43,10 +49,10 @@ class ResponseCoder(Coder):
         media_type = value_to_decode.get("media_type")
         encoded_content = value_to_decode.get("encoded_content")
         if media_type == SupportedMimeTypes.JSON.mime_type:
-            coder = JsonCoder
+            decoded_body = JsonCoder.decode(encoded_content)
         else:
-            coder = PickleCoder
+            decoded_body = base64.b64decode(encoded_content)
         return Response(
-            content=coder.decode(encoded_content),
+            content=decoded_body,
             media_type=media_type,
         )

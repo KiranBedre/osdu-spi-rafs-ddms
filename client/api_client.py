@@ -81,10 +81,10 @@ class APIClient(object):
         if extra_headers:
             # Remove headers set to None, merge others
             for header_name, header_value in extra_headers.items():
-                if header_value is not None:
-                    headers[header_name] = header_value
-                else:
+                if header_value is None:
                     headers.pop(header_name, None)
+                else:
+                    headers[header_name] = header_value
 
         return headers
 

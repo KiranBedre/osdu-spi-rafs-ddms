@@ -14,8 +14,9 @@
 
 """Tests for Redis factory resolver pattern."""
 
-import pytest
 from unittest import mock
+
+import pytest
 
 from app.core.helpers.cache.redis_client_factory import RedisClientFactory
 from app.providers.dependencies.az.redis_client_factory import AzureRedisClientFactory

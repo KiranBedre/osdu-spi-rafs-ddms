@@ -81,7 +81,7 @@ class RedisClientFactory(object):
                 await redis_client.ping()
                 logger.debug("Redis client connected successfully")
                 return redis_client
-            except (AuthenticationError, ConnectionError, ResponseError, TimeoutError) as exc:
+            except (AuthenticationError, ConnectionError, ResponseError, TimeoutError) as exc:  # noqa: WPS239
                 exc_msg = str(exc)
                 error_msg = f"Redis client error: {exc_msg}"
                 logger.error(error_msg)

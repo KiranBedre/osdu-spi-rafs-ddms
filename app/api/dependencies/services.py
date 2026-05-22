@@ -28,7 +28,7 @@ from app.resources.common_headers import CORRELATION_ID
 from app.services import dataset, entitlements, schema, search, storage
 
 
-async def get_async_dataset_service(
+def get_async_dataset_service(
     data_partition_id: str = Depends(require_data_partition_id),
     settings: AppSettings = Depends(get_app_settings),
     user: User = Depends(require_authorized_user),
@@ -42,7 +42,7 @@ async def get_async_dataset_service(
     )
 
 
-async def get_async_storage_service(
+def get_async_storage_service(
     data_partition_id: str = Depends(require_data_partition_id),
     settings: AppSettings = Depends(get_app_settings),
     user: User = Depends(require_authorized_user),
@@ -56,7 +56,7 @@ async def get_async_storage_service(
     )
 
 
-async def get_async_search_service(
+def get_async_search_service(
     data_partition_id: str = Depends(require_data_partition_id),
     settings: AppSettings = Depends(get_app_settings),
     user: User = Depends(require_authorized_user),
@@ -70,7 +70,7 @@ async def get_async_search_service(
     )
 
 
-async def get_async_schema_service(
+def get_async_schema_service(
     data_partition_id: str = Depends(require_data_partition_id),
     settings: AppSettings = Depends(get_app_settings),
     user: User = Depends(require_authorized_user),
@@ -84,7 +84,7 @@ async def get_async_schema_service(
     )
 
 
-async def get_blob_storage_service(
+async def get_blob_storage_service(  # noqa: ASYNC910
     data_partition_id: str = Depends(require_data_partition_id),
     settings: AppSettings = Depends(get_app_settings),
     cloud_provider_config: BaseSettings = Depends(get_provider_config),
@@ -97,7 +97,7 @@ async def get_blob_storage_service(
         )
 
 
-async def get_async_entitlements_service(
+def get_async_entitlements_service(
     data_partition_id: str = Depends(require_data_partition_id),
     settings: AppSettings = Depends(get_app_settings),
     user: User = Depends(require_authorized_user),

@@ -144,35 +144,22 @@ class DatasetPrefix:
 class VersionedDataFiles:
     VALUES = {
         (SamplesAnalysisTypes.CAPILLARY_PRESSURE, SchemaVersions.V1_1_0): DataFiles.CAPILLARY_PRESSURE_DATA_V1_1,
-
         (SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME, SchemaVersions.V1_0_0): DataFiles.CAPILLARY_SUCTION_TIME_DATA_V1,
-
         (
             SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
             SchemaVersions.V1_1_0,
         ): DataFiles.COMPOSITIONAL_ANALYSIS_DATA_V1_1,
-
         (SamplesAnalysisTypes.NMR, SchemaVersions.V1_0_0): DataFiles.NMR_DATA_V1,
-
         (SamplesAnalysisTypes.PROPPANT_EMBEDMENT, SchemaVersions.V1_0_0): DataFiles.PROPPANT_EMBEDMENT_DATA_V1,
-
         (SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_0_0): DataFiles.RELATIVE_PERMEABILITY_DATA_V1,
-
         (SamplesAnalysisTypes.ROLLER_OVEN_TEST, SchemaVersions.V1_0_0): DataFiles.ROLLER_OVEN_TEST_DATA_V1,
-
         (SamplesAnalysisTypes.SATURATION_TEST, SchemaVersions.V1_0_0): DataFiles.SATURATION_TEST_DATA_V1,
-
         (SamplesAnalysisTypes.SLIM_TUBE, SchemaVersions.V1_0_0): DataFiles.SLIM_TUBE_DATA_V1,
         (SamplesAnalysisTypes.SLIM_TUBE, SchemaVersions.V2_0_0): DataFiles.SLIM_TUBE_DATA_V2,
-
         (SamplesAnalysisTypes.STOCK_TANK_OIL, SchemaVersions.V1_1_0): DataFiles.STOCK_TANK_OIL_DATA_V1_1,
-
         (SamplesAnalysisTypes.VLE, SchemaVersions.V2_0_0): DataFiles.VLE_DATA_V2,
-
         (SamplesAnalysisTypes.XRD, SchemaVersions.V1_1_0): DataFiles.XRD_DATA_V1_1,
-
         (SamplesAnalysisTypes.XRF, SchemaVersions.V1_1_0): DataFiles.XRF_DATA_V1_1,
-
         (DataTypes.SATURATION_FUNCTION_SET, SchemaVersions.V1_0_0): DataFiles.SATURATION_FUNCTION_SET_DATA_V1,
     }
 
@@ -203,7 +190,7 @@ class SamplesAnalysisConfig:
             "samples_analysis_type": "NMR",
             "parent_report_id": "sar_record_id",
         },
-        SamplesAnalysisTypes.PROPPANT_EMBEDMENT : {
+        SamplesAnalysisTypes.PROPPANT_EMBEDMENT: {
             "samples_analysis_type": "Geomechanics.ProppantEmbedment",
             "parent_report_id": "sar_record_id",
         },
@@ -240,7 +227,6 @@ class SamplesAnalysisConfig:
             "parent_report_id": "sar_record_id",
         },
     }
-
 
     @classmethod
     def get(cls, analysis_type):

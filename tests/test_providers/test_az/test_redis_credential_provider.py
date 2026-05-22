@@ -33,8 +33,8 @@ class TestAzureRedisCredentialProvider:
         header = {"alg": "RS256", "typ": "JWT"}
         payload = {"oid": "test-oid-12345", "exp": 9999999999}
 
-        header_b64 = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip('=')
-        payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')
+        header_b64 = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
+        payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
         signature = "mock_signature"
 
         return f"{header_b64}.{payload_b64}.{signature}"
@@ -43,9 +43,7 @@ class TestAzureRedisCredentialProvider:
         """Test that get_credentials returns (username, token) tuple."""
         with patch("app.providers.dependencies.az.redis_credential_provider.DefaultAzureCredential") as mock_cred_class:
             mock_credential = Mock()
-            mock_credential.get_token = Mock(
-                return_value=AccessToken(token=mock_token_with_oid, expires_on=9999999999)
-            )
+            mock_credential.get_token = Mock(return_value=AccessToken(token=mock_token_with_oid, expires_on=9999999999))
             mock_credential.close = Mock()
             mock_cred_class.return_value = mock_credential
 
@@ -61,9 +59,7 @@ class TestAzureRedisCredentialProvider:
         """Test that get_credentials can be called multiple times (for token refresh)."""
         with patch("app.providers.dependencies.az.redis_credential_provider.DefaultAzureCredential") as mock_cred_class:
             mock_credential = Mock()
-            mock_credential.get_token = Mock(
-                return_value=AccessToken(token=mock_token_with_oid, expires_on=9999999999)
-            )
+            mock_credential.get_token = Mock(return_value=AccessToken(token=mock_token_with_oid, expires_on=9999999999))
             mock_credential.close = Mock()
             mock_cred_class.return_value = mock_credential
 
@@ -85,9 +81,7 @@ class TestAzureRedisCredentialProvider:
         """Test that get_credentials raises exception when auth fails."""
         with patch("app.providers.dependencies.az.redis_credential_provider.DefaultAzureCredential") as mock_cred_class:
             mock_credential = Mock()
-            mock_credential.get_token = Mock(
-                side_effect=Exception("Auth failed")
-            )
+            mock_credential.get_token = Mock(side_effect=Exception("Auth failed"))
             mock_credential.close = Mock()
             mock_cred_class.return_value = mock_credential
 
@@ -100,14 +94,12 @@ class TestAzureRedisCredentialProvider:
         """Test that get_credentials raises exception when token has no OID."""
         # Token without OID claim
         payload = {"sub": "subject", "exp": 9999999999}
-        payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')
+        payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
         token_no_oid = f"header.{payload_b64}.signature"
 
         with patch("app.providers.dependencies.az.redis_credential_provider.DefaultAzureCredential") as mock_cred_class:
             mock_credential = Mock()
-            mock_credential.get_token = Mock(
-                return_value=AccessToken(token=token_no_oid, expires_on=9999999999)
-            )
+            mock_credential.get_token = Mock(return_value=AccessToken(token=token_no_oid, expires_on=9999999999))
             mock_credential.close = Mock()
             mock_cred_class.return_value = mock_credential
 
@@ -120,9 +112,7 @@ class TestAzureRedisCredentialProvider:
         """Test that __del__ closes the credential."""
         with patch("app.providers.dependencies.az.redis_credential_provider.DefaultAzureCredential") as mock_cred_class:
             mock_credential = Mock()
-            mock_credential.get_token = Mock(
-                return_value=AccessToken(token=mock_token_with_oid, expires_on=9999999999)
-            )
+            mock_credential.get_token = Mock(return_value=AccessToken(token=mock_token_with_oid, expires_on=9999999999))
             mock_credential.close = Mock()
             mock_cred_class.return_value = mock_credential
 

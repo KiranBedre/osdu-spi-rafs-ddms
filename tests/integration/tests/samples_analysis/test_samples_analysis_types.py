@@ -52,7 +52,6 @@ def test_samples_analysis_types_negative_missing_authorization_header(api):
     assert "Not authenticated" in body["reason"]
 
 
-
 def test_samples_analysis_types_negative_invalid_authorization_header(api):
     """Reject malformed Authorization header with 403 Forbidden."""
 

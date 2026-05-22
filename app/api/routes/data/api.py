@@ -304,11 +304,16 @@ class BaseDataView(object):
 
             if missing_fields:
                 fields_str = ", ".join(missing_fields)
-                reason = "Data error: missing required fields: {0}. For records format, wrap the data in an array [{{...}}, ...].".format(  # noqa: E501, WPS326
-                    fields_str,
-                )
+                reason = (
+                    "Data error: missing required fields: {0}. "
+                    "For records format, wrap the data in an array [{{...}}, ...]."
+                ).format(fields_str)
             else:
-                reason = "Data error: invalid 'split' format. Expected 'columns' (list of strings), 'index' (list of integers), and 'data' (list of arrays). For records format, use an array of objects [{{...}}, ...]."  # noqa: E501, WPS326
+                reason = (
+                    "Data error: invalid 'split' format. Expected 'columns' (list of strings), "
+                    "'index' (list of integers), and 'data' (list of arrays). "
+                    "For records format, use an array of objects [{{...}}, ...]."
+                )
 
             logger.debug(f"Raw validation error: {error_msg}")
             raise exceptions.UnprocessableContentException(detail=reason)

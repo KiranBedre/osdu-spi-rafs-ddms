@@ -64,7 +64,10 @@ class PartitionServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             response = await client.get(
                 f"{PartitionServicePaths.PARTITIONS}/{data_partition_id}",
@@ -81,7 +84,10 @@ class PartitionServiceApiClient(object):
         :rtype: list
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             response = await client.get(PartitionServicePaths.PARTITIONS, headers=self.headers)
             logger.debug(f"{self.name}: list partitions response: {response}")

@@ -40,7 +40,7 @@ def samples_analysis_create_record(create_record, samples_analysis_type):
         DataTypes.SAMPLE_ANALYSIS,
         DataFiles.SAMPLE_ANALYSIS,
         DataTemplates.ID_SAMPLE_ANALYSIS.format(partition=CONFIG["DATA_PARTITION"]),
-        samples_analysis_type
+        samples_analysis_type,
     )
     yield record_data
     # Cleanup is handled by create_record fixture
@@ -54,7 +54,7 @@ def record_id(samples_analysis_create_record):
 
 @pytest.fixture(scope="module")
 def dataset_id_v1(api, helper, record_id, tests_data, samples_analysis_type):
-    """  Generic fixture to create a V1 dataset. """
+    """Generic fixture to create a V1 dataset."""
     # 1. Lookup the correct data file for this Analysis Type + V1
     file_key = VersionedDataFiles.VALUES.get((samples_analysis_type, SchemaVersions.V1_0_0))
 
@@ -67,7 +67,7 @@ def dataset_id_v1(api, helper, record_id, tests_data, samples_analysis_type):
         record_id=record_id,
         body=data_payload,
         analysis_type=samples_analysis_type,
-        schema_version=SchemaVersions.V1_0_0
+        schema_version=SchemaVersions.V1_0_0,
     )
 
     return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
@@ -75,7 +75,7 @@ def dataset_id_v1(api, helper, record_id, tests_data, samples_analysis_type):
 
 @pytest.fixture(scope="module")
 def dataset_id_v1_1(api, helper, record_id, tests_data, samples_analysis_type):
-    """  Generic fixture to create a V1 dataset. """
+    """Generic fixture to create a V1 dataset."""
     # 1. Lookup the correct data file for this Analysis Type + V1
     file_key = VersionedDataFiles.VALUES.get((samples_analysis_type, SchemaVersions.V1_1_0))
 
@@ -88,7 +88,7 @@ def dataset_id_v1_1(api, helper, record_id, tests_data, samples_analysis_type):
         record_id=record_id,
         body=data_payload,
         analysis_type=samples_analysis_type,
-        schema_version=SchemaVersions.V1_1_0
+        schema_version=SchemaVersions.V1_1_0,
     )
 
     return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
@@ -96,7 +96,7 @@ def dataset_id_v1_1(api, helper, record_id, tests_data, samples_analysis_type):
 
 @pytest.fixture(scope="module")
 def dataset_id_v2(api, helper, record_id, tests_data, samples_analysis_type):
-    """ Generic fixture to create a V2 dataset. """
+    """Generic fixture to create a V2 dataset."""
     # 1. Lookup V2 file
     file_key = VersionedDataFiles.VALUES.get((samples_analysis_type, SchemaVersions.V2_0_0))
 
@@ -109,7 +109,7 @@ def dataset_id_v2(api, helper, record_id, tests_data, samples_analysis_type):
         record_id=record_id,
         body=data_payload,
         analysis_type=samples_analysis_type,
-        schema_version=SchemaVersions.V2_0_0
+        schema_version=SchemaVersions.V2_0_0,
     )
 
     return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])

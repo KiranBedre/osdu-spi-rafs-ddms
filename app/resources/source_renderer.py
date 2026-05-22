@@ -35,7 +35,7 @@ class FileSourceRenderer(object):
     def __init__(self, data_source_files: List[DatasetSourceFile]) -> None:
         self.data_source_files = data_source_files
 
-    async def render_source_data(self) -> Response:
+    async def render_source_data(self) -> Response:  # noqa: ASYNC910
         if len(self.data_source_files) > 1:
             response = self._create_zip_response(self.data_source_files)
         elif len(self.data_source_files) == 1:
@@ -48,7 +48,7 @@ class FileSourceRenderer(object):
                 status_code=status.HTTP_404_NOT_FOUND,
             )
 
-        return response
+        return response  # noqa: ASYNC910
 
     def _create_zip_response(self, data_source_files: List[DatasetSourceFile]) -> Response:
         response_file = BytesIO()
@@ -68,8 +68,7 @@ class FileSourceRenderer(object):
             iter([response_file.getvalue()]),
             media_type=SupportedMimeTypes.ZIP.mime_type,
             headers={
-                f"{common_headers.CONTENT_DISPOSITION}":
-                f"{common_headers.ATTACHMENT};filename=datasets{extension}",
+                f"{common_headers.CONTENT_DISPOSITION}": f"{common_headers.ATTACHMENT};filename=datasets{extension}",
             },
         )
 
@@ -81,9 +80,9 @@ class FileSourceRenderer(object):
         return StreamingResponse(
             iter([response_file.getvalue()]),
             media_type=dsf.mime_type,
-
             headers={
-                f"{common_headers.CONTENT_DISPOSITION}":
-                f'{common_headers.ATTACHMENT};filename="{dsf.dataset_id}{extension}"',
+                f"{common_headers.CONTENT_DISPOSITION}": (
+                    f'{common_headers.ATTACHMENT};filename="{dsf.dataset_id}{extension}"'
+                ),
             },
         )

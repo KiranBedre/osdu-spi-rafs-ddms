@@ -108,6 +108,7 @@ class BlobParquetLoader(object):
             uuid=uuid,
             content_type=SupportedMimeTypes.PARQUET,
         )
+
         try:
             blob = await blob_storage_service.get_blob(blob_metadata=blob_metadata)
             df = self._apply_filters(blob.blob_data, blob_id, blob_metadata.object_name, df_filter_processor)

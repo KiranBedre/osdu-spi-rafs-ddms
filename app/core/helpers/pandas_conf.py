@@ -15,7 +15,7 @@
 import pandas as pd
 
 
-async def init_pandas():
+def init_pandas():
     """Set here pandas library options."""
     pd.set_option("display.max_columns", None)
     pd.set_option("display.max_rows", None)

@@ -25,14 +25,16 @@ def create_default_dataset_record(
     common_resources = {"ResourceHomeRegionID", "ResourceHostRegionIDs", "ResourceSecurityClassification"}
     existent_common_resources = set(parent_record["data"].keys()).intersection(common_resources)
     record_data = {key: parent_record["data"][key] for key in existent_common_resources}
-    record_data.update({
-        "DatasetProperties": {
-            "FileSourceInfo": {
-                "FileSource": file_source,
-                "FileSize": file_size,
+    record_data.update(
+        {
+            "DatasetProperties": {
+                "FileSourceInfo": {
+                    "FileSource": file_source,
+                    "FileSize": file_size,
+                },
             },
-        },
-    })
+        }
+    )
     return {
         "id": dataset_id,
         "kind": f"{schema_authority}:wks:dataset--File.Generic:1.0.0",

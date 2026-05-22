@@ -79,7 +79,8 @@ class WPCDatasetSourceView(object):
 
     def _prepare_get_source_data_route(self) -> None:
         """Add api route for get_source_data."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id

@@ -61,13 +61,10 @@ def _is_header_error(errors: list) -> bool:
     Headers are request metadata, not entity body, so missing headers
     should return 400 Bad Request instead of 422 per RFC 4918.
     """
-    return all(
-        error.get("loc") and error["loc"][0] == "header"
-        for error in errors
-    )
+    return all(error.get("loc") and error["loc"][0] == "header" for error in errors)
 
 
-async def http422_error_handler(
+async def http422_error_handler(  # noqa: ASYNC910, ASYNC124
     _: Request,
     exc: Union[RequestValidationError, ValidationError],
 ) -> JSONResponse:
@@ -75,7 +72,7 @@ async def http422_error_handler(
 
     # Return 400 for missing headers (RFC 4918: headers are request metadata)
     if _is_header_error(errors):
-        return JSONResponse(
+        return JSONResponse(  # noqa: ASYNC910
             ValidationErrorResponse.construct(
                 code=HTTP_400_BAD_REQUEST,
                 reason="Bad request.",
@@ -84,7 +81,7 @@ async def http422_error_handler(
             status_code=HTTP_400_BAD_REQUEST,
         )
 
-    return JSONResponse(
+    return JSONResponse(  # noqa: ASYNC910
         ValidationErrorResponse.construct(
             reason="Unprocessable entity.",
             errors=format_errors(errors),
@@ -103,7 +100,8 @@ validation_error_definition["properties"] = {
             "anyOf": [
                 {
                     "type": "string",
-                }, {
+                },
+                {
                     "type": "integer",
                 },
             ],

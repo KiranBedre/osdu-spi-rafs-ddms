@@ -72,7 +72,10 @@ class DatasetService(IDatasetService):
         return blob
 
     async def upload_file(
-        self, blob_file: bytes, dataset_id: str, parent_record: dict,
+        self,
+        blob_file: bytes,
+        dataset_id: str,
+        parent_record: dict,
     ) -> str:
         """Upload file.
 
@@ -115,7 +118,7 @@ class DatasetService(IDatasetService):
         detail="Failed to get signed urls using DatasetService.",
     )
     @cache(expire=CACHE_DEFAULT_TTL, key_builder=key_builder_for_service_methods)
-    async def get_signed_urls(self, dataset_ids: List[str]) -> List[Tuple[str, str]]:
+    async def get_signed_urls(self, dataset_ids: List[str]) -> List[Tuple[str, str]]:  # noqa: ASYNC910
         """Get a signed url per dataset id for a list of dataset_ids.
 
         :param dataset_ids: list of dataset ids
@@ -126,7 +129,7 @@ class DatasetService(IDatasetService):
         """
         max_ids_per_request = 20
         id_chunks = [
-            dataset_ids[ix: ix + max_ids_per_request] for ix in range(0, len(dataset_ids), max_ids_per_request)
+            dataset_ids[ix : ix + max_ids_per_request] for ix in range(0, len(dataset_ids), max_ids_per_request)
         ]
         tasks = []
         try:
@@ -134,13 +137,13 @@ class DatasetService(IDatasetService):
                 for id_chunk in id_chunks:
                     tasks.append(group.create_task(self._request_signed_urls(id_chunk)))
         except ExceptionGroup as eg:
-            for exc in eg.exceptions:  # noqa: WPS328 pylint: disable=not-an-iterable
-                raise exc
+            for exc in eg.exceptions:  # noqa: WPS328, ASYNC123 pylint: disable=not-an-iterable
+                raise exc  # noqa: ASYNC123
 
         signed_urls = []
         for task in tasks:
             signed_urls.extend(task.result())
-        return signed_urls
+        return signed_urls  # noqa: ASYNC910
 
     async def _request_signed_urls(self, dataset_ids: List[str]) -> List[Tuple[str, str]]:
         """Performs the actual dataset request to fetch signed urls.
@@ -154,4 +157,4 @@ class DatasetService(IDatasetService):
         signed_urls = []
         for dataset in retrieval_instructions["datasets"]:
             signed_urls.append((dataset["datasetRegistryId"], dataset["retrievalProperties"]["signedUrl"]))
-        return signed_urls
+        return signed_urls  # noqa: ASYNC910

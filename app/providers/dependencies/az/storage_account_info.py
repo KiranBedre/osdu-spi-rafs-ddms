@@ -16,6 +16,9 @@ import hashlib
 from typing import Callable, Optional
 
 from async_lru import alru_cache
+
+# Pylint cannot always resolve Azure namespace packages in static analysis.
+# pylint: disable=no-name-in-module
 from azure.identity.aio import DefaultAzureCredential
 from azure.keyvault.secrets.aio import SecretClient
 from fastapi_cache import FastAPICache
@@ -69,12 +72,12 @@ class AzureStorageAccountInfo(object):
         self._settings = settings
         self._cloud_provider_config = cloud_provider_config
 
-    async def __aenter__(self):
+    async def __aenter__(self):  # noqa: ASYNC910
         self._credential = DefaultAzureCredential()
-        return self
+        return self  # noqa: ASYNC910
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self._credential.close()
+    async def __aexit__(self, exc_type, exc_val, exc_tb):  # noqa: ASYNC102
+        await self._credential.close()  # noqa: ASYNC102
 
     @alru_cache
     @cache(expire=STORAGE_ACCOUNT_INFO_CACHE_DEFAULT_TTL, key_builder=storage_account_key_builder)

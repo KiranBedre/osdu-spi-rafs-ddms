@@ -54,9 +54,7 @@ class CorrelationIDMiddleware(BaseHTTPMiddleware):
             correlation_id = f"rafs-ddms-{uuid.uuid4()}"
             headers = dict(request.scope["headers"])
             headers[bytes(CORRELATION_ID, "utf-8")] = bytes(correlation_id, "utf-8")
-            request.scope["headers"] = [
-                (h_name, h_value) for h_name, h_value in headers.items()
-            ]
+            request.scope["headers"] = [(h_name, h_value) for h_name, h_value in headers.items()]
 
         response = await call_next(request)
         if CORRELATION_ID not in response.headers:

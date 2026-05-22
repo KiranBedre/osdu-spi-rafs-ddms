@@ -18,14 +18,16 @@ from typing import Any, List, Optional
 
 import pandas as pd
 
-OPERATOR_TYPES = MappingProxyType({
-    "=": operator.eq,
-    "!=": operator.ne,
-    "<=": operator.le,
-    ">=": operator.ge,
-    "<": operator.lt,
-    ">": operator.gt,
-})
+OPERATOR_TYPES = MappingProxyType(
+    {
+        "=": operator.eq,
+        "!=": operator.ne,
+        "<=": operator.le,
+        ">=": operator.ge,
+        "<": operator.lt,
+        ">": operator.gt,
+    }
+)
 
 
 class PandasDFQueryBase(object):

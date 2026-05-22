@@ -21,7 +21,7 @@ from app.core.settings.app import AppSettings
 from app.dev.core.helpers.redis_index import init_samplesanalysis_index
 
 
-async def init_index(
+async def init_index(  # noqa: ASYNC910
     settings: AppSettings = Depends(get_app_settings),
     partition: str = Depends(require_data_partition_id),
 ) -> bool:
@@ -30,4 +30,4 @@ async def init_index(
         await init_samplesanalysis_index(partition)
     else:
         logger.debug("Redis index disabled")
-    return bool(settings.redis_index_enable)
+    return bool(settings.redis_index_enable)  # noqa: ASYNC910

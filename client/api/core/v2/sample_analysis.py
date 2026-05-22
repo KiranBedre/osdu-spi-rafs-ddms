@@ -4,8 +4,8 @@ from client.api.core.api_source import APIResource
 from client.api_client import APIClient
 from tests.integration.config import (
     ACCEPT_HEADERS,
-    SchemaVersions,
     SamplesAnalysisTypes,
+    SchemaVersions,
 )
 
 
@@ -129,7 +129,7 @@ class SamplesAnalysis(APIResource, APIClient):
         return response if raw else response.json()
 
     def _add_version_header(self, kwargs: dict, schema_version: str) -> None:
-        """ Helper to construct and inject the Accept header. """
+        """Helper to construct and inject the Accept header."""
 
         accept_header = ACCEPT_HEADERS.format(version=schema_version)
 

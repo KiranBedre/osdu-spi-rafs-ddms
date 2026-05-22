@@ -257,9 +257,7 @@ class BaseDataViewV2(BaseDataView):
     def _prepare_get_data_route_v2(self) -> None:
         """Add api route for get_data."""
 
-        async def validate_record_id(  # noqa: ASYNC124
-            record_id: str = Path(default=..., pattern=self._id_regex_str),
-        ) -> str:
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -267,11 +265,9 @@ class BaseDataViewV2(BaseDataView):
             :return: record id
             :rtype: str
             """
-            return record_id  # noqa: ASYNC910
+            return record_id
 
-        async def validate_content_id(  # noqa: ASYNC124
-            content_id: str = Path(default=..., pattern=self._content_id_regex),
-        ) -> str:
+        def validate_content_id(content_id: str = Path(default=..., pattern=self._content_id_regex)) -> str:
             """Validate if content identifier matches regex.
 
             :param content_id: content id
@@ -279,7 +275,7 @@ class BaseDataViewV2(BaseDataView):
             :return: content id
             :rtype: str
             """
-            return content_id  # noqa: ASYNC910
+            return content_id
 
         self._router.add_api_route(
             path="/{record_id}/data/{analysis_type}/{content_id}",
@@ -296,9 +292,7 @@ class BaseDataViewV2(BaseDataView):
     def _prepare_post_data_route_v2(self) -> None:
         """Add api route for post_data."""
 
-        async def validate_record_id(  # noqa: ASYNC124
-            record_id: str = Path(default=..., pattern=self._id_regex_str),
-        ) -> str:
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -306,7 +300,7 @@ class BaseDataViewV2(BaseDataView):
             :return: record id
             :rtype: str
             """
-            return record_id  # noqa: ASYNC910
+            return record_id
 
         self._router.add_api_route(
             path="/{record_id}/data/{analysis_type}",
@@ -597,9 +591,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
     def _prepare_get_data_route(self, api_function: Callable, path: str) -> None:
         """Add api route for get_data."""
 
-        async def validate_record_id(  # noqa: ASYNC124
-            record_id: str = Path(default=..., pattern=self._id_regex_str),
-        ) -> str:
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -607,11 +599,9 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             :return: record id
             :rtype: str
             """
-            return record_id  # noqa: ASYNC910
+            return record_id
 
-        async def validate_content_id(  # noqa: ASYNC124
-            content_id: str = Path(default=..., pattern=self._content_id_regex),
-        ) -> str:
+        def validate_content_id(content_id: str = Path(default=..., pattern=self._content_id_regex)) -> str:
             """Validate if content identifier matches regex.
 
             :param content_id: content id
@@ -619,7 +609,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             :return: content id
             :rtype: str
             """
-            return content_id  # noqa: ASYNC910
+            return content_id
 
         self._router.add_api_route(
             path=path,
@@ -636,9 +626,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
     def _prepare_post_data_route(self, api_function: Callable, path: str) -> None:
         """Add api route for post_data."""
 
-        async def validate_record_id(  # noqa: ASYNC124
-            record_id: str = Path(default=..., pattern=self._id_regex_str),
-        ) -> str:
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -646,7 +634,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             :return: record id
             :rtype: str
             """
-            return record_id  # noqa: ASYNC910
+            return record_id
 
         self._router.add_api_route(
             path=path,

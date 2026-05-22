@@ -16,7 +16,6 @@ import copy
 import datetime
 
 from app.resources.common_headers import CONTENT_TYPE
-
 from tests.integration.config import (
     DataFiles,
 )
@@ -122,7 +121,7 @@ def test_sfs_get_data_filtered_out_by_row(api, record_id, dataset_id):
         "SaturationFunctionSetID",
         "Meta",
         "RelativePermeabilityFunctions",
-        "CapillaryPressureFunctions"
+        "CapillaryPressureFunctions",
     ]
     assert response["index"] == []
     assert response["data"] == []
@@ -240,8 +239,10 @@ def test_sfs_search_record_filtered_out_by_page_limit(api, record_id, dataset_id
 
 def test_sfs_search_data_filtered_by_columns(api, helper, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified columns filter in the search results"""
-    params = {"columns_filter": "CapillaryPressureFunctions,RelativePermeabilityFunctions",
-              "rows_filter": f"SaturationFunctionSetID,eq,{record_id}:"}
+    params = {
+        "columns_filter": "CapillaryPressureFunctions,RelativePermeabilityFunctions",
+        "rows_filter": f"SaturationFunctionSetID,eq,{record_id}:",
+    }
     response = api.saturation_function_set.search_data(params=params)
     result_data = response.get("result", {})
 

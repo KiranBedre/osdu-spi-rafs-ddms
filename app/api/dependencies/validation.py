@@ -83,7 +83,7 @@ OrientQuery = Query(
 )
 
 
-def get_orient(orient: OrientType = OrientQuery) -> str:
+def get_orient(orient: OrientType = OrientQuery) -> str:  # noqa: WPS463
     """Get orient query parameter (validated by Literal type).
 
     :param orient: the orient query parameter value ('split' or 'records')
@@ -220,19 +220,6 @@ async def validate_osdu_wks_records(
     schema_service: SchemaService,
     valid_kinds: List[str],
 ) -> List[dict]:
-    """Validate OSDU records using Well Known Schema.
-
-    :param records_list: list of records
-    :type records_list: List[OsduStorageRecord]
-    :param schema_service: schema service instance
-    :type schema_service: SchemaService
-    :param valid_kinds: list of valid kinds
-    :type valid_kinds: List[str]
-    :raises exc: when schema fetch fails
-    :raises RecordValidationException: when jsonschema validation fails
-    :return: list of validated records
-    :rtype: List[dict]
-    """
     tasks = []
     records = []
     skipped = []
@@ -256,6 +243,7 @@ async def validate_osdu_wks_records(
             raise exc  # noqa: ASYNC123
 
     skipped = [task.result() for task in tasks if task.result()]
+
     if skipped:
         logger.error(f"Validation failed. Skipped records {skipped}")
         raise RecordValidationException(detail=skipped)
@@ -453,7 +441,7 @@ def get_data_model(
         available_versions = set(version_models.keys())
         raise_model_not_found(analysis_type, content_schema_version, available_versions)
 
-    return model
+    return model  # noqa: ASYNC910
 
 
 def get_data_model_for_content_type(
@@ -528,7 +516,7 @@ def validate_filters(
         raise UnprocessableContentException(detail=str(exc))
 
     logger.debug("Query parameters are valid.")
-    return sql_filter
+    return sql_filter  # noqa: ASYNC910
 
 
 def validate_filters_for_content_type(
@@ -678,7 +666,7 @@ def get_search_data_pagination_parameters(
                 status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
-    return offset, page_limit, start_date_obj, end_date_obj
+    return offset, page_limit, start_date_obj, end_date_obj  # noqa: ASYNC910
 
 
 def get_search_pagination_parameters(
@@ -716,4 +704,4 @@ def get_search_pagination_parameters(
                 status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
-    return offset, page_limit, indexed_start_date, indexed_end_date
+    return offset, page_limit, indexed_start_date, indexed_end_date  # noqa: ASYNC910

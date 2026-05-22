@@ -44,7 +44,7 @@ class RedisIndexView(object):
         self._router = router
         self._prepare_api_routes()
 
-    async def index_records(
+    async def index_records(  # noqa: ASYNC910
         self,
         index_initialized: bool = Depends(init_index),
         partition: str = Depends(get_validated_partition),
@@ -72,7 +72,7 @@ class RedisIndexView(object):
         tasks = []
 
         if not index_initialized:
-            return "Feature not available"
+            return "Feature not available"  # noqa: ASYNC910
 
         async for samplesanalyses_batch in self._get_samplesanalysis_records(search_service):
             for samplesanalysis_record in samplesanalyses_batch:
@@ -84,24 +84,31 @@ class RedisIndexView(object):
                     "ACLViewers": ",".join(samplesanalysis_record.get("acl", {}).get("viewers", [""])),
                     "ACLOwners": ",".join(samplesanalysis_record.get("acl", {}).get("owners", [""])),
                     "DDMSDatasets": ",".join(samplesanalysis_record.get("data", {}).get("DDMSDatasets", [])),
-                    "ParentSamplesAnalysesReports": ",".join([
-                        get_id(sar.get("ParentSamplesAnalysesReportID", ""))
-                        for sar in samplesanalysis_record.get("data", {}).get("ParentSamplesAnalysesReports", [])
-                    ]),
-                    "SampleAnalysisTypeIDs": ",".join([
-                        get_id(sat_id)
-                        for sat_id in samplesanalysis_record.get("data", {}).get("SampleAnalysisTypeIDs", [])
-                    ]),
-                    "SampleIDs": ",".join([
-                        get_id(sample_id)
-                        for sample_id in samplesanalysis_record.get("data", {}).get("SampleIDs", [])
-                    ]),
+                    "ParentSamplesAnalysesReports": ",".join(
+                        [
+                            get_id(sar.get("ParentSamplesAnalysesReportID", ""))
+                            for sar in samplesanalysis_record.get("data", {}).get("ParentSamplesAnalysesReports", [])
+                        ]
+                    ),
+                    "SampleAnalysisTypeIDs": ",".join(
+                        [
+                            get_id(sat_id)
+                            for sat_id in samplesanalysis_record.get("data", {}).get("SampleAnalysisTypeIDs", [])
+                        ]
+                    ),
+                    "SampleIDs": ",".join(
+                        [get_id(sample_id) for sample_id in samplesanalysis_record.get("data", {}).get("SampleIDs", [])]
+                    ),
                 }
 
                 sample_ids = record_to_index["SampleIDs"].split(",")
                 tasks.append(
                     self._process_sample_ids(
-                        sample_ids, storage_service, sa_record_id, record_to_index, partition,
+                        sample_ids,
+                        storage_service,
+                        sa_record_id,
+                        record_to_index,
+                        partition,
                     ),
                 )
 
@@ -132,9 +139,14 @@ class RedisIndexView(object):
                 if geo_ctx.get("FieldID"):
                     field_ids.append(get_id(geo_ctx.get("FieldID")))
 
-            wellbore_id = sample_record_data.get("SampleAcquisition", {}).get(
-                "SampleAcquisitionDetail", {},
-            ).get("WellboreID", "")
+            wellbore_id = (
+                sample_record_data.get("SampleAcquisition", {})
+                .get(
+                    "SampleAcquisitionDetail",
+                    {},
+                )
+                .get("WellboreID", "")
+            )
             if wellbore_id:
                 wellbore_ids.append(get_id(wellbore_id))
 
@@ -156,7 +168,7 @@ class RedisIndexView(object):
         redis_client = await get_redis_client()
         await redis_client.json().set(key, Path.root_path(), record_to_index)
 
-    async def _get_alias_names(
+    async def _get_alias_names(  # noqa: ASYNC910
         self,
         query_ids: List[str],
         storage_service: storage.StorageService,
@@ -166,13 +178,14 @@ class RedisIndexView(object):
         if query_ids:
             records_response = await storage_service.query_records(query_ids)
             alias_names = [
-                alias_name.get("AliasName") for record in records_response.get("records", [])
+                alias_name.get("AliasName")
+                for record in records_response.get("records", [])
                 for alias_name in record.get("data", {}).get("NameAliases", [])  # noqa: WPS361
                 if alias_name.get("AliasName")
             ]
             record_to_index[field_name] = ",".join(alias_names)
 
-    async def _get_samplesanalysis_records(
+    async def _get_samplesanalysis_records(  # noqa: ASYNC900, ASYNC911
         self,
         search_service: search.SearchService,
     ):

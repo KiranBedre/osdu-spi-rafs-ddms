@@ -32,12 +32,18 @@ from tests.integration.config import (
 
 
 @pytest.mark.parametrize(
-    "analysis_type,measurements_file", [
+    "analysis_type,measurements_file",
+    [
         (SamplesAnalysisTypes.NMR, DataFiles.NMR_DATA_V1),
     ],
 )
 def test_get_measurements_orient_split(
-    api, create_record, helper, tests_data, analysis_type, measurements_file,
+    api,
+    create_record,
+    helper,
+    tests_data,
+    analysis_type,
+    measurements_file,
 ):
     """Test that orient=split and default (no orient) return split format."""
     record_data, _ = create_record(
@@ -51,7 +57,9 @@ def test_get_measurements_orient_split(
     test_data["data"][0][0] = f'{record_data["id"]}:'
 
     full_dataset_id = api.sample_analysis.post_measurements(
-        record_data["id"], test_data, analysis_type,
+        record_data["id"],
+        test_data,
+        analysis_type,
     )["ddms_urn"]
     content_id = helper.get_content_id_from_ddms_urn(full_dataset_id)
 
@@ -59,7 +67,10 @@ def test_get_measurements_orient_split(
     params = {"orient": "split"}
 
     response = api.sample_analysis.get_measurements(
-        record_data["id"], content_id, analysis_type, params=params,
+        record_data["id"],
+        content_id,
+        analysis_type,
+        params=params,
     )
 
     # Verify split format structure
@@ -73,19 +84,27 @@ def test_get_measurements_orient_split(
 
     # Verify default (no orient) also returns split
     default_response = api.sample_analysis.get_measurements(
-        record_data["id"], content_id, analysis_type,
+        record_data["id"],
+        content_id,
+        analysis_type,
     )
     assert isinstance(default_response, dict), "Default format should return a dict (split)"
     assert "columns" in default_response, "Default format should have 'columns' key"
 
 
 @pytest.mark.parametrize(
-    "analysis_type,measurements_file", [
+    "analysis_type,measurements_file",
+    [
         (SamplesAnalysisTypes.NMR, DataFiles.NMR_DATA_V1),
     ],
 )
 def test_get_measurements_orient_records(
-    api, create_record, helper, tests_data, analysis_type, measurements_file,
+    api,
+    create_record,
+    helper,
+    tests_data,
+    analysis_type,
+    measurements_file,
 ):
     """Test that orient=records returns data in records format."""
     record_data, _ = create_record(
@@ -98,16 +117,17 @@ def test_get_measurements_orient_records(
     test_data = copy.deepcopy(tests_data_content)
     test_data["data"][0][0] = f'{record_data["id"]}:'
 
-    full_dataset_id = api.sample_analysis.post_measurements(
-        record_data["id"], test_data, analysis_type
-    )["ddms_urn"]
+    full_dataset_id = api.sample_analysis.post_measurements(record_data["id"], test_data, analysis_type)["ddms_urn"]
     content_id = helper.get_content_id_from_ddms_urn(full_dataset_id)
 
     # Get with orient=records
     params = {"orient": "records"}
 
     response = api.sample_analysis.get_measurements(
-        record_data["id"], content_id, analysis_type, params=params,
+        record_data["id"],
+        content_id,
+        analysis_type,
+        params=params,
     )
 
     # Verify records format structure

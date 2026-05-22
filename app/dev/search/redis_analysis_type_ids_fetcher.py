@@ -59,7 +59,9 @@ class RedisSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
         data_acl_groups = await self._entitlements_service.get_data_groups()
 
         query = self._build_sampleanalysis_query(
-            data_partition_id, SAMPLESANALYSIS_TYPE_MAPPING[analysis_type], wks_parameters,
+            data_partition_id,
+            SAMPLESANALYSIS_TYPE_MAPPING[analysis_type],
+            wks_parameters,
         )
 
         query_offset = 0
@@ -80,6 +82,7 @@ class RedisSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
 
     def _validate_acl(self, records: list, data_acl_groups: list) -> list:
         """Validates records against acl groups."""
+
         def verify_acl(record: dict, acls: set) -> bool:
             record_owners = set(record["ACLOwners"].split(","))
             record_viewers = set(record["ACLViewers"].split(","))
@@ -137,4 +140,4 @@ class RedisSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
         return result_ids
 
     def _prepare_redis_str(self, query_str):
-        return query_str.replace(":", "\:").replace("-", "\-").replace(".", "\.")  # noqa: W605
+        return query_str.replace(":", r"\:").replace("-", r"\-").replace(".", r"\.")  # noqa: W605

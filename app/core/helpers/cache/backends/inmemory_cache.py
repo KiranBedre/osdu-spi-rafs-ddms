@@ -18,9 +18,9 @@ from app.core.helpers.cache.backends.base_cache import BaseCacheBackend
 
 
 class InMemoryCacheBackend(BaseCacheBackend):
-    async def get_backend(self) -> InMemoryBackend:
+    async def get_backend(self) -> InMemoryBackend:  # noqa: ASYNC910
         """Init and return instance of InMemoryBackend from fastapi-cache.
 
         :return InMemoryBackend: instance of InMemoryBackend
         """
-        return InMemoryBackend()
+        return InMemoryBackend()  # noqa: ASYNC910

@@ -47,7 +47,7 @@ def cce_record_id(create_record):
 
 @pytest.fixture(scope="module")
 def dataset_id_v1(api, helper, record_id, tests_data, samples_analysis_type, cce_record_id):
-    """  Generic fixture to create a V1 dataset. """
+    """Generic fixture to create a V1 dataset."""
     # 1. Lookup the correct data file for this Analysis Type + V1
     file_key = VersionedDataFiles.VALUES.get((samples_analysis_type, SchemaVersions.V1_0_0))
 

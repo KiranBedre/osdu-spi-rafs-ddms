@@ -84,7 +84,7 @@ def handle_core_services_http_status_error(expected_codes: list[int], detail: st
 
     def decorator(func):
         @functools.wraps(func)
-        async def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):  # noqa: ASYNC910
             try:
                 return await func(*args, **kwargs)
             except HTTPStatusError as status_error:

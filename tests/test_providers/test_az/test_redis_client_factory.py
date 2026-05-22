@@ -28,6 +28,7 @@ from app.providers.dependencies.az.redis_client_factory import (
 AMR_PORT = AZURE_MANAGED_REDIS_PORT  # 10000
 ACR_PORT = 6380
 
+
 def _make_config(**overrides) -> RedisCacheConfig:
     """Return a RedisCacheConfig with test-friendly defaults."""
     defaults = dict(
@@ -41,12 +42,14 @@ def _make_config(**overrides) -> RedisCacheConfig:
     defaults.update(overrides)
     return RedisCacheConfig(**defaults)
 
+
 def _make_factory(port=ACR_PORT, use_index_database=False, redis_database=13) -> AzureRedisClientFactory:
     """Return an AzureRedisClientFactory with a mocked azure_config."""
     config = _make_config(redis_port=port, redis_database=redis_database)
     with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config"):
         factory = AzureRedisClientFactory(config, use_index_database=use_index_database)
     return factory
+
 
 class TestAzureRedisClientFactoryIsAmr:
     """Tests for the _is_amr property."""
@@ -117,8 +120,11 @@ class TestAzureRedisClientFactory:
         """Test that create_client() uses password auth when passwordless disabled."""
         azure_config = AzureConfig(redis_use_passwordless_auth=False)
 
-        with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config), \
-             patch("app.providers.dependencies.az.redis_client_factory.RedisClientFactory.create_client") as mock_parent_create:
+        with patch(
+            "app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config
+        ), patch(
+            "app.providers.dependencies.az.redis_client_factory.RedisClientFactory.create_client"
+        ) as mock_parent_create:
 
             mock_redis = AsyncMock()
             mock_parent_create.return_value = mock_redis
@@ -135,10 +141,15 @@ class TestAzureRedisClientFactory:
         """Test that create_client() builds a connection pool when Entra auth succeeds."""
         azure_config = AzureConfig(redis_use_passwordless_auth=True)
 
-        with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config), \
-             patch("app.providers.dependencies.az.redis_client_factory.AzureRedisCredentialProvider") as mock_provider_class, \
-             patch("app.providers.dependencies.az.redis_client_factory.ConnectionPool") as mock_pool_class, \
-             patch("app.providers.dependencies.az.redis_client_factory.Redis") as mock_redis_class:
+        with patch(
+            "app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config
+        ), patch(
+            "app.providers.dependencies.az.redis_client_factory.AzureRedisCredentialProvider"
+        ) as mock_provider_class, patch(
+            "app.providers.dependencies.az.redis_client_factory.ConnectionPool"
+        ) as mock_pool_class, patch(
+            "app.providers.dependencies.az.redis_client_factory.Redis"
+        ) as mock_redis_class:
 
             mock_credential_provider = MagicMock()
             mock_provider_class.return_value = mock_credential_provider
@@ -171,9 +182,15 @@ class TestAzureRedisClientFactory:
 
         mock_redis = AsyncMock()
 
-        with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config), \
-             patch("app.providers.dependencies.az.redis_client_factory.AzureRedisCredentialProvider", side_effect=Exception("token error")), \
-             patch("app.providers.dependencies.az.redis_client_factory.RedisClientFactory.create_client", return_value=mock_redis) as mock_parent_create:
+        with patch(
+            "app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config
+        ), patch(
+            "app.providers.dependencies.az.redis_client_factory.AzureRedisCredentialProvider",
+            side_effect=Exception("token error"),
+        ), patch(
+            "app.providers.dependencies.az.redis_client_factory.RedisClientFactory.create_client",
+            return_value=mock_redis,
+        ) as mock_parent_create:
 
             config = _make_config(redis_port=ACR_PORT)
             factory = AzureRedisClientFactory(config, use_index_database=False)
@@ -225,9 +242,13 @@ class TestResolveRedisHostname:
         mock_credential.__aenter__ = AsyncMock(return_value=mock_credential)
         mock_credential.__aexit__ = AsyncMock(return_value=None)
 
-        with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config), \
-             patch("app.providers.dependencies.az.redis_client_factory.DefaultAzureCredential", return_value=mock_credential), \
-             patch("app.providers.dependencies.az.redis_client_factory.SecretClient", return_value=mock_kv_client):
+        with patch(
+            "app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config
+        ), patch(
+            "app.providers.dependencies.az.redis_client_factory.DefaultAzureCredential", return_value=mock_credential
+        ), patch(
+            "app.providers.dependencies.az.redis_client_factory.SecretClient", return_value=mock_kv_client
+        ):
 
             factory = AzureRedisClientFactory(config)
             result = await factory._resolve_redis_hostname()

@@ -1,5 +1,5 @@
 compile-and-unit-test:
-  image: mcr.microsoft.com/mirror/docker/library/python:3.11-slim
+  image: python:3.11-slim-bookworm
   variables:
     PIP_CMD: pip
     PIP_REQUIREMENTS: >

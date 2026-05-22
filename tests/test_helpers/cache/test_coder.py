@@ -1,9 +1,10 @@
 #  Copyright 2023 ExxonMobil Technology and Engineering Company
 #
+import base64
 import json
 
 import pytest
-from fastapi_cache.coder import JsonCoder, PickleCoder
+from fastapi_cache.coder import JsonCoder
 from starlette.responses import Response
 
 from app.core.helpers.cache.coder import ResponseCoder
@@ -11,21 +12,24 @@ from app.resources.mime_types import SupportedMimeTypes
 
 
 @pytest.mark.parametrize(
-    "media_type,coder", [
-        (SupportedMimeTypes.JSON.mime_type, JsonCoder),
-        ("application/any", PickleCoder),
+    "media_type,encode_fn",
+    [
+        (SupportedMimeTypes.JSON.mime_type, JsonCoder.encode),
+        ("application/any", lambda body: base64.b64encode(body).decode("ascii")),
     ],
 )
-def test_response_coder_encode(media_type, coder):
+def test_response_coder_encode(media_type, encode_fn):
     response = Response(
         content="content",
         media_type=media_type,
     )
-    encoded_content = coder.encode(response.body)
-    test_result = json.dumps({
-        "encoded_content": encoded_content,
-        "media_type": media_type,
-    })
+    encoded_content = encode_fn(response.body)
+    test_result = json.dumps(
+        {
+            "encoded_content": encoded_content,
+            "media_type": media_type,
+        }
+    )
 
     expected_result = ResponseCoder.encode(response)
 
@@ -33,28 +37,29 @@ def test_response_coder_encode(media_type, coder):
 
 
 @pytest.mark.parametrize(
-    "value_to_decode,coder", [
+    "value_to_decode,decode_fn",
+    [
         (
             {
                 "encoded_content": '"content"',
                 "media_type": SupportedMimeTypes.JSON.mime_type,
             },
-            JsonCoder,
+            JsonCoder.decode,
         ),
         (
             {
-                "encoded_content": "gASVCwAAAAAAAABDB2NvbnRlbnSULg==\n",
+                "encoded_content": base64.b64encode(b"content").decode("ascii"),
                 "media_type": "application/any",
             },
-            PickleCoder,
+            base64.b64decode,
         ),
     ],
 )
-def test_response_coder_decode(value_to_decode, coder):
+def test_response_coder_decode(value_to_decode, decode_fn):
     encoded_content = value_to_decode.get("encoded_content")
     media_type = value_to_decode.get("media_type")
     test_result = Response(
-        content=coder.decode(encoded_content),
+        content=decode_fn(encoded_content),
         media_type=media_type,
     )
 

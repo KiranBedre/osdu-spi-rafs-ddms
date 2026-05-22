@@ -22,7 +22,7 @@ from app.models.schemas.user import User
 security = HTTPBearer()
 
 
-async def require_authorized_user(
+def require_authorized_user(
     request: Request,
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ):
