@@ -22,7 +22,7 @@ settings = get_app_settings()
 
 
 @router.get("/info", response_model=InfoResponse, include_in_schema=True)
-async def get_info() -> InfoResponse:
+def get_info() -> InfoResponse:
     """Get application info.
 
     :return: application info

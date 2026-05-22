@@ -70,11 +70,16 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             q_params = {"kindSubType": kind_subtype}
             response = await client.post(
-                DatasetServicePaths.STORAGE_INSTRUCTIONS, headers=self.headers, params=q_params,
+                DatasetServicePaths.STORAGE_INSTRUCTIONS,
+                headers=self.headers,
+                params=q_params,
             )
             logger.debug(f"{self.name}: storage instructions response: {response}")
             response.raise_for_status()
@@ -90,11 +95,16 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             q_params = {"kindSubType": kind_subtype}
             response = await client.get(
-                DatasetServicePaths.GET_STORAGE_INSTRUCTIONS, headers=self.headers, params=q_params,
+                DatasetServicePaths.GET_STORAGE_INSTRUCTIONS,
+                headers=self.headers,
+                params=q_params,
             )
             logger.debug(f"{self.name}: get storage instructions response: {response}")
             response.raise_for_status()
@@ -111,7 +121,10 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             request_body = {
                 "datasetRegistryIds": dataset_ids,
@@ -137,7 +150,10 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             q_params = {"id": dataset_id}
 
@@ -159,7 +175,10 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             request_body = {
                 "datasetRegistries": dataset_registries,
@@ -178,12 +197,17 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             q_params = {"id": dataset_id}
 
             response = await client.get(
-                DatasetServicePaths.GET_DATASET_REGISTRY, headers=self.headers, params=q_params,
+                DatasetServicePaths.GET_DATASET_REGISTRY,
+                headers=self.headers,
+                params=q_params,
             )
             logger.debug(f"{self.name}: get dataset registry response: {response}")
             response.raise_for_status()
@@ -198,14 +222,19 @@ class DatasetServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             request_body = {
                 "datasetRegistryIds": dataset_ids,
             }
 
             response = await client.post(
-                DatasetServicePaths.GET_DATASET_REGISTRY, headers=self.headers, json=request_body,
+                DatasetServicePaths.GET_DATASET_REGISTRY,
+                headers=self.headers,
+                json=request_body,
             )
             logger.debug(f"{self.name}: get dataset registries response: {response}")
             response.raise_for_status()

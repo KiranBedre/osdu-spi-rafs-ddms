@@ -14,12 +14,14 @@
 
 import pandera as pa
 
-TEST_SCHEMA = pa.DataFrameSchema({
-    "SampleDepth": pa.Column(float),
-    "SampleNumber": pa.Column(int, required=False),
-    "GrainDensity": pa.Column(float, nullable=True, required=False),
-    "Remarks": pa.Column(str, required=False),
-})
+TEST_SCHEMA = pa.DataFrameSchema(
+    {
+        "SampleDepth": pa.Column(float),
+        "SampleNumber": pa.Column(int, required=False),
+        "GrainDensity": pa.Column(float, nullable=True, required=False),
+        "Remarks": pa.Column(str, required=False),
+    }
+)
 
 CORRECT_TEST_BULK_DATA = """{
     "columns": [

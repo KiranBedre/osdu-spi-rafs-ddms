@@ -20,7 +20,9 @@ from fastapi import FastAPI
 class DependencyOverrider:
 
     def __init__(
-        self, app: FastAPI, overrides: typing.Mapping[
+        self,
+        app: FastAPI,
+        overrides: typing.Mapping[
             typing.Callable,
             typing.Callable,
         ],

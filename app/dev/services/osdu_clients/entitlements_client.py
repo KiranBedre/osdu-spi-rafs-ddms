@@ -62,7 +62,10 @@ class EntitlementsServiceApiClient(object):
         :rtype: list
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             response = await client.get(EntitlementsServicePaths.GROUPS, headers=self.headers)
             logger.debug(f"{self.name}: groups response: {response}")

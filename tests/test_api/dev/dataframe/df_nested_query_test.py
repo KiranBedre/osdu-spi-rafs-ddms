@@ -27,7 +27,8 @@ def sample_dataframe():
 class TestPandasDFQueryNested:
 
     @pytest.mark.parametrize(
-        "column,operator,comp_val,field", [
+        "column,operator,comp_val,field",
+        [
             ("IntColumn", "<", 35, None),
             ("IntColumn", "<=", 30, None),
             ("FloatColumn", "<", 2.1, None),
@@ -44,7 +45,8 @@ class TestPandasDFQueryNested:
         assert selected.df.equals(expected_df)
 
     @pytest.mark.parametrize(
-        "column,operator,comp_val,field", [
+        "column,operator,comp_val,field",
+        [
             ("IntColumn", ">", 30, None),
             ("IntColumn", ">=", 35, None),
             ("FloatColumn", ">", 2.0, None),
@@ -61,7 +63,8 @@ class TestPandasDFQueryNested:
         assert selected.df.equals(expected_df)
 
     @pytest.mark.parametrize(
-        "column,operator,comp_val,field", [
+        "column,operator,comp_val,field",
+        [
             ("TextColumn", "=", "Row3", None),
             ("IntColumn", "=", 35, None),
             ("FloatColumn", "=", 3.0, None),
@@ -77,7 +80,8 @@ class TestPandasDFQueryNested:
         assert selected.df.equals(expected_df)
 
     @pytest.mark.parametrize(
-        "column,operator,comp_val,field", [
+        "column,operator,comp_val,field",
+        [
             ("TextColumn", "!=", "Row4", None),
             ("IntColumn", "!=", 40, None),
             ("FloatColumn", "!=", 4.0, None),

@@ -53,16 +53,19 @@ class TestGetValidatedBulkDataJson:
             request = MagicMock()
             request.body = AsyncMock(return_value=body_content.encode("utf-8"))
             return request
+
         return _mock_request
 
     @pytest.mark.asyncio
     async def test_accepts_split_format(self, mock_request):
         """Split format is accepted and returned as-is."""
-        body = json.dumps({
-            "columns": ["A", "B"],
-            "index": [0, 1],
-            "data": [[1, 2], [3, 4]],
-        })
+        body = json.dumps(
+            {
+                "columns": ["A", "B"],
+                "index": [0, 1],
+                "data": [[1, 2], [3, 4]],
+            }
+        )
         request = mock_request(body)
 
         result_json, orient = await get_validated_bulk_data_json(request)
@@ -77,10 +80,12 @@ class TestGetValidatedBulkDataJson:
     @pytest.mark.asyncio
     async def test_accepts_records_format(self, mock_request):
         """Records format is passed through as records orient."""
-        body = json.dumps([
-            {"A": 1, "B": 2},
-            {"A": 3, "B": 4},
-        ])
+        body = json.dumps(
+            [
+                {"A": 1, "B": 2},
+                {"A": 3, "B": 4},
+            ]
+        )
         request = mock_request(body)
 
         result_json, orient = await get_validated_bulk_data_json(request)
@@ -93,10 +98,12 @@ class TestGetValidatedBulkDataJson:
     @pytest.mark.asyncio
     async def test_records_format_preserves_fields(self, mock_request):
         """Records format preserves field names in the returned data."""
-        body = json.dumps([
-            {"A": 1, "B": "x"},
-            {"A": 2, "B": "y"},
-        ])
+        body = json.dumps(
+            [
+                {"A": 1, "B": "x"},
+                {"A": 2, "B": "y"},
+            ]
+        )
         request = mock_request(body)
 
         result_json, orient = await get_validated_bulk_data_json(request)
@@ -142,11 +149,15 @@ class TestGetValidatedBulkDataJson:
     @pytest.mark.asyncio
     async def test_list_wrapped_split_format_raises_error(self, mock_request):
         """Split format wrapped in a list raises UnprocessableContentException."""
-        body = json.dumps([{
-            "columns": ["SaturationFunctionSetID", "Meta"],
-            "index": [0, 1],
-            "data": [["id:1", []], ["id:2", []]],
-        }])
+        body = json.dumps(
+            [
+                {
+                    "columns": ["SaturationFunctionSetID", "Meta"],
+                    "index": [0, 1],
+                    "data": [["id:1", []], ["id:2", []]],
+                }
+            ]
+        )
         request = mock_request(body)
 
         with pytest.raises(UnprocessableContentException) as exc_info:
@@ -160,16 +171,20 @@ class TestFormatEquivalence:
 
     def test_simple_data_produces_same_dataframe(self):
         """Both formats produce identical DataFrames for simple data."""
-        split_json = json.dumps({
-            "columns": ["A", "B", "C"],
-            "index": [0, 1],
-            "data": [[1, 2, 3], [4, 5, 6]],
-        })
+        split_json = json.dumps(
+            {
+                "columns": ["A", "B", "C"],
+                "index": [0, 1],
+                "data": [[1, 2, 3], [4, 5, 6]],
+            }
+        )
 
-        records_json = json.dumps([
-            {"A": 1, "B": 2, "C": 3},
-            {"A": 4, "B": 5, "C": 6},
-        ])
+        records_json = json.dumps(
+            [
+                {"A": 1, "B": 2, "C": 3},
+                {"A": 4, "B": 5, "C": 6},
+            ]
+        )
 
         df_split = pd.read_json(io.StringIO(split_json), orient="split")
         df_records = pd.read_json(io.StringIO(records_json), orient="records")
@@ -180,15 +195,19 @@ class TestFormatEquivalence:
         """Both formats produce identical DataFrames for nested data."""
         nested_obj = {"kind": "Unit", "name": "percent"}
 
-        split_json = json.dumps({
-            "columns": ["SamplesAnalysisID", "Meta"],
-            "index": [0],
-            "data": [["id:123", [nested_obj]]],
-        })
+        split_json = json.dumps(
+            {
+                "columns": ["SamplesAnalysisID", "Meta"],
+                "index": [0],
+                "data": [["id:123", [nested_obj]]],
+            }
+        )
 
-        records_json = json.dumps([
-            {"SamplesAnalysisID": "id:123", "Meta": [nested_obj]},
-        ])
+        records_json = json.dumps(
+            [
+                {"SamplesAnalysisID": "id:123", "Meta": [nested_obj]},
+            ]
+        )
 
         df_split = pd.read_json(io.StringIO(split_json), orient="split")
         df_records = pd.read_json(io.StringIO(records_json), orient="records")
@@ -197,15 +216,19 @@ class TestFormatEquivalence:
 
     def test_null_values_produce_same_dataframe(self):
         """Both formats handle null values identically."""
-        split_json = json.dumps({
-            "columns": ["A", "B"],
-            "index": [0],
-            "data": [[1, None]],
-        })
+        split_json = json.dumps(
+            {
+                "columns": ["A", "B"],
+                "index": [0],
+                "data": [[1, None]],
+            }
+        )
 
-        records_json = json.dumps([
-            {"A": 1, "B": None},
-        ])
+        records_json = json.dumps(
+            [
+                {"A": 1, "B": None},
+            ]
+        )
 
         df_split = pd.read_json(io.StringIO(split_json), orient="split")
         df_records = pd.read_json(io.StringIO(records_json), orient="records")
@@ -216,19 +239,25 @@ class TestFormatEquivalence:
         """CEC SAT type example produces identical DataFrames."""
         meta = [{"kind": "Unit", "name": "percentage", "propertyNames": ["CeC"]}]
 
-        split_json = json.dumps({
-            "columns": ["SamplesAnalysisID", "SampleID", "Meta", "CeC", "Qv"],
-            "index": [0],
-            "data": [["wpc:123:", "sample:456:", meta, 0.563, 0.975]],
-        })
+        split_json = json.dumps(
+            {
+                "columns": ["SamplesAnalysisID", "SampleID", "Meta", "CeC", "Qv"],
+                "index": [0],
+                "data": [["wpc:123:", "sample:456:", meta, 0.563, 0.975]],
+            }
+        )
 
-        records_json = json.dumps([{
-            "SamplesAnalysisID": "wpc:123:",
-            "SampleID": "sample:456:",
-            "Meta": meta,
-            "CeC": 0.563,
-            "Qv": 0.975,
-        }])
+        records_json = json.dumps(
+            [
+                {
+                    "SamplesAnalysisID": "wpc:123:",
+                    "SampleID": "sample:456:",
+                    "Meta": meta,
+                    "CeC": 0.563,
+                    "Qv": 0.975,
+                }
+            ]
+        )
 
         df_split = pd.read_json(io.StringIO(split_json), orient="split")
         df_records = pd.read_json(io.StringIO(records_json), orient="records")
@@ -241,16 +270,20 @@ class TestParquetEquivalence:
 
     def test_simple_data_produces_same_parquet(self):
         """Both formats produce identical parquet bytes."""
-        split_json = json.dumps({
-            "columns": ["A", "B"],
-            "index": [0, 1],
-            "data": [[1, 2], [3, 4]],
-        })
+        split_json = json.dumps(
+            {
+                "columns": ["A", "B"],
+                "index": [0, 1],
+                "data": [[1, 2], [3, 4]],
+            }
+        )
 
-        records_json = json.dumps([
-            {"A": 1, "B": 2},
-            {"A": 3, "B": 4},
-        ])
+        records_json = json.dumps(
+            [
+                {"A": 1, "B": 2},
+                {"A": 3, "B": 4},
+            ]
+        )
 
         df_split = pd.read_json(io.StringIO(split_json), orient="split")
         df_records = pd.read_json(io.StringIO(records_json), orient="records")
@@ -272,15 +305,19 @@ class TestParquetEquivalence:
             "Values": [1.0, 2.0, 3.0],
         }
 
-        split_json = json.dumps({
-            "columns": ["ID", "Data"],
-            "index": [0],
-            "data": [["id:1", nested_data]],
-        })
+        split_json = json.dumps(
+            {
+                "columns": ["ID", "Data"],
+                "index": [0],
+                "data": [["id:1", nested_data]],
+            }
+        )
 
-        records_json = json.dumps([
-            {"ID": "id:1", "Data": nested_data},
-        ])
+        records_json = json.dumps(
+            [
+                {"ID": "id:1", "Data": nested_data},
+            ]
+        )
 
         df_split = pd.read_json(io.StringIO(split_json), orient="split")
         df_records = pd.read_json(io.StringIO(records_json), orient="records")
@@ -315,28 +352,32 @@ class TestRecordsNanValidationBypass:
         meta = [{"kind": "Unit", "name": "psi"}]
         valid_sat = "osdu:reference-data--SaturationProcessMethod:primary:"
 
-        records_json = json.dumps([
-            {
-                "SamplesAnalysisID": valid_id,
-                "SampleID": "osdu:master-data--Sample:s1:",
-                "Meta": meta,
-                "SaturationProcessMethodID": valid_sat,
-            },
-            {
-                "SamplesAnalysisID": invalid_id,
-                "SampleID": "osdu:master-data--Sample:s2:",
-                "Meta": meta,
-            },
-        ])
+        records_json = json.dumps(
+            [
+                {
+                    "SamplesAnalysisID": valid_id,
+                    "SampleID": "osdu:master-data--Sample:s1:",
+                    "Meta": meta,
+                    "SaturationProcessMethodID": valid_sat,
+                },
+                {
+                    "SamplesAnalysisID": invalid_id,
+                    "SampleID": "osdu:master-data--Sample:s2:",
+                    "Meta": meta,
+                },
+            ]
+        )
 
         df = pd.read_json(io.StringIO(records_json), orient="records")
 
         # Apply the fix: normalize NaN to None in object columns
         from app.api.routes.data.api import _normalize_nan_to_none
+
         _normalize_nan_to_none(df)
 
         mock_storage = await build_mock_get_storage_service(
-            record_data=None, data_payload=df,
+            record_data=None,
+            data_payload=df,
         )()
         schema = build_data_schema(CapillaryPressureModel100)
         validator = DataValidator(schema, mock_storage, API_VERSION_V2)
@@ -352,19 +393,21 @@ class TestRecordsNanValidationBypass:
         meta = [{"kind": "Unit", "name": "psi"}]
         valid_sat = "osdu:reference-data--SaturationProcessMethod:primary:"
 
-        records_json = json.dumps([
-            {
-                "SamplesAnalysisID": valid_id,
-                "SampleID": "osdu:master-data--Sample:s1:",
-                "Meta": meta,
-                "SaturationProcessMethodID": valid_sat,
-            },
-            {
-                "SamplesAnalysisID": invalid_id,
-                "SampleID": "osdu:master-data--Sample:s2:",
-                "Meta": meta,
-            },
-        ])
+        records_json = json.dumps(
+            [
+                {
+                    "SamplesAnalysisID": valid_id,
+                    "SampleID": "osdu:master-data--Sample:s1:",
+                    "Meta": meta,
+                    "SaturationProcessMethodID": valid_sat,
+                },
+                {
+                    "SamplesAnalysisID": invalid_id,
+                    "SampleID": "osdu:master-data--Sample:s2:",
+                    "Meta": meta,
+                },
+            ]
+        )
 
         # Read WITHOUT the NaN->None fix (the old buggy behavior)
         df = pd.read_json(io.StringIO(records_json), orient="records")
@@ -373,7 +416,8 @@ class TestRecordsNanValidationBypass:
         assert pd.isna(df["SaturationProcessMethodID"].iloc[1]), "Missing field is NaN"
 
         mock_storage = await build_mock_get_storage_service(
-            record_data=None, data_payload=df,
+            record_data=None,
+            data_payload=df,
         )()
         schema = build_data_schema(CapillaryPressureModel100)
         validator = DataValidator(schema, mock_storage, API_VERSION_V2)
@@ -385,10 +429,12 @@ class TestRecordsNanValidationBypass:
     @pytest.mark.asyncio
     async def test_records_nan_normalized_to_none_in_object_columns(self):
         """After NaN normalization, object columns have None instead of NaN."""
-        records_json = json.dumps([
-            {"ID": "a", "OptionalObj": {"nested": True}},
-            {"ID": "b"},
-        ])
+        records_json = json.dumps(
+            [
+                {"ID": "a", "OptionalObj": {"nested": True}},
+                {"ID": "b"},
+            ]
+        )
 
         from app.api.routes.data.api import _normalize_nan_to_none
 

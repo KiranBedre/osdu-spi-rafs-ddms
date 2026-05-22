@@ -349,9 +349,9 @@ class GenericSearchDataView(object):
                 dataset_service=dataset_service,
                 df_filter=df_filter,
             )
-        return df_payload_gen
+        return df_payload_gen  # noqa: ASYNC910
 
-    async def _get_search_data_for_blobs(  # noqa: WPS234
+    async def _get_search_data_for_blobs(  # noqa: WPS234, ASYNC900, ASYNC911
         self,
         analysis_type_ids: List[Tuple[str, str]],
         blob_storage_service: IBlobStorage,
@@ -366,14 +366,14 @@ class GenericSearchDataView(object):
         for n_batch in range((len(blob_ids) // self._batch_size) + 1):
             batch_offset = self._batch_size * n_batch
             blob_ids_batch = blob_ids[batch_offset : batch_offset + self._batch_size]
-            df_triplets = await parquet_loader.read_parquet_files(
+            df_triplets = await parquet_loader.read_parquet_files(  # noqa: WPS476
                 blob_ids=blob_ids_batch,
                 blob_storage_service=blob_storage_service,
                 df_filter_processor=df_filter_processor,
             )
             yield df_triplets
 
-    async def _get_search_data_for_datasets(  # noqa: WPS234
+    async def _get_search_data_for_datasets(  # noqa: WPS234, ASYNC900, ASYNC911
         self,
         analysis_type_ids: List[Tuple[str, str]],
         dataset_service: dataset.DatasetService,
@@ -388,8 +388,8 @@ class GenericSearchDataView(object):
         for n_batch in range((len(dataset_ids) // self._batch_size) + 1):
             batch_offset = self._batch_size * n_batch
             dataset_ids_batch = dataset_ids[batch_offset : batch_offset + self._batch_size]
-            signed_urls_for_datasets = await dataset_service.get_signed_urls(dataset_ids_batch)
-            df_triplets = await parquet_loader.read_parquet_files(
+            signed_urls_for_datasets = await dataset_service.get_signed_urls(dataset_ids_batch)  # noqa: WPS476
+            df_triplets = await parquet_loader.read_parquet_files(  # noqa: WPS476
                 signed_urls_for_datasets,
                 df_filter_processor,
             )
@@ -447,7 +447,7 @@ class GenericSearchDataView(object):
 
         return result_df, total_size
 
-    async def _filter_dfs(
+    async def _filter_dfs(  # noqa: ASYNC900
         self,
         df_triplets: AsyncGenerator[DFPayload, None],
     ) -> AsyncGenerator[DFPayload, None]:
@@ -456,7 +456,7 @@ class GenericSearchDataView(object):
         async for batch_df_triplets in df_triplets:
             for dataset_id, df, error_msg in batch_df_triplets:
                 if not (df.empty and error_msg is None):
-                    yield dataset_id, df, error_msg
+                    yield dataset_id, df, error_msg  # noqa: ASYNC911
 
     def _handle_errors(self, analysis_type_ids: List[Tuple[str, str]], errors: List[Tuple[str, str]]):
         """Handle errors."""

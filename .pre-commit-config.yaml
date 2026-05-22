@@ -22,7 +22,7 @@ repos:
           - --remove-all-unused-imports
           - --remove-unused-variables
         exclude: "(app/models/domain)|(app/models/data_schemas)|(devops/aws)"
-        language_version: python3.12
+        language_version: python3.11
 
   - repo: https://github.com/pycqa/isort
     rev: 8.0.0
@@ -31,7 +31,7 @@ repos:
         files: "\\.py$"
         args: ["--profile=black"]
         exclude: "(app/models/domain)|(app/models/data_schemas)|(devops/aws)"
-        language_version: python3.12
+        language_version: python3.11
 
   - repo: https://github.com/psf/black
     rev: 26.1.0
@@ -40,7 +40,7 @@ repos:
         files: "\\.py$"
         args: ["--line-length=120"]
         exclude: "(app/models/domain)|(app/models/data_schemas)|(devops/aws)"
-        language_version: python3.12
+        language_version: python3.11
 
 # Linters
 
@@ -69,7 +69,7 @@ repos:
           - pep8-naming==0.15.0
         args: [--config=setup.cfg]
         exclude: "(app/models/domain)|(app/models/data_schemas)|(devops/aws)|(scripts)"
-        language_version: python3.12
+        language_version: python3.11
 
   - repo: https://github.com/PyCQA/pylint
     rev: v4.0.5
@@ -79,6 +79,7 @@ repos:
           - --rcfile=setup.cfg
           - --errors-only
         exclude: "(app/models/domain)|(app/models/data_schemas)|(devops/aws)"
+        language_version: python3.11
 
   - repo: https://github.com/jorisroovers/gitlint
     rev: v0.19.1

@@ -84,10 +84,14 @@ def run_datamodel_codegen(source_directory: str, target_directory: str, end_filt
             # Construct the command
             command = [  # noqa: WPS317
                 "datamodel-codegen",
-                "--input", input_path,
-                "--input-file-type", "jsonschema",
-                "--output", output_path,
-                "--class-name", model_class_name,
+                "--input",
+                input_path,
+                "--input-file-type",
+                "jsonschema",
+                "--output",
+                output_path,
+                "--class-name",
+                model_class_name,
                 "--use-double-quotes",
             ]
 

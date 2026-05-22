@@ -18,7 +18,7 @@ router = APIRouter()
 
 
 @router.get("/healthz", include_in_schema=False)
-async def get_health() -> dict:
+def get_health() -> dict:
     """Get health status.
 
     :return: health status

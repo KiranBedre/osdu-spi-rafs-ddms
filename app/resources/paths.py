@@ -155,7 +155,7 @@ SAMPLESANALYSIS_TYPE_MAPPING = {
         "CapillaryPressure",
     ],
     "capillarysuctiontime": [
-        "FluidSensitivity.CapillarySuctionTime",
+        "BasicRockProperties.CapillarySuctionTime",
     ],
     "wettabilityindex": [
         "Wettability.AmottHarvey",

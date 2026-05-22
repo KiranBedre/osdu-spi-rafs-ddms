@@ -143,10 +143,10 @@ def get_search_wks_parameters(
             err_msg = f"Properties {metadata_keys} not found in samplesanalysis redis schema: {names}"
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err_msg)
 
-        return wks_metadata
+        return wks_metadata  # noqa: ASYNC910
 
 
-async def get_validated_partition(
+async def get_validated_partition(  # noqa: ASYNC910
     settings: AppSettings = Depends(get_app_settings),
     partition: str = Depends(require_data_partition_id),
     partition_service: partition.PartitionService = Depends(get_async_partition_service),
@@ -157,4 +157,4 @@ async def get_validated_partition(
         err_msg = f"Partition '{partition}' does not exist"
         logger.error(err_msg)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err_msg)
-    return partition
+    return partition  # noqa: ASYNC910

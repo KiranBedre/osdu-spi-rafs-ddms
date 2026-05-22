@@ -10,7 +10,9 @@ def expand_schema(directory_path: str, filename: str):
     file_path = os.path.abspath(os.path.join(directory_path, filename))
     with open(file_path) as fr:
         exp_schema = jsonref.load(
-            fr, base_uri=f"file:///{base_uri_path}/", merge_props=True,
+            fr,
+            base_uri=f"file:///{base_uri_path}/",
+            merge_props=True,
         )
 
     with open(file_path, "w") as fw:

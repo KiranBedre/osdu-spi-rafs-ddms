@@ -21,4 +21,5 @@ from app.core.settings.base import AppEnvTypes
 def init_metric(app: FastAPI, settings: AppSettings):
     if settings.app_env == AppEnvTypes.prod and settings.cloud_provider == "azure":
         from prometheus_fastapi_instrumentator import Instrumentator
+
         Instrumentator().instrument(app).expose(app)

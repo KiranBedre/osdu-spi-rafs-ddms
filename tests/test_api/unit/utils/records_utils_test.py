@@ -90,7 +90,9 @@ def test_generate_blob_urn(ddms_id, wpc_id, object_name, expected_urn):
             [
                 "urn://rafs/wpc_id/samplesanalysis/nmr/1.0.0/4321",
                 "urn://rafs/wpc_id/samplesanalysis/nmr/1.0.0/1234",
-            ], "samplesanalysis/nmr/1.0.0/1234", 1,
+            ],
+            "samplesanalysis/nmr/1.0.0/1234",
+            1,
         ),
         (["urn://rafs/wpc_id/samplesanalysis/nmr/1.0.0/1234"], "object_name", None),
         ([], "object", None),

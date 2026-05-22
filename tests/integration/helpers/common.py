@@ -37,7 +37,8 @@ COMPARE_RESPONSES_EXCLUDE_PATHS = (
     "root['modifyTime']",
 )
 
-class CommonHelper():
+
+class CommonHelper:
     """Methods to work with all test."""
 
     def __init__(self, api):
@@ -47,7 +48,7 @@ class CommonHelper():
     def extract_only_created_tests_ids(record_id_versions: list) -> list:
         """Extract only tests from created records without updated/created PVT
         id."""
-        return [el for el in record_id_versions if DataTypes.PVT.upper() not in el]
+        return [el for el in record_id_versions if "PVT" not in el]
 
     @staticmethod
     def generate_random_record_id(length: int = 10) -> str:
@@ -180,7 +181,7 @@ class CommonHelper():
         except JsonPointerException as exc:
             raise AssertionError(f"Invalid JSON pointer '{path}': {exc}") from exc
 
-    def wait_for_search_record(self, search_func, record_id: str, max_attempts: int = 30,  interval: int = 5) -> dict:
+    def wait_for_search_record(self, search_func, record_id: str, max_attempts: int = 30, interval: int = 5) -> dict:
         """
         Polls the search function until the specified record_id appears in the results or times out.
         :param search_func: Function with no arguments that returns a search response dict (must have 'result' list)
@@ -200,7 +201,8 @@ class CommonHelper():
                 return last_response
 
             logger.info(
-                f"Record '{record_id}' not found yet; retrying in {interval}s (Attempt {attempt + 1}/{max_attempts})")
+                f"Record '{record_id}' not found yet; retrying in {interval}s (Attempt {attempt + 1}/{max_attempts})"
+            )
             if attempt < max_attempts - 1:
                 time.sleep(interval)
 
@@ -209,7 +211,7 @@ class CommonHelper():
             f"Last response: {last_response}"
         )
 
-    def wait_for_search_data(self, search_func, record_id: str, max_attempts: int = 30,  interval: int = 5) -> dict:
+    def wait_for_search_data(self, search_func, record_id: str, max_attempts: int = 30, interval: int = 5) -> dict:
         """
         Polls the search function until the specified record_id appears in the results or times out.
         :param search_func: Function with no arguments that returns a search response dict (must have 'result' list)
@@ -236,7 +238,8 @@ class CommonHelper():
                         return last_response
 
             logger.info(
-                f"Record '{record_id}' not found; retrying in {interval}s (attempt {attempt + 1}/{max_attempts}).")
+                f"Record '{record_id}' not found; retrying in {interval}s (attempt {attempt + 1}/{max_attempts})."
+            )
             if attempt < max_attempts - 1:
                 time.sleep(interval)
 

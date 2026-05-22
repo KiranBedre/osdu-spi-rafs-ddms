@@ -93,7 +93,7 @@ def with_patched_storage_client_error(
         status_code = response_code
         text = response_text
 
-        def json(_):
+        def json(self):
             raise json.decoder.JSONDecodeError(msg="", doc="", pos=1)
 
     error = HTTPStatusError(message="", request=object(), response=Response())
@@ -115,7 +115,7 @@ def with_patched_storage_client_error_json_from_dependecy(
         status_code = response_code
         text = response_text
 
-        def json(_):
+        def json(self):
             return response_json
 
     error = HTTPStatusError(message="", request=object(), response=Response())

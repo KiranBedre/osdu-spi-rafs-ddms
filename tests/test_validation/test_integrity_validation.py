@@ -68,7 +68,9 @@ async def test_validate_referential_integrity(mocker):
     mock_get_storage_service = StorageService(None, query_records_response={"invalidRecords": []})
     get_all_ids_from_records = mocker.patch("app.api.dependencies.validation.get_all_ids_from_records")
     await validate_referential_integrity(
-        [TEST_RECORD], TEST_IDS_FIELDS, mock_get_storage_service,
+        [TEST_RECORD],
+        TEST_IDS_FIELDS,
+        mock_get_storage_service,
     )
 
     get_all_ids_from_records.assert_called_once_with([TEST_RECORD])

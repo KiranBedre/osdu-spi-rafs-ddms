@@ -97,7 +97,7 @@ class ParquetLoader(object):
         logger.warning(f"Omitted due to {message}. Dataset ID = {dataset_id}, error: {err}")
         return DFPayload(dataset_id, pd.DataFrame(), None)
 
-    async def _read_parquet_from_url(  # noqa: WPS234
+    async def _read_parquet_from_url(  # noqa: WPS234, ASYNC910
         self,
         dataset_id: str,
         url: str,

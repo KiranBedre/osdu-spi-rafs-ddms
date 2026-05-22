@@ -16,7 +16,6 @@ import copy
 import datetime
 
 from app.resources.common_headers import CONTENT_TYPE
-
 from tests.integration.config import (
     DataFiles,
     SamplesAnalysisTypes,
@@ -233,10 +232,10 @@ def test_roller_oven_test_search_record_filtered_out_by_row(api, record_id, data
     """Verify record is filtered out by the specified row filter in the search results"""
     params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
     response = api.sample_analysis.search(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert record_id not in response["result"]
@@ -247,10 +246,10 @@ def test_roller_oven_test_search_record_filtered_in_by_start_date(api, record_id
     current_date = datetime.date.today()
     params = {"indexed_start_date": current_date}
     response = api.sample_analysis.search(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert record_id in response["result"]
@@ -262,10 +261,10 @@ def test_roller_oven_test_search_record_filtered_out_by_start_date(api, record_i
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.sample_analysis.search(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert response["result"] == []
@@ -276,10 +275,10 @@ def test_roller_oven_test_search_record_filtered_in_by_end_date(api, record_id, 
     current_date = datetime.date.today()
     params = {"indexed_end_date": current_date}
     response = api.sample_analysis.search(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert record_id in response["result"]
@@ -291,10 +290,10 @@ def test_roller_oven_test_search_record_filtered_out_by_end_date(api, record_id,
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.sample_analysis.search(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert record_id not in response["result"]
@@ -304,10 +303,10 @@ def test_roller_oven_test_search_record_filtered_out_by_page_limit(api, record_i
     """Verify records are filtered out by the specified page limit filter in the search results"""
     params = {"page_limit": 2}
     response = api.sample_analysis.search(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert len(response["result"]) == 2
@@ -317,13 +316,15 @@ def test_roller_oven_test_search_data_filtered_by_columns(
     api, helper, tests_data, record_id, dataset_id_v1, search_available_v1
 ):
     """Verify bulk data is filtered out by the specified columns filter in the search results"""
-    params = {"columns_filter": "WellFluidsReportID,TestFluidVolume",
-              "rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
+    params = {
+        "columns_filter": "WellFluidsReportID,TestFluidVolume",
+        "rows_filter": f"SamplesAnalysisID,eq,{record_id}:",
+    }
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
     result_data = response.get("result", {})
 
     # Prepare baseline
@@ -339,10 +340,10 @@ def test_roller_oven_test_search_data_filtered_out_by_row(api, record_id, datase
     """Verify bulk data is filtered out by row filter in the search results"""
     params = {"rows_filter": "SamplesAnalysisID,eq,DummyValue"}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert response["result"]["columns"] == []
@@ -354,10 +355,10 @@ def test_roller_oven_test_search_data_aggregated(api, record_id, dataset_id_v1, 
     """Verify bulk data aggregated in the search results"""
     params = {"columns_aggregation": "MeshSizeTypeID,describe"}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert response["result"]["columns"] == ["describe"]
@@ -371,10 +372,10 @@ def test_roller_oven_test_search_data_filtered_in_by_start_date(
     current_date = datetime.date.today()
     params = {"indexed_start_date": current_date}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     baseline = copy.deepcopy(tests_data(DataFiles.ROLLER_OVEN_TEST_DATA_V1))
@@ -389,10 +390,10 @@ def test_roller_oven_test_search_data_filtered_out_by_start_date(api, record_id,
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert response["result"]["columns"] == []
@@ -407,10 +408,10 @@ def test_roller_oven_test_search_data_filtered_in_by_end_date(
     current_date = datetime.date.today()
     params = {"indexed_end_date": current_date}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     baseline = copy.deepcopy(tests_data(DataFiles.ROLLER_OVEN_TEST_DATA_V1))
@@ -427,10 +428,10 @@ def test_roller_oven_test_search_data_filtered_out_by_end_date(
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     baseline = copy.deepcopy(tests_data(DataFiles.ROLLER_OVEN_TEST_DATA_V1))
@@ -445,10 +446,10 @@ def test_roller_oven_test_search_data_filtered_out_by_page_limit(
     """Verify bulk data is filtered out by the specified page limit filter in the search results"""
     params = {"page_limit": 2}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     baseline = copy.deepcopy(tests_data(DataFiles.ROLLER_OVEN_TEST_DATA_V1))

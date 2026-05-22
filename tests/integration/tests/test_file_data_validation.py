@@ -28,12 +28,19 @@ from tests.integration.config import (
 
 
 @pytest.mark.parametrize(
-    "measurements_file, dataset_prefix, analysis_type", [
+    "measurements_file, dataset_prefix, analysis_type",
+    [
         (DataFiles.NMR_DATA_V1, DatasetPrefix.NMR, SamplesAnalysisTypes.NMR),
     ],
 )
 def test_validate_file_data_content(
-    api, create_record, helper, tests_data, measurements_file, dataset_prefix, analysis_type,
+    api,
+    create_record,
+    helper,
+    tests_data,
+    measurements_file,
+    dataset_prefix,
+    analysis_type,
 ):
     record_data, _ = create_record(
         DataTypes.SAMPLE_ANALYSIS,
@@ -50,11 +57,7 @@ def test_validate_file_data_content(
 
     measurements_json = api.sample_analysis.get_measurements(record_data["id"], content_id, analysis_type)
     measurements_parquet = api.sample_analysis.get_measurements(
-        record_data["id"],
-        content_id,
-        analysis_type,
-        raw=True,
-        headers={CONTENT_TYPE: "application/x-parquet"}
+        record_data["id"], content_id, analysis_type, raw=True, headers={CONTENT_TYPE: "application/x-parquet"}
     ).content
 
     helper.compare_responses(measurements_json, measurements_parquet)

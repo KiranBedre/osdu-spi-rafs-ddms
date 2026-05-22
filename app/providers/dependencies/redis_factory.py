@@ -36,9 +36,7 @@ def get_redis_factory(
     """
     config = RedisCacheConfig()
 
-    match settings.cloud_provider:
-        case "azure":
-            return AzureRedisClientFactory(config, use_index_database)
-        case _:
-            # Default to base factory for other providers
-            return RedisClientFactory(config, use_index_database)
+    if settings.cloud_provider == "azure":
+        return AzureRedisClientFactory(config, use_index_database)
+    # Default to base factory for other providers
+    return RedisClientFactory(config, use_index_database)

@@ -225,7 +225,9 @@ async def test_startup_initializes_when_restart_returns_false(monkeypatch):
 
     with patch("app.core.events.restart_otel_span_processors", return_value=False):
         with patch("app.core.events.initialize_tracer") as mock_init:
-            with patch("app.core.events.init_cache"), patch("app.core.events.init_pandas"):
+            with patch("app.core.events.init_cache", new_callable=AsyncMock), patch(
+                "app.core.events.init_pandas", new_callable=AsyncMock
+            ):
                 handler = create_start_app_handler(MagicMock(), settings)
                 await handler()
 
@@ -244,7 +246,9 @@ async def test_startup_skips_init_when_restart_succeeds():
 
     with patch("app.core.events.restart_otel_span_processors", return_value=True):
         with patch("app.core.events.initialize_tracer") as mock_init:
-            with patch("app.core.events.init_cache"), patch("app.core.events.init_pandas"):
+            with patch("app.core.events.init_cache", new_callable=AsyncMock), patch(
+                "app.core.events.init_pandas", new_callable=AsyncMock
+            ):
                 handler = create_start_app_handler(MagicMock(), settings)
                 await handler()
 

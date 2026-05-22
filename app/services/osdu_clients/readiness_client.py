@@ -26,10 +26,8 @@ class ReadinessClient(object):
         settings: AppSettings,
     ) -> None:
         self.settings = settings
-        self.readiness_urls = [] if (
-            self.settings.service_readiness_urls is None
-        ) else (
-            self.settings.service_readiness_urls.split(",")
+        self.readiness_urls = (
+            [] if (self.settings.service_readiness_urls is None) else (self.settings.service_readiness_urls.split(","))
         )
 
     async def is_ready(

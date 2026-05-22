@@ -114,9 +114,11 @@ async def test_get_info_with_partition_service(mock_settings, mock_cloud_config)
     mock_blob_endpoint_secret = Mock()
     mock_blob_endpoint_secret.value = "https://test-storage-account.blob.core.windows.net/"
 
-    with patch("app.providers.dependencies.az.storage_account_info.DefaultAzureCredential", return_value=mock_credential), \
-         patch("app.providers.dependencies.az.storage_account_info.SecretClient") as mock_secret_client_class, \
-         patch("app.providers.dependencies.az.storage_account_info.PartitionServiceApiClient") as mock_partition_client_class:
+    with patch(
+        "app.providers.dependencies.az.storage_account_info.DefaultAzureCredential", return_value=mock_credential
+    ), patch("app.providers.dependencies.az.storage_account_info.SecretClient") as mock_secret_client_class, patch(
+        "app.providers.dependencies.az.storage_account_info.PartitionServiceApiClient"
+    ) as mock_partition_client_class:
 
         # Setup SecretClient mock
         mock_secret_client_instance = AsyncMock()
@@ -162,8 +164,9 @@ async def test_get_info_without_partition_service(mock_settings, mock_cloud_conf
     mock_blob_endpoint_secret = Mock()
     mock_blob_endpoint_secret.value = "https://test-storage-account.blob.core.windows.net/"
 
-    with patch("app.providers.dependencies.az.storage_account_info.DefaultAzureCredential", return_value=mock_credential), \
-         patch("app.providers.dependencies.az.storage_account_info.SecretClient") as mock_secret_client_class:
+    with patch(
+        "app.providers.dependencies.az.storage_account_info.DefaultAzureCredential", return_value=mock_credential
+    ), patch("app.providers.dependencies.az.storage_account_info.SecretClient") as mock_secret_client_class:
 
         mock_secret_client_instance = AsyncMock()
         mock_secret_client_instance.__aenter__.return_value = mock_secret_client_instance

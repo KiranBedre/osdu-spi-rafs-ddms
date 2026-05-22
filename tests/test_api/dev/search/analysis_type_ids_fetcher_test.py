@@ -47,7 +47,8 @@ def mock_search_service(urn):
     service.find_records.side_effect = [
         {
             "results": [{"data": {"DDMSDatasets": [urn]}}],
-        }, {},
+        },
+        {},
     ]
     return service
 

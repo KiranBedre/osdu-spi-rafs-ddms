@@ -50,11 +50,11 @@ class LoggingRedisBackend(RedisBackend):
         :param str key: cache key
         :return Optional[bytes]: cached value or None
         """
-        cached_data = await super().get(self._apply_prefix(key))
-        if cached_data is not None:
-            logger.debug(f"Cache HIT for key: {key}")
-        else:
+        cached_data = await super().get(key)
+        if cached_data is None:
             logger.debug(f"Cache MISS for key: {key}")
+        else:
+            logger.debug(f"Cache HIT for key: {key}")
         return cached_data
 
     async def get_with_ttl(self, key: str) -> tuple:
@@ -65,10 +65,10 @@ class LoggingRedisBackend(RedisBackend):
         """
         ttl, cached_data = await super().get_with_ttl(self._apply_prefix(key))
 
-        if cached_data is not None:
-            logger.debug(f"Cache HIT for key: {key}, TTL: {ttl}s")
-        else:
+        if cached_data is None:
             logger.debug(f"Cache MISS for key: {key}")
+        else:
+            logger.debug(f"Cache HIT for key: {key}, TTL: {ttl}s")
 
         return ttl, cached_data
 
@@ -161,5 +161,5 @@ class RedisCacheBackend(BaseCacheBackend):
         try:
             logger.debug("Validating Redis connection...")
             await redis_client.ping()
-        except (AuthenticationError, ConnectionError, ResponseError, TimeoutError):
+        except (AuthenticationError, ConnectionError, ResponseError, TimeoutError):  # noqa: WPS239
             raise CacheBackendError("Redis client can't be init. Redis host, port, password or db are wrong")

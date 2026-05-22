@@ -159,11 +159,11 @@ class LocalFilesystemBlobStorage(IBlobStorage):
 
         return blob.blob_metadata
 
-    async def delete_blob(self, blob_metadata: BlobMetadata) -> bool:
+    async def delete_blob(self, blob_metadata: BlobMetadata) -> bool:  # noqa: ASYNC910
         blob_path = os.path.join(self.base_path, blob_metadata.object_name)
-        if os.path.exists(blob_path):
+        if os.path.exists(blob_path):  # noqa: ASYNC240
             os.remove(blob_path)
-            return True
+            return True  # noqa: ASYNC910
         raise NotFoundException(detail=f"Blob not found: {blob_metadata.object_name}")
 
     async def update_blob(self, blob: Blob) -> BlobMetadata:
@@ -176,7 +176,7 @@ class LocalFilesystemBlobStorage(IBlobStorage):
 
     async def get_blob(self, blob_metadata: BlobMetadata) -> Blob:
         blob_path = os.path.join(self.base_path, blob_metadata.object_name)
-        if not os.path.exists(blob_path):
+        if not os.path.exists(blob_path):  # noqa: ASYNC240
             raise NotFoundException(detail=f"Blob not found: {blob_metadata.object_name}")
 
         async with aiofiles.open(blob_path, "rb") as fp:
@@ -184,19 +184,19 @@ class LocalFilesystemBlobStorage(IBlobStorage):
 
         return Blob(blob_data=blob_data, blob_metadata=blob_metadata)
 
-    async def list_blobs(self, subpath: str) -> List[str]:
+    async def list_blobs(self, subpath: str) -> List[str]:  # noqa: ASYNC910
         full_path = os.path.join(self.base_path, subpath)
-        if not os.path.exists(full_path):
-            return []
+        if not os.path.exists(full_path):  # noqa: ASYNC240
+            return []  # noqa: ASYNC910
 
-        return [
-            os.path.relpath(os.path.join(root, blob_file), self.base_path)
+        return [  # noqa: ASYNC910
+            os.path.relpath(os.path.join(root, blob_file), self.base_path)  # noqa: ASYNC240
             for root, _, blob_files in os.walk(full_path)
             for blob_file in blob_files
         ]
 
 
-async def get_blob_storage(
+async def get_blob_storage(  # noqa: ASYNC910
     data_partition_id: str,
     settings: AppSettings,
     cloud_provider_config: Optional[BaseSettings],
@@ -204,20 +204,22 @@ async def get_blob_storage(
 ) -> IBlobStorage:
 
     if settings.local_dev_mode:
-        return LocalFilesystemBlobStorage("./blobdata")
+        return LocalFilesystemBlobStorage("./blobdata")  # noqa: ASYNC910
 
-    match settings.cloud_provider:
-        case "azure":
-            from app.providers.dependencies.az.blob_storage import (
-                AzureBlobStorage,
-            )
-            from app.providers.dependencies.az.storage_account_info import (
-                AzureStorageAccountInfo,
-            )
-            async with AzureStorageAccountInfo(
-                data_partition_id, settings, cloud_provider_config,
-            ) as azure_storage_account_info:
-                account_info = await azure_storage_account_info.get_info()
-                return AzureBlobStorage(StoragePartitionInfo(data_partition_id, account_info))
-        case _:
-            raise NotImplementedError()
+    if settings.cloud_provider == "azure":
+        from app.providers.dependencies.az.blob_storage import (
+            AzureBlobStorage,
+        )
+        from app.providers.dependencies.az.storage_account_info import (
+            AzureStorageAccountInfo,
+        )
+
+        async with AzureStorageAccountInfo(
+            data_partition_id,
+            settings,
+            cloud_provider_config,
+        ) as azure_storage_account_info:
+            account_info = await azure_storage_account_info.get_info()
+            return AzureBlobStorage(StoragePartitionInfo(data_partition_id, account_info))
+
+    raise NotImplementedError()

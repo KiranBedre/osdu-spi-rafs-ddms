@@ -31,7 +31,7 @@ def divide_chunks(elements: List[Any], chunk_size: int) -> Iterable:
     :rtype: Iterator[Iterable]
     """
     for idx in range(0, len(elements), chunk_size):  # noqa: WPS526 (false positive)
-        yield elements[idx:idx + chunk_size]
+        yield elements[idx : idx + chunk_size]
 
 
 def find_osdu_ids_from_string(input_string: str) -> set:
@@ -45,7 +45,7 @@ def find_osdu_ids_from_string(input_string: str) -> set:
     ids_set = set()
     for osdu_regex in ALL_OSDU_REGEXES:
         found_ids = {
-            get_id_version(id_.strip(f"{string.whitespace}\"\'"))[FULLID_ID_INDEX]
+            get_id_version(id_.strip(f"{string.whitespace}\"'"))[FULLID_ID_INDEX]
             for id_ in re.findall(osdu_regex, f" {input_string} ")
         }
         ids_set.update(found_ids)

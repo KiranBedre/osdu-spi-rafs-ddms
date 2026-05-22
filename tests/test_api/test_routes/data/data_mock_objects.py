@@ -30,21 +30,24 @@ TEST_SCHEMA_VERSION = "1.0.0"
 TEST_DDMS_URN = f"urn://rafs-v1/routinecoreanalysisdata/partition:work-product-component--RockSampleAnalysis:rocksampleanalysis_test/{TEST_DATASET_RECORD_ID}"
 TEST_DDMS_URN_WITH_VERSION = f"urn://rafs-v1/routinecoreanalysisdata/partition:work-product-component--RockSampleAnalysis:rocksampleanalysis_test/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
 RECORD_DATA = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN],
         },
     },
 }
 RECORD_DATA_WITH_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION],
         },
     },
 }
 RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [f"{TEST_DDMS_URN}/2.0.0"],
         },
@@ -145,7 +148,7 @@ TEST_DATA = {
 
 TEST_AGGREGATED_DATA = {
     "columns": [
-        "count(\"Remarks\")",
+        'count("Remarks")',
     ],
     "index": [
         0,
@@ -340,10 +343,10 @@ class DatasetServiceMock:
         return build_get_test_data(self.mime_type, self.test_data)
 
     async def upload_file(
-            self,
-            blob_file: bytes,
-            dataset_id: Optional[str] = None,
-            parent_record: Optional[dict] = None,
+        self,
+        blob_file: bytes,
+        dataset_id: Optional[str] = None,
+        parent_record: Optional[dict] = None,
     ):
         return self.test_dataset_record_id
 
@@ -437,12 +440,9 @@ INVALID_DATA_WITH_NAN = {
 }
 
 INVALID_DATA_EMPTY = {
-    "columns": [
-    ],
-    "index": [
-    ],
-    "data": [
-    ],
+    "columns": [],
+    "index": [],
+    "data": [],
 }
 
 INVALID_DATA_INCONSISTENT = {

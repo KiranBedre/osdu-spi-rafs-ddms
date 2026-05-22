@@ -36,7 +36,7 @@ class DataValidator(object):
     storage_service: StorageService
     api_version: str
 
-    async def validate(self, df: pd.DataFrame, bulk_mode: bool = False) -> dict:
+    async def validate(self, df: pd.DataFrame, bulk_mode: bool = False) -> dict:  # noqa: ASYNC910
         """Validate dataframe.
 
         :param df: dataframe
@@ -96,7 +96,7 @@ class DataValidator(object):
         storage_response = await self.storage_service.query_records(ids_to_check)
         return set(storage_response["invalidRecords"])
 
-    async def _validate_integrity(self, df: pd.DataFrame) -> set:
+    async def _validate_integrity(self, df: pd.DataFrame) -> set:  # noqa: ASYNC910
         """Validate data referential integrity.
 
         :param df: dataframe

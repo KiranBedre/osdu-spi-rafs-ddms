@@ -57,7 +57,9 @@ def authorization_prefix() -> str:
 
 @pytest.fixture
 def authorized_client(
-    client: AsyncClient, token: str, authorization_prefix: str,
+    client: AsyncClient,
+    token: str,
+    authorization_prefix: str,
 ) -> AsyncClient:
     client.headers = {
         "Authorization": f"{authorization_prefix} {token}",
@@ -71,7 +73,9 @@ def mock_cache(*args, **kwargs):
         @wraps(func)
         async def inner(*args, **kwargs):
             return await func(*args, **kwargs)
+
         return inner
+
     return wrapper
 
 

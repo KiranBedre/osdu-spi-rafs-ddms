@@ -103,8 +103,7 @@ FORUM_REFERENCE_KINDS = {
 
 
 class DDMSFootprintGen:
-    GITLAB_URL = \
-        "https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/app/models/data_schemas/jsonschema/api_v2"  # noqa
+    GITLAB_URL = "https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/app/models/data_schemas/jsonschema/api_v2"  # noqa
 
     @classmethod
     def run(cls):
@@ -126,7 +125,8 @@ class DDMSFootprintGen:
 
         logger.info("Populating the AuthorityToContentTypes section")
         footprint_data_with_ctypes = cls.populate_authority_content_types(
-            footprint_with_covered_items, types_map,
+            footprint_with_covered_items,
+            types_map,
         )
         logger.info("AuthorityToContentTypes section has been populated.")
 
@@ -223,17 +223,18 @@ class DDMSFootprintGen:
         footprint_content["CoveredItems"] = [{"WKS": t} for t in covered_items]
 
         logger.info("Populating the ContentTypes for work-product-component--SamplesAnalysis")
-        footprint_content["CoveredItems"].append({
-            "WKS": SAMPLESANALYSIS_KIND,
-            "ContentTypes": list(supported_types),
-        })
+        footprint_content["CoveredItems"].append(
+            {
+                "WKS": SAMPLESANALYSIS_KIND,
+                "ContentTypes": list(supported_types),
+            }
+        )
 
         return footprint_content
 
     @classmethod
     def populate_authority_content_types(cls, footprint_content: Dict, types_map: Dict) -> Dict:
-        footprint_content["AuthorityToContentTypes"][0]["ContentTypeURLs"] = \
-            cls.populate_content_types(types_map)
+        footprint_content["AuthorityToContentTypes"][0]["ContentTypeURLs"] = cls.populate_content_types(types_map)
 
         return footprint_content
 

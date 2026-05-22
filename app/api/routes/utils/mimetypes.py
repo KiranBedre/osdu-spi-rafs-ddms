@@ -20,7 +20,7 @@ from app.api.routes.utils.records import RecordKeys, get_id_part
 from app.resources.mime_types import SupportedMimeTypes
 
 
-async def init_mimetypes():
+def init_mimetypes():
     """Init mimetypes.
 
     Workaround since distroless image lacks some types so we need to add
@@ -43,9 +43,14 @@ async def get_mime_type(dataset_record: dict) -> Optional[str]:
     mimetype_id = unquote(dataset_record["data"].get(RecordKeys.MIMETYPE_ID, ""))
 
     # fallback for EncodingFormatTypeID
-    file_source_info = dataset_record["data"].get(
-        RecordKeys.DATASET_PROPERTIES, {},
-    ).get(RecordKeys.FILE_SOURCE_INFO, {})
+    file_source_info = (
+        dataset_record["data"]
+        .get(
+            RecordKeys.DATASET_PROPERTIES,
+            {},
+        )
+        .get(RecordKeys.FILE_SOURCE_INFO, {})
+    )
     mimetype_id = mimetype_id or unquote(file_source_info.get(RecordKeys.MIMETYPE_ID, ""))
 
     # if non of previuos work guess with file name or file id

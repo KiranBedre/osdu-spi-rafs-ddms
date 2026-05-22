@@ -52,9 +52,14 @@ class TestDatasetServiceApiClient:
 
     @pytest.mark.asyncio
     async def test_get_storage_instructions(self):
-        with patch.object(AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = DatasetServiceApiClient(
-                base_url=BASE_URL, data_partition_id=DATA_PARTITION_ID, bearer_token=TOKEN_STR,
+                base_url=BASE_URL,
+                data_partition_id=DATA_PARTITION_ID,
+                bearer_token=TOKEN_STR,
+                extra_headers={common_headers.CORRELATION_ID: TEST_CORRELATION_ID},
             )
             response = await api_client.get_storage_instructions(KIND_SUBTYPE)
 
@@ -67,8 +72,10 @@ class TestDatasetServiceApiClient:
         )
 
     @pytest.mark.asyncio
-    async def test_get_storage_instructions(self):
-        with patch.object(AsyncClient, "post", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+    async def test_storage_instructions(self):
+        with patch.object(
+            AsyncClient, "post", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = DatasetServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -87,7 +94,9 @@ class TestDatasetServiceApiClient:
 
     @pytest.mark.asyncio
     async def test_retrieval_instructions(self):
-        with patch.object(AsyncClient, "post", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "post", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = DatasetServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -99,13 +108,16 @@ class TestDatasetServiceApiClient:
         # Verify that the expected headers were set and the expected response was returned
         self.common_get_post_success_assertions(api_client, response)
         httpx_client.assert_called_once_with(
-            f"{DatasetServicePaths.RETRIEVAL_INSTRUCTIONS}", json={"datasetRegistryIds": [TEST_REGISTRY_ID]},
+            f"{DatasetServicePaths.RETRIEVAL_INSTRUCTIONS}",
+            json={"datasetRegistryIds": [TEST_REGISTRY_ID]},
             headers=api_client.headers,
         )
 
     @pytest.mark.asyncio
     async def test_get_retrieval_instructions(self):
-        with patch.object(AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = DatasetServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -124,7 +136,9 @@ class TestDatasetServiceApiClient:
 
     @pytest.mark.asyncio
     async def test_create_or_update_dataset_registry(self):
-        with patch.object(AsyncClient, "put", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "put", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = DatasetServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -136,13 +150,16 @@ class TestDatasetServiceApiClient:
         # Verify that the expected headers were set and the expected response was returned
         self.common_get_post_success_assertions(api_client, response)
         httpx_client.assert_called_once_with(
-            f"{DatasetServicePaths.REGISTER_DATASET}", json={"datasetRegistries": [TEST_RECORD]},
+            f"{DatasetServicePaths.REGISTER_DATASET}",
+            json={"datasetRegistries": [TEST_RECORD]},
             headers=api_client.headers,
         )
 
     @pytest.mark.asyncio
     async def test_get_dataset_registry(self):
-        with patch.object(AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = DatasetServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -161,7 +178,9 @@ class TestDatasetServiceApiClient:
 
     @pytest.mark.asyncio
     async def test_get_dataset_registries(self):
-        with patch.object(AsyncClient, "post", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "post", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = DatasetServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -173,6 +192,7 @@ class TestDatasetServiceApiClient:
         # Verify that the expected headers were set and the expected response was returned
         self.common_get_post_success_assertions(api_client, response)
         httpx_client.assert_called_once_with(
-            f"{DatasetServicePaths.GET_DATASET_REGISTRY}", json={"datasetRegistryIds": [TEST_REGISTRY_ID]},
+            f"{DatasetServicePaths.GET_DATASET_REGISTRY}",
+            json={"datasetRegistryIds": [TEST_REGISTRY_ID]},
             headers=api_client.headers,
         )

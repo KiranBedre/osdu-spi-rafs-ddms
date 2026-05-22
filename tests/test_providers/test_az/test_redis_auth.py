@@ -32,8 +32,8 @@ class TestRedisAuthUtilities:
         payload = {"oid": "12345678-1234-1234-1234-123456789abc", "exp": 9999999999}
 
         # Encode header and payload as base64
-        header_b64 = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip('=')
-        payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')
+        header_b64 = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
+        payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
         signature = "mock_signature"
 
         return f"{header_b64}.{payload_b64}.{signature}"
@@ -49,8 +49,8 @@ class TestRedisAuthUtilities:
         header = {"alg": "RS256", "typ": "JWT"}
         payload = {"sub": "subject", "exp": 9999999999}
 
-        header_b64 = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip('=')
-        payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip('=')
+        header_b64 = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
+        payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
         token_no_oid = f"{header_b64}.{payload_b64}.signature"
 
         oid = extract_oid_from_token(token_no_oid)

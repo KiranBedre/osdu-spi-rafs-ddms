@@ -36,7 +36,9 @@ class TestSearchServiceApiClient:
         expected_response = {"result": "query test result"}
 
         # Patch the AsyncClient.post method to return a mock response
-        with patch.object(AsyncClient, "post", return_value=Mock(status_code=200, json=Mock(return_value=expected_response))) as httpx_client:
+        with patch.object(
+            AsyncClient, "post", return_value=Mock(status_code=200, json=Mock(return_value=expected_response))
+        ) as httpx_client:
             api_client = SearchServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -52,7 +54,8 @@ class TestSearchServiceApiClient:
         assert response == expected_response
         httpx_client.assert_called_once_with(
             SearchServicePaths.QUERY,
-            json=QUERY_DATA, headers=api_client.headers,
+            json=QUERY_DATA,
+            headers=api_client.headers,
         )
 
     @pytest.mark.asyncio
@@ -60,7 +63,9 @@ class TestSearchServiceApiClient:
         expected_response = {"result": "query with cursor test result"}
 
         # Patch the AsyncClient.post method to return a mock response
-        with patch.object(AsyncClient, "post", return_value=Mock(status_code=200, json=Mock(return_value=expected_response))) as httpx_client:
+        with patch.object(
+            AsyncClient, "post", return_value=Mock(status_code=200, json=Mock(return_value=expected_response))
+        ) as httpx_client:
             api_client = SearchServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -76,5 +81,6 @@ class TestSearchServiceApiClient:
         assert response == expected_response
         httpx_client.assert_called_once_with(
             SearchServicePaths.CURSOR_QUERY,
-            json=QUERY_DATA, headers=api_client.headers,
+            json=QUERY_DATA,
+            headers=api_client.headers,
         )

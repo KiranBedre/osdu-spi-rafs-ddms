@@ -14,7 +14,7 @@
 
 from typing import List
 
-from azure.core.exceptions import (
+from azure.core.exceptions import (  # pylint: disable=no-name-in-module
     HttpResponseError,
     ResourceExistsError,
     ResourceModifiedError,
@@ -22,9 +22,9 @@ from azure.core.exceptions import (
     ServiceRequestError,
     ServiceResponseError,
 )
-from azure.identity.aio import DefaultAzureCredential
-from azure.storage.blob import BlobType, ContentSettings
-from azure.storage.blob.aio import BlobServiceClient
+from azure.identity.aio import DefaultAzureCredential  # pylint: disable=no-name-in-module
+from azure.storage.blob import BlobType, ContentSettings  # pylint: disable=no-name-in-module
+from azure.storage.blob.aio import BlobServiceClient  # pylint: disable=no-name-in-module
 from loguru import logger
 
 from app.exceptions.exceptions import (
@@ -67,7 +67,8 @@ class AzureBlobStorage(IBlobStorage):
     async def get_blob(self, blob_metadata: BlobMetadata) -> Blob:
         object_name = blob_metadata.object_name
         async with BlobServiceClient(
-            account_url=self._account_url, credential=self._credential,
+            account_url=self._account_url,
+            credential=self._credential,
         ) as blob_service_client:
             container_client = blob_service_client.get_container_client(container=self._container_name)
             blob_client = container_client.get_blob_client(object_name)
@@ -86,7 +87,8 @@ class AzureBlobStorage(IBlobStorage):
 
     async def list_blobs(self, subpath: str) -> List[str]:
         async with BlobServiceClient(
-            account_url=self._account_url, credential=self._credential,
+            account_url=self._account_url,
+            credential=self._credential,
         ) as blob_service_client:
             container_client = blob_service_client.get_container_client(container=self._container_name)
 
@@ -99,7 +101,8 @@ class AzureBlobStorage(IBlobStorage):
     async def delete_blob(self, blob_metadata: BlobMetadata) -> bool:
         object_name = blob_metadata.object_name
         async with BlobServiceClient(
-            account_url=self._account_url, credential=self._credential,
+            account_url=self._account_url,
+            credential=self._credential,
         ) as blob_service_client:
             container_client = blob_service_client.get_container_client(container=self._container_name)
             blob_client = container_client.get_blob_client(object_name)
@@ -122,7 +125,8 @@ class AzureBlobStorage(IBlobStorage):
         blob_type: BlobType = BlobType.BLOCKBLOB,
     ) -> BlobMetadata:
         async with BlobServiceClient(
-            account_url=self._account_url, credential=self._credential,
+            account_url=self._account_url,
+            credential=self._credential,
         ) as blob_service_client:
             container_client = blob_service_client.get_container_client(container=self._container_name)
             blob_client = container_client.get_blob_client(blob.blob_metadata.object_name)

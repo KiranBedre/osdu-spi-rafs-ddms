@@ -74,10 +74,7 @@ def _build_kwargs_string(kwargs: Optional[dict]) -> str:
     if not kwargs:
         return ""
 
-    return ":".join(
-        f"{kwarg_key}={kwarg_value}"
-        for kwarg_key, kwarg_value in sorted(kwargs.items())
-    )
+    return ":".join(f"{kwarg_key}={kwarg_value}" for kwarg_key, kwarg_value in sorted(kwargs.items()))
 
 
 def key_builder_for_service_methods(

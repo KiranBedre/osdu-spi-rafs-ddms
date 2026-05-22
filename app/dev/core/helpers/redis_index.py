@@ -67,7 +67,8 @@ async def create_samplesanalysis_index(redis_client: Redis, partition: str):
     await redis_client.ft(
         SAMPLESANALYSIS_IX.format(partition=partition),
     ).create_index(
-        fields=schema, definition=definition,
+        fields=schema,
+        definition=definition,
     )
 
 

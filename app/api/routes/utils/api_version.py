@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+
 def get_api_version_from_url(url: str) -> str:
     version_position = 3  # api/rafs/<version>/<domain>/etc.
     return url.split("/")[version_position]

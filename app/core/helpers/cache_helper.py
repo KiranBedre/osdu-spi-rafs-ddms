@@ -19,7 +19,7 @@ from app.core.helpers.cache.backend_builder import BackendBuilder
 from app.core.settings.app import AppSettings
 
 
-async def init_cache(settings: AppSettings) -> None:
+async def init_cache(settings: AppSettings) -> None:  # noqa: ASYNC910
     """Init cache layer for the app.
 
     :param AppSettings settings: app settings
@@ -48,7 +48,7 @@ async def init_cache(settings: AppSettings) -> None:
     )
 
 
-async def clear_cache(settings: AppSettings) -> None:
+async def clear_cache(settings: AppSettings) -> None:  # noqa: ASYNC910
     """Clear cache if cache enabled.
 
     :param settings: app settings
