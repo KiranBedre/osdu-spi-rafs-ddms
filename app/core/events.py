@@ -40,7 +40,7 @@ def create_start_app_handler(
         if not restart_otel_span_processors():
             initialize_tracer(settings)
         await init_cache(settings)
-        await init_pandas()
+        init_pandas()
 
     return start_app
 
