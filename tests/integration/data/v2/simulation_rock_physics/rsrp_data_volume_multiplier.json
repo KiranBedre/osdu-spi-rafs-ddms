@@ -1,0 +1,58 @@
+{
+    "columns": [
+        "ReservoirSimulationRockPhysicsID",
+        "Meta",
+        "Compressibility",
+        "ThermalModelDefinition"
+    ],
+    "index": [
+        0
+    ],
+    "data": [
+        [
+            "{data_partition_id}:work-product-component--ReservoirSimulationRockPhysicsModel:{record_id}:",
+            [
+                {
+                    "kind": "Unit",
+                    "name": "bar",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:bar:",
+                    "propertyNames": [
+                        "Compressibility.ReferencePressure"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "1/bar",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:1%2Fbar:",
+                    "propertyNames": [
+                        "Compressibility.PoreVolumeCompressibilityAtReferencePressure"
+                    ]
+                }
+            ],
+            {
+                "Pressure": [
+                    100,
+                    200,
+                    300,
+                    400
+                ],
+                "PoreVolumeMultiplier": [
+                    0.9,
+                    1.0,
+                    1.1,
+                    1.2
+                ],
+                "TransmissibilityMultiplier": [
+                    0.85,
+                    0.95,
+                    1.05,
+                    1.15
+                ]
+            },
+            {
+                "ThermalConductivity": 2.5,
+                "HeatCapacity": 900
+            }
+        ]
+    ]
+}

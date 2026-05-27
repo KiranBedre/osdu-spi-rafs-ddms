@@ -15,7 +15,8 @@
 import copy
 import datetime
 
-from app.resources.common_headers import CONTENT_TYPE
+from app.resources.common_headers import ACCEPT
+
 from tests.integration.config import (
     DataFiles,
     SamplesAnalysisTypes,
@@ -69,25 +70,25 @@ def test_saturation_test_add_data_v1(api, helper, tests_data, record_id, cce_rec
     data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_TEST_DATA_V1))
     data_payload["data"][0][0] = f"{record_id}:"
     data_payload["data"][0][7] = f"{cce_record_id}:"
-    post_response = api.sample_analysis.post_measurements(
+    post_response = api.sample_analysis.post_data(
         record_id, data_payload, SamplesAnalysisTypes.SATURATION_TEST, SchemaVersions.V1_0_0
     )
     dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
 
     # GET data as JSON and compare with original payload
-    gotten_data = api.sample_analysis.get_measurements(
+    gotten_data = api.sample_analysis.get_data(
         record_id, dataset_id, SamplesAnalysisTypes.SATURATION_TEST, SchemaVersions.V1_0_0
     )
     helper.compare_responses(gotten_data, data_payload, response_type="json")
 
     # Verify JSON and Parquet responses are equivalent
-    parquet_response = api.sample_analysis.get_measurements(
+    parquet_response = api.sample_analysis.get_data(
         record_id,
         dataset_id,
         SamplesAnalysisTypes.SATURATION_TEST,
         SchemaVersions.V1_0_0,
         raw=True,
-        headers={CONTENT_TYPE: "application/x-parquet"},
+        headers={ACCEPT: "application/x-parquet"},
     ).content
     helper.compare_responses(gotten_data, parquet_response)
 
@@ -101,7 +102,7 @@ def test_saturation_test_get_data_v1_filtered_by_column(api, helper, tests_data,
 
     # GET data as JSON and compare with modified payload
     params = {"columns_filter": "TestNumber,Temperature,SaturationPressure"}
-    gotten_data = api.sample_analysis.get_measurements(
+    gotten_data = api.sample_analysis.get_data(
         record_id,
         dataset_id=dataset_id_v1,
         analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
@@ -122,7 +123,7 @@ def test_saturation_test_get_data_v1_filtered_in_by_row(
 
     # GET data as JSON and compare with modified payload
     params = {"rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
-    gotten_data = api.sample_analysis.get_measurements(
+    gotten_data = api.sample_analysis.get_data(
         record_id,
         dataset_id=dataset_id_v1,
         analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
@@ -136,7 +137,7 @@ def test_saturation_test_get_data_v1_filtered_out_by_row(api, tests_data, record
     """Verify bulk data retrieval filtered out by row."""
     # GET data as JSON
     params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
-    response = api.sample_analysis.get_measurements(
+    response = api.sample_analysis.get_data(
         record_id,
         dataset_id=dataset_id_v1,
         analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
@@ -156,7 +157,7 @@ def test_saturation_test_get_data_v1_aggregated(api, record_id, dataset_id_v1):
     """Verify bulk data retrieval aggregated."""
     # GET data as JSON
     params = {"columns_aggregation": "SamplesAnalysisID,describe"}
-    response = api.sample_analysis.get_measurements(
+    response = api.sample_analysis.get_data(
         record_id,
         dataset_id=dataset_id_v1,
         analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
@@ -184,7 +185,7 @@ def test_saturation_test_search_record_filtered_in_by_row(api, helper, record_id
 
     # Wait until search returns the record_id in its result set
     response = helper.wait_for_search_record(
-        lambda: api.sample_analysis.search(
+        lambda: api.sample_analysis.search_records(
             analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
             schema_version=SchemaVersions.V1_0_0,
             params=params,
@@ -222,7 +223,7 @@ def test_saturation_test_search_data_filtered_in_by_row(
 def test_saturation_test_search_record_filtered_out_by_row(api, record_id, dataset_id_v1, search_available_v1):
     """Verify record is filtered out by the specified row filter in the search results"""
     params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
         schema_version=SchemaVersions.V1_0_0,
         params=params,
@@ -236,7 +237,7 @@ def test_saturation_test_search_record_filtered_in_by_start_date(api, record_id,
     """Verify record is filtered in by the specified start date filter in the search results"""
     current_date = datetime.date.today()
     params = {"indexed_start_date": current_date}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
         schema_version=SchemaVersions.V1_0_0,
         params=params,
@@ -251,7 +252,7 @@ def test_saturation_test_search_record_filtered_out_by_start_date(api, record_id
     current_date = datetime.date.today()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
         schema_version=SchemaVersions.V1_0_0,
         params=params,
@@ -265,7 +266,7 @@ def test_saturation_test_search_record_filtered_in_by_end_date(api, record_id, d
     """Verify record is filtered in by the specified end date filter in the search results"""
     current_date = datetime.date.today()
     params = {"indexed_end_date": current_date}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
         schema_version=SchemaVersions.V1_0_0,
         params=params,
@@ -280,7 +281,7 @@ def test_saturation_test_search_record_filtered_out_by_end_date(api, record_id, 
     current_date = datetime.date.today()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
         schema_version=SchemaVersions.V1_0_0,
         params=params,
@@ -293,7 +294,7 @@ def test_saturation_test_search_record_filtered_out_by_end_date(api, record_id, 
 def test_saturation_test_search_record_filtered_out_by_page_limit(api, record_id, dataset_id_v1, search_available_v1):
     """Verify records are filtered out by the specified page limit filter in the search results"""
     params = {"page_limit": 2}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
         schema_version=SchemaVersions.V1_0_0,
         params=params,

@@ -1,0 +1,51 @@
+{
+    "kind": "{schema_authority}:wks:work-product-component--ReservoirSimulationRockPhysicsModel:{wpc_version}",
+    "acl": {
+        "viewers": [
+            "{acl_viewers}"
+        ],
+        "owners": [
+            "{acl_owners}"
+        ]
+    },
+    "legal": {
+        "legaltags": [
+            "{legal_tag}"
+        ],
+        "otherRelevantDataCountries": [
+            "US"
+        ],
+        "status": "compliant"
+    },
+    "data": {
+            "CompressibilityModelTypeID": "{data_partition_id}:reference-data--CompressibilityModelType:BulkCompressibility:",
+            "ThermalModelTypeID": "{data_partition_id}:reference-data--ThermalModelType:GeometricMeanModel:",
+            "ParentModelID": "{data_partition_id}:work-product-component--ReservoirSimulationRockPhysicsModel:ParentRecord:",
+            "DatePublished": "2024-01-01",
+            "Name": "Reservoir Simulation Rock Physics Model",
+            "BasisOfModelling": {
+                "CompressibilityModelInputSampleAnalysisIDs": [
+                    "{data_partition_id}:work-product-component--SamplesAnalysis:SamplesAnalysis-sample_test:"
+                ],
+                "CompressibilityModelInputDataCollectionID": "{data_partition_id}:work-product-component--PersistedCollection:CollectionRecord:",
+                "ThermalModelInputSampleAnalysisIDs": [
+                    "{data_partition_id}:work-product-component--SamplesAnalysis:SamplesAnalysis-sample_test:"
+                ],
+                "ThermalModelInputDataCollectionID": "{data_partition_id}:work-product-component--PersistedCollection:CollectionRecord:",
+                "ModellingApplicationsUsed": [
+                    "Eclipse"
+                ],
+                "IntendedWorkflowUsageIDs": [
+                    "{data_partition_id}:reference-data--WorkflowUsageType:SeismicProcessing:"
+                ]
+            },
+            "Remarks": [
+                {
+                "RemarkSequenceNumber":1,
+                "Remark":"Remark",
+                "RemarkSource":"Remark Source",
+                "RemarkDate":"2025-01-01"
+                }
+            ]
+    }
+}

@@ -28,7 +28,7 @@ from tests.integration.config import (
 
 
 @pytest.fixture(scope="package")
-def samples_analysis_type():
+def analysis_type():
     """Analysis type definition"""
     return SamplesAnalysisTypes.STOCK_TANK_OIL
 
@@ -46,10 +46,10 @@ def fractionation_record_id(create_record):
 
 
 @pytest.fixture(scope="module")
-def dataset_id_v1_1(api, helper, record_id, tests_data, samples_analysis_type, fractionation_record_id):
+def dataset_id_v1_1(api, helper, record_id, tests_data, analysis_type, fractionation_record_id):
     """Generic fixture to create a V1 dataset."""
     # 1. Lookup the correct data file for this Analysis Type + V1
-    file_key = VersionedDataFiles.VALUES.get((samples_analysis_type, SchemaVersions.V1_1_0))
+    file_key = VersionedDataFiles.VALUES.get((analysis_type, SchemaVersions.V1_1_0))
 
     # 2. Load and Prepare Data
     data_payload = copy.deepcopy(tests_data(file_key))
@@ -57,10 +57,10 @@ def dataset_id_v1_1(api, helper, record_id, tests_data, samples_analysis_type, f
     data_payload["data"][0][33][0] = f"{fractionation_record_id}:"
 
     # 3. Post
-    post_response = api.sample_analysis.post_measurements(
+    post_response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
-        analysis_type=samples_analysis_type,
+        analysis_type=analysis_type,
         schema_version=SchemaVersions.V1_1_0,
     )
     return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])

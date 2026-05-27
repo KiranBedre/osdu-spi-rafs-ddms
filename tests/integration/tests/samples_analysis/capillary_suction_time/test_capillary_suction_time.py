@@ -15,7 +15,8 @@
 import copy
 import datetime
 
-from app.resources.common_headers import CONTENT_TYPE
+from app.resources.common_headers import ACCEPT
+
 from tests.integration.config import (
     DataFiles,
     SamplesAnalysisTypes,
@@ -68,25 +69,25 @@ def test_capillary_suction_time_add_data_v1(api, helper, tests_data, record_id):
     # Prepare and upload dataset payload
     data_payload = copy.deepcopy(tests_data(DataFiles.CAPILLARY_SUCTION_TIME_DATA_V1))
     data_payload["data"][0][0] = f"{record_id}:"
-    post_response = api.sample_analysis.post_measurements(
+    post_response = api.sample_analysis.post_data(
         record_id, data_payload, SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME, SchemaVersions.V1_0_0
     )
     dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
 
     # GET data as JSON and compare with original payload
-    gotten_data = api.sample_analysis.get_measurements(
+    gotten_data = api.sample_analysis.get_data(
         record_id, dataset_id, SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME, SchemaVersions.V1_0_0
     )
     helper.compare_responses(gotten_data, data_payload, response_type="json")
 
     # Verify JSON and Parquet responses are equivalent
-    parquet_response = api.sample_analysis.get_measurements(
+    parquet_response = api.sample_analysis.get_data(
         record_id,
         dataset_id,
         SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
         SchemaVersions.V1_0_0,
         raw=True,
-        headers={CONTENT_TYPE: "application/x-parquet"},
+        headers={ACCEPT: "application/x-parquet"},
     ).content
     helper.compare_responses(gotten_data, parquet_response)
 
@@ -100,7 +101,7 @@ def test_capillary_suction_time_get_data_v1_filtered_by_column(api, helper, test
 
     # GET data as JSON and compare with modified payload
     params = {"columns_filter": "WellFluidsReportID,TestFluidVolume,TestFluidAverageCapillarySuctionTime"}
-    gotten_data = api.sample_analysis.get_measurements(
+    gotten_data = api.sample_analysis.get_data(
         record_id,
         dataset_id=dataset_id_v1,
         analysis_type=SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
@@ -118,7 +119,7 @@ def test_capillary_suction_time_get_data_v1_filtered_in_by_row(api, helper, test
 
     # GET data as JSON and compare with modified payload
     params = {"rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
-    gotten_data = api.sample_analysis.get_measurements(
+    gotten_data = api.sample_analysis.get_data(
         record_id,
         dataset_id=dataset_id_v1,
         analysis_type=SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
@@ -132,7 +133,7 @@ def test_capillary_suction_time_get_data_v1_filtered_out_by_row(api, tests_data,
     """Verify bulk data retrieval filtered out by row."""
     # GET data as JSON
     params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
-    response = api.sample_analysis.get_measurements(
+    response = api.sample_analysis.get_data(
         record_id,
         dataset_id=dataset_id_v1,
         analysis_type=SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
@@ -152,7 +153,7 @@ def test_capillary_suction_time_get_data_v1_aggregated(api, record_id, dataset_i
     """Verify bulk data retrieval aggregated."""
     # GET data as JSON
     params = {"columns_aggregation": "SamplesAnalysisID,describe"}
-    response = api.sample_analysis.get_measurements(
+    response = api.sample_analysis.get_data(
         record_id,
         dataset_id=dataset_id_v1,
         analysis_type=SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
@@ -180,7 +181,7 @@ def test_capillary_suction_time_search_record_filtered_in_by_row(api, helper, re
 
     # Wait until search returns the record_id in its result set
     response = helper.wait_for_search_record(
-        lambda: api.sample_analysis.search(
+        lambda: api.sample_analysis.search_records(
             analysis_type=SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
             schema_version=SchemaVersions.V1_0_0,
             params=params,
@@ -215,7 +216,7 @@ def test_capillary_suction_time_search_data_filtered_in_by_row(api, helper, test
 def test_capillary_suction_time_search_record_filtered_out_by_row(api, record_id, dataset_id_v1, search_available_v1):
     """Verify record is filtered out by the specified row filter in the search results"""
     params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
         schema_version=SchemaVersions.V1_0_0,
         params=params,
@@ -231,7 +232,7 @@ def test_capillary_suction_time_search_record_filtered_in_by_start_date(
     """Verify record is filtered in by the specified start date filter in the search results"""
     current_date = datetime.date.today()
     params = {"indexed_start_date": current_date}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
         schema_version=SchemaVersions.V1_0_0,
         params=params,
@@ -248,7 +249,7 @@ def test_capillary_suction_time_search_record_filtered_out_by_start_date(
     current_date = datetime.date.today()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
         schema_version=SchemaVersions.V1_0_0,
         params=params,
@@ -264,7 +265,7 @@ def test_capillary_suction_time_search_record_filtered_in_by_end_date(
     """Verify record is filtered in by the specified end date filter in the search results"""
     current_date = datetime.date.today()
     params = {"indexed_end_date": current_date}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
         schema_version=SchemaVersions.V1_0_0,
         params=params,
@@ -281,7 +282,7 @@ def test_capillary_suction_time_search_record_filtered_out_by_end_date(
     current_date = datetime.date.today()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
         schema_version=SchemaVersions.V1_0_0,
         params=params,
@@ -296,7 +297,7 @@ def test_capillary_suction_time_search_record_filtered_out_by_page_limit(
 ):
     """Verify records are filtered out by the specified page limit filter in the search results"""
     params = {"page_limit": 2}
-    response = api.sample_analysis.search(
+    response = api.sample_analysis.search_records(
         analysis_type=SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME,
         schema_version=SchemaVersions.V1_0_0,
         params=params,

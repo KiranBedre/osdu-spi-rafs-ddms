@@ -1,0 +1,73 @@
+{
+    "kind": "{schema_authority}:wks:work-product-component--FluidModel:{wpc_version}",
+    "acl": {
+        "viewers": [
+            "{acl_viewers}"
+        ],
+        "owners": [
+            "{acl_owners}"
+        ]
+    },
+    "legal": {
+        "legaltags": [
+            "{legal_tag}"
+        ],
+        "otherRelevantDataCountries": [
+            "US"
+        ],
+        "status": "compliant"
+    },
+    "data": {
+            "FluidModelTypeID": "{data_partition_id}:reference-data--FluidModelType:BlackOil:",
+            "BasisOfModelling": {
+                "InputDataCollectionID": "{data_partition_id}:work-product-component--PersistedCollection:CollectionRecord:",
+                "ModelPropertyFormulationMethods": [
+                    {
+                        "ModelPropertyTypeID": "{data_partition_id}:reference-data--FluidModelPropertyType:Density:",
+                        "ModelPropertyFormulationMethodID": "{data_partition_id}:reference-data--FluidModelPropertyFormulationMethod:BlackOil.SimulatedLiberation:"
+                    }
+                ],
+                "ModellingApplicationsUsed": [
+                    "PVTsim Nova 5.0"
+                ],
+                "IntendedWorkflowUsageIDs": [
+                    "{data_partition_id}:reference-data--WorkflowUsageType:Assessment:"
+                ],
+                "IsOptimizedForEnhancedRecoveryStudies": false,
+                "IsModelPvtOptimized": true,
+                "IsModelViscosityOptimized": true,
+                "IsCompositionLumped": true,
+                "ComponentCount": 8,
+                "BlackOilFlashMechanismAppliedID": "{data_partition_id}:reference-data--BlackOilFlashMechanismApplied:DifferentialLiberation:"
+
+            },
+            "ParentModelID": "{data_partition_id}:work-product-component--FluidModel:ParentModelID:",
+            "DatePublished": "2020-02-13T09:13:15.55Z",
+            "ModellingContacts": [
+                {
+                    "EmailAddress": "pvt-analyst@company.com",
+                    "Name": "PVT Analyst"
+                }
+            ],
+            "ModelAreaOfInterestIDs": [
+                "{data_partition_id}:master-data--Reservoir:reservoir-007::"
+            ],
+            "IsApplicableForThermalSimulation": false,
+            "FluidModelSaturationTypeID": "{data_partition_id}:reference-data--FluidModelSaturationType:BubblePoint:",
+            "HasVariableDepthFluidProperties": false,
+            "Remarks": [
+                {
+                    "RemarkSequenceNumber": 1,
+                    "Remark": "For SGFN: COREY = 2 as in old model, but uses equidistant SG after recommendation",
+                    "RemarkSource": "Jostein Skretting",
+                    "RemarkDate": "2010-03-24"
+                },
+                {
+                    "RemarkSequenceNumber": 2,
+                    "Remark": "For SWFN: (a) Krw PESSIMISTIC from J. Skretting (Corey = 2) in Table I (b) Krw with Corey = 1.5 in Table II",
+                    "RemarkSource": "Jostein Skretting",
+                    "RemarkDate": "2010-09-08"
+                }
+            ]
+        }
+}

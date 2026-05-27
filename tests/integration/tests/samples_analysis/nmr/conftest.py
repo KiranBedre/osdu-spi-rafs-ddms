@@ -20,5 +20,5 @@ from tests.integration.config import (
 
 
 @pytest.fixture(scope="package")
-def samples_analysis_type():
+def analysis_type():
     return SamplesAnalysisTypes.NMR
