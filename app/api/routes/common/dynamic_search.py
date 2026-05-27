@@ -61,9 +61,9 @@ def get_search_description_template(entity_name: str) -> str:
     return append_query_params(
         [
             f"Get `{entity_name}` records containing associated bulk data (`data.DDMSDatasets`).<br><br>",
-            "Use the `Accept` request header to specify content schema version",
-            "(example header `Accept: application/json;version=1.0.0` is supported).",
-        ]
+            "Use the `content_schema_version` query parameter to specify content schema version",
+            "(e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.",
+        ],
     )
 
 
@@ -72,12 +72,12 @@ def get_search_data_description_template(entity_name: str) -> str:
     return append_query_params(
         [
             f"Get `{entity_name}` records bulk data content.<br><br>",
-            "Use the `Accept` request header to specify content schema version",
-            "(example header `Accept: application/json;version=1.0.0` is supported).<br><br>",
+            "Use the `content_schema_version` query parameter to specify content schema version",
+            "(e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>",
             "Use the `Content-Type` request header to specify payload and response",
             "formats (`application/json` and `application/parquet` are supported).<br><br>",
             "Use the `orient` query parameter to select the JSON output format (`split` or `records`).",
-        ]
+        ],
     )
 
 

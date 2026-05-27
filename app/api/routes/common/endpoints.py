@@ -17,7 +17,7 @@ from typing import Any, Callable, Dict, Optional
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import JSONResponse
 
-from app.api.dependencies.request import get_content_schema_version
+from app.api.dependencies.request import get_content_schema_version, get_response_mime_type
 from app.api.dependencies.services import get_async_entitlements_service
 from app.api.dependencies.validation import raise_model_not_found
 from app.api.routes.utils.api_description_helper import APIDescriptionHelper
@@ -93,6 +93,7 @@ class GenericSchemasView(object):
         """
         # validate user is authenticated in OSDU
         await entitlements_service.get_groups()
+        get_response_mime_type(request)
 
         content_type = content_type_extractor(request)
         model_versions = None

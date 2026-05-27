@@ -1191,8 +1191,8 @@ async def test_get_data_accept_negotiation_returns_parquet(
     ],
 )
 @pytest.mark.asyncio
-async def test_get_data_unsupported_accept_returns_415(data_endpoint_path, dataset_id):
-    """Accept header with unsupported MIME type must return 415 Unsupported Media Type."""
+async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, dataset_id):
+    """Accept header with unsupported MIME type must return 406 Not Acceptable."""
     with services_overrides():
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
             response = await client.get(
@@ -1203,7 +1203,7 @@ async def test_get_data_unsupported_accept_returns_415(data_endpoint_path, datas
                     "Accept": "application/xml;version=1.0.0",
                 },
             )
-    assert response.status_code == status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
 
 
 @pytest.mark.parametrize(

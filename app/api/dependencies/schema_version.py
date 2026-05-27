@@ -35,7 +35,7 @@ def validate_version_format(version: str, source: str) -> None:
             source,
             version,
         )
-        raise exceptions.NotAcceptableException(detail=reason)
+        raise exceptions.UnprocessableContentException(detail=reason)
 
 
 def parse_version_from_accept_header(accept_header: str) -> str:
@@ -43,12 +43,10 @@ def parse_version_from_accept_header(accept_header: str) -> str:
     mime_type = parts[0]
 
     if mime_type not in SUPPORTED_MIME_TYPES:
-        supported = str(list(SUPPORTED_MIME_TYPES))
-        error_details = "The requested media type '{0}' is not supported. Supported types are: {1}.".format(
-            mime_type,
-            supported,
-        )
-        raise exceptions.UnsupportedMediaTypeException(detail=error_details)
+        supported = str(SUPPORTED_MIME_TYPES)
+        msg = "Not Acceptable. The requested media type '{0}' is not supported. Supported types are: {1}."
+        error_details = msg.format(mime_type, supported)  # noqa: E501
+        raise exceptions.NotAcceptableException(detail=error_details)
 
     version_match = re.search(r"version=(\d+\.\d+(?:\.\d+)?)", accept_header.lower().strip())
 
