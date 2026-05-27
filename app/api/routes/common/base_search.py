@@ -74,8 +74,8 @@ class GenericSearchDataView(object):
         self._router = router
         self.description_template_search_data = APIDescriptionHelper.append_joined_roles(
             "Get the (`queried`) bulk data from every `{analysis_type}` found in search service. <br><br>\
-            Use the `Accept` request header to specify content schema version \
-                (example header `Accept: */*;version=1.0.0` is supported).<br><br>\
+            Use the `content_schema_version` query parameter to specify content schema version \
+                (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>\
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
                 query parameters can be used to manage data in response. <br><br>\
             Use the `orient` query parameter to select the JSON output format (`split` or `records`).<br><br>\
@@ -84,8 +84,8 @@ class GenericSearchDataView(object):
         )
         self.description_template_search = APIDescriptionHelper.append_joined_roles(
             "Get the (`samples analysis`) ids list that comply with `{query}` for given`{analysis_type}`. <br><br>\
-            Use the `Accept` request header to specify content schema version \
-                (example header `Accept: */*;version=1.0.0` is supported).<br><br>\
+            Use the `content_schema_version` query parameter to specify content schema version \
+                (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>\
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
                 query parameters can be used to manage data in response. <br><br> \
             Use `offset`, `page_limit` query parameters to control response data size. \
@@ -272,6 +272,7 @@ class GenericSearchDataView(object):
         :rtype: Response
         """
         data_partition_id = request.headers.get("data-partition-id")
+        get_response_mime_type(request)
         offset, page_limit, indexed_start_date, indexed_end_date = pagination_parameters
         query_date_range = (indexed_start_date, indexed_end_date)
 

@@ -88,9 +88,9 @@ GenericSchemasView(
         "description": " ".join(
             [
                 "Get the (`content schema`) for `{ReservoirSimulationRockPhysicsModel}`. <br><br>",
-                "Use the `Accept` request header to specify content schema version ",
-                "(example header `Accept: application/json;version=1.0.0` is supported).",
-            ]
+                "Use the `content_schema_version` query parameter to specify content schema version ",
+                "(e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.",
+            ],
         ),
     },
 )
