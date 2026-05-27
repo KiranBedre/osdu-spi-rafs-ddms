@@ -106,9 +106,16 @@ class TestRedisAnalysisTypeIdsFetcher:
     async def test_get_ids(self, redis_fetcher, analysis_type):
         data_partition_id = "test_partition"
         target_schema_version = "1.0.0"
+        query_date_range = (None, None)
         wks_parameters = None
 
-        result = await redis_fetcher.get_ids(data_partition_id, analysis_type, target_schema_version, wks_parameters)
+        result = await redis_fetcher.get_ids(
+            data_partition_id,
+            analysis_type,
+            target_schema_version,
+            query_date_range,
+            wks_parameters,
+        )
 
         samples_analysis_id = "opendes:work-product-component--SamplesAnalysis:SA_ID"
         dataset_id = f"opendes:dataset--File.Generic:{analysis_type}-1"

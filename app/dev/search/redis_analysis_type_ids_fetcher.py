@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import json
+from datetime import date
 from typing import List, Optional, Tuple
 
 from loguru import logger
@@ -37,6 +38,7 @@ class RedisSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
         data_partition_id: str,
         analysis_type: str,
         target_schema_version: str,
+        query_date_range: Tuple[date, date] = (None, None),
         wks_parameters: Optional[dict] = None,
     ) -> List[Tuple[str, str]]:
         """Performs a query to get a list of tuples (dataset_id,
