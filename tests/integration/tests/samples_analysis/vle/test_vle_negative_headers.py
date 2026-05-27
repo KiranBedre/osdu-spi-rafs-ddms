@@ -23,7 +23,7 @@ from tests.integration.config import (
 def test_vle_negative_getting_dataset_in_different_schema_version_than_stored(api, record_id, dataset_id_v2):
     """Check getting dataset in different schema version than stored."""
 
-    response = api.sample_analysis.get_measurements(
+    response = api.sample_analysis.get_data(
         record_id=record_id,
         dataset_id=dataset_id_v2,
         analysis_type=SamplesAnalysisTypes.VLE,

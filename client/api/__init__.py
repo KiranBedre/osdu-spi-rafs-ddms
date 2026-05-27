@@ -11,10 +11,12 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+from client.api.core.v2.fluid_model import FluidModel
 from client.api.core.v2.master_data import MasterDataV2Core
 from client.api.core.v2.sample_analysis import SamplesAnalysis
 from client.api.core.v2.samples_analyses_report import SamplesAnalysesReportV2Core
 from client.api.core.v2.saturation_function_set import SaturationFunctionSet
+from client.api.core.v2.simulation_rock_physics import SimulationRockPhysics
 from client.api.legal import APILegal
 from client.api.storage import APIStorage
 
@@ -29,3 +31,5 @@ class ApiWorker(object):
         self.masterdata = MasterDataV2Core(host, url_prefix, data_partition, token)
         self.sample_analysis = SamplesAnalysis(host, url_prefix, data_partition, token)
         self.saturation_function_set = SaturationFunctionSet(host, url_prefix, data_partition, token)
+        self.simulation_rock_physics = SimulationRockPhysics(host, url_prefix, data_partition, token)
+        self.fluid_model = FluidModel(host, url_prefix, data_partition, token)

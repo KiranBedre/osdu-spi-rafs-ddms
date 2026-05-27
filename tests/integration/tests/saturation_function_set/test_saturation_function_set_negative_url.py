@@ -58,14 +58,14 @@ def test_sfs_negative_invalid_regex_record_id_in_url(api, tests_data, endpoint, 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.RECORD_ID_ENDPOINTS_ARGS)
 def test_sfs_negative_invalid_data_partition_id_record_id_in_url(api, tests_data, endpoint, args, version, dataset_id):
-    """Reject record ID with wrong partition prefix with 424 Failed Dependency."""
+    """Reject record ID with wrong partition prefix with 400 Bad Request."""
     method = getattr(api.saturation_function_set, endpoint)
     record_id = "WrongID:work-product-component--SaturationFunctionSet:Test123"
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
 
     kwargs = {
-        "allowed_codes": [status.HTTP_424_FAILED_DEPENDENCY],
+        "allowed_codes": [status.HTTP_400_BAD_REQUEST],
         "raw": True,
     }
 
@@ -78,7 +78,7 @@ def test_sfs_negative_invalid_data_partition_id_record_id_in_url(api, tests_data
     response = method(*call_args, **kwargs)
 
     # Assert
-    assert response.status_code == 424
+    assert response.status_code == 400
     body = response.json()
     assert f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'" in body["reason"]
 
@@ -131,40 +131,38 @@ def test_sfs_negative_non_existing_version_in_url(api, tests_data, record_id):
     assert "The requested record version was not found" in body["message"]
 
 
-@pytest.mark.skip(reason="#732")
 def test_sfs_negative_edge_max_version_in_url(api, tests_data, record_id):
-    """Skip: Handle extreme version numbers boundary testing (Issue #732)."""
+    """Reject extreme version number - boundary testing."""
     version = 12345678901234567890
     kwargs = {
-        "allowed_codes": [status.HTTP_404_NOT_FOUND],
+        "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
         "raw": True,
     }
 
     response = api.saturation_function_set.get_record_version(record_id, version, **kwargs)
 
     # Assert
-    assert response.status_code == 400
+    assert response.status_code == 422
     body = response.json()
-    assert "Record version not found" in body["reason"]
-    assert "The requested record version was not found" in body["message"]
+    assert "Unprocessable entity." in body["reason"]
+    assert "version ensure this value is less than or equal to 9223372036854775807" in body["errors"]
 
 
-@pytest.mark.skip(reason="#732")
 def test_sfs_negative_edge_min_version_in_url(api, tests_data, record_id):
-    """Skip: Reject zero/negative version numbers boundary testing (Issue #732)."""
+    """Reject zero/negative version numbers boundary testing."""
     version = 0
     kwargs = {
-        "allowed_codes": [status.HTTP_404_NOT_FOUND],
+        "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
         "raw": True,
     }
 
     response = api.saturation_function_set.get_record_version(record_id, version, **kwargs)
 
     # Assert
-    assert response.status_code == 404
+    assert response.status_code == 422
     body = response.json()
-    assert "Record version not found" in body["reason"]
-    assert "The requested record version was not found" in body["message"]
+    assert "Unprocessable entity." in body["reason"]
+    assert "version ensure this value is greater than or equal to 1" in body["errors"]
 
 
 def test_sfs_negative_invalid_regex_dataset_id_in_url(api, tests_data, record_id):
@@ -444,9 +442,10 @@ def test_sfs_negative_params_conflict(api, tests_data, endpoint, args, record_id
     method = getattr(api.saturation_function_set, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
+    aggregated_column = "SaturationFunctionSetID"
     params = {
         "columns_filter": "RelativePermeabilityFunctions,CapillaryPressureFunctions",
-        "columns_aggregation": "SaturationFunctionSetID,describe",
+        "columns_aggregation": f"{aggregated_column},describe",
     }
 
     kwargs = {
@@ -459,7 +458,10 @@ def test_sfs_negative_params_conflict(api, tests_data, endpoint, args, record_id
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert "Processing filter exception" in body["reason"]
+    assert (
+        f"Filter conflict: 'columns_aggregation' column '{aggregated_column}' is not included in 'columns_filter'. "
+        f"Either add '{aggregated_column}' to 'columns_filter' or remove 'columns_filter'."
+    ) in body["reason"]
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.ORIENT_ENDPOINTS_ARGS)
@@ -622,3 +624,87 @@ def test_sfs_negative_boundary_value_offset_param(api, tests_data, endpoint):
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
     assert "offset ensure this value is greater than or equal to 0" in body["errors"]
+
+
+@pytest.mark.parametrize("endpoint,args", Endpoints.SCHEMA_VERSION_ENDPOINTS_ARGS)
+def test_sfs_negative_missing_schema_version(api, tests_data, endpoint, args, record_id, dataset_id):
+    """Reject missing schema version with 406 Not Applicable."""
+    method = getattr(api.saturation_function_set, endpoint)
+    local_vars = locals().copy()
+    call_args = [local_vars[name] for name in args]
+
+    kwargs = {
+        "allowed_codes": [status.HTTP_406_NOT_ACCEPTABLE],
+        "raw": True,
+    }
+
+    if endpoint == "post_data":
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+        data_payload["data"][0][0] = f"{record_id}:"
+        kwargs["body"] = data_payload
+
+    response = method(schema_version=None, *call_args, **kwargs)
+
+    # Assert
+    assert response.status_code == 406
+    body = response.json()
+    assert (
+        "No schema version specified or invalid schema format. Use the content_schema_version query parameter "
+        "(e.g. ?content_schema_version=1.0.0). The deprecated Accept header versioning is also still accepted "
+        "(e.g. Accept: */*;version=1.0.0)."
+    ) in body["reason"]
+
+
+@pytest.mark.parametrize("endpoint,args", Endpoints.SCHEMA_VERSION_ENDPOINTS_ARGS)
+def test_sfs_negative_unsupported_format_schema_version(api, tests_data, endpoint, args, record_id, dataset_id):
+    """Reject unsupported format for schema version with 406 Not Applicable."""
+    method = getattr(api.saturation_function_set, endpoint)
+    local_vars = locals().copy()
+    call_args = [local_vars[name] for name in args]
+
+    kwargs = {
+        "allowed_codes": [status.HTTP_406_NOT_ACCEPTABLE],
+        "raw": True,
+    }
+
+    if endpoint == "post_data":
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+        data_payload["data"][0][0] = f"{record_id}:"
+        kwargs["body"] = data_payload
+
+    response = method(schema_version="0", *call_args, **kwargs)
+
+    # Assert
+    assert response.status_code == 406
+    body = response.json()
+    assert (
+        "Invalid version format in content_schema_version: '0'. Expected format: major.minor.patch (e.g. 1.0.0)"
+    ) in body["reason"]
+
+
+@pytest.mark.parametrize("endpoint,args", Endpoints.SCHEMA_VERSION_ENDPOINTS_ARGS)
+def test_sfs_negative_unsupported_schema_version(api, tests_data, endpoint, args, record_id, dataset_id):
+    """Reject unsupported schema version with 404 Not Found."""
+    method = getattr(api.saturation_function_set, endpoint)
+    local_vars = locals().copy()
+    call_args = [local_vars[name] for name in args]
+
+    kwargs = {
+        "allowed_codes": [status.HTTP_404_NOT_FOUND],
+        "raw": True,
+    }
+
+    if endpoint == "post_data":
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+        data_payload["data"][0][0] = f"{record_id}:"
+        kwargs["body"] = data_payload
+
+    response = method(schema_version="0.0.7", *call_args, **kwargs)
+
+    # Assert
+    assert response.status_code == 404
+    body = response.json()
+    assert (
+        "Model not found for type 'saturationfunctionset',  version '0.0.7'. Available versions: {'1.0.0'}"
+    ) in body["reason"]
+

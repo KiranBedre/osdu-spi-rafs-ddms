@@ -179,7 +179,7 @@ def test_relative_permeability_negative_add_data_v1_missing_mandatory_generic_fi
     helper.delete_by_path(data_payload, field_path)
     field_name = field_path.split("/")[-1]
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
@@ -203,7 +203,7 @@ def test_relative_permeability_negative_add_data_v1_missing_main_mandatory_colum
     helper.delete_by_path(data_payload, main_column)
     helper.delete_by_path(data_payload, main_column_value)
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
@@ -227,7 +227,7 @@ def test_relative_permeability_negative_add_data_v1_invalid_type_specific_field(
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1))
     helper.set_by_path(data_payload, field_path, value)
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
@@ -252,7 +252,7 @@ def test_relative_permeability_negative_add_data_v1_missing_reference_specific_f
     helper.set_by_path(data_payload, field_path, value)
     record_value = value.rsplit(":", 1)[0]
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
@@ -276,7 +276,7 @@ def test_relative_permeability_negative_add_data_v1_invalid_regex_specific_field
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1))
     helper.set_by_path(data_payload, field_path, value)
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
@@ -298,7 +298,7 @@ def test_relative_permeability_negative_add_data_v1_extra_main_field(api, tests_
     data_payload["columns"].append("ExtraColumn")
     data_payload["data"][0].append("ExtraColumnValue")
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
@@ -320,7 +320,7 @@ def test_relative_permeability_negative_add_data_v1_extra_field(api, tests_data,
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1))
     helper.set_by_path(data_payload, field_path, value)
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
@@ -340,7 +340,7 @@ def test_relative_permeability_negative_add_data_v1_invalid_payload_format(api, 
     """Reject data upload when payload is wrapped in array with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1))
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=[data_payload],
         analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
@@ -356,3 +356,26 @@ def test_relative_permeability_negative_add_data_v1_invalid_payload_format(api, 
         "Data error: split format must be a JSON object, not wrapped in an array. Remove the outer [] brackets."
         in body["reason"]
     )
+
+
+def test_relative_permeability_negative_add_data_v1_record_id_mismatch_between_payload_and_url(
+    api, tests_data, record_id, fresh_record_id
+):
+    """Reject data upload with record_id different in bulk data and URL with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1))
+    data_payload["data"][0][0] = f"{fresh_record_id}:"
+
+    response = api.sample_analysis.post_data(
+        record_id=record_id,
+        body=data_payload,
+        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        schema_version=SchemaVersions.V1_0_0,
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 422
+    body = response.json()
+    assert "Data validation failed." in body["reason"]
+    assert body["errors"]["Invalid value"][0]["SamplesAnalysisID"] == f"{fresh_record_id}:"

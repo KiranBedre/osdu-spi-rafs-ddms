@@ -17,11 +17,10 @@ import copy
 import pytest
 from starlette import status
 
-from app.resources.common_headers import AUTHORIZATION, CONTENT_TYPE, DATA_PARTITION_ID
+from app.resources.common_headers import ACCEPT, AUTHORIZATION, CONTENT_TYPE, DATA_PARTITION_ID
 from tests.integration.config import (
     DataFiles,
     Endpoints,
-    SchemaVersions,
 )
 
 
@@ -141,7 +140,6 @@ def test_sfs_negative_missing_data_partition_id_header(api, tests_data, endpoint
     assert "No data-partition-id in headers" in body["errors"]
 
 
-@pytest.mark.skip(reason="#730")
 @pytest.mark.parametrize("endpoint,args", Endpoints.CONTENT_TYPE_ENDPOINTS_ARGS)
 def test_sfs_negative_missing_content_type_header(api, tests_data, endpoint, args, record_id, dataset_id):
     """Skip: Reject requests missing Content-Type header with 400 Bad Request."""
@@ -150,9 +148,9 @@ def test_sfs_negative_missing_content_type_header(api, tests_data, endpoint, arg
     call_args = [local_vars[name] for name in args]
 
     kwargs = {
-        "headers": {CONTENT_TYPE: None},
         "allowed_codes": [status.HTTP_400_BAD_REQUEST],
         "raw": True,
+        "headers": {CONTENT_TYPE: None},
     }
 
     if endpoint == "post_record":
@@ -172,14 +170,14 @@ def test_sfs_negative_missing_content_type_header(api, tests_data, endpoint, arg
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.CONTENT_TYPE_ENDPOINTS_ARGS)
 def test_sfs_negative_unsupported_content_type_header(api, tests_data, endpoint, args, record_id, dataset_id):
-    """Reject unsupported content types (only JSON accepted) with 400 Bad Request."""
+    """Reject unsupported content types (only JSON accepted) with 415 Unsupported Media Type."""
     method = getattr(api.saturation_function_set, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
 
     kwargs = {
         "headers": {CONTENT_TYPE: "application/xml"},
-        "allowed_codes": [status.HTTP_400_BAD_REQUEST],
+        "allowed_codes": [status.HTTP_415_UNSUPPORTED_MEDIA_TYPE],
         "raw": True,
     }
 
@@ -193,7 +191,7 @@ def test_sfs_negative_unsupported_content_type_header(api, tests_data, endpoint,
     response = method(*call_args, **kwargs)
 
     # Assert
-    assert response.status_code == 400
+    assert response.status_code == 415
     body = response.json()
     assert (
         "The provided content-type is not supported. Please provide one of the next supported content types: "
@@ -202,60 +200,8 @@ def test_sfs_negative_unsupported_content_type_header(api, tests_data, endpoint,
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.ACCEPT_ENDPOINTS_ARGS)
-def test_sfs_negative_missing_accept_header(api, tests_data, endpoint, args, record_id, dataset_id):
-    """Reject requests missing schema version in Accept header with 406 Not Acceptable."""
-    method = getattr(api.saturation_function_set, endpoint)
-    local_vars = locals().copy()
-    call_args = [local_vars[name] for name in args]
-
-    kwargs = {
-        "allowed_codes": [status.HTTP_406_NOT_ACCEPTABLE],
-        "raw": True,
-    }
-
-    if endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
-        data_payload["data"][0][0] = f"{record_id}:"
-        kwargs["body"] = data_payload
-
-    response = method(schema_version_header=None, *call_args, **kwargs)
-
-    # Assert
-    assert response.status_code == 406
-    body = response.json()
-    assert "No schema version specified or invalid schema format." in body["reason"]
-    assert "content_schema_version" in body["reason"]
-
-
-@pytest.mark.parametrize("endpoint,args", Endpoints.ACCEPT_ENDPOINTS_ARGS)
 def test_sfs_negative_unsupported_application_accept_header(api, tests_data, endpoint, args, record_id, dataset_id):
-    """Reject unsupported media types in Accept header with 415 Unsupported Media Type."""
-    method = getattr(api.saturation_function_set, endpoint)
-    local_vars = locals().copy()
-    call_args = [local_vars[name] for name in args]
-
-    kwargs = {
-        "allowed_codes": [status.HTTP_415_UNSUPPORTED_MEDIA_TYPE],
-        "raw": True,
-    }
-
-    if endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
-        data_payload["data"][0][0] = f"{record_id}:"
-        kwargs["body"] = data_payload
-
-    response = method(schema_version_header=f"application/xml;version={SchemaVersions.DEFAULT}", *call_args, **kwargs)
-
-    # Assert
-    assert response.status_code == 415
-    body = response.json()
-    assert "application/xml" in body["reason"]
-    assert "not supported" in body["reason"]
-
-
-@pytest.mark.parametrize("endpoint,args", Endpoints.ACCEPT_ENDPOINTS_ARGS)
-def test_sfs_negative_unsupported_schema_format_accept_header(api, tests_data, endpoint, args, record_id, dataset_id):
-    """Reject invalid schema format (version=0) in Accept header with 406 Not Acceptable."""
+    """Reject unsupported media types in Accept header with 406 Not Acceptable."""
     method = getattr(api.saturation_function_set, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
@@ -263,44 +209,15 @@ def test_sfs_negative_unsupported_schema_format_accept_header(api, tests_data, e
     kwargs = {
         "allowed_codes": [status.HTTP_406_NOT_ACCEPTABLE],
         "raw": True,
+        "headers": {ACCEPT: "application/xml"},
     }
 
-    if endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
-        data_payload["data"][0][0] = f"{record_id}:"
-        kwargs["body"] = data_payload
-
-    response = method(schema_version_header="application/json;version=0", *call_args, **kwargs)
+    response = method(*call_args, **kwargs)
 
     # Assert
     assert response.status_code == 406
-    body = response.json()
-    assert "No schema version specified or invalid schema format." in body["reason"]
-    assert "content_schema_version" in body["reason"]
-
-
-@pytest.mark.parametrize("endpoint,args", Endpoints.ACCEPT_ENDPOINTS_ARGS)
-def test_sfs_negative_unsupported_schema_version_accept_header(api, tests_data, endpoint, args, record_id, dataset_id):
-    """Reject unsupported schema version (only 1.0.0 supported) with 404 Not Found."""
-    method = getattr(api.saturation_function_set, endpoint)
-    local_vars = locals().copy()
-    call_args = [local_vars[name] for name in args]
-
-    kwargs = {
-        "allowed_codes": [status.HTTP_404_NOT_FOUND],
-        "raw": True,
-    }
-
-    if endpoint == "post_data":
-        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
-        data_payload["data"][0][0] = f"{record_id}:"
-        kwargs["body"] = data_payload
-
-    response = method(schema_version_header="application/json;version=0.0.7", *call_args, **kwargs)
-
-    # Assert
-    assert response.status_code == 404
     body = response.json()
     assert (
-        "Model not found for type 'saturationfunctionset',  version '0.0.7'. " "Available versions: {'1.0.0'}."
+        "Not Acceptable. The requested media type 'application/xml' is not supported. "
+        "Supported types are: ('application/json', 'application/x-parquet', '*/*')."
     ) in body["reason"]

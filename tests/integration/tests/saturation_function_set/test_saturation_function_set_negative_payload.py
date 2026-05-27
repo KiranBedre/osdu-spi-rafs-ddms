@@ -880,3 +880,22 @@ def test_sfs_negative_add_data_records_format_extra_field(api, tests_data, helpe
     body = response.json()
     assert "Data validation failed." in body["reason"]
     assert "field" in body["errors"]["Invalid type"][0]
+
+
+def test_sfs_negative_add_data_record_id_mismatch_between_payload_and_url(api, tests_data, record_id, fresh_record_id):
+    """Reject data upload with record_id different in bulk data and URL with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+    data_payload["data"][0][0] = f"{fresh_record_id}:"
+
+    response = api.saturation_function_set.post_data(
+        record_id=record_id,
+        body=data_payload,
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 422
+    body = response.json()
+    assert "Data validation failed." in body["reason"]
+    assert body["errors"]["Invalid value"][0]["SaturationFunctionSetID"] == f"{fresh_record_id}:"

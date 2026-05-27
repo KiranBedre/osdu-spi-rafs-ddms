@@ -1,0 +1,29 @@
+{
+  "ReservoirSimulationRockPhysicsID": "{data_partition_id}:work-product-component--ReservoirSimulationRockPhysicsModel:{record_id}:",
+  "Meta": [
+    {
+      "kind": "Unit",
+      "name": "bar",
+      "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:bar:",
+      "propertyNames": [
+        "Compressibility.ReferencePressure"
+      ]
+    },
+    {
+      "kind": "Unit",
+      "name": "1/bar",
+      "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:1%2Fbar:",
+      "propertyNames": [
+        "Compressibility.PoreVolumeCompressibilityAtReferencePressure"
+      ]
+    }
+  ],
+  "Compressibility": {
+    "ReferencePressure": 329,
+    "PoreVolumeCompressibilityAtReferencePressure": 0.00002
+  },
+  "ThermalModelDefinition": {
+    "ThermalConductivity": 2.5,
+    "HeatCapacity": 900
+  }
+}

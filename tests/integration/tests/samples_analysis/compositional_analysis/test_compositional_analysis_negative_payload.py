@@ -98,7 +98,7 @@ def test_compositional_analysis_negative_add_data_v1_1_missing_mandatory_generic
     helper.delete_by_path(data_payload, field_path)
     field_name = field_path.split("/")[-1]
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
@@ -123,7 +123,7 @@ def test_compositional_analysis_negative_add_data_v1_1_missing_main_mandatory_co
     helper.delete_by_path(data_payload, main_column)
     helper.delete_by_path(data_payload, main_column_value)
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
@@ -148,7 +148,7 @@ def test_compositional_analysis_negative_add_data_v1_1_invalid_type_specific_fie
     data_payload["data"][0][0] = f"{record_id}:"
     helper.set_by_path(data_payload, field_path, value)
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
@@ -174,7 +174,7 @@ def test_compositional_analysis_negative_add_data_v1_1_missing_reference_specifi
     helper.set_by_path(data_payload, field_path, value)
     record_value = value.rsplit(":", 1)[0]
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
@@ -199,7 +199,7 @@ def test_compositional_analysis_negative_add_data_v1_1_invalid_regex_specific_fi
     data_payload["data"][0][0] = f"{record_id}:"
     helper.set_by_path(data_payload, field_path, value)
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
@@ -221,7 +221,7 @@ def test_compositional_analysis_negative_add_data_v1_1_extra_main_field(api, tes
     data_payload["columns"].append("ExtraColumn")
     data_payload["data"][0].append("ExtraColumnValue")
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
@@ -246,7 +246,7 @@ def test_compositional_analysis_negative_add_data_v1_1_extra_field(
     data_payload["data"][0][0] = f"{record_id}:"
     helper.set_by_path(data_payload, field_path, value)
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=data_payload,
         analysis_type=SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
@@ -267,7 +267,7 @@ def test_compositional_analysis_negative_add_data_v1_1_invalid_payload_format(ap
     data_payload = copy.deepcopy(tests_data(DataFiles.COMPOSITIONAL_ANALYSIS_DATA_V1_1))
     data_payload["data"][0][0] = f"{record_id}:"
 
-    response = api.sample_analysis.post_measurements(
+    response = api.sample_analysis.post_data(
         record_id=record_id,
         body=[data_payload],
         analysis_type=SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
@@ -283,3 +283,26 @@ def test_compositional_analysis_negative_add_data_v1_1_invalid_payload_format(ap
         "Data error: split format must be a JSON object, not wrapped in an array. Remove the outer [] brackets."
         in body["reason"]
     )
+
+
+def test_compositional_analysis_negative_add_data_v1_1_record_id_mismatch_between_payload_and_url(
+    api, tests_data, record_id, fresh_record_id
+):
+    """Reject data upload with record_id different in bulk data and URL with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.COMPOSITIONAL_ANALYSIS_DATA_V1_1))
+    data_payload["data"][0][0] = f"{fresh_record_id}:"
+
+    response = api.sample_analysis.post_data(
+        record_id=record_id,
+        body=data_payload,
+        analysis_type=SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
+        schema_version=SchemaVersions.V1_1_0,
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 422
+    body = response.json()
+    assert "Data validation failed." in body["reason"]
+    assert body["errors"]["Invalid value"][0]["SamplesAnalysisID"] == f"{fresh_record_id}:"

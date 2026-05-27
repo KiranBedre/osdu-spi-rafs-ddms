@@ -16,6 +16,7 @@ pytest-xdist==3.0.2
 pytest-rerunfailures==11.1.1
 jsonpointer==3.0.0
 allure-pytest==2.15.3
+filelock==3.0
 
 # Formatters
 autoflake==2.3.3
