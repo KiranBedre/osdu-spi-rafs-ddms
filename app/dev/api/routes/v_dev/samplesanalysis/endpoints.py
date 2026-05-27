@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import json
+from datetime import date
 from typing import AsyncGenerator, List, Optional, Tuple
 
 import pandas as pd
@@ -102,7 +103,9 @@ class SamplesAnalysisSearchDataView(object):
         blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
         df_filter: DFMultipleNestedFilterValidator = Depends(validate_multiple_nested_filters),
         content_schema_version: str = Depends(get_content_schema_version),
-        pagination_parameters: Tuple[int, int] = Depends(get_search_data_pagination_parameters),
+        pagination_parameters: Tuple[int, int, Optional[date], Optional[date]] = Depends(
+            get_search_data_pagination_parameters
+        ),  # noqa: E501
         wks_parameters: Optional[dict] = Depends(get_search_wks_parameters),
         analysis_type_ids_fetcher: DDMSDatasetIdsFetcher = Depends(get_analysis_type_ids_fetcher),
     ) -> Response:
@@ -126,7 +129,7 @@ class SamplesAnalysisSearchDataView(object):
         :type content_schema_version: str, optional
         :param pagination_parameters: pagination parameters, defaults to
             Depends(get_pagination_parameters)
-        :type pagination_parameters: Tuple[int, int], optional
+        :type pagination_parameters: Tuple[int, int, Optional[date], Optional[date]], optional
         :param wks_parameters: wks search parameters, defaults to
             Depends(get_search_wks_parameters)
         :type wks_parameters: Optiona[dict], optional
@@ -136,12 +139,13 @@ class SamplesAnalysisSearchDataView(object):
         """
         data_partition_id = request.headers.get("data-partition-id")
         mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
-        offset, page_limit = pagination_parameters
+        offset, page_limit, start_date, end_date = pagination_parameters
 
-        analysis_type_ids = await analysis_type_ids_fetcher.get_ids(
+        analysis_type_ids = await analysis_type_ids_fetcher.get_ids(  # noqa: WPS317
             data_partition_id,
             analysis_type,
             content_schema_version,
+            (start_date, end_date),
             wks_parameters,
         )
         analysis_type_ids.sort(key=lambda analysis_type_id: analysis_type_id[1])
@@ -207,7 +211,9 @@ class SamplesAnalysisSearchDataView(object):
         blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
         df_filter: DFMultipleNestedFilterValidator = Depends(validate_multiple_nested_filters),
         content_schema_version: str = Depends(get_content_schema_version),
-        pagination_parameters: Tuple[int, int] = Depends(get_search_pagination_parameters),
+        pagination_parameters: Tuple[int, int, Optional[date], Optional[date]] = Depends(
+            get_search_pagination_parameters
+        ),  # noqa: E501
         wks_parameters: Optional[dict] = Depends(get_search_wks_parameters),
         analysis_type_ids_fetcher: DDMSDatasetIdsFetcher = Depends(get_analysis_type_ids_fetcher),
     ) -> JSONResponse:
@@ -231,7 +237,7 @@ class SamplesAnalysisSearchDataView(object):
         :type content_schema_version: str, optional
         :param pagination_parameters: pagination parameters, defaults to
             Depends(get_pagination_parameters)
-        :type pagination_parameters: Tuple[int, int], optional
+        :type pagination_parameters: Tuple[int, int, Optional[date], Optional[date]], optional
         :param wks_parameters: wks search parameters, defaults to
             Depends(get_search_wks_parameters)
         :type wks_parameters: Optiona[dict], optional
@@ -239,12 +245,13 @@ class SamplesAnalysisSearchDataView(object):
         :rtype: Response
         """
         data_partition_id = request.headers.get("data-partition-id")
-        offset, page_limit = pagination_parameters
+        offset, page_limit, start_date, end_date = pagination_parameters
 
-        analysis_type_ids = await analysis_type_ids_fetcher.get_ids(
+        analysis_type_ids = await analysis_type_ids_fetcher.get_ids(  # noqa: WPS317
             data_partition_id,
             analysis_type,
             content_schema_version,
+            (start_date, end_date),
             wks_parameters,
         )
         analysis_type_ids.sort(key=lambda analysis_type_id: analysis_type_id[1])
