@@ -712,7 +712,7 @@ def test_sfs_negative_unsupported_schema_version(api, tests_data, endpoint, args
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.SCHEMA_VERSION_ENDPOINTS_ARGS)
 def test_sfs_negative_schema_version_overwritten_by_param(api, tests_data, endpoint, args, record_id, dataset_id):
-    """Query param content_schema_version takes precedence over Accept header version."""
+    """Query param content_schema_version takes precedence over Accept header version"""
     method = getattr(api.saturation_function_set, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
@@ -734,5 +734,5 @@ def test_sfs_negative_schema_version_overwritten_by_param(api, tests_data, endpo
     assert response.status_code == 404
     body = response.json()
     assert (
-        "Model not found for type 'saturationfunctionset', version '0.0.7'. Available versions: {'1.0.0'}"
+        "Model not found for type 'saturationfunctionset',  version '0.0.7'. Available versions: {'1.0.0'}"
     ) in body["reason"]

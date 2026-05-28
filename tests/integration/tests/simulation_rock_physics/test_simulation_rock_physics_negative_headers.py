@@ -144,7 +144,7 @@ def test_rsrp_negative_missing_data_partition_id_header(
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.CONTENT_TYPE_ENDPOINTS_ARGS)
 def test_rsrp_negative_missing_content_type_header(api, tests_data, endpoint, args, record_id, dataset_id):
-    """Skip: Reject requests missing Content-Type header with 400 Bad Request."""
+    """Reject requests missing Content-Type header with 400 Bad Request."""
     method = getattr(api.simulation_rock_physics, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]

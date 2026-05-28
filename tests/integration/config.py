@@ -96,6 +96,8 @@ class DataFiles:
 
     FLUID_MODEL = "v2/fluid_model/fluid.json"
 
+    DEPTH_SHIFT = "v2/depth_shift/depth_shift.json"
+
 
 class DataTemplates:
     ID_DATASET = "{partition}:dataset--File.Generic:"
@@ -104,6 +106,7 @@ class DataTemplates:
     ID_SATURATION_FUNCTION_SET = "{partition}:work-product-component--SaturationFunctionSet:"
     ID_SIMULATION_ROCK_PHYSICS = "{partition}:work-product-component--ReservoirSimulationRockPhysicsModel:"
     ID_FLUID_MODEL = "{partition}:work-product-component--FluidModel:"
+    ID_DEPTH_SHIFT = "{partition}:work-product-component--DepthShift:"
 
 
 class DataTypes:
@@ -118,6 +121,7 @@ class DataTypes:
     SATURATION_FUNCTION_SET = "saturation_function_set"
     SIMULATION_ROCK_PHYSICS = "simulation_rock_physics"
     FLUID_MODEL = "fluid_model"
+    DEPTH_SHIFT = "depth_shift"
 
 
 class SamplesAnalysisTypes:  # Custom values
@@ -158,7 +162,6 @@ class VersionedDataFiles:
         (SamplesAnalysisTypes.XRD, SchemaVersions.V1_1_0): DataFiles.XRD_DATA_V1_1,
         (SamplesAnalysisTypes.XRF, SchemaVersions.V1_1_0): DataFiles.XRF_DATA_V1_1,
         (DataTypes.SATURATION_FUNCTION_SET, SchemaVersions.V1_0_0): DataFiles.SATURATION_FUNCTION_SET_DATA_V1,
-
         (DataTypes.SIMULATION_ROCK_PHYSICS, SchemaVersions.V1_0_0): DataFiles.SIMULATION_ROCK_PHYSICS_DATA1_V1,
     }
 

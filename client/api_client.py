@@ -86,14 +86,16 @@ class APIClient(object):
 
         return headers
 
-    def _merge_headers(self, headers, extra_headers, kwargs):
+    @staticmethod
+    def _merge_headers(headers, extra_headers, kwargs):
         for header_name, header_value in extra_headers.items():
             if header_value is None:
-                self._remove_header(headers, header_name, kwargs)
+                APIClient._remove_header(headers, header_name, kwargs)
             else:
                 headers[header_name] = header_value
 
-    def _remove_header(self, headers, header_name, kwargs):
+    @staticmethod
+    def _remove_header(headers, header_name, kwargs):
         headers.pop(header_name, None)
         if header_name == CONTENT_TYPE and "json" in kwargs:
             kwargs["data"] = json.dumps(kwargs.pop("json"))
