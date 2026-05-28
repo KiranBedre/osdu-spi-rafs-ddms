@@ -169,7 +169,31 @@
               "items": {
                 "type": "object",
                 "title": "Depth Shifted Sample",
-                "description": "Defines the relationship between this depth shift to a sample/specimen (e.g., rock or fluid) as well as the intended usage of the depth shift with the identified sample."
+                "description": "Defines the relationship between this depth shift to a sample/specimen (e.g., rock or fluid) as well as the intended usage of the depth shift with the identified sample.",
+                "properties": {
+                  "SampleID": {
+                    "type": "string",
+                    "title": "Sample ID",
+                    "description": "Identifies the sample/specimen (e.g., core) to which this depth shift applies.",
+                    "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "master-data",
+                        "EntityType": "Sample"
+                      }
+                    ]
+                  },
+                  "CanDepthShiftBeAppliedToChildSamples": {
+                    "type": "boolean",
+                    "title": "Can Depth Shift Be Applied To Child Samples",
+                    "description": "Indicates whether the author of this depth shift intends for it to be applied to all rock samples that are subsampled from the specified SampleID. This could be used as a trigger for an application to find all child samples and apply this depth shift to those."
+                  },
+                  "CanDepthShiftBeAppliedToSiblingSamples": {
+                    "type": "boolean",
+                    "title": "Can Depth Shift Be Applied To Sibling Samples",
+                    "description": "Indicates whether the author of this depth shift intends for it to be applied to all samples/specimens that were subsampled from the same parent sample (e.g., other core plugs taken from the same slab, but for which a depth shift data record is not explicitly generated). This could be used as a trigger for an application to find all sibling samples and apply this depth shift."
+                  }
+                }
               }
             },
             "AuthorID": {
