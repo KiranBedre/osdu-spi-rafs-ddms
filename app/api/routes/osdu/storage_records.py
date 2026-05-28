@@ -270,7 +270,8 @@ class BaseStorageRecordView(object):
             response_model=StorageUpsertResponse,
             response_model_by_alias=False,
             description=APIDescriptionHelper.append_manage_roles(
-                f"Create or update `{self._record_type}` record(s).",
+                f"Create or update `{self._record_type}` record(s)."
+                + " The `Content-Type: application/json` request header is required.",
             ),
             dependencies=[
                 Depends(validate_request_records),
