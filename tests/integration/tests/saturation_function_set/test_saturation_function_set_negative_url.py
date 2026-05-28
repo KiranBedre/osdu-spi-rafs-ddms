@@ -17,6 +17,7 @@ import copy
 import pytest
 from starlette import status
 
+from app.resources.common_headers import ACCEPT
 from tests.integration.config import (
     CONFIG,
     DataFiles,
@@ -657,13 +658,13 @@ def test_sfs_negative_missing_schema_version(api, tests_data, endpoint, args, re
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.SCHEMA_VERSION_ENDPOINTS_ARGS)
 def test_sfs_negative_unsupported_format_schema_version(api, tests_data, endpoint, args, record_id, dataset_id):
-    """Reject unsupported format for schema version with 406 Not Applicable."""
+    """Reject unsupported format for schema version with 422 Unprocessable Content."""
     method = getattr(api.saturation_function_set, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
 
     kwargs = {
-        "allowed_codes": [status.HTTP_406_NOT_ACCEPTABLE],
+        "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
         "raw": True,
     }
 
@@ -675,7 +676,7 @@ def test_sfs_negative_unsupported_format_schema_version(api, tests_data, endpoin
     response = method(schema_version="0", *call_args, **kwargs)
 
     # Assert
-    assert response.status_code == 406
+    assert response.status_code == 422
     body = response.json()
     assert (
         "Invalid version format in content_schema_version: '0'. Expected format: major.minor.patch (e.g. 1.0.0)"
@@ -708,3 +709,30 @@ def test_sfs_negative_unsupported_schema_version(api, tests_data, endpoint, args
         "Model not found for type 'saturationfunctionset',  version '0.0.7'. Available versions: {'1.0.0'}"
     ) in body["reason"]
 
+
+@pytest.mark.parametrize("endpoint,args", Endpoints.SCHEMA_VERSION_ENDPOINTS_ARGS)
+def test_sfs_negative_schema_version_overwritten_by_param(api, tests_data, endpoint, args, record_id, dataset_id):
+    """Query param content_schema_version takes precedence over Accept header version."""
+    method = getattr(api.saturation_function_set, endpoint)
+    local_vars = locals().copy()
+    call_args = [local_vars[name] for name in args]
+
+    kwargs = {
+        "allowed_codes": [status.HTTP_404_NOT_FOUND],
+        "headers": {ACCEPT: "application/json;version=1.0.0"},
+        "raw": True,
+    }
+
+    if endpoint == "post_data":
+        data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+        data_payload["data"][0][0] = f"{record_id}:"
+        kwargs["body"] = data_payload
+
+    response = method(schema_version="0.0.7", *call_args, **kwargs)
+
+    # Assert
+    assert response.status_code == 404
+    body = response.json()
+    assert (
+        "Model not found for type 'saturationfunctionset', version '0.0.7'. Available versions: {'1.0.0'}"
+    ) in body["reason"]

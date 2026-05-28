@@ -44,8 +44,10 @@ def parse_version_from_accept_header(accept_header: str) -> str:
 
     if mime_type not in SUPPORTED_MIME_TYPES:
         supported = str(SUPPORTED_MIME_TYPES)
-        msg = "Not Acceptable. The requested media type '{0}' is not supported. Supported types are: {1}."
-        error_details = msg.format(mime_type, supported)  # noqa: E501
+        error_details = "Not Acceptable. The requested media type '{0}' is not supported. Supported types are: {1}.".format(  # noqa: E501
+            mime_type,
+            supported,
+        )
         raise exceptions.NotAcceptableException(detail=error_details)
 
     version_match = re.search(r"version=(\d+\.\d+(?:\.\d+)?)", accept_header.lower().strip())

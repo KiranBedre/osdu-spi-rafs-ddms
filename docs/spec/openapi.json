@@ -249,6 +249,18 @@
             }
           },
           {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
+              "type": "string"
+            }
+          },
+          {
             "description": "A valid json array with property name and aggregator function",
             "examples": {
               "example": {
@@ -277,18 +289,6 @@
             "schema": {
               "description": "A valid json array of property names",
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -455,6 +455,18 @@
             }
           },
           {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
+              "type": "string"
+            }
+          },
+          {
             "description": "A valid json array with property name and aggregator function",
             "examples": {
               "example": {
@@ -483,18 +495,6 @@
             "schema": {
               "description": "A valid json array of property names",
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -674,6 +674,18 @@
             }
           },
           {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
+              "type": "string"
+            }
+          },
+          {
             "description": "A valid json array with property name and aggregator function",
             "examples": {
               "example": {
@@ -702,18 +714,6 @@
             "schema": {
               "description": "A valid json array of property names",
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -891,7 +891,7 @@
     },
     "/api/rafs-ddms/v2/depthshift": {
       "post": {
-        "description": "Create or update `DepthShift` record(s).<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Create or update `DepthShift` record(s). The `Content-Type: application/json` request header is required.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "post_records_api_rafs_ddms_v2_depthshift_post",
         "parameters": [
           {
@@ -1283,7 +1283,7 @@
     },
     "/api/rafs-ddms/v2/fluidmodel": {
       "post": {
-        "description": "Create or update `FluidModel` record(s).<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Create or update `FluidModel` record(s). The `Content-Type: application/json` request header is required.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "post_records_api_rafs_ddms_v2_fluidmodel_post",
         "parameters": [
           {
@@ -1706,7 +1706,7 @@
     },
     "/api/rafs-ddms/v2/masterdata": {
       "post": {
-        "description": "Create or update `(osdu:wks:master-data--GenericFacility:1.0.0|osdu:wks:master-data--GenericSite:1.0.0|osdu:wks:master-data--Sample:2.0.0|osdu:wks:master-data--Sample:2.1.0|osdu:wks:master-data--SampleAcquisitionJob:1.0.0|osdu:wks:master-data--SampleChainOfCustodyEvent:1.0.0|osdu:wks:master-data--SampleContainer:1.0.0)` record(s).<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Create or update `(osdu:wks:master-data--GenericFacility:1.0.0|osdu:wks:master-data--GenericSite:1.0.0|osdu:wks:master-data--Sample:2.0.0|osdu:wks:master-data--Sample:2.1.0|osdu:wks:master-data--SampleAcquisitionJob:1.0.0|osdu:wks:master-data--SampleChainOfCustodyEvent:1.0.0|osdu:wks:master-data--SampleContainer:1.0.0)` record(s). The `Content-Type: application/json` request header is required.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "post_records_api_rafs_ddms_v2_masterdata_post",
         "parameters": [
           {
@@ -2531,7 +2531,7 @@
     },
     "/api/rafs-ddms/v2/reservoirsimulationrockphysicsmodel": {
       "post": {
-        "description": "Create or update `ReservoirSimulationRockPhysicsModel` record(s).<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Create or update `ReservoirSimulationRockPhysicsModel` record(s). The `Content-Type: application/json` request header is required.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "post_records_api_rafs_ddms_v2_reservoirsimulationrockphysicsmodel_post",
         "parameters": [
           {
@@ -2748,6 +2748,18 @@
             }
           },
           {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -2772,18 +2784,6 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -2894,7 +2894,7 @@
     },
     "/api/rafs-ddms/v2/reservoirsimulationrockphysicsmodel/search/data": {
       "get": {
-        "description": "Get `ReservoirSimulationRockPhysicsModel` records bulk data content.<br><br> Use the `content_schema_version` query parameter to specify content schema version (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br> Use the `Content-Type` request header to specify payload and response formats (`application/json` and `application/parquet` are supported).<br><br> Use the `orient` query parameter to select the JSON output format (`split` or `records`). The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query parameters can be used to manage data in response. <br><br>  Use `offset`, `page_limit` query parameters to control response data size.  The `page_limit` and `total_size` (found in response) <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters to filter the data based on indexing  date. <br><br>  - `indexed_start_date`: Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before this date. <br><br>",
+        "description": "Get `ReservoirSimulationRockPhysicsModel` records bulk data content.<br><br> Use the `content_schema_version` query parameter to specify content schema version (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br> Use the `orient` query parameter to select the JSON output format (`split` or `records`). The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query parameters can be used to manage data in response. <br><br>  Use `offset`, `page_limit` query parameters to control response data size.  The `page_limit` and `total_size` (found in response) <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters to filter the data based on indexing  date. <br><br>  - `indexed_start_date`: Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before this date. <br><br>",
         "operationId": "search_endpoint_api_rafs_ddms_v2_reservoirsimulationrockphysicsmodel_search_data_get",
         "parameters": [
           {
@@ -2910,6 +2910,18 @@
             "schema": {
               "description": "Specifies the proper data partition id",
               "title": "data-partition-id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -2938,18 +2950,6 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -3498,6 +3498,18 @@
             }
           },
           {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -3522,18 +3534,6 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -3746,7 +3746,7 @@
     },
     "/api/rafs-ddms/v2/samplesanalysesreport": {
       "post": {
-        "description": "Create or update `SamplesAnalysesReport` record(s).<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Create or update `SamplesAnalysesReport` record(s). The `Content-Type: application/json` request header is required.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "post_records_api_rafs_ddms_v2_samplesanalysesreport_post",
         "parameters": [
           {
@@ -4221,7 +4221,7 @@
     },
     "/api/rafs-ddms/v2/samplesanalysis": {
       "post": {
-        "description": "Create or update `SamplesAnalysis` record(s).<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Create or update `SamplesAnalysis` record(s). The `Content-Type: application/json` request header is required.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "post_records_api_rafs_ddms_v2_samplesanalysis_post",
         "parameters": [
           {
@@ -4444,6 +4444,18 @@
             }
           },
           {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -4468,18 +4480,6 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -4590,7 +4590,7 @@
     },
     "/api/rafs-ddms/v2/samplesanalysis/{analysis_type}/search/data": {
       "get": {
-        "description": "Get `{analysis_type}` records bulk data content.<br><br> Use the `content_schema_version` query parameter to specify content schema version (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br> Use the `Content-Type` request header to specify payload and response formats (`application/json` and `application/parquet` are supported).<br><br> Use the `orient` query parameter to select the JSON output format (`split` or `records`). The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query parameters can be used to manage data in response. <br><br>  Use `offset`, `page_limit` query parameters to control response data size.  The `page_limit` and `total_size` (found in response) <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters to filter the data based on indexing  date. <br><br>  - `indexed_start_date`: Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before this date. <br><br>",
+        "description": "Get `{analysis_type}` records bulk data content.<br><br> Use the `content_schema_version` query parameter to specify content schema version (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br> Use the `orient` query parameter to select the JSON output format (`split` or `records`). The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query parameters can be used to manage data in response. <br><br>  Use `offset`, `page_limit` query parameters to control response data size.  The `page_limit` and `total_size` (found in response) <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters to filter the data based on indexing  date. <br><br>  - `indexed_start_date`: Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before this date. <br><br>",
         "operationId": "search_endpoint_api_rafs_ddms_v2_samplesanalysis__analysis_type__search_data_get",
         "parameters": [
           {
@@ -4619,6 +4619,18 @@
             }
           },
           {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -4643,18 +4655,6 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -5235,6 +5235,18 @@
             }
           },
           {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -5259,18 +5271,6 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -5483,7 +5483,7 @@
     },
     "/api/rafs-ddms/v2/saturationfunctionset": {
       "post": {
-        "description": "Create or update `SaturationFunctionSet` record(s).<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Create or update `SaturationFunctionSet` record(s). The `Content-Type: application/json` request header is required.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "post_records_api_rafs_ddms_v2_saturationfunctionset_post",
         "parameters": [
           {
@@ -5736,6 +5736,18 @@
             }
           },
           {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -5760,18 +5772,6 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -5882,7 +5882,7 @@
     },
     "/api/rafs-ddms/v2/saturationfunctionset/search/data": {
       "get": {
-        "description": "Get `SaturationFunctionSet` records bulk data content.<br><br> Use the `content_schema_version` query parameter to specify content schema version (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br> Use the `Content-Type` request header to specify payload and response formats (`application/json` and `application/parquet` are supported).<br><br> Use the `orient` query parameter to select the JSON output format (`split` or `records`). The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query parameters can be used to manage data in response. <br><br>  Use `offset`, `page_limit` query parameters to control response data size.  The `page_limit` and `total_size` (found in response) <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters to filter the data based on indexing  date. <br><br>  - `indexed_start_date`: Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before this date. <br><br>",
+        "description": "Get `SaturationFunctionSet` records bulk data content.<br><br> Use the `content_schema_version` query parameter to specify content schema version (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br> Use the `orient` query parameter to select the JSON output format (`split` or `records`). The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query parameters can be used to manage data in response. <br><br>  Use `offset`, `page_limit` query parameters to control response data size.  The `page_limit` and `total_size` (found in response) <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters to filter the data based on indexing  date. <br><br>  - `indexed_start_date`: Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before this date. <br><br>",
         "operationId": "search_endpoint_api_rafs_ddms_v2_saturationfunctionset_search_data_get",
         "parameters": [
           {
@@ -5898,6 +5898,18 @@
             "schema": {
               "description": "Specifies the proper data partition id",
               "title": "data-partition-id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -5926,18 +5938,6 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },
@@ -6448,6 +6448,18 @@
             }
           },
           {
+            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+            "example": "1.0.0",
+            "in": "query",
+            "name": "content_schema_version",
+            "required": true,
+            "schema": {
+              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+              "title": "Content Schema Version",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -6472,18 +6484,6 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
-              "type": "string"
-            }
-          },
-          {
-            "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-            "example": "1.0.0",
-            "in": "query",
-            "name": "content_schema_version",
-            "required": true,
-            "schema": {
-              "description": "Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-              "title": "Content Schema Version",
               "type": "string"
             }
           },

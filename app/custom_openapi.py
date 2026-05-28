@@ -129,6 +129,21 @@ def _annotate_record_id_param(openapi_param: dict, route_info: tuple) -> None:
         openapi_param["description"] = _build_record_id_description(entity_type, segment)
 
 
+def _mark_content_schema_version_required(openapi_schema: dict) -> None:
+    """Mark content_schema_version query parameter as required in the live OpenAPI schema.
+
+    The FastAPI dependency declares it Optional to allow Accept header fallback,
+    but it must be shown as required in Swagger UI.
+    """
+    for path_item in openapi_schema.get("paths", {}).values():
+        for operation in path_item.values():
+            if not isinstance(operation, dict):
+                continue
+            for openapi_param in operation.get("parameters", []):
+                if openapi_param.get("name") == "content_schema_version" and openapi_param.get("in") == "query":
+                    openapi_param["required"] = True
+
+
 def _sort_and_annotate_parameters(openapi_schema: dict) -> None:  # noqa: WPS231
     """Sort parameters and inject tailored record_id descriptions per resource endpoint.
 
@@ -168,6 +183,7 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
         },
     )
     _apply_request_body_overrides(custom_openapi_schema, settings)
+    _mark_content_schema_version_required(custom_openapi_schema)
     _sort_and_annotate_parameters(custom_openapi_schema)
     return custom_openapi_schema
 
