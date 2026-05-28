@@ -14,7 +14,7 @@
 
 from typing import List
 
-from fastapi import APIRouter, Depends, Path, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Path, Request, Response
 from fastapi_cache.decorator import cache
 from starlette import status
 
@@ -87,7 +87,7 @@ class BaseStorageRecordView(object):
     async def get_record_specific_version(
         self,
         version: int,
-        record_id,
+        record_id: str,
         storage_service: storage.StorageService = Depends(get_async_storage_service),
     ) -> dict:
         """Get specific record.
@@ -101,7 +101,16 @@ class BaseStorageRecordView(object):
         :return: specific record
         :rtype: dict
         """
-        return await storage_service.get_record(record_id, version)
+        record = await storage_service.get_record(record_id, version)
+
+        if record:
+            # Handle both dictionary (production) and Pydantic mock objects (testing)
+            record_version = record.get("version") if isinstance(record, dict) else getattr(record, "version", None)
+
+            if record_version is not None and int(record_version) != version:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Record version {version} not found")
+
+        return record
 
     async def post_records(
         self,
