@@ -710,5 +710,6 @@ def test_rsrp_negative_schema_version_overwritten_by_param(api, tests_data, endp
     assert response.status_code == 404
     body = response.json()
     assert (
-        "Model not found for type 'reservoirsimulationrockphysicsmodel', version '0.0.7'."
+        "Model not found for type 'reservoirsimulationrockphysicsmodel',  version '0.0.7'. "
+        "Available versions: {'1.0.0'}"
     ) in body["reason"]

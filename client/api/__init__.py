@@ -11,6 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+from client.api.core.v2.depth_shift import DepthShift
 from client.api.core.v2.fluid_model import FluidModel
 from client.api.core.v2.master_data import MasterDataV2Core
 from client.api.core.v2.sample_analysis import SamplesAnalysis
@@ -33,3 +34,4 @@ class ApiWorker(object):
         self.saturation_function_set = SaturationFunctionSet(host, url_prefix, data_partition, token)
         self.simulation_rock_physics = SimulationRockPhysics(host, url_prefix, data_partition, token)
         self.fluid_model = FluidModel(host, url_prefix, data_partition, token)
+        self.depth_shift = DepthShift(host, url_prefix, data_partition, token)

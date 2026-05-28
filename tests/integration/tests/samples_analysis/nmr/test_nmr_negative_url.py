@@ -17,6 +17,7 @@ import copy
 import pytest
 from starlette import status
 
+from app.resources.common_headers import ACCEPT
 from tests.integration.config import (
     CONFIG,
     DataFiles,
@@ -720,7 +721,7 @@ def test_nmr_negative_missing_schema_version(
 def test_nmr_negative_unsupported_format_schema_version(
     api, tests_data, endpoint, args, record_id, dataset_id_v1, analysis_type
 ):
-    """Reject unsupported format for schema version with 406 Not Applicable."""
+    """Reject unsupported format for schema version with 422 Unprocessable Content."""
     dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
@@ -728,7 +729,7 @@ def test_nmr_negative_unsupported_format_schema_version(
 
     call_kwargs.update({
         "schema_version": "0",
-        "allowed_codes": [status.HTTP_406_NOT_ACCEPTABLE],
+        "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
         "raw": True,
     })
 
@@ -740,7 +741,7 @@ def test_nmr_negative_unsupported_format_schema_version(
     response = method(**call_kwargs)
 
     # Assert
-    assert response.status_code == 406
+    assert response.status_code == 422
     body = response.json()
     assert (
         "Invalid version format in content_schema_version: '0'. Expected format: major.minor.patch (e.g. 1.0.0)"
@@ -777,3 +778,33 @@ def test_nmr_negative_unsupported_schema_version(
         f"Model not found for type '{analysis_type}',  version '0.0.7'. Available versions: {{'1.0.0'}}"
     ) in body["reason"]
 
+@pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.SCHEMA_VERSION_ENDPOINTS_ARGS)
+def test_nmr_negative_schema_version_overwritten_by_param(
+    api, tests_data, endpoint, args, record_id, dataset_id_v1, analysis_type
+):
+    """Reject unsupported schema version from param that takes precedence over the Accept header."""
+    dataset_id = dataset_id_v1
+    method = getattr(api.sample_analysis, endpoint)
+    local_vars = locals().copy()
+    call_kwargs = {name: local_vars[name] for name in args}
+
+    call_kwargs.update({
+        "schema_version": "0.0.7",
+        "allowed_codes": [status.HTTP_404_NOT_FOUND],
+        "raw": True,
+        "headers": {ACCEPT: "application/json;version=1.0.0"},
+    })
+
+    if endpoint == "post_data":
+        data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
+        data_payload["data"][0][0] = f"{record_id}:"
+        call_kwargs["body"] = data_payload
+
+    response = method(**call_kwargs)
+
+    # Assert
+    assert response.status_code == 404
+    body = response.json()
+    assert (
+        f"Model not found for type '{analysis_type}',  version '0.0.7'. Available versions: {{'1.0.0'}}"
+    ) in body["reason"]

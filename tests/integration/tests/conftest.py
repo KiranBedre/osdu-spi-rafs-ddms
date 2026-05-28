@@ -72,6 +72,7 @@ def create_referenced_records(api, helper, tests_data, tmp_path_factory, create_
         copy.deepcopy(tests_data(DataFiles.XRF_DATA_V1_1)),
         copy.deepcopy(tests_data(DataFiles.SIMULATION_ROCK_PHYSICS)),
         copy.deepcopy(tests_data(DataFiles.FLUID_MODEL)),
+        copy.deepcopy(tests_data(DataFiles.DEPTH_SHIFT)),
     ]
 
     storage_dependencies = set()

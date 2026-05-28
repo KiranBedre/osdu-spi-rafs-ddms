@@ -154,7 +154,7 @@ def test_nmr_negative_missing_data_partition_id_header(
 def test_nmr_negative_missing_content_type_header(
     api, tests_data, endpoint, args, record_id, dataset_id_v1, analysis_type
 ):
-    """Skip: Reject requests missing Content-Type header with 400 Bad Request."""
+    """Reject requests missing Content-Type header with 400 Bad Request."""
     dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()

@@ -1,0 +1,51 @@
+{
+    "id": "{data_partition_id}:work-product-component--DepthShift:depth-shift-example",
+    "kind": "{schema_authority}:wks:work-product-component--DepthShift:1.0.0",
+    "acl": {
+      "viewers": [
+        "{acl_viewers}"
+      ],
+      "owners": [
+        "{acl_owners}"
+      ]
+    },
+    "legal": {
+      "legaltags": [
+        "{legal_tag}"
+      ],
+      "otherRelevantDataCountries": [
+        "US"
+      ],
+      "status": "compliant"
+    },
+    "data": {
+      "WellboreID": "{data_partition_id}:master-data--Wellbore:wellbore-example:",
+      "VerticalReferenceRecordID": "{data_partition_id}:work-product-component--WellboreMarkerSet:wls-example:",
+      "VerticalReferenceRecordCurveIDs": [
+        "GR"
+      ],
+      "DepthShiftTypeID": "{data_partition_id}:reference-data--DepthShiftType:CoreToWellLog:",
+      "ShiftedSamplingDomainTypeID": "{data_partition_id}:reference-data--WellLogSamplingDomainType:SeismicOneWayTravelTime:",
+      "DepthShiftedSamples": [
+        {
+          "SampleID": "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+          "CanDepthShiftBeAppliedToChildSamples": true,
+          "CanDepthShiftBeAppliedToSiblingSamples": true
+        }
+      ],
+      "AuthorID": {
+        "Name": "Depth Shift Analyst",
+        "EmailAddress": "analyst@company.com",
+        "RoleTypeID": "{data_partition_id}:reference-data--ContactRoleType:ProjectManager:",
+        "PhoneNumber": "1-555-281-5555",
+        "OrganisationID": "{data_partition_id}:master-data--Organisation:GenericOrganisation_007:"
+      },
+      "Remarks": [
+        {
+          "RemarkSequenceNumber": 1,
+          "Remark": "Depth shift generated using gamma ray alignment.",
+          "RemarkDate": "2020-02-13"
+        }
+      ]
+    }
+  }

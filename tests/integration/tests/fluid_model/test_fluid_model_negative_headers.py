@@ -130,7 +130,7 @@ def test_fluid_negative_missing_data_partition_id_header(api, tests_data, endpoi
 
 
 def test_fluid_negative_missing_content_type_header(api, tests_data, record_id):
-    """Skip: Reject requests missing Content-Type header with 400 Bad Request."""
+    """Reject requests missing Content-Type header with 400 Bad Request."""
     kwargs = {
         "headers": {CONTENT_TYPE: None},
         "allowed_codes": [status.HTTP_400_BAD_REQUEST],
