@@ -57,6 +57,9 @@ from tests.test_api.test_routes.api_v2.constantvolumedepletion import (
 from tests.test_api.test_routes.api_v2.core_gamma import (
     core_gamma_mock_objects,
 )
+from tests.test_api.test_routes.api_v2.coretologdepthshift import (
+    coretologdepthshift_mock_objects,
+)
 from tests.test_api.test_routes.api_v2.crushed_rock_analysis import (
     crushed_rock_analysis_mock_objects,
 )
@@ -321,6 +324,7 @@ def _headers_parquet_accept_only(version="1.0.0"):
         (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, BulkDatasetIdV2.CRUSHED_ROCK_ANALYSIS),
         (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, BulkDatasetIdV2.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL),
         (TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL, BulkDatasetIdV2.SATURATION_FUNCTION_SET_MODEL),
+        (TestContentPathsApiV2.DEPTH_SHIFT_MODEL, BulkDatasetIdV2.DEPTH_SHIFT_MODEL),
         (TestContentPathsApiV2.ROLLER_OVEN_TEST, BulkDatasetIdV2.ROLLER_OVEN_TEST),
         (TestContentPathsApiV2.SATURATION_TEST, BulkDatasetIdV2.SATURATION_TEST),
     ],
@@ -390,6 +394,7 @@ async def test_get_content_data_no_data(data_endpoint_path, dataset_id):
         TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS,
         TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
         TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+        TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
         TestContentPathsApiV2.SATURATION_TEST,
     ],
@@ -460,6 +465,7 @@ async def test_post_data_no_content_header(data_endpoint_path):
         TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS,
         TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
         TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+        TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
         TestContentPathsApiV2.SATURATION_TEST,
     ],
@@ -491,6 +497,10 @@ async def test_post_data_wrong_content_header(data_endpoint_path):
         (
             TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
             saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+            coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
         ),
     ],
 )
@@ -1086,6 +1096,16 @@ async def test_get_data_accept_parquet_does_not_return_content_type_error(data_e
             ],
             "download_file",
             [build_get_test_data("x-parquet", saturation_function_set_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+            coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", coretologdepthshift_mock_objects.TEST_DATA)],
         ),
         (
             TestContentPathsApiV2.ROLLER_OVEN_TEST,
@@ -2686,6 +2706,33 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             saturation_function_set_mock_objects.TEST_AGGREGATED_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.DEPTH_SHIFT_MODEL}/{coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", coretologdepthshift_mock_objects.TRIMMED_TEST_DATA)],
+            coretologdepthshift_mock_objects.TRIMMED_TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.DEPTH_SHIFT_MODEL}/{coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID}",
+            coretologdepthshift_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", coretologdepthshift_mock_objects.TEST_DATA)],
+            coretologdepthshift_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.DEPTH_SHIFT_MODEL}/{coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID}",
+            coretologdepthshift_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", coretologdepthshift_mock_objects.TEST_DATA)],
+            coretologdepthshift_mock_objects.TEST_AGGREGATED_DATA,
+        ),
+        (
             f"{TestContentPathsApiV2.ROLLER_OVEN_TEST}/{roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID}",
             roller_oven_test_mock_objects.TEST_PARAMS_FILTERS,
             "get_record",
@@ -3129,6 +3176,14 @@ async def test_get_data_json_data(
             saturation_function_set_mock_objects.TEST_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.DEPTH_SHIFT_MODEL}/{coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", coretologdepthshift_mock_objects.TEST_DATA)],
+            coretologdepthshift_mock_objects.TEST_DATA,
+        ),
+        (
             f"{TestContentPathsApiV2.ROLLER_OVEN_TEST}/{roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID}",
             "get_record",
             [roller_oven_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
@@ -3564,6 +3619,14 @@ async def test_get_data_json_data_no_content_schema_version(
             saturation_function_set_mock_objects.TEST_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.DEPTH_SHIFT_MODEL}/{coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", coretologdepthshift_mock_objects.TEST_DATA)],
+            coretologdepthshift_mock_objects.TEST_DATA,
+        ),
+        (
             f"{TestContentPathsApiV2.ROLLER_OVEN_TEST}/{roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID}",
             "get_record",
             [roller_oven_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
@@ -3981,6 +4044,14 @@ async def test_get_data_json_data_improper_schema_version(
             "download_file",
             [build_get_test_data("x-parquet", saturation_function_set_mock_objects.TEST_DATA)],
             saturation_function_set_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.DEPTH_SHIFT_MODEL}/{coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [coretologdepthshift_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", coretologdepthshift_mock_objects.TEST_DATA)],
+            coretologdepthshift_mock_objects.TEST_DATA,
         ),
         (
             f"{TestContentPathsApiV2.ROLLER_OVEN_TEST}/{roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -4417,6 +4488,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             saturation_function_set_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+            coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            coretologdepthshift_mock_objects.TEST_DATA,
+            coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
+            coretologdepthshift_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
             TestContentPathsApiV2.ROLLER_OVEN_TEST,
             roller_oven_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             roller_oven_test_mock_objects.TEST_DATA,
@@ -4838,6 +4916,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             saturation_function_set_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+            coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            coretologdepthshift_mock_objects.TEST_DATA,
+            coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
+            coretologdepthshift_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
             TestContentPathsApiV2.ROLLER_OVEN_TEST,
             roller_oven_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             roller_oven_test_mock_objects.TEST_DATA,
@@ -5144,6 +5229,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
             TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
             saturation_function_set_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+            coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
             TestContentPathsApiV2.ROLLER_OVEN_TEST,
@@ -5558,6 +5648,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             saturation_function_set_mock_objects.TRIMMED_TEST_DATA,
             saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID,
             saturation_function_set_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+            coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            coretologdepthshift_mock_objects.TRIMMED_TEST_DATA,
+            coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
+            coretologdepthshift_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
             TestContentPathsApiV2.ROLLER_OVEN_TEST,
@@ -5983,6 +6080,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             saturation_function_set_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+            coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            coretologdepthshift_mock_objects.TEST_DATA,
+            coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
+            coretologdepthshift_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
             TestContentPathsApiV2.ROLLER_OVEN_TEST,
             roller_oven_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             roller_oven_test_mock_objects.TEST_DATA,
@@ -6069,6 +6173,10 @@ async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data,
         (
             TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
             saturation_function_set_mock_objects.INCORRECT_SCHEMA_TEST_DATA,
+        ),
+        (
+            TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+            coretologdepthshift_mock_objects.INCORRECT_SCHEMA_TEST_DATA,
         ),
         (TestContentPathsApiV2.ROLLER_OVEN_TEST, roller_oven_test_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.SATURATION_TEST, saturation_test_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
@@ -6342,6 +6450,11 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             saturation_function_set_mock_objects.EXPECTED_ERROR_REASON,
         ),
         (
+            TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+            coretologdepthshift_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
+            coretologdepthshift_mock_objects.EXPECTED_ERROR_REASON,
+        ),
+        (
             TestContentPathsApiV2.ROLLER_OVEN_TEST,
             roller_oven_test_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             roller_oven_test_mock_objects.EXPECTED_ERROR_REASON,
@@ -6419,6 +6532,7 @@ async def test_post_invalid_df_error(data_endpoint_path, incorrect_dataframe_dat
         f"{TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS}/{crushed_rock_analysis_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL}/{res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL}/{saturation_function_set_mock_objects.TEST_DATASET_RECORD_ID}",
+        f"{TestContentPathsApiV2.DEPTH_SHIFT_MODEL}/{coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.ROLLER_OVEN_TEST}/{roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.SATURATION_TEST}/{saturation_test_mock_objects.TEST_DATASET_RECORD_ID}",
     ],
@@ -6485,6 +6599,7 @@ async def test_get_403(data_endpoint_path):
         TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS,
         TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
         TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+        TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
         TestContentPathsApiV2.SATURATION_TEST,
     ],
@@ -6716,6 +6831,7 @@ async def test_post_integrity_error(
         TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS,
         TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL,
         TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
+        TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
         TestContentPathsApiV2.SATURATION_TEST,
     ],
@@ -6931,3 +7047,39 @@ async def test_post_rsrpm_data_rejects_mismatched_id():
     assert body["reason"] == "Data validation failed."
     assert "Invalid value" in body["errors"]
     assert any("ReservoirSimulationRockPhysicsID" in entry for entry in body["errors"]["Invalid value"])
+
+
+# Issue #678 — DepthShiftWPCID mismatch validation
+
+_MISMATCHED_DS_WPC_ID = "opendes:work-product-component--DepthShift:wrong-record:"
+
+
+def _ds_data_with_id(value):
+    data = _copy.deepcopy(coretologdepthshift_mock_objects.TEST_DATA)
+    col_idx = data["columns"].index("DepthShiftWPCID")
+    for row in data["data"]:
+        row[col_idx] = value
+    return data
+
+
+@pytest.mark.asyncio
+async def test_post_ds_data_rejects_mismatched_id():
+    """Issue #678: DepthShiftWPCID in payload must match record_id in URL."""
+    payload = _ds_data_with_id(_MISMATCHED_DS_WPC_ID)
+    with post_overrides(
+        coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
+        payload,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    body = response.json()
+    assert body["reason"] == "Data validation failed."
+    assert "Invalid value" in body["errors"]
+    assert any("DepthShiftWPCID" in entry for entry in body["errors"]["Invalid value"])

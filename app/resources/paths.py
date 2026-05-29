@@ -183,3 +183,5 @@ SATURATION_FUNCTION_SET_STR = "saturationfunctionset"
 RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR = "reservoirsimulationrockphysicsmodel"
 
 ROLLER_OVEN_TEST_STR = "rolleroventest"
+
+DEPTH_SHIFT_STR = "depthshift"
