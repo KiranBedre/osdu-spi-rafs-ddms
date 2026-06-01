@@ -88,8 +88,6 @@ TEST_FILTERED_DATA = {
                     "OriginalBaseDepth": 1010.0,
                     "ShiftedTopDepth": 1001.5,
                     "ShiftedBaseDepth": 1011.5,
-                    "ShiftAmountTop": 1.5,
-                    "ShiftAmountBase": 1.5,
                     "DepthShiftInterpolationMethodID": "osdu:reference-data--DepthShiftInterpolationMethod:Linear:",
                     "DepthShiftInterpolationReasonID": "osdu:reference-data--DepthShiftInterpolationReason:CoreToLog:",
                 }

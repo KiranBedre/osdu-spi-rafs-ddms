@@ -193,16 +193,6 @@ class DepthShiftSetItem(RafsBaseModel):
         description='The resulting depth when OriginalBaseDepth has been shifted up or down to better align with its shift reference.',
         title='Shifted Base Depth',
     )
-    ShiftAmountTop: float = Field(
-        ...,
-        description='The magnitude and direction of the depth shift applied at the top of the interval.',
-        title='Shift Amount Top',
-    )
-    ShiftAmountBase: float = Field(
-        ...,
-        description='The magnitude and direction of the depth shift applied at the base of the interval.',
-        title='Shift Amount Base',
-    )
     DepthShiftInterpolationMethodID: constr(
         regex=r'^[\w\-\.]+:reference-data\-\-DepthShiftInterpolationMethod:[\w\-\.\:\%]+:[0-9]*$'
     ) = Field(
