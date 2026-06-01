@@ -258,18 +258,6 @@
             "description": "The resulting depth when OriginalBaseDepth has been shifted up or down to better align with its shift reference.",
             "x-osdu-frame-of-reference": "UOM:length"
           },
-          "ShiftAmountTop": {
-            "type": "number",
-            "title": "Shift Amount Top",
-            "description": "The magnitude and direction of the depth shift applied at the top of the interval.",
-            "x-osdu-frame-of-reference": "UOM:length"
-          },
-          "ShiftAmountBase": {
-            "type": "number",
-            "title": "Shift Amount Base",
-            "description": "The magnitude and direction of the depth shift applied at the base of the interval.",
-            "x-osdu-frame-of-reference": "UOM:length"
-          },
           "DepthShiftInterpolationMethodID": {
             "type": "string",
             "title": "Depth Shift Interpolation Method ID",
@@ -340,8 +328,6 @@
           "OriginalBaseDepth",
           "ShiftedTopDepth",
           "ShiftedBaseDepth",
-          "ShiftAmountTop",
-          "ShiftAmountBase",
           "DepthShiftInterpolationMethodID",
           "DepthShiftInterpolationReasonID"
         ]
