@@ -13,6 +13,13 @@
 #  limitations under the License.
 
 import copy
+import datetime
+
+from app.resources.common_headers import ACCEPT
+
+from tests.integration.config import (
+    DataFiles,
+)
 
 
 def test_depth_shift_create_record(api, depth_shift_create_record, helper):
@@ -53,3 +60,345 @@ def test_depth_shift_versions(api, record_id, helper):
     # Plain GET should return the latest version
     latest = api.depth_shift.get_record(record_id)
     helper.compare_responses(latest, version_2, response_type="json")
+
+
+def test_depth_shift_add_data(api, record_id, helper, tests_data):
+    """Upload bulk data and verify retrieval in JSON and Parquet formats are equivalent."""
+    # Prepare and upload dataset payload
+    data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    data_payload["data"][0][0] = f"{record_id}:"
+    post_response = api.depth_shift.post_data(record_id, data_payload)
+    dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
+
+    # GET data as JSON and compare with original payload
+    gotten_data = api.depth_shift.get_data(record_id, dataset_id)
+    helper.compare_responses(gotten_data, data_payload, response_type="json")
+
+    # Verify JSON and Parquet responses are equivalent
+    parquet_response = api.depth_shift.get_data(
+        record_id,
+        dataset_id,
+        json=False,
+        headers={ACCEPT: "application/x-parquet"},
+        raw=True,
+    ).content
+    helper.compare_responses(gotten_data, parquet_response)
+
+
+def test_depth_shift_get_data_filtered_by_column(api, helper, tests_data, record_id, dataset_id):
+    """Verify bulk data retrieval filtered by column."""
+    # Prepare baseline
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    baseline["data"][0][0] = f"{record_id}:"
+    indices = [0, 2]
+    baseline["columns"] = [baseline["columns"][i] for i in indices]
+    baseline["data"][0] = [baseline["data"][0][i] for i in indices]
+
+    # GET data as JSON and compare with modified payload
+    params = {"columns_filter": "DepthShiftWPCID,DepthShiftSet"}
+    gotten_data = api.depth_shift.get_data(record_id, dataset_id, params=params)
+    helper.compare_responses(gotten_data, baseline, response_type="json")
+
+
+def test_depth_shift_get_data_filtered_in_by_row(api, helper, tests_data, record_id, dataset_id):
+    """Verify bulk data retrieval filtered in by row."""
+    # Prepare baseline
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    baseline["data"][0][0] = f"{record_id}:"
+
+    # GET data as JSON and compare with modified payload
+    params = {"rows_filter": f"DepthShiftWPCID,eq,{record_id}:"}
+    gotten_data = api.depth_shift.get_data(record_id, dataset_id, params=params)
+    helper.compare_responses(gotten_data, baseline, response_type="json")
+
+
+def test_depth_shift_get_data_filtered_out_by_row(api, tests_data, record_id, dataset_id):
+    """Verify bulk data retrieval filtered out by row."""
+    # GET data as JSON
+    params = {"rows_filter": f"DepthShiftWPCID,neq,{record_id}:"}
+    response = api.depth_shift.get_data(record_id, dataset_id, params=params)
+
+    # Assert
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+
+    assert set(response["columns"]).issubset(baseline["columns"])
+    assert response["index"] == []
+    assert response["data"] == []
+
+
+def test_depth_shift_get_data_aggregated(api, record_id, dataset_id):
+    """Verify bulk data retrieval aggregated."""
+    # GET data as JSON
+    params = {"columns_aggregation": "DepthShiftWPCID,describe"}
+    response = api.depth_shift.get_data(record_id, dataset_id, params=params)
+
+    # Assert
+    assert response["columns"] == ["describe"]
+    assert set(response["index"]) == {"count", "unique", "top", "freq"}
+    assert f"{record_id}:" in (row[0] for row in response["data"])
+
+
+def test_depth_shift_get_schema(api, helper, tests_data):
+    """Verify schema endpoint matches expected schema model."""
+    schema = api.depth_shift.get_schema()
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_SCHEMA))
+
+    helper.compare_responses(schema, baseline, response_type="json")
+
+
+def test_depth_shift_search_record_filtered_in_by_row(api, helper, record_id, dataset_id):
+    """Verify record appears in search results after indexing completes."""
+    params = {"rows_filter": f"DepthShiftWPCID,eq,{record_id}:"}
+
+    # Wait until search returns the record_id in its result set
+    response = helper.wait_for_search_record(
+        lambda: api.depth_shift.search_records(params=params),
+        record_id,
+    )
+    assert record_id in response["result"]
+
+
+def test_depth_shift_search_data_filtered_in_by_row(api, helper, tests_data, record_id, dataset_id):
+    """Verify bulk data appears in search results matching baseline."""
+    params = {"rows_filter": f"DepthShiftWPCID,eq,{record_id}:"}
+
+    # Baseline expected dataset (with concrete record id substituted)
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    baseline["data"][0][0] = f"{record_id}:"
+
+    # Wait until search data returns the record_id in result set
+    search_response = helper.wait_for_search_data(
+        lambda: api.depth_shift.search_data(params=params),
+        record_id,
+    )
+
+    result_data = search_response.get("result", {})
+    helper.compare_responses(result_data, baseline, response_type="json")
+
+
+def test_depth_shift_search_record_filtered_out_by_row(api, record_id, dataset_id, search_available):
+    """Verify record is filtered out by the specified row filter in the search results"""
+    params = {"rows_filter": f"DepthShiftWPCID,neq,{record_id}:"}
+    response = api.depth_shift.search_records(params=params)
+
+    # Assert
+    assert record_id not in response["result"]
+
+
+def test_depth_shift_search_record_filtered_in_by_start_date(api, record_id, dataset_id, search_available):
+    """Verify record is filtered in by the specified start date filter in the search results"""
+    current_date = datetime.date.today()
+    params = {"indexed_start_date": current_date}
+    response = api.depth_shift.search_records(params=params)
+
+    # Assert
+    assert record_id in response["result"]
+
+
+def test_depth_shift_search_record_filtered_out_by_start_date(api, record_id, dataset_id, search_available):
+    """Verify record is filtered out by the specified start date filter in the search results"""
+    current_date = datetime.date.today()
+    tomorrow_date = current_date + datetime.timedelta(days=1)
+    params = {"indexed_start_date": tomorrow_date}
+    response = api.depth_shift.search_records(params=params)
+
+    # Assert
+    assert response["result"] == []
+
+
+def test_depth_shift_search_record_filtered_in_by_end_date(api, record_id, dataset_id, search_available):
+    """Verify record is filtered in by the specified end date filter in the search results"""
+    current_date = datetime.date.today()
+    params = {"indexed_end_date": current_date}
+    response = api.depth_shift.search_records(params=params)
+
+    # Assert
+    assert record_id in response["result"]
+
+
+def test_depth_shift_search_record_filtered_out_by_end_date(api, record_id, dataset_id, search_available):
+    """Verify record is filtered out by the specified end date filter in the search results"""
+    current_date = datetime.date.today()
+    yesterday_date = current_date - datetime.timedelta(days=1)
+    params = {"indexed_end_date": yesterday_date}
+    response = api.depth_shift.search_records(params=params)
+
+    # Assert
+    assert record_id not in response["result"]
+
+
+def test_depth_shift_search_record_filtered_out_by_page_limit(api, record_id, dataset_id, search_available):
+    """Verify records are filtered out by the specified page limit filter in the search results"""
+    params = {"page_limit": 2}
+    response = api.depth_shift.search_records(params=params)
+
+    # Assert
+    assert len(response["result"]) <= 2
+
+
+def test_depth_shift_search_data_filtered_by_columns(api, helper, tests_data, record_id, dataset_id, search_available):
+    """Verify bulk data is filtered out by the specified columns filter in the search results"""
+    params = {
+        "columns_filter": "DepthShiftWPCID,DepthShiftSet",
+        "rows_filter": f"DepthShiftWPCID,eq,{record_id}:",
+    }
+    response = api.depth_shift.search_data(params=params)
+    result_data = response.get("result", {})
+
+    # Prepare baseline
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    baseline["data"][0][0] = f"{record_id}:"
+    indices = [0, 2]
+    baseline["columns"] = [baseline["columns"][i] for i in indices]
+    baseline["data"][0] = [baseline["data"][0][i] for i in indices]
+
+    # Verify expected results match baseline
+    helper.compare_responses(result_data, baseline, response_type="json")
+
+
+def test_depth_shift_search_data_filtered_out_by_row(api, record_id, dataset_id, search_available):
+    """Verify bulk data is filtered out by row filter in the search results"""
+    params = {"rows_filter": "DepthShiftWPCID,eq,DummyValue"}
+    response = api.depth_shift.search_data(params=params)
+
+    # Assert
+    assert response["result"]["columns"] == []
+    assert response["result"]["index"] == []
+    assert response["result"]["data"] == []
+
+
+def test_depth_shift_search_data_aggregated(api, record_id, dataset_id, search_available):
+    """Verify bulk data aggregated in the search results"""
+    params = {"columns_aggregation": "DepthShiftWPCID,describe"}
+    response = api.depth_shift.search_data(params=params)
+
+    # Assert
+    assert response["result"]["columns"] == ["describe"]
+    assert set(response["result"]["index"]) == {"count", "unique", "top", "freq"}
+
+
+def test_depth_shift_search_data_filtered_in_by_start_date(api, tests_data, record_id, dataset_id, search_available):
+    """Verify bulk data is filtered in by the specified start date filter in the search results"""
+    current_date = datetime.date.today()
+    params = {"indexed_start_date": current_date}
+    response = api.depth_shift.search_data(params=params)
+
+    # Assert
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+
+    assert set(response["result"]["columns"]).issubset(baseline["columns"])
+    assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
+
+
+def test_depth_shift_search_data_filtered_out_by_start_date(api, record_id, dataset_id, search_available):
+    """Verify bulk data is filtered out by the specified start date filter in the search results"""
+    current_date = datetime.date.today()
+    tomorrow_date = current_date + datetime.timedelta(days=1)
+    params = {"indexed_start_date": tomorrow_date}
+    response = api.depth_shift.search_data(params=params)
+
+    # Assert
+    assert response["result"]["columns"] == []
+    assert response["result"]["index"] == []
+    assert response["result"]["data"] == []
+
+
+def test_depth_shift_search_data_filtered_in_by_end_date(api, tests_data, record_id, dataset_id, search_available):
+    """Verify bulk data is filtered in by the specified end date filter in the search results"""
+    current_date = datetime.date.today()
+    params = {"indexed_end_date": current_date}
+    response = api.depth_shift.search_data(params=params)
+
+    # Assert
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+
+    assert set(response["result"]["columns"]).issubset(baseline["columns"])
+    assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
+
+
+def test_depth_shift_search_data_filtered_out_by_end_date(api, tests_data, record_id, dataset_id, search_available):
+    """Verify bulk data is filtered out by the specified end date filter in the search results"""
+    current_date = datetime.date.today()
+    yesterday_date = current_date - datetime.timedelta(days=1)
+    params = {"indexed_end_date": yesterday_date}
+    response = api.depth_shift.search_data(params=params)
+
+    # Assert
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+
+    assert set(response["result"]["columns"]).issubset(baseline["columns"])
+    assert not any(row[0] == f"{record_id}:" for row in response["result"]["data"])
+
+
+def test_depth_shift_search_data_filtered_out_by_page_limit(api, tests_data, record_id, dataset_id, search_available):
+    """Verify bulk data is filtered out by the specified page limit filter in the search results"""
+    params = {"page_limit": 2}
+    response = api.depth_shift.search_data(params=params)
+
+    # Assert
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+
+    assert set(response["result"]["columns"]).issubset(baseline["columns"])
+    assert len({row[0] for row in response["result"]["data"]}) <= 2
+
+
+def test_depth_shift_add_data_records_format(api, helper, tests_data, record_id):
+    """Upload bulk data in records format and verify retrieval in JSON."""
+    # Prepare and upload dataset payload
+    data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA_RECORDS_FORMAT))
+    data_payload["DepthShiftWPCID"] = f"{record_id}:"
+    post_response = api.depth_shift.post_data(record_id, [data_payload])
+    dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
+
+    # GET data as JSON and compare with original payload
+    params = {"orient": "records"}
+    gotten_data = api.depth_shift.get_data(record_id, dataset_id, params=params)
+    helper.compare_responses(gotten_data, [data_payload], response_type="json")
+
+
+def test_depth_shift_search_data_records_format_filtered_in_by_row(
+    api, helper, tests_data, record_id, dataset_id, search_available
+):
+    """Verify bulk data in records_format appears in search results matching baseline."""
+    params = {
+        "rows_filter": f"DepthShiftWPCID,eq,{record_id}:",
+        "orient": "records",
+    }
+
+    # Baseline expected dataset (with concrete record id substituted)
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA_RECORDS_FORMAT))
+    baseline["DepthShiftWPCID"] = f"{record_id}:"
+
+    response = api.depth_shift.search_data(params=params)
+    helper.compare_responses(response["result"], [baseline], response_type="json")
+
+
+def test_depth_shift_search_data_records_format_filtered_by_columns(
+    api, helper, tests_data, record_id, dataset_id, search_available
+):
+    """Verify bulk data in record format is filtered out by the specified columns filter in the search results"""
+    params = {
+        "columns_filter": "Meta,DepthShiftSet",
+        "rows_filter": f"DepthShiftWPCID,eq,{record_id}:",
+        "orient": "records",
+    }
+
+    # Prepare baseline
+    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA_RECORDS_FORMAT))
+    baseline.pop("DepthShiftWPCID", None)
+
+    response = api.depth_shift.search_data(params=params)
+    helper.compare_responses(response["result"], [baseline], response_type="json")
+
+
+def test_depth_shift_search_data_records_format_aggregated(api, record_id, dataset_id, search_available):
+    """Verify bulk data in record format aggregated in the search results - orient param ignored in response"""
+    params = {
+        "columns_aggregation": "DepthShiftWPCID,describe",
+        "orient": "records",
+    }
+    response = api.depth_shift.search_data(params=params)
+
+    # Assert
+    assert response["result"]["columns"] == ["describe"]
+    assert set(response["result"]["index"]) == {"count", "unique", "top", "freq"}

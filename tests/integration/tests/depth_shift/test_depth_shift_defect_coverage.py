@@ -15,11 +15,114 @@
 import copy
 import urllib.parse
 
+import pytest
 from starlette import status
 
+from app.resources.common_headers import CACHE_CONTROL
 from tests.integration.config import (
     DataFiles,
+    Endpoints,
 )
+
+
+@pytest.mark.parametrize("endpoint,args", Endpoints.ENDPOINTS_WITH_FILTERS_ARGS)
+def test_depth_shift_max_age_cache_header(api, endpoint, args, fresh_record_id, fresh_dataset_id):
+    """Verify that endpoint returns expected status codes for max-age Cache Control header"""
+    record_id = fresh_record_id
+    dataset_id = fresh_dataset_id
+    method = getattr(api.depth_shift, endpoint)
+    local_vars = locals().copy()
+    call_args = [local_vars[name] for name in args]
+
+    kwargs = {
+        "headers": {CACHE_CONTROL: "max-age=120"},
+        "raw": True,
+    }
+
+    response = method(*call_args, **kwargs)
+
+    # Assert
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("endpoint,args", Endpoints.ENDPOINTS_WITH_FILTERS_ARGS)
+def test_depth_shift_max_stale_cache_header(api, endpoint, args, fresh_record_id, fresh_dataset_id):
+    """Verify that endpoint returns expected status codes for max-stale Cache Control header"""
+    record_id = fresh_record_id
+    dataset_id = fresh_dataset_id
+    method = getattr(api.depth_shift, endpoint)
+    local_vars = locals().copy()
+    call_args = [local_vars[name] for name in args]
+
+    kwargs = {
+        "headers": {CACHE_CONTROL: "max-stale"},
+        "raw": True,
+    }
+
+    response = method(*call_args, **kwargs)
+
+    # Assert
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("endpoint,args", Endpoints.ENDPOINTS_WITH_FILTERS_ARGS)
+def test_depth_shift_private_cache_header(api, endpoint, args, fresh_record_id, fresh_dataset_id):
+    """Verify that endpoint returns expected status codes for private Cache Control header"""
+    record_id = fresh_record_id
+    dataset_id = fresh_dataset_id
+    method = getattr(api.depth_shift, endpoint)
+    local_vars = locals().copy()
+    call_args = [local_vars[name] for name in args]
+
+    kwargs = {
+        "headers": {CACHE_CONTROL: "private"},
+        "raw": True,
+    }
+
+    response = method(*call_args, **kwargs)
+
+    # Assert
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("endpoint,args", Endpoints.ENDPOINTS_WITH_FILTERS_ARGS)
+def test_depth_shift_public_cache_header(api, endpoint, args, fresh_record_id, fresh_dataset_id):
+    """Verify that endpoint returns expected status codes for public Cache Control header"""
+    record_id = fresh_record_id
+    dataset_id = fresh_dataset_id
+    method = getattr(api.depth_shift, endpoint)
+    local_vars = locals().copy()
+    call_args = [local_vars[name] for name in args]
+
+    kwargs = {
+        "headers": {CACHE_CONTROL: "public"},
+        "raw": True,
+    }
+
+    response = method(*call_args, **kwargs)
+
+    # Assert
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("endpoint,args", Endpoints.ENDPOINTS_WITH_FILTERS_ARGS)
+def test_depth_shift_immutable_cache_header(api, endpoint, args, fresh_record_id, fresh_dataset_id):
+    """Verify that endpoint returns expected status codes for immutable Cache Control header"""
+    record_id = fresh_record_id
+    dataset_id = fresh_dataset_id
+    method = getattr(api.depth_shift, endpoint)
+    local_vars = locals().copy()
+    call_args = [local_vars[name] for name in args]
+
+    kwargs = {
+        "headers": {CACHE_CONTROL: "immutable"},
+        "raw": True,
+    }
+
+    response = method(*call_args, **kwargs)
+
+    # Assert
+    assert response.status_code == 200
 
 
 def test_depth_shift_create_record_with_special_characters_in_record_id(api, helper, tests_data, spec_char_record_id):
@@ -65,6 +168,20 @@ def test_depth_shift_versions_with_special_characters_in_record_id(api, helper, 
     # Plain GET should return the latest version
     latest = api.depth_shift.get_record(encoded_record_id)
     helper.compare_responses(latest, version_2, response_type="json")
+
+
+def test_depth_shift_add_data_with_special_characters_in_record_id(api, helper, tests_data, spec_char_record_id):
+    """Upload bulk data and verify retrieval in JSON for record_id with special characters."""
+    # Prepare and upload dataset payload
+    data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    data_payload["data"][0][0] = f"{spec_char_record_id}:"
+    encoded_record_id = urllib.parse.quote(spec_char_record_id)
+    post_response = api.depth_shift.post_data(encoded_record_id, data_payload)
+    dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
+
+    # GET data as JSON and compare with original payload
+    gotten_data = api.depth_shift.get_data(encoded_record_id, dataset_id)
+    helper.compare_responses(gotten_data, data_payload, response_type="json")
 
 
 def test_depth_shift_delete_record_special_characters_in_record_id(api, spec_char_record_id):

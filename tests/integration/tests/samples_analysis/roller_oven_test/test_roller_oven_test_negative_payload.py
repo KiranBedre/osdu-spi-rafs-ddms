@@ -213,6 +213,28 @@ def test_roller_oven_test_negative_add_data_v1_extra_main_field(api, tests_data,
     assert "field" in body["errors"]["Invalid type"][0]
 
 
+def test_roller_oven_test_negative_add_data_v1_extra_main_nullable_field(api, tests_data, record_id):
+    """Reject data upload with unexpected/extra main field with null value with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.ROLLER_OVEN_TEST_DATA_V1))
+    data_payload["columns"].append("ExtraColumn")
+    data_payload["data"][0].append(None)
+
+    response = api.sample_analysis.post_data(
+        record_id=record_id,
+        body=data_payload,
+        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 422
+    body = response.json()
+    assert "Data validation failed." in body["reason"]
+    assert "field" in body["errors"]["Invalid type"][0]
+
+
 @pytest.mark.parametrize("field_path,value", EXTRA_DATA_V1_FIELDS)
 def test_roller_oven_test_negative_add_data_v1_extra_field(api, tests_data, helper, field_path, value, record_id):
     """Reject data upload with unexpected/extra fields with 422 Unprocessable Content."""

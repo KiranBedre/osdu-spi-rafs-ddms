@@ -97,6 +97,9 @@ class DataFiles:
     FLUID_MODEL = "v2/fluid_model/fluid.json"
 
     DEPTH_SHIFT = "v2/depth_shift/depth_shift.json"
+    CORE_TO_LOG_DEPTH_SHIFT_DATA = "v2/depth_shift/core_to_log_data.json"
+    CORE_TO_LOG_DEPTH_SHIFT_DATA_RECORDS_FORMAT = "v2/depth_shift/core_to_log_data_records_format.json"
+    CORE_TO_LOG_DEPTH_SHIFT_SCHEMA = "v2/depth_shift/core_to_log_schema.json"
 
 
 class DataTemplates:
