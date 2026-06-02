@@ -697,6 +697,46 @@ def test_sfs_negative_add_data_invalid_regex_specific_field(api, tests_data, hel
     assert "field" in body["errors"]["Invalid type"][0]
 
 
+def test_sfs_negative_add_data_extra_main_field(api, tests_data, record_id):
+    """Reject data upload with unexpected/extra fields with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+    data_payload["columns"].append("ExtraColumn")
+    data_payload["data"][0].append("ExtraColumnValue")
+
+    response = api.saturation_function_set.post_data(
+        record_id=record_id,
+        body=data_payload,
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 422
+    body = response.json()
+    assert "Data validation failed." in body["reason"]
+    assert "field" in body["errors"]["Invalid type"][0]
+
+
+def test_sfs_negative_add_data_extra_main_nullable_field(api, tests_data, record_id):
+    """Reject data upload with unexpected/extra main field with null value with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+    data_payload["columns"].append("ExtraColumn")
+    data_payload["data"][0].append(None)
+
+    response = api.saturation_function_set.post_data(
+        record_id=record_id,
+        body=data_payload,
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 422
+    body = response.json()
+    assert "Data validation failed." in body["reason"]
+    assert "field" in body["errors"]["Invalid type"][0]
+
+
 @pytest.mark.parametrize("field_path,value", EXTRA_DATA_FIELDS)
 def test_sfs_negative_add_data_extra_field(api, tests_data, helper, field_path, value, record_id):
     """Reject data upload with unexpected/extra fields with 422 Unprocessable Content."""

@@ -193,7 +193,7 @@ cimpl-test-python:
         --url-prefix "${URL_PREFIX}" \
         --bearer-token "${ACCESS_TOKEN}" \
         --partition "${PARTITION}" \
-        --cloud-provider "gc"
+        --cloud-provider "cimpl"
   after_script:
     - allure generate allure-results --clean -o allure-report
   artifacts:
@@ -268,7 +268,7 @@ cimpl-dev2-test-python:
         --url-prefix "${URL_PREFIX}" \
         --bearer-token "${ACCESS_TOKEN}" \
         --partition "${PARTITION}" \
-        --cloud-provider "gc"
+        --cloud-provider "cimpl"
 
 cimpl-helm-charts-release-gitlab:
   stage: containerize

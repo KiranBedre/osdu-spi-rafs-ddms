@@ -72,7 +72,7 @@ def load_test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes]
         data_values = create_azure_values(CONFIG["DATA_PARTITION"])
     elif CONFIG["CLOUD_PROVIDER"] == "aws":
         data_values = aws_values
-    elif CONFIG["CLOUD_PROVIDER"] == "gc":
+    elif CONFIG["CLOUD_PROVIDER"] in ["gc", "cimpl"]:
         data_values = create_gc_values(CONFIG["DATA_PARTITION"])
     with open(os.path.join(DATA_DIR, file_name), encoding="utf-8") as json_file:
         data_str = (
