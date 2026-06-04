@@ -19,8 +19,11 @@ from app.exceptions.exceptions import DataValidationException
 from app.models.schemas.errors import ValidationErrorResponse
 
 
-async def data_validation_http_error_handler(_: Request, exc: DataValidationException) -> JSONResponse:
-    return JSONResponse(
+async def data_validation_http_error_handler(  # noqa: ASYNC910, ASYNC124
+    _: Request,
+    exc: DataValidationException,
+) -> JSONResponse:
+    return JSONResponse(  # noqa: ASYNC910
         ValidationErrorResponse.construct(
             reason=exc.detail,
             errors=exc.errors,

@@ -20,10 +20,10 @@ from typing import Optional
 from tests.integration.config import (
     CONFIG,
     DATA_DIR,
-    WPC_VERSION,
     TEST_DATA_STORE,
+    WPC_VERSION,
+    SamplesAnalysisConfig,
     SamplesAnalysisTypes,
-    SamplesAnalysisConfig
 )
 from tests.integration.helpers import CommonHelper
 
@@ -72,34 +72,47 @@ def load_test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes]
         data_values = create_azure_values(CONFIG["DATA_PARTITION"])
     elif CONFIG["CLOUD_PROVIDER"] == "aws":
         data_values = aws_values
-    elif CONFIG["CLOUD_PROVIDER"] == "gc":
+    elif CONFIG["CLOUD_PROVIDER"] in ["gc", "cimpl"]:
         data_values = create_gc_values(CONFIG["DATA_PARTITION"])
     with open(os.path.join(DATA_DIR, file_name), encoding="utf-8") as json_file:
         data_str = (
-            json_file.read(
-            ).replace(
-                "{record_id}", f"{CommonHelper.generate_random_record_id()}",
-            ).replace(
-                "{wpc_version}", WPC_VERSION,
-            ).replace(
-                "{data_partition_id}", data_values.data_partition_id,
-            ).replace(
-                "{schema_authority}", data_values.schema_authority,
-            ).replace(
-                "{custom_schema_authority}", data_values.custom_schema_authority,
-            ).replace(
-                "{acl_viewers}", data_values.acl_viewers,
-            ).replace(
-                "{acl_owners}", data_values.acl_owners,
-            ).replace(
-                "{legal_tag}", TEST_DATA_STORE.get("legal_tag"),
+            json_file.read()
+            .replace(
+                "{record_id}",
+                f"{CommonHelper.generate_random_record_id()}",
+            )
+            .replace(
+                "{wpc_version}",
+                WPC_VERSION,
+            )
+            .replace(
+                "{data_partition_id}",
+                data_values.data_partition_id,
+            )
+            .replace(
+                "{schema_authority}",
+                data_values.schema_authority,
+            )
+            .replace(
+                "{custom_schema_authority}",
+                data_values.custom_schema_authority,
+            )
+            .replace(
+                "{acl_viewers}",
+                data_values.acl_viewers,
+            )
+            .replace(
+                "{acl_owners}",
+                data_values.acl_owners,
+            )
+            .replace(
+                "{legal_tag}",
+                TEST_DATA_STORE.get("legal_tag"),
             )
         )
         if analysis_type:
             context = SamplesAnalysisConfig.get(analysis_type)
-            data_str = (
-                data_str
-                .replace("{parent_report_id}", context["parent_report_id"])
-                .replace("{samples_analysis_type}", context["samples_analysis_type"])
+            data_str = data_str.replace("{parent_report_id}", context["parent_report_id"]).replace(
+                "{samples_analysis_type}", context["samples_analysis_type"]
             )
         return json.loads(data_str)

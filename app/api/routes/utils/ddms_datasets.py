@@ -19,11 +19,13 @@ from fastapi.responses import JSONResponse, Response
 from loguru import logger
 from starlette import status
 
+from app.api.dependencies.request import get_response_mime_type
 from app.api.routes.utils.records import (
     find_object_name_from_type,
     find_object_name_index,
     find_schema_versions_for_object_name,
     generate_blob_urn,
+    get_id_version,
 )
 from app.core.config import get_app_settings
 from app.dataframe.parquet_filter import apply_filters_from_bytes
@@ -147,8 +149,9 @@ async def get_parquet_data(
     :return: parquet data in proper format
     :rtype: Response
     """
-    record = await storage_service.get_record(record_id)
-    mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
+    record_id, version = get_id_version(record_id)
+    record = await storage_service.get_record(record_id, version)
+    mime_type = get_response_mime_type(request)
     # Aggregation results only make sense in split format (index holds the function name)
     orient = "split" if df_filter.valid_columns_aggregation else orient
 
@@ -174,7 +177,6 @@ async def get_parquet_data(
         logger.debug(f"Dataframe info: {df.size} elements; {df.columns}")
 
         if mime_type == SupportedMimeTypes.PARQUET:
-            df.astype(str)
             response = Response(content=df.to_parquet(), media_type=SupportedMimeTypes.PARQUET.mime_type)
         else:
             response = Response(

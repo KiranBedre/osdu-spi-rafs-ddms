@@ -44,8 +44,8 @@ async def test_redis_backend_initialization():
     redis_instance = await backend.get_backend()
 
     assert redis_instance is not None
-    assert hasattr(redis_instance, 'get')
-    assert hasattr(redis_instance, 'set')
+    assert hasattr(redis_instance, "get")
+    assert hasattr(redis_instance, "set")
 
 
 @pytest.mark.asyncio

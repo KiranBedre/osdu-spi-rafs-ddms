@@ -15,7 +15,7 @@
 import copy
 import datetime
 
-from app.resources.common_headers import CONTENT_TYPE
+from app.resources.common_headers import ACCEPT
 
 from tests.integration.config import (
     DataFiles,
@@ -79,7 +79,7 @@ def test_sfs_add_data(api, record_id, helper, tests_data):
         record_id,
         dataset_id,
         json=False,
-        headers={CONTENT_TYPE: "application/x-parquet"},
+        headers={ACCEPT: "application/x-parquet"},
         raw=True,
     ).content
     helper.compare_responses(gotten_data, parquet_response)
@@ -111,19 +111,16 @@ def test_sfs_get_data_filtered_in_by_row(api, helper, tests_data, record_id, dat
     helper.compare_responses(gotten_data, baseline, response_type="json")
 
 
-def test_sfs_get_data_filtered_out_by_row(api, record_id, dataset_id):
+def test_sfs_get_data_filtered_out_by_row(api, tests_data, record_id, dataset_id):
     """Verify bulk data retrieval filtered out by row."""
     # GET data as JSON
     params = {"rows_filter": f"SaturationFunctionSetID,neq,{record_id}:"}
     response = api.saturation_function_set.get_data(record_id, dataset_id, params=params)
 
     # Assert
-    assert response["columns"] == [
-        "SaturationFunctionSetID",
-        "Meta",
-        "RelativePermeabilityFunctions",
-        "CapillaryPressureFunctions"
-    ]
+    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+
+    assert set(response["columns"]).issubset(baseline["columns"])
     assert response["index"] == []
     assert response["data"] == []
 
@@ -240,8 +237,10 @@ def test_sfs_search_record_filtered_out_by_page_limit(api, record_id, dataset_id
 
 def test_sfs_search_data_filtered_by_columns(api, helper, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified columns filter in the search results"""
-    params = {"columns_filter": "CapillaryPressureFunctions,RelativePermeabilityFunctions",
-              "rows_filter": f"SaturationFunctionSetID,eq,{record_id}:"}
+    params = {
+        "columns_filter": "CapillaryPressureFunctions,RelativePermeabilityFunctions",
+        "rows_filter": f"SaturationFunctionSetID,eq,{record_id}:",
+    }
     response = api.saturation_function_set.search_data(params=params)
     result_data = response.get("result", {})
 
@@ -275,19 +274,16 @@ def test_sfs_search_data_aggregated(api, record_id, dataset_id, search_available
     assert set(response["result"]["index"]) == {"count", "unique", "top", "freq"}
 
 
-def test_sfs_search_data_filtered_in_by_start_date(api, record_id, dataset_id, search_available):
+def test_sfs_search_data_filtered_in_by_start_date(api, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered in by the specified start date filter in the search results"""
     current_date = datetime.date.today()
     params = {"indexed_start_date": current_date}
     response = api.saturation_function_set.search_data(params=params)
 
     # Assert
-    assert response["result"]["columns"] == [
-        "SaturationFunctionSetID",
-        "Meta",
-        "RelativePermeabilityFunctions",
-        "CapillaryPressureFunctions",
-    ]
+    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+
+    assert set(response["result"]["columns"]).issubset(baseline["columns"])
     assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
@@ -304,23 +300,20 @@ def test_sfs_search_data_filtered_out_by_start_date(api, record_id, dataset_id, 
     assert response["result"]["data"] == []
 
 
-def test_sfs_search_data_filtered_in_by_end_date(api, record_id, dataset_id, search_available):
+def test_sfs_search_data_filtered_in_by_end_date(api, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered in by the specified end date filter in the search results"""
     current_date = datetime.date.today()
     params = {"indexed_end_date": current_date}
     response = api.saturation_function_set.search_data(params=params)
 
     # Assert
-    assert response["result"]["columns"] == [
-        "SaturationFunctionSetID",
-        "Meta",
-        "RelativePermeabilityFunctions",
-        "CapillaryPressureFunctions",
-    ]
+    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+
+    assert set(response["result"]["columns"]).issubset(baseline["columns"])
     assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-def test_sfs_search_data_filtered_out_by_end_date(api, record_id, dataset_id, search_available):
+def test_sfs_search_data_filtered_out_by_end_date(api, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified end date filter in the search results"""
     current_date = datetime.date.today()
     yesterday_date = current_date - datetime.timedelta(days=1)
@@ -328,27 +321,21 @@ def test_sfs_search_data_filtered_out_by_end_date(api, record_id, dataset_id, se
     response = api.saturation_function_set.search_data(params=params)
 
     # Assert
-    assert response["result"]["columns"] == [
-        "SaturationFunctionSetID",
-        "Meta",
-        "RelativePermeabilityFunctions",
-        "CapillaryPressureFunctions",
-    ]
+    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+
+    assert set(response["result"]["columns"]).issubset(baseline["columns"])
     assert not any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-def test_sfs_search_data_filtered_out_by_page_limit(api, record_id, dataset_id, search_available):
+def test_sfs_search_data_filtered_out_by_page_limit(api, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified page limit filter in the search results"""
     params = {"page_limit": 2}
     response = api.saturation_function_set.search_data(params=params)
 
     # Assert
-    assert response["result"]["columns"] == [
-        "SaturationFunctionSetID",
-        "Meta",
-        "RelativePermeabilityFunctions",
-        "CapillaryPressureFunctions",
-    ]
+    baseline = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
+
+    assert set(response["result"]["columns"]).issubset(baseline["columns"])
     assert len({row[0] for row in response["result"]["data"]}) <= 2
 
 

@@ -22,6 +22,6 @@ from tests.integration.config import (
 
 
 @pytest.fixture(scope="package")
-def samples_analysis_type():
+def analysis_type():
     """Analysis type definition"""
     return SamplesAnalysisTypes.VLE

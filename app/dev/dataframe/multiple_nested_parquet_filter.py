@@ -73,7 +73,8 @@ def apply_filters_from_df(
     try:
         if df_filter.valid_rows_multiple_filter:
             query_df = rows_multiple_filter_processor.apply_rows_multiple_filter(
-                query_df, df_filter.valid_rows_multiple_filter,
+                query_df,
+                df_filter.valid_rows_multiple_filter,
             )
         elif df_filter.valid_rows_filter:
             query_df = rows_filter_processor.apply_rows_filter(query_df, df_filter.valid_rows_filter)
@@ -81,7 +82,8 @@ def apply_filters_from_df(
             query_df = columns_filter_processor.apply_columns_filter(query_df, df_filter.valid_columns_filter)
         if df_filter.valid_columns_aggregation and not query_df.df.empty:
             query_df = columns_aggregation_processor.apply_columns_aggregation_filter(
-                query_df, df_filter.valid_columns_aggregation,
+                query_df,
+                df_filter.valid_columns_aggregation,
             )
     except Exception as exc:  # noqa: B902
         exc_type = type(exc)
@@ -350,7 +352,7 @@ class ColumnsAggregationProcessor(object):
         if Separator.DOT in full_column_name:
             props = full_column_name.split(Separator.DOT)
             for ix, prop in enumerate(props):
-                prop_name = Separator.DOT.join(props[:ix + 1]).replace(Separator.ARRAY, "").strip(Separator.DOT)
+                prop_name = Separator.DOT.join(props[: ix + 1]).replace(Separator.ARRAY, "").strip(Separator.DOT)
                 if Separator.ARRAY in prop:
                     query_df = PandasDFQueryNested(normalize_df_column(query_df.df.explode(prop_name), prop_name))
                 elif ix == 0:
@@ -386,7 +388,9 @@ class RowsMultipleFilterProcessor(object):
                             stack.append(nested_condition)  # noqa: WPS220
             else:
                 current_condition[self.SOLVED_FILTER] = self._apply_oper(
-                    query_df, LogicalOperators.AND, [current_condition],
+                    query_df,
+                    LogicalOperators.AND,
+                    [current_condition],
                 )
         return rows_multiple_filter.conditions[self.SOLVED_FILTER]
 
@@ -438,7 +442,8 @@ class RowsMultipleFilterProcessor(object):
             if RowsFilterValidator.VALID_FILTER in predicate:
                 dfs.append(
                     self._rows_filter_processor.apply_rows_filter(
-                        query_df, predicate.get(RowsFilterValidator.VALID_FILTER),
+                        query_df,
+                        predicate.get(RowsFilterValidator.VALID_FILTER),
                     ).df,
                 )
             elif self.SOLVED_FILTER in predicate:

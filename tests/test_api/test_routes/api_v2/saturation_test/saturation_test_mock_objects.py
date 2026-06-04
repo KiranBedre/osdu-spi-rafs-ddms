@@ -54,7 +54,7 @@ TEST_PARAMS_AGGREGATION = {
 }
 TEST_PARAMS_FILTERS = {
     "columns_filter": "SamplesAnalysisID,TestNumber,SampleID",
-    "rows_filter": "SamplesAnalysisID,eq,opendes:work-product-component--SamplesAnalysis:Example_WPC:",
+    "rows_filter": "SamplesAnalysisID,eq,partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
 }
 with open(f"{dir_path}/saturation_test_orient_split.json") as fp:
     TEST_DATA = json.load(fp)
@@ -82,7 +82,7 @@ TEST_FILTERED_DATA = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:Example_WPC:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "1",
             "opendes:master-data--Sample:Example_Sample:",
         ],

@@ -15,23 +15,13 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from redis.exceptions import (
-    AuthenticationError,
-    ConnectionError,
-    ResponseError
-)
+from redis.exceptions import AuthenticationError, ConnectionError, ResponseError
 
 from app.core.helpers.cache.backends.redis_cache import RedisCacheBackend
 from app.core.helpers.cache.errors import CacheBackendError
 
 
-@pytest.mark.parametrize(
-    "error", (
-        AuthenticationError,
-        ConnectionError,
-        ResponseError
-    )
-)
+@pytest.mark.parametrize("error", (AuthenticationError, ConnectionError, ResponseError))
 @pytest.mark.asyncio
 async def test_validate_redis_connection(error):
     redis_mock = AsyncMock()
@@ -114,7 +104,7 @@ async def test_clear_with_namespace(mock_get_redis_factory):
     # Mock the parent's clear method to capture what namespace it receives
     with patch("fastapi_cache.backends.redis.RedisBackend.clear", new_callable=AsyncMock) as mock_parent_clear:
         mock_parent_clear.return_value = 5
-        
+
         # Clear with a namespace - should prefix the namespace
         result = await logging_backend.clear(namespace="myns")
 
@@ -122,4 +112,3 @@ async def test_clear_with_namespace(mock_get_redis_factory):
         # The parent RedisBackend.clear() will convert this to the pattern "db13:myns:*"
         mock_parent_clear.assert_called_once_with("db13:myns", None)
         assert result == 5
-

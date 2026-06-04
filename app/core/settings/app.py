@@ -105,6 +105,7 @@ class AppSettings(BaseAppSettings):
             from app.providers.dependencies.gc.logging_setup import (  # noqa: WPS433
                 setup_logging,
             )
+
             setup_logging()
         for logger_name in self.loggers:
             logging_logger = logging.getLogger(logger_name)

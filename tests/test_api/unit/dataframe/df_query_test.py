@@ -49,7 +49,8 @@ class TestPandasDFQueryBase:
         assert list(projected.df.columns) == list(sample_dataframe.columns)
 
     @pytest.mark.parametrize(
-        "column,operator,comp_val,field", [
+        "column,operator,comp_val,field",
+        [
             ("IntColumn", "<", 35, None),
             ("IntColumn", "<=", 30, None),
             ("FloatColumn", "<", 2.1, None),
@@ -65,7 +66,8 @@ class TestPandasDFQueryBase:
         assert selected.df.equals(expected_df)
 
     @pytest.mark.parametrize(
-        "column,operator,comp_val,field", [
+        "column,operator,comp_val,field",
+        [
             ("IntColumn", ">", 30, None),
             ("IntColumn", ">=", 35, None),
             ("FloatColumn", ">", 2.0, None),
@@ -81,7 +83,8 @@ class TestPandasDFQueryBase:
         assert selected.df.equals(expected_df)
 
     @pytest.mark.parametrize(
-        "column,operator,comp_val,field", [
+        "column,operator,comp_val,field",
+        [
             ("TextColumn", "=", "Row3", None),
             ("IntColumn", "=", 35, None),
             ("FloatColumn", "=", 3.0, None),
@@ -96,7 +99,8 @@ class TestPandasDFQueryBase:
         assert selected.df.equals(expected_df)
 
     @pytest.mark.parametrize(
-        "column,operator,comp_val,field", [
+        "column,operator,comp_val,field",
+        [
             ("TextColumn", "!=", "Row4", None),
             ("IntColumn", "!=", 40, None),
             ("FloatColumn", "!=", 4.0, None),
@@ -111,7 +115,8 @@ class TestPandasDFQueryBase:
         assert selected.df.equals(expected_df)
 
     @pytest.mark.parametrize(
-        "column,aggregator_funcs,field, results", [
+        "column,aggregator_funcs,field, results",
+        [
             ("IntColumn", ["mean", "max", "min", "sum"], None, [32.5, 40, 25, 130]),
             ("FloatColumn", ["mean", "max", "min", "sum"], None, [2.5, 4.0, 1.0, 10.0]),
             ("TextColumn", ["count"], None, [4]),

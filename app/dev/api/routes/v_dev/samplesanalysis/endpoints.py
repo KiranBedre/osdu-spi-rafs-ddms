@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import json
+from datetime import date
 from typing import AsyncGenerator, List, Optional, Tuple
 
 import pandas as pd
@@ -102,7 +103,9 @@ class SamplesAnalysisSearchDataView(object):
         blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
         df_filter: DFMultipleNestedFilterValidator = Depends(validate_multiple_nested_filters),
         content_schema_version: str = Depends(get_content_schema_version),
-        pagination_parameters: Tuple[int, int] = Depends(get_search_data_pagination_parameters),
+        pagination_parameters: Tuple[int, int, Optional[date], Optional[date]] = Depends(
+            get_search_data_pagination_parameters
+        ),  # noqa: E501
         wks_parameters: Optional[dict] = Depends(get_search_wks_parameters),
         analysis_type_ids_fetcher: DDMSDatasetIdsFetcher = Depends(get_analysis_type_ids_fetcher),
     ) -> Response:
@@ -126,7 +129,7 @@ class SamplesAnalysisSearchDataView(object):
         :type content_schema_version: str, optional
         :param pagination_parameters: pagination parameters, defaults to
             Depends(get_pagination_parameters)
-        :type pagination_parameters: Tuple[int, int], optional
+        :type pagination_parameters: Tuple[int, int, Optional[date], Optional[date]], optional
         :param wks_parameters: wks search parameters, defaults to
             Depends(get_search_wks_parameters)
         :type wks_parameters: Optiona[dict], optional
@@ -136,10 +139,14 @@ class SamplesAnalysisSearchDataView(object):
         """
         data_partition_id = request.headers.get("data-partition-id")
         mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
-        offset, page_limit = pagination_parameters
+        offset, page_limit, start_date, end_date = pagination_parameters
 
-        analysis_type_ids = await analysis_type_ids_fetcher.get_ids(
-            data_partition_id, analysis_type, content_schema_version, wks_parameters,
+        analysis_type_ids = await analysis_type_ids_fetcher.get_ids(  # noqa: WPS317
+            data_partition_id,
+            analysis_type,
+            content_schema_version,
+            (start_date, end_date),
+            wks_parameters,
         )
         analysis_type_ids.sort(key=lambda analysis_type_id: analysis_type_id[1])
 
@@ -152,18 +159,26 @@ class SamplesAnalysisSearchDataView(object):
             )
 
             result_df, total_size = await self._build_result_df(
-                df_triplets_gen, df_filter, offset, page_limit, analysis_type_ids,
+                df_triplets_gen,
+                df_filter,
+                offset,
+                page_limit,
+                analysis_type_ids,
             )
         else:
             df_triplets_gen = await self._get_search_data(
-                analysis_type_ids=analysis_type_ids[offset:offset + page_limit],
+                analysis_type_ids=analysis_type_ids[offset : offset + page_limit],
                 dataset_service=dataset_service,
                 blob_storage_service=blob_storage_service,
                 df_filter=df_filter,
             )
             total_size = len(analysis_type_ids)
             result_df, _ = await self._build_result_df(
-                df_triplets_gen, df_filter, 0, page_limit, analysis_type_ids,
+                df_triplets_gen,
+                df_filter,
+                0,
+                page_limit,
+                analysis_type_ids,
             )
 
         if mime_type == SupportedMimeTypes.PARQUET:
@@ -196,7 +211,9 @@ class SamplesAnalysisSearchDataView(object):
         blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
         df_filter: DFMultipleNestedFilterValidator = Depends(validate_multiple_nested_filters),
         content_schema_version: str = Depends(get_content_schema_version),
-        pagination_parameters: Tuple[int, int] = Depends(get_search_pagination_parameters),
+        pagination_parameters: Tuple[int, int, Optional[date], Optional[date]] = Depends(
+            get_search_pagination_parameters
+        ),  # noqa: E501
         wks_parameters: Optional[dict] = Depends(get_search_wks_parameters),
         analysis_type_ids_fetcher: DDMSDatasetIdsFetcher = Depends(get_analysis_type_ids_fetcher),
     ) -> JSONResponse:
@@ -220,7 +237,7 @@ class SamplesAnalysisSearchDataView(object):
         :type content_schema_version: str, optional
         :param pagination_parameters: pagination parameters, defaults to
             Depends(get_pagination_parameters)
-        :type pagination_parameters: Tuple[int, int], optional
+        :type pagination_parameters: Tuple[int, int, Optional[date], Optional[date]], optional
         :param wks_parameters: wks search parameters, defaults to
             Depends(get_search_wks_parameters)
         :type wks_parameters: Optiona[dict], optional
@@ -228,10 +245,14 @@ class SamplesAnalysisSearchDataView(object):
         :rtype: Response
         """
         data_partition_id = request.headers.get("data-partition-id")
-        offset, page_limit = pagination_parameters
+        offset, page_limit, start_date, end_date = pagination_parameters
 
-        analysis_type_ids = await analysis_type_ids_fetcher.get_ids(
-            data_partition_id, analysis_type, content_schema_version, wks_parameters,
+        analysis_type_ids = await analysis_type_ids_fetcher.get_ids(  # noqa: WPS317
+            data_partition_id,
+            analysis_type,
+            content_schema_version,
+            (start_date, end_date),
+            wks_parameters,
         )
         analysis_type_ids.sort(key=lambda analysis_type_id: analysis_type_id[1])
 
@@ -259,7 +280,7 @@ class SamplesAnalysisSearchDataView(object):
             result_set = [samplesanalysis_ids for _, samplesanalysis_ids in analysis_type_ids]
 
         response = {
-            "result": result_set[offset:offset + page_limit],
+            "result": result_set[offset : offset + page_limit],
             "offset": offset,
             "page_limit": page_limit,
             "total_size": len(result_set),
@@ -288,9 +309,9 @@ class SamplesAnalysisSearchDataView(object):
                 dataset_service=dataset_service,
                 df_filter=df_filter,
             )
-        return df_payload_gen
+        return df_payload_gen  # noqa: ASYNC910
 
-    async def _get_search_data_for_blobs(  # noqa: WPS234
+    async def _get_search_data_for_blobs(  # noqa: WPS234, ASYNC900, ASYNC911
         self,
         analysis_type_ids: List[Tuple[str, str]],
         blob_storage_service: IBlobStorage,
@@ -304,7 +325,7 @@ class SamplesAnalysisSearchDataView(object):
 
         for n_batch in range((len(blob_ids) // self._batch_size) + 1):
             batch_offset = self._batch_size * n_batch
-            blob_ids_batch = blob_ids[batch_offset:batch_offset + self._batch_size]
+            blob_ids_batch = blob_ids[batch_offset : batch_offset + self._batch_size]
             df_triplets = await parquet_loader.read_parquet_files(
                 blob_ids=blob_ids_batch,
                 blob_storage_service=blob_storage_service,
@@ -312,7 +333,7 @@ class SamplesAnalysisSearchDataView(object):
             )
             yield df_triplets
 
-    async def _get_search_data_for_datasets(  # noqa: WPS234
+    async def _get_search_data_for_datasets(  # noqa: WPS234, ASYNC900, ASYNC911
         self,
         analysis_type_ids: List[Tuple[str, str]],
         dataset_service: dataset.DatasetService,
@@ -326,10 +347,11 @@ class SamplesAnalysisSearchDataView(object):
 
         for n_batch in range((len(dataset_ids) // self._batch_size) + 1):
             batch_offset = self._batch_size * n_batch
-            dataset_ids_batch = dataset_ids[batch_offset:batch_offset + self._batch_size]
+            dataset_ids_batch = dataset_ids[batch_offset : batch_offset + self._batch_size]
             signed_urls_for_datasets = await dataset_service.get_signed_urls(dataset_ids_batch)
             df_triplets = await parquet_loader.read_parquet_files(
-                signed_urls_for_datasets, df_filter_processor,
+                signed_urls_for_datasets,
+                df_filter_processor,
             )
             yield df_triplets
 
@@ -369,9 +391,13 @@ class SamplesAnalysisSearchDataView(object):
         if df_filter.valid_columns_aggregation:
             df_filter_processor = DFMultipleNestedFilterProcessor(df_filter=df_filter)
             paged_dfs, total_size, errors = await self._paginate_dfs(filtered_df_triplets, offset=0, select_all=True)
-            result_df = df_filter_processor.apply_filters_from_df(
-                pd.concat(paged_dfs, ignore_index=True),
-            ) if paged_dfs else pd.DataFrame()
+            result_df = (
+                df_filter_processor.apply_filters_from_df(
+                    pd.concat(paged_dfs, ignore_index=True),
+                )
+                if paged_dfs
+                else pd.DataFrame()
+            )
         else:
             paged_dfs, total_size, errors = await self._paginate_dfs(filtered_df_triplets, offset, page_limit)
             result_df = pd.concat(paged_dfs, ignore_index=True) if paged_dfs else pd.DataFrame()
@@ -381,7 +407,7 @@ class SamplesAnalysisSearchDataView(object):
 
         return result_df, total_size
 
-    async def _filter_dfs(
+    async def _filter_dfs(  # noqa: ASYNC900
         self,
         df_triplets: AsyncGenerator[DFPayload, None],
     ) -> AsyncGenerator[DFPayload, None]:
@@ -390,7 +416,7 @@ class SamplesAnalysisSearchDataView(object):
         async for batch_df_triplets in df_triplets:
             for dataset_id, df, error_msg in batch_df_triplets:
                 if not (df.empty and error_msg is None):
-                    yield dataset_id, df, error_msg
+                    yield dataset_id, df, error_msg  # noqa: ASYNC911
 
     def _is_non_empty_filter(self, df_filter: DFMultipleNestedFilterValidator) -> bool:
         is_column_filter = df_filter.raw_columns_aggregation or df_filter.raw_columns_filter

@@ -13,7 +13,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:GasChromatography_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:GasChromatography_Sample:",
       7,
       [

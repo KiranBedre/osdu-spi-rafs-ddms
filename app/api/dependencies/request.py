@@ -12,20 +12,23 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import re
-from typing import Final, List
+from typing import Final, List, Optional
 
-from fastapi import Header, HTTPException, Request
+from fastapi import Header, HTTPException, Query, Request, Response
 from loguru import logger
 from starlette import status
 
+from app.api.dependencies.schema_version import (
+    parse_version_from_accept_header,
+    set_deprecation_headers,
+    validate_version_format,
+)
 from app.exceptions import exceptions
 from app.middleware.correlation_id_middleware import set_correlation_id
 from app.resources.common_headers import ACCEPT, CONTENT_TYPE, CORRELATION_ID
 from app.resources.mime_types import SupportedMimeTypes
 
 ACCEPT_HEADER: Final = "accept"
-SUPPORTED_MIME_TYPES: Final[tuple] = ("application/json", "*/*")
 
 
 def require_data_partition_id(
@@ -68,14 +71,10 @@ def validate_content_type(request: Request, supported_types: List[str]) -> None:
         raise exceptions.InvalidHeaderException(detail=reason)
 
     if content_type not in supported_types:
-        supported_content_types = (
-            f"Please provide one of the next supported content types: {supported_types}"
-        )
-        reason = (
-            f"The provided content-type is not supported. {supported_content_types}"
-        )
+        supported_content_types = f"Please provide one of the next supported content types: {supported_types}"
+        reason = f"The provided content-type is not supported. {supported_content_types}"
         logger.debug(reason)
-        raise exceptions.InvalidHeaderException(detail=reason)
+        raise exceptions.UnsupportedMediaTypeException(detail=reason)
 
 
 def validate_bulkdata_content_type(request: Request) -> None:
@@ -109,54 +108,93 @@ def validate_json_content_type(request: Request) -> None:
     validate_content_type(request=request, supported_types=supported_types)
 
 
-async def get_content_schema_version(request: Request) -> str:
-    """Get content schema version from header.
+def get_content_schema_version(
+    request: Request,
+    response: Response,
+    content_schema_version: Optional[str] = Query(
+        None,
+        description="Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
+        example="1.0.0",
+    ),
+) -> str:
+    """Get content schema version from query parameter or Accept header.
+
+    Priority: content_schema_version > Accept header (deprecated).
 
     :param request: request
     :type request: Request
-    :raises exceptions.InvalidHeaderException: if schema version hasn't
-        been provided or schema format is invalid
+    :param response: response (used to set deprecation headers)
+    :type response: Response
+    :param content_schema_version: schema version query parameter
+    :type content_schema_version: Optional[str]
+    :raises exceptions.NotAcceptableException: if schema version hasn't
+        been provided or format is invalid
     :return: schema version
     :rtype: str
     """
+    if content_schema_version is not None:
+        validate_version_format(content_schema_version, "content_schema_version")
+        logger.debug(f"Schema version (from content_schema_version): {content_schema_version}")
+        return content_schema_version
+
     accept_header = request.headers.get(ACCEPT)
 
     if not accept_header:
-        error_title = "Missing 'Accept' header."
-        example_detail = "Example: --header 'Accept: application/json;version=1.0.0'"
-        error_details = f"The 'Accept' header is required to specify the schema version. {example_detail}"
-        reason = f"{error_title} {error_details}"
+        reason = (
+            "No schema version provided."
+            + " Use the content_schema_version query parameter (e.g. ?content_schema_version=1.0.0)."
+            + " The deprecated Accept header versioning is also still accepted (e.g. Accept: */*;version=1.0.0)."
+        )
         raise exceptions.NotAcceptableException(detail=reason)
 
-    parts = [part.strip() for part in accept_header.lower().split(";")]
-    mime_type = parts[0]
-
-    if mime_type not in SUPPORTED_MIME_TYPES:
-        error_title = "Not Acceptable."
-        error_details = " ".join([
-            f"The requested media type '{mime_type}' is not supported.",
-            f"Supported types are: {SUPPORTED_MIME_TYPES}.",
-        ])
-        reason = f"{error_title} {error_details}"
-        raise exceptions.NotAcceptableException(detail=reason)
-
-    accept_header = accept_header.lower().strip()
-    version_regex = r"version=(\d+\.\d+(?:\.\d+)?)"
-    version_match = re.search(version_regex, accept_header)
-
-    if not version_match:
-        error_title = "No schema version specified or invalid schema format."
-        example_detail = "Example: --header 'Accept: */*;version=1.0.0'"
-        error_details = f"Check if the schema version is specified in the 'Accept' header. {example_detail}"
-        reason = f"{error_title} {error_details}"
-        raise exceptions.NotAcceptableException(detail=reason)
-
-    content_schema_version = version_match.group(1)
-    logger.debug(f"Schema version: {content_schema_version}")
-    return content_schema_version
+    parsed = parse_version_from_accept_header(accept_header)
+    logger.debug(f"Schema version (from deprecated Accept header): {parsed}")
+    set_deprecation_headers(response)
+    return parsed
 
 
-async def get_correlation_id(request: Request):
+def get_response_mime_type(request: Request) -> SupportedMimeTypes:
+    """Determine response MIME type from the Accept header.
+
+    Iterates comma-separated media ranges in the Accept header, strips
+    quality and extension parameters, and returns the first supported
+    MIME type.  Defaults to JSON when the header is absent or ``*/*``.
+    Raises 406 if an explicit unsupported MIME type is requested.
+
+    :param request: request
+    :type request: Request
+    :return: resolved MIME type (JSON or PARQUET)
+    :rtype: SupportedMimeTypes
+    :raises exceptions.NotAcceptableException: if Accept specifies only
+        unsupported MIME types
+    """
+    accept_header = request.headers.get(ACCEPT, "")
+    if not accept_header or accept_header.strip() == "*/*":
+        logger.debug("Response MIME type defaulting to application/json")
+        return SupportedMimeTypes.JSON
+
+    for media_range in accept_header.split(","):
+        mime_part = media_range.split(";")[0].strip().lower()
+        if mime_part in {"*/*", ""}:
+            logger.debug("Response MIME type defaulting to application/json")
+            return SupportedMimeTypes.JSON
+        mime_type = SupportedMimeTypes.find_by_mime_type(mime_part)
+        if mime_type is not None:
+            logger.debug(f"Response MIME type from Accept header: {mime_type.mime_type}")
+            return mime_type
+
+    first_mime = accept_header.split(",")[0].split(";")[0].strip()
+    supported = "('application/json', 'application/x-parquet', '*/*')"
+    reason = (
+        "Not Acceptable."
+        + f" The requested media type '{first_mime}' is not supported."
+        + f" Supported types are: {supported}."
+    )
+    logger.debug(reason)
+    raise exceptions.NotAcceptableException(detail=reason)
+
+
+def get_correlation_id(request: Request):
     correlation_id = request.headers.get(CORRELATION_ID)
     if not correlation_id:
         reason = f"No {CORRELATION_ID} in headers"

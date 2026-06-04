@@ -66,7 +66,10 @@ class StorageServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             response = await client.put(StorageServicePaths.RECORDS, json=records, headers=self.headers)
             logger.debug(f"{self.name}: upsert records response: {response}")
@@ -83,7 +86,10 @@ class StorageServiceApiClient(object):
         """
         encoded_id = self._encode_record_id(record_id)
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             url = f"{StorageServicePaths.RECORDS}/{encoded_id}"
             response = await client.get(url, headers=self.headers)
@@ -103,7 +109,10 @@ class StorageServiceApiClient(object):
         """
         encoded_id = self._encode_record_id(record_id)
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             url = f"{StorageServicePaths.RECORDS}/{encoded_id}/{version}"
             response = await client.get(url, headers=self.headers)
@@ -121,7 +130,10 @@ class StorageServiceApiClient(object):
         """
         encoded_id = self._encode_record_id(record_id)
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             url = f"{StorageServicePaths.RECORDS}/versions/{encoded_id}"
             response = await client.get(url, headers=self.headers)
@@ -137,7 +149,10 @@ class StorageServiceApiClient(object):
         """
         encoded_id = self._encode_record_id(record_id)
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             url = f"{StorageServicePaths.RECORDS}/{encoded_id}:delete"
             response = await client.post(url, headers=self.headers)
@@ -154,7 +169,10 @@ class StorageServiceApiClient(object):
         """
         encoded_id = self._encode_record_id(record_id)
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             url = f"{StorageServicePaths.RECORDS}/{encoded_id}"
             response = await client.delete(url, headers=self.headers)
@@ -170,11 +188,16 @@ class StorageServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             query_records_request = {"records": records}
             response = await client.post(
-                f"{StorageServicePaths.QUERY}", json=query_records_request, headers=self.headers,
+                f"{StorageServicePaths.QUERY}",
+                json=query_records_request,
+                headers=self.headers,
             )
             logger.debug(f"{self.name}: query records response: {response}")
             response.raise_for_status()

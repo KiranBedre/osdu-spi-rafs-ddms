@@ -1,0 +1,71 @@
+{
+    "columns": [
+        "ReservoirSimulationRockPhysicsID",
+        "Meta",
+        "Compressibility",
+        "ThermalModelDefinition"
+    ],
+    "index": [
+        0
+    ],
+    "data": [
+        [
+            "{data_partition_id}:work-product-component--ReservoirSimulationRockPhysicsModel:{record_id}:",
+            [
+                {
+                    "kind": "Unit",
+                    "name": "bar",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:bar:",
+                    "propertyNames": [
+                        "Compressibility.ReferencePressure"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "1/bar",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:1%2Fbar:",
+                    "propertyNames": [
+                        "Compressibility.PoreVolumeCompressibilityAtReferencePressure"
+                    ]
+                }
+            ],
+            {
+                "Pressure": [
+                    100,
+                    200,
+                    300,
+                    400
+                ],
+                "PoreVolumeCompressibility": [
+                    0.00001,
+                    0.000015,
+                    0.00002,
+                    0.00003
+                ],
+                "TransmissibilityCompressibility": [
+                    0.00001,
+                    0.00002,
+                    0.000025,
+                    0.00003
+                ],
+                "Y-DirectionTransmissibilityCompressibility": [
+                    0.000009,
+                    0.000018,
+                    0.000026,
+                    0.000029
+                ],
+                "Z-DirectionTransmissibilityCompressibility": [
+                    0.000011,
+                    0.000021,
+                    0.000027,
+                    0.000031
+                ],
+                "ReferencePressure": 100
+            },
+            {
+                "ThermalConductivity": 2.5,
+                "HeatCapacity": 900
+            }
+        ]
+    ]
+}

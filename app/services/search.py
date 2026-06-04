@@ -67,10 +67,13 @@ class SearchService(ISearchService):
         :return: records
         :rtype: List[dict]
         """
-        return await self.search_client.query_with_cursor({
-            **{
-                "kind": kind,
-                "query": query,
-                "limit": limit,
-            }, **kwargs,
-        })
+        return await self.search_client.query_with_cursor(
+            {
+                **{
+                    "kind": kind,
+                    "query": query,
+                    "limit": limit,
+                },
+                **kwargs,
+            }
+        )

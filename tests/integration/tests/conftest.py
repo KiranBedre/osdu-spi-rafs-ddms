@@ -26,22 +26,33 @@ from tests.integration.config import (
     DataTypes,
     SamplesAnalysisTypes,
 )
+from tests.integration.helpers.parallel_execution import begin_cross_worker_session, end_cross_worker_session
 
 
 @pytest.fixture(scope="session", autouse=True)
-def create_legal_tag(api):
-    """Fixture to create a legal tag with a random id and delete it after a
-    test."""
-    legal_tag = api.legal.create_tag()
-    TEST_DATA_STORE["legal_tag"] = legal_tag
+def create_legal_tag(api, tmp_path_factory):
+    """Create a legal tag once across all xdist workers."""
+    shared_dir = tmp_path_factory.getbasetemp().parent
 
-    yield legal_tag
+    state = begin_cross_worker_session(
+        shared_dir,
+        name="create_legal_tag",
+        setup=lambda: {"legal_tag": api.legal.create_tag()},
+    )
+    TEST_DATA_STORE["legal_tag"] = state["legal_tag"]
 
-    api.legal.delete_tag(legal_tag)
+    yield state["legal_tag"]
+
+    end_cross_worker_session(
+        shared_dir,
+        name="create_legal_tag",
+        state=state,
+        teardown=lambda s: api.legal.delete_tag(s["legal_tag"]),
+    )
 
 
 @pytest.fixture(scope="session", autouse=True)
-def create_referenced_records(api, helper, tests_data):
+def create_referenced_records(api, helper, tests_data, tmp_path_factory, create_legal_tag):
     """Fixture to create referenced records and delete them after a test."""
     partition = CONFIG["DATA_PARTITION"]
 
@@ -59,6 +70,9 @@ def create_referenced_records(api, helper, tests_data):
         copy.deepcopy(tests_data(DataFiles.VLE_DATA_V2)),
         copy.deepcopy(tests_data(DataFiles.XRD_DATA_V1_1)),
         copy.deepcopy(tests_data(DataFiles.XRF_DATA_V1_1)),
+        copy.deepcopy(tests_data(DataFiles.SIMULATION_ROCK_PHYSICS)),
+        copy.deepcopy(tests_data(DataFiles.FLUID_MODEL)),
+        copy.deepcopy(tests_data(DataFiles.DEPTH_SHIFT)),
     ]
 
     storage_dependencies = set()
@@ -67,40 +81,31 @@ def create_referenced_records(api, helper, tests_data):
             del record["id"]
         storage_dependencies.update(helper.find_ids_from_string(json.dumps(record)))
 
-    osdu_generic_record = tests_data(DataFiles.OSDU_GENERIC_RECORD)
-    records_to_store = []
-    for reference_id in storage_dependencies:
-        if "reference-data" in reference_id:  # Don't override reference-data values
-            continue
-        # Purge existing record to avoid version conflicts with stale data
-        api.storage.purge_record(reference_id)
-        record_to_store = copy.deepcopy(osdu_generic_record)
-        record_to_store["id"] = reference_id
-        record_type = reference_id.split(":")[1]
-        record_to_store["kind"] = f"{partition}:wks:{record_type}:1.0.0"
-        records_to_store.append(record_to_store)
-
-    response = api.storage.create_or_update_records(records_to_store)
-    logger.debug(response.json())
-
     record_to_create = [
         (DataTypes.SAR, DataFiles.SAR, DataTemplates.ID_SAR.format(partition=partition)),
     ]
-    for data_type, data, id_template in record_to_create:
-        record_data = copy.deepcopy(tests_data(data))
-        record_data["id"] = f"{id_template}{helper.generate_random_record_id()}"
-        getattr(api, data_type).post_record([record_data])
-        TEST_DATA_STORE[f"{data_type}_record_id"] = record_data["id"]
+
+    shared_dir = tmp_path_factory.getbasetemp().parent
+
+    state = begin_cross_worker_session(
+        shared_dir,
+        name="create_referenced_records",
+        setup=lambda: helper.create_reference_records(
+            api, helper, tests_data, partition, storage_dependencies, record_to_create,
+        ),
+    )
+    TEST_DATA_STORE.update(state)
 
     yield
 
-    for data_type, _, _ in record_to_create:
-        api.storage.purge_record(TEST_DATA_STORE[f"{data_type}_record_id"])
-
-    for reference_id in storage_dependencies:
-        if "reference-data" in reference_id:  # Don't delete reference-data values
-            continue
-        api.storage.purge_record(reference_id)
+    end_cross_worker_session(
+        shared_dir,
+        name="create_referenced_records",
+        state=state,
+        teardown=lambda s: helper.purge_reference_records(
+            api, state, storage_dependencies, record_to_create,
+        ),
+    )
 
 
 @pytest.fixture(scope="package")
@@ -161,3 +166,9 @@ def delete_record(api, helper):
 
     for record_id in container["record_id"]:
         api.storage.purge_record(record_id)
+
+
+@pytest.fixture(scope="session")
+def data_partition_id():
+    """Return the data partition ID from the session configuration."""
+    return CONFIG["DATA_PARTITION"]

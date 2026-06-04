@@ -57,7 +57,7 @@ class RowsFilter(NamedTuple):
 
 
 class ColumnsFilter(NamedTuple):
-    colums: List[str]
+    columns: List[str]
 
 
 class ColumnsAggregation(NamedTuple):
@@ -107,6 +107,20 @@ class DataFrameFilterValidator(object):
     def valid_columns_aggregation(self) -> Optional[ColumnsAggregation]:
         return self._validate_columns_aggregation() if self.raw_columns_aggregation else None
 
+    def validate_combination(self) -> None:
+        """Validate that columns_aggregation and columns_filter are compatible.
+
+        :raises FilterValidationError: if aggregation column is excluded by columns_filter
+        """
+        cf = self.valid_columns_filter
+        ca = self.valid_columns_aggregation
+        if cf and ca and ca.column not in set(cf.columns):
+            raise FilterValidationError(
+                f"Filter conflict: 'columns_aggregation' column '{ca.column}' "
+                + "is not included in 'columns_filter'. "  # fix WPS326
+                + f"Either add '{ca.column}' to 'columns_filter' or remove 'columns_filter'.",  # fix WPS326
+            )
+
     def _validate_column_value(self, column: str, comp_value: str, field: Optional[str]) -> Any:
         value_type = self._get_type_from_schema(column, field)
 
@@ -132,10 +146,12 @@ class DataFrameFilterValidator(object):
                 casted_result = comp_value
             case _:
                 raise FilterValidationError(
-                    "".join([
-                        f"Filtering not supported on type '{value_type}' ",
-                        f"for '{column}{'.' + field if field else ''}'.",  # noqa: WPS529, WPS237, WPS336
-                    ]),
+                    "".join(
+                        [
+                            f"Filtering not supported on type '{value_type}' ",
+                            f"for '{column}{'.' + field if field else ''}'.",  # noqa: WPS529, WPS237, WPS336
+                        ],  # fix C812
+                    ),
                 )
         if error:
             raise FilterValidationError(error)
@@ -146,10 +162,12 @@ class DataFrameFilterValidator(object):
         if not op:
             allowed = list(Predicate.OPERATORS.keys())
             raise FilterValidationError(
-                "".join([
-                    f"Invalid comparison operator '{operator}'. ",
-                    f"Allowed: {allowed}",
-                ]),
+                "".join(
+                    [
+                        f"Invalid comparison operator '{operator}'. ",
+                        f"Allowed: {allowed}",
+                    ],  # fix C812
+                ),
             )
         return op
 
@@ -206,26 +224,32 @@ class DataFrameFilterValidator(object):
 
         if col_type == "array":
             raise FilterValidationError(
-                "".join([
-                    f"Column '{column_name}' is an array; dotted field access ",
-                    f"('{column_name}.{field_name}') is not supported.",
-                ]),
+                "".join(
+                    [
+                        f"Column '{column_name}' is an array; dotted field access ",
+                        f"('{column_name}.{field_name}') is not supported.",
+                    ],  # fix C812
+                ),
             )
         if col_type != "object":
             raise FilterValidationError(
-                "".join([
-                    f"Column '{column_name}' is of type '{col_type}', dotted syntax ",
-                    "requires an object column.",
-                ]),
+                "".join(
+                    [
+                        f"Column '{column_name}' is of type '{col_type}', dotted syntax ",
+                        "requires an object column.",
+                    ],  # fix C812
+                ),
             )
 
         properties = column_schema.get("properties", {})
         if field_name not in properties:
             raise FilterValidationError(
-                "".join([
-                    f"Field '{field_name}' does not exist in column '{column_name}'. ",
-                    f"Available fields: {list(properties.keys())}",  # noqa: WPS237
-                ]),
+                "".join(
+                    [
+                        f"Field '{field_name}' does not exist in column '{column_name}'. ",
+                        f"Available fields: {list(properties.keys())}",  # noqa: WPS237
+                    ],  # fix C812
+                ),
             )
 
         return column_name, field_name
@@ -265,7 +289,7 @@ class DataFrameFilterValidator(object):
             raise FilterValidationError(
                 f"Invalid columns: {invalid_columns}. Select one of {self.all_valid_columns}",
             )
-        return ColumnsFilter(colums=valid_columns)
+        return ColumnsFilter(columns=valid_columns)
 
     def _validate_columns_aggregation(self) -> ColumnsAggregation:
         parts = self.raw_columns_aggregation.split(Separator.COMMA)

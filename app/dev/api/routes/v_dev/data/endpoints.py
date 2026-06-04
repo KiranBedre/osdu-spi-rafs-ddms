@@ -23,6 +23,7 @@ from starlette import status
 
 from app.api.dependencies.request import (
     get_content_schema_version,
+    get_response_mime_type,
     validate_bulkdata_content_type,
 )
 from app.api.dependencies.services import (
@@ -207,7 +208,7 @@ class BaseDataViewDev(BaseDataView):
         settings: AppSettings = get_app_settings()
         analysis_family = get_family_type_from_url(request.url.path)
 
-        parquet_file = await self._get_validated_payload(request, model, storage_service)
+        parquet_file = await self._get_validated_payload(request, model, storage_service, record_id)
         blob_metadata = BlobMetadata(
             analysis_family=analysis_family,
             analysis_type=analysis_type,
@@ -274,7 +275,7 @@ class BaseDataViewDev(BaseDataView):
         :rtype: Response
         """
         record = await storage_service.get_record(record_id)
-        mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
+        mime_type = get_response_mime_type(request)
 
         ddms_datasets = record["data"].get("DDMSDatasets", [])
         dataset_id = find_dataset_id_from_type(ddms_datasets, analysis_type, content_schema_version)
@@ -314,7 +315,10 @@ class BaseDataViewDev(BaseDataView):
 
     def _prepare_get_data_route_dev(self) -> None:
         """Add api route for get_data."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        async def validate_record_id(  # noqa: ASYNC124
+            record_id: str = Path(default=..., pattern=self._id_regex_str),
+        ) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -322,7 +326,7 @@ class BaseDataViewDev(BaseDataView):
             :return: record id
             :rtype: str
             """
-            return record_id
+            return record_id  # noqa: ASYNC910
 
         self._router.add_api_route(
             path="/{record_id}/data/{analysis_type}",
@@ -332,13 +336,15 @@ class BaseDataViewDev(BaseDataView):
             description=self.description_template_get_data,
             dependencies=[
                 Depends(validate_record_id),
-                Depends(validate_bulkdata_content_type),
             ],
         )
 
     def _prepare_post_data_route_dev(self) -> None:
         """Add api route for post_data."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        async def validate_record_id(  # noqa: ASYNC124
+            record_id: str = Path(default=..., pattern=self._id_regex_str),
+        ) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -346,7 +352,7 @@ class BaseDataViewDev(BaseDataView):
             :return: record id
             :rtype: str
             """
-            return record_id
+            return record_id  # noqa: ASYNC910
 
         self._router.add_api_route(
             path="/{record_id}/data/{analysis_type}",

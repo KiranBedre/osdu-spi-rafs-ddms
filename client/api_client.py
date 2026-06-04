@@ -11,6 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+import json
 import uuid
 from os import linesep
 from time import sleep
@@ -22,6 +23,7 @@ from loguru import logger
 from starlette import status
 
 from app.resources.common_headers import (
+    ACCEPT,
     AUTHORIZATION,
     CACHE_CONTROL,
     CONTENT_TYPE,
@@ -73,20 +75,30 @@ class APIClient(object):
             AUTHORIZATION: f"Bearer {self.token}",
             CONTENT_TYPE: "application/json",
             DATA_PARTITION_ID: self.data_partition,
+            ACCEPT: "application/json",
             CACHE_CONTROL: "no-store",
             CORRELATION_ID: f"rafs-ddms-autotest-{uuid.uuid4()}",
         }
 
         extra_headers = kwargs.pop("headers", None)
         if extra_headers:
-            # Remove headers set to None, merge others
-            for header_name, header_value in extra_headers.items():
-                if header_value is not None:
-                    headers[header_name] = header_value
-                else:
-                    headers.pop(header_name, None)
+            self._merge_headers(headers, extra_headers, kwargs)
 
         return headers
+
+    @staticmethod
+    def _merge_headers(headers, extra_headers, kwargs):
+        for header_name, header_value in extra_headers.items():
+            if header_value is None:
+                APIClient._remove_header(headers, header_name, kwargs)
+            else:
+                headers[header_name] = header_value
+
+    @staticmethod
+    def _remove_header(headers, header_name, kwargs):
+        headers.pop(header_name, None)
+        if header_name == CONTENT_TYPE and "json" in kwargs:
+            kwargs["data"] = json.dumps(kwargs.pop("json"))
 
     @staticmethod
     def _log_response(method, path, response):

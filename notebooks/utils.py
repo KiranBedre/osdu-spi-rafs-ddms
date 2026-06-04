@@ -16,7 +16,7 @@ def print_json(json_data: dict, length=None, title=None):
     if title:
         print(title.upper())
     print(json_dumped[:length])
-    if (length and len(json_dumped) > length):
+    if length and len(json_dumped) > length:
         print("...")
     print("*" * SEPARATOR_WIDTH)
 

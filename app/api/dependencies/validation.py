@@ -83,7 +83,7 @@ OrientQuery = Query(
 )
 
 
-def get_orient(orient: OrientType = OrientQuery) -> str:
+def get_orient(orient: OrientType = OrientQuery) -> str:  # noqa: WPS463
     """Get orient query parameter (validated by Literal type).
 
     :param orient: the orient query parameter value ('split' or 'records')
@@ -152,7 +152,7 @@ def validate_ids_from_records(
         )
 
 
-async def validate_referential_integrity(
+async def validate_referential_integrity(  # noqa: ASYNC910
     records: List[dict],
     fields: List[str],
     storage_service: StorageService,
@@ -220,24 +220,11 @@ async def validate_osdu_wks_records(
     schema_service: SchemaService,
     valid_kinds: List[str],
 ) -> List[dict]:
-    """Validate OSDU records using Well Known Schema.
-
-    :param records_list: list of records
-    :type records_list: List[OsduStorageRecord]
-    :param schema_service: schema service instance
-    :type schema_service: SchemaService
-    :param valid_kinds: list of valid kinds
-    :type valid_kinds: List[str]
-    :raises exc: when schema fetch fails
-    :raises RecordValidationException: when jsonschema validation fails
-    :return: list of validated records
-    :rtype: List[dict]
-    """
     tasks = []
     records = []
     skipped = []
     try:
-        async with asyncio.TaskGroup() as group:
+        async with asyncio.TaskGroup() as group:  # pylint: disable=no-member
             for index, record in enumerate(records_list):
                 record_dict = record.dict(exclude_none=True)
                 validate_kind(record_dict.get("kind", ""), valid_kinds=valid_kinds)
@@ -251,17 +238,18 @@ async def validate_osdu_wks_records(
                         ),
                     ),
                 )
-    except ExceptionGroup as eg:
+    except ExceptionGroup as eg:  # pylint: disable=undefined-variable
         for exc in eg.exceptions:  # noqa: WPS328 pylint: disable=not-an-iterable
-            raise exc
+            raise exc  # noqa: ASYNC123
 
     skipped = [task.result() for task in tasks if task.result()]
+
     if skipped:
         logger.error(f"Validation failed. Skipped records {skipped}")
         raise RecordValidationException(detail=skipped)
 
     logger.info("Records successfully validated.")
-    return records
+    return records  # noqa: ASYNC910
 
 
 async def validate_samples_analyses_report_v2_payload(
@@ -410,7 +398,7 @@ def raise_model_not_found(
     raise NotFoundException(detail=message)
 
 
-async def get_data_model(
+def get_data_model(
     analysis_type: str,
     request: Request,
     content_schema_version: str = Depends(get_content_schema_version),
@@ -453,10 +441,10 @@ async def get_data_model(
         available_versions = set(version_models.keys())
         raise_model_not_found(analysis_type, content_schema_version, available_versions)
 
-    return model
+    return model  # noqa: ASYNC910
 
 
-async def get_data_model_for_content_type(
+def get_data_model_for_content_type(
     content_type: str,
     request: Request,
     content_schema_version: str = Depends(get_content_schema_version),
@@ -470,10 +458,10 @@ async def get_data_model_for_content_type(
     :param content_schema_version: version obtained from header,
         defaults to Depends(get_content_schema_version)
     """
-    return await get_data_model(content_type, request, content_schema_version)
+    return get_data_model(content_type, request, content_schema_version)
 
 
-async def get_data_model_inferred_from_domain(
+def get_data_model_inferred_from_domain(
     request: Request,
     content_schema_version: str = Depends(get_content_schema_version),
 ) -> Model:
@@ -485,10 +473,10 @@ async def get_data_model_inferred_from_domain(
         defaults to Depends(get_content_schema_version)
     """
     domain = get_domain_from_url(request.url.path)
-    return await get_data_model(domain, request, content_schema_version)
+    return get_data_model(domain, request, content_schema_version)
 
 
-async def validate_filters(
+def validate_filters(
     model: BaseModel = Depends(get_data_model),
     columns_filter: Optional[str] = ColumnsFilter,
     rows_filter: Optional[str] = RowsFilter,
@@ -522,15 +510,16 @@ async def validate_filters(
                 sql_filter.valid_rows_filter,
             ],
         )
+        sql_filter.validate_combination()
     except FilterValidationError as exc:
         logger.debug(f"Query parameters are invalid: {exc}")
         raise UnprocessableContentException(detail=str(exc))
 
     logger.debug("Query parameters are valid.")
-    return sql_filter
+    return sql_filter  # noqa: ASYNC910
 
 
-async def validate_filters_for_content_type(
+def validate_filters_for_content_type(
     model: BaseModel = Depends(get_data_model_for_content_type),
     columns_filter: Optional[str] = ColumnsFilter,
     rows_filter: Optional[str] = RowsFilter,
@@ -550,10 +539,10 @@ async def validate_filters_for_content_type(
     :return: filter object with validations
     :rtype: DataFrameFilterValidator
     """
-    return await validate_filters(model, columns_filter, rows_filter, columns_aggregation)
+    return validate_filters(model, columns_filter, rows_filter, columns_aggregation)
 
 
-async def validate_filters_for_domain_inferred_model(
+def validate_filters_for_domain_inferred_model(
     model: BaseModel = Depends(get_data_model_inferred_from_domain),
     columns_filter: Optional[str] = ColumnsFilter,
     rows_filter: Optional[str] = RowsFilter,
@@ -573,7 +562,7 @@ async def validate_filters_for_domain_inferred_model(
     :return: filter object with validations
     :rtype: DataFrameFilterValidator
     """
-    return await validate_filters(model, columns_filter, rows_filter, columns_aggregation)
+    return validate_filters(model, columns_filter, rows_filter, columns_aggregation)
 
 
 def _validate_records_format(parsed: list) -> str:
@@ -634,7 +623,7 @@ async def get_validated_bulk_data_json(request: Request) -> Tuple[str, str]:
     return bulk_data.json(), "split"
 
 
-async def get_search_data_pagination_parameters(
+def get_search_data_pagination_parameters(
     page_limit: int = Query(
         default=100,
         description="Maximum number of results to return per page",
@@ -677,10 +666,10 @@ async def get_search_data_pagination_parameters(
                 status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
-    return offset, page_limit, start_date_obj, end_date_obj
+    return offset, page_limit, start_date_obj, end_date_obj  # noqa: ASYNC910
 
 
-async def get_search_pagination_parameters(
+def get_search_pagination_parameters(
     page_limit: int = Query(
         default=1000,
         description="Maximum number of results to return per page",
@@ -715,4 +704,4 @@ async def get_search_pagination_parameters(
                 status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
-    return offset, page_limit, indexed_start_date, indexed_end_date
+    return offset, page_limit, indexed_start_date, indexed_end_date  # noqa: ASYNC910

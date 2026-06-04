@@ -29,7 +29,8 @@ def build_storage_service_exception_detail(method: str = ""):
     """Build the exception detail using the provided failed method."""
     return (
         f"Failed to {method} record using the Storage service API."
-        if method else STORAGE_SERVICE_GENERIC_EXCEPTION_DETAIL
+        if method
+        else STORAGE_SERVICE_GENERIC_EXCEPTION_DETAIL
     )
 
 

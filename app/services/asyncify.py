@@ -32,6 +32,7 @@ def run_in_threadpool(method: TFunc) -> TFunc:
     :return: The decorated method
     :rtype: TFunc
     """
+
     @wraps(method)
     def wrapper(
         self: Any,
@@ -47,4 +48,5 @@ def run_in_threadpool(method: TFunc) -> TFunc:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             pfunc = partial(method, self, *args, **kwargs)
             return loop.run_in_executor(executor, pfunc)
+
     return wrapper

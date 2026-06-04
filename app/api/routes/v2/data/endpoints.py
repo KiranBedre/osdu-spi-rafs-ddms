@@ -52,6 +52,7 @@ from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.core.settings.app import AppSettings
+from app.models.schemas.errors import BadRequestResponse, UnsupportedMediaTypeResponse
 from app.providers.dependencies.blob_storage import (
     Blob,
     BlobMetadata,
@@ -76,15 +77,15 @@ class BaseDataViewV2(BaseDataView):
             "Upload the bulk data for a given `{analysis_type}` object by record id.<br>\
             It creates a new version of the record. <br>\
             The previous meta-data with bulk data is available by their `versions`. <br> <br>\
-            Use the `Content-Type` request header to specify payload and response formats \
+            The `Content-Type` request header is **required** to specify payload format \
                 (`application/json` and `application/parquet` are supported).<br>\
-            Use the `Accept` request header to specify content schema version \
-                (example header `Accept: */*;version=1.0.0` is supported).",
+            Use the `content_schema_version` query parameter to specify content schema version \
+                (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.",
         )
         self.description_template_get_data = APIDescriptionHelper.append_joined_roles(
             "Get the (`latest version`) bulk data for a given `{analysis_type}` object by record id. <br><br>\
-            Use the `Accept` request header to specify content schema version \
-                (example header `Accept: */*;version=1.0.0` is supported).<br><br>\
+            Use the `content_schema_version` query parameter to specify content schema version \
+                (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>\
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
                 query parameters can be used to manage data in response.<br><br>\
             Use the `orient` query parameter to select the JSON output format (`split` or `records`).",
@@ -216,7 +217,7 @@ class BaseDataViewV2(BaseDataView):
         settings: AppSettings = get_app_settings()
         analysis_family = get_family_type_from_url(request.url.path)
 
-        parquet_file = await self._get_validated_payload(request, model, storage_service)
+        parquet_file = await self._get_validated_payload(request, model, storage_service, record_id)
         blob_metadata = BlobMetadata(
             analysis_family=analysis_family,
             analysis_type=analysis_type,
@@ -256,9 +257,7 @@ class BaseDataViewV2(BaseDataView):
     def _prepare_get_data_route_v2(self) -> None:
         """Add api route for get_data."""
 
-        async def validate_record_id(  # noqa: ASYNC124
-            record_id: str = Path(default=..., pattern=self._id_regex_str),
-        ) -> str:
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -266,11 +265,9 @@ class BaseDataViewV2(BaseDataView):
             :return: record id
             :rtype: str
             """
-            return record_id  # noqa: ASYNC910
+            return record_id
 
-        async def validate_content_id(  # noqa: ASYNC124
-            content_id: str = Path(default=..., pattern=self._content_id_regex),
-        ) -> str:
+        def validate_content_id(content_id: str = Path(default=..., pattern=self._content_id_regex)) -> str:
             """Validate if content identifier matches regex.
 
             :param content_id: content id
@@ -278,7 +275,7 @@ class BaseDataViewV2(BaseDataView):
             :return: content id
             :rtype: str
             """
-            return content_id  # noqa: ASYNC910
+            return content_id
 
         self._router.add_api_route(
             path="/{record_id}/data/{analysis_type}/{content_id}",
@@ -289,16 +286,13 @@ class BaseDataViewV2(BaseDataView):
             dependencies=[
                 Depends(validate_record_id),
                 Depends(validate_content_id),
-                Depends(validate_bulkdata_content_type),
             ],
         )
 
     def _prepare_post_data_route_v2(self) -> None:
         """Add api route for post_data."""
 
-        async def validate_record_id(  # noqa: ASYNC124
-            record_id: str = Path(default=..., pattern=self._id_regex_str),
-        ) -> str:
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -306,7 +300,7 @@ class BaseDataViewV2(BaseDataView):
             :return: record id
             :rtype: str
             """
-            return record_id  # noqa: ASYNC910
+            return record_id
 
         self._router.add_api_route(
             path="/{record_id}/data/{analysis_type}",
@@ -318,6 +312,10 @@ class BaseDataViewV2(BaseDataView):
                 Depends(validate_record_id),
                 Depends(validate_bulkdata_content_type),
             ],
+            responses={
+                status.HTTP_400_BAD_REQUEST: {"model": BadRequestResponse},
+                status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {"model": UnsupportedMediaTypeResponse},
+            },
         )
 
 
@@ -327,9 +325,12 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         router: APIRouter,
         id_regex_str: str,
         single_content_type: Optional[str] = None,
+        record_id_column: Optional[str] = None,
         **kwargs,
     ) -> None:
         self._single_content_type = single_content_type
+        if record_id_column is not None:
+            self._record_id_column = record_id_column
         super().__init__(router, id_regex_str, **kwargs)
 
     @cache(expire=CACHE_DEFAULT_TTL, coder=ResponseCoder, key_builder=key_builder_using_token)
@@ -590,9 +591,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
     def _prepare_get_data_route(self, api_function: Callable, path: str) -> None:
         """Add api route for get_data."""
 
-        async def validate_record_id(  # noqa: ASYNC124
-            record_id: str = Path(default=..., pattern=self._id_regex_str),
-        ) -> str:
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -600,11 +599,9 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             :return: record id
             :rtype: str
             """
-            return record_id  # noqa: ASYNC910
+            return record_id
 
-        async def validate_content_id(  # noqa: ASYNC124
-            content_id: str = Path(default=..., pattern=self._content_id_regex),
-        ) -> str:
+        def validate_content_id(content_id: str = Path(default=..., pattern=self._content_id_regex)) -> str:
             """Validate if content identifier matches regex.
 
             :param content_id: content id
@@ -612,7 +609,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             :return: content id
             :rtype: str
             """
-            return content_id  # noqa: ASYNC910
+            return content_id
 
         self._router.add_api_route(
             path=path,
@@ -623,16 +620,13 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             dependencies=[
                 Depends(validate_record_id),
                 Depends(validate_content_id),
-                Depends(validate_bulkdata_content_type),
             ],
         )
 
     def _prepare_post_data_route(self, api_function: Callable, path: str) -> None:
         """Add api route for post_data."""
 
-        async def validate_record_id(  # noqa: ASYNC124
-            record_id: str = Path(default=..., pattern=self._id_regex_str),
-        ) -> str:
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -640,7 +634,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             :return: record id
             :rtype: str
             """
-            return record_id  # noqa: ASYNC910
+            return record_id
 
         self._router.add_api_route(
             path=path,
@@ -652,4 +646,8 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
                 Depends(validate_record_id),
                 Depends(validate_bulkdata_content_type),
             ],
+            responses={
+                status.HTTP_400_BAD_REQUEST: {"model": BadRequestResponse},
+                status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {"model": UnsupportedMediaTypeResponse},
+            },
         )

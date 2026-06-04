@@ -25,7 +25,7 @@ def test_capillary_pressure_negative_getting_dataset_in_different_schema_version
 ):
     """Check getting dataset in different schema version than stored."""
 
-    response = api.sample_analysis.get_measurements(
+    response = api.sample_analysis.get_data(
         record_id=record_id,
         dataset_id=dataset_id_v1_1,
         analysis_type=SamplesAnalysisTypes.CAPILLARY_PRESSURE,

@@ -1,8 +1,7 @@
-from collections import defaultdict
 from typing import Optional
 
-from client.api.core.api_source import APIResource
-from tests.integration.config import ACCEPT_HEADERS, SchemaVersions
+from client.api.core.schema_versioned_resource import SchemaVersionedAPIResource
+from tests.integration.config import SchemaVersions
 
 
 class SaturationFunctionSetPaths(object):
@@ -19,7 +18,8 @@ class SaturationFunctionSetPaths(object):
     SEARCH_DATA = "/saturationfunctionset/search/data"
 
 
-class SaturationFunctionSet(APIResource):
+class SaturationFunctionSet(SchemaVersionedAPIResource):
+
     def __init__(self, host: str, url_prefix: str, data_partition: str, token: str):
         super().__init__(
             host,
@@ -34,11 +34,11 @@ class SaturationFunctionSet(APIResource):
         self,
         record_id: str,
         body: dict,
-        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SchemaVersions.DEFAULT),
+        schema_version: Optional[str] = SchemaVersions.DEFAULT,
         raw: bool = False,
         **kwargs,
     ) -> dict:
-        self._apply_schema_version_header(kwargs, schema_version_header)
+        kwargs = self._merge_params(kwargs, schema_version)
         response = self.post(
             path=SaturationFunctionSetPaths.POST_DATA.format(record_id=record_id),
             json=body,
@@ -50,11 +50,11 @@ class SaturationFunctionSet(APIResource):
         self,
         record_id: str,
         dataset_id: str,
-        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SchemaVersions.DEFAULT),
+        schema_version: Optional[str] = SchemaVersions.DEFAULT,
         raw: bool = False,
         **kwargs,
     ):
-        self._apply_schema_version_header(kwargs, schema_version_header)
+        kwargs = self._merge_params(kwargs, schema_version)
         response = self.get(
             path=SaturationFunctionSetPaths.GET_DATA.format(
                 record_id=record_id,
@@ -66,37 +66,30 @@ class SaturationFunctionSet(APIResource):
 
     def get_schema(
         self,
-        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SchemaVersions.DEFAULT),
+        schema_version: Optional[str] = SchemaVersions.DEFAULT,
         raw: bool = False,
         **kwargs,
     ) -> dict:
-        self._apply_schema_version_header(kwargs, schema_version_header)
+        kwargs = self._merge_params(kwargs, schema_version)
         response = self.get(path=SaturationFunctionSetPaths.GET_SCHEMA, **kwargs)
         return response if raw else response.json()
 
     def search_records(
         self,
-        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SchemaVersions.DEFAULT),
+        schema_version: Optional[str] = SchemaVersions.DEFAULT,
         raw: bool = False,
         **kwargs,
     ) -> dict:
-        self._apply_schema_version_header(kwargs, schema_version_header)
+        kwargs = self._merge_params(kwargs, schema_version)
         response = self.get(path=SaturationFunctionSetPaths.SEARCH, **kwargs)
         return response if raw else response.json()
 
     def search_data(
         self,
-        schema_version_header: Optional[str] = ACCEPT_HEADERS.format(version=SchemaVersions.DEFAULT),
+        schema_version: Optional[str] = SchemaVersions.DEFAULT,
         raw: bool = False,
         **kwargs,
     ) -> dict:
-        self._apply_schema_version_header(kwargs, schema_version_header)
+        kwargs = self._merge_params(kwargs, schema_version)
         response = self.get(path=SaturationFunctionSetPaths.SEARCH_DATA, **kwargs)
         return response if raw else response.json()
-
-    def _apply_schema_version_header(self, kwargs, header_value: Optional[str]):
-        if not header_value:
-            return
-        headers = defaultdict(dict, kwargs.get("headers", {}))
-        headers.update({"Accept": header_value})
-        kwargs["headers"] = headers

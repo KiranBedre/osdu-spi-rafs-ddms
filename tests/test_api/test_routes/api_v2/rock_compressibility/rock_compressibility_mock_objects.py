@@ -28,21 +28,24 @@ TEST_DDMS_URN = f"urn://rafs-v2/rockcompressibilitydata/partition:work-product-c
 TEST_SCHEMA_VERSION = "1.0.0"
 TEST_DDMS_URN_WITH_VERSION = f"{TEST_DDMS_URN}/{TEST_SCHEMA_VERSION}"
 RECORD_DATA = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN],
         },
     },
 }
 RECORD_DATA_WITH_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION],
         },
     },
 }
 RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True), **{
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
         "data": {
             "DDMSDatasets": [f"{TEST_DDMS_URN}/2.0.0"],
         },
@@ -83,7 +86,7 @@ TEST_FILTERED_DATA = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:RockCompressibilityDevTest:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             [
                 {
                     "StepNumber": 1,
@@ -121,7 +124,7 @@ INCORRECT_SCHEMA_TEST_DATA = {
     "index": [0],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:1:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--:1:",  # Incorrect value
         ],
     ],
@@ -129,5 +132,7 @@ INCORRECT_SCHEMA_TEST_DATA = {
 
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
 INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()
-EXPECTED_ERROR_REASON = f"Data error: {len(INCORRECT_DATAFRAME_TEST_DATA['columns'])} columns passed, " \
+EXPECTED_ERROR_REASON = (
+    f"Data error: {len(INCORRECT_DATAFRAME_TEST_DATA['columns'])} columns passed, "
     f"passed data had {len(INCORRECT_DATAFRAME_TEST_DATA['data'][0])} columns"
+)

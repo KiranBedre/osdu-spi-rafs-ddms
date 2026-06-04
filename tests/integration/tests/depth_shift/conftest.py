@@ -1,0 +1,108 @@
+#  Copyright 2023 ExxonMobil Technology and Engineering Company
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+import copy
+import uuid
+
+import pytest
+
+from tests.integration.config import (
+    CONFIG,
+    DataFiles,
+    DataTemplates,
+    DataTypes,
+)
+
+
+@pytest.fixture(scope="module")
+def depth_shift_create_record(create_record):
+    """Create a Depth Shift record."""
+    record_data, _ = create_record(
+        DataTypes.DEPTH_SHIFT,
+        DataFiles.DEPTH_SHIFT,
+        DataTemplates.ID_DEPTH_SHIFT.format(partition=CONFIG["DATA_PARTITION"]),
+    )
+    yield record_data
+    # Cleanup is handled by create_record fixture
+
+
+@pytest.fixture(scope="function")
+def depth_shift_create_fresh_record(create_record):
+    """Create a fresh Depth Shift record per test."""
+    record_data, _ = create_record(
+        DataTypes.DEPTH_SHIFT,
+        DataFiles.DEPTH_SHIFT,
+        DataTemplates.ID_DEPTH_SHIFT.format(partition=CONFIG["DATA_PARTITION"]),
+    )
+    yield record_data
+    # Cleanup is handled by create_record fixture
+
+
+@pytest.fixture(scope="module")
+def record_id(depth_shift_create_record):
+    """Return Depth Shift record_id."""
+    return depth_shift_create_record["id"]
+
+
+@pytest.fixture(scope="function")
+def fresh_record_id(depth_shift_create_fresh_record):
+    """Return SaturationFunctionSet record_id."""
+    return depth_shift_create_fresh_record["id"]
+
+
+@pytest.fixture(scope="module")
+def version(api, record_id):
+    """Return Depth Shift record's version."""
+    response = api.depth_shift.get_record_versions(record_id)
+    versions = response.get("versions", [])
+    return versions[-1]
+
+
+@pytest.fixture(scope="module")
+def dataset_id(api, helper, record_id, tests_data):
+    """Create a fresh dataset and return dataset_id."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    data_payload["data"][0][0] = f"{record_id}:"
+    post_response = api.depth_shift.post_data(record_id, data_payload)
+    return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
+
+
+@pytest.fixture(scope="function")
+def fresh_dataset_id(api, helper, fresh_record_id, tests_data):
+    """Create a fresh dataset and return dataset_id."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    data_payload["data"][0][0] = f"{fresh_record_id}:"
+    post_response = api.depth_shift.post_data(record_id=fresh_record_id, body=data_payload)
+    return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
+
+
+@pytest.fixture(scope="function")
+def search_available(api, helper, record_id):
+    """Verify if record is available in search results - workaround for issue #729."""
+    params = {"rows_filter": f"DepthShiftWPCID,eq,{record_id}:"}
+
+    # Wait until search returns the record_id in its result set
+    helper.wait_for_search_record(
+        lambda: api.depth_shift.search_records(params=params),
+        record_id,
+        max_attempts=5,
+    )
+
+
+@pytest.fixture(scope="module")
+def spec_char_record_id(data_partition_id):
+    """Generate a unique record ID that includes the required special characters."""
+    base_id = f"{data_partition_id}:work-product-component--DepthShift:7%2F12-A-7%20D_"
+    unique_suffix = str(uuid.uuid4().int)[:8]
+    return f"{base_id}{unique_suffix}"

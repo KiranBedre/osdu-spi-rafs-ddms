@@ -52,9 +52,13 @@ class PandasDFQueryNested(PandasDFQueryBase):
             return field
 
         if oper:
-            cond = df_col.apply(
-                lambda row: oper(get_field(row, prop_path), comp_val),
-            ) if prop_path else oper(df_col, comp_val)
+            cond = (
+                df_col.apply(
+                    lambda row: oper(get_field(row, prop_path), comp_val),
+                )
+                if prop_path
+                else oper(df_col, comp_val)
+            )
             df_query = PandasDFQueryNested(self.df[cond])
 
         return df_query

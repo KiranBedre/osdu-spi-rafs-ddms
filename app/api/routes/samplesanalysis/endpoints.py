@@ -49,7 +49,8 @@ class SamplesAnalysisRecordView(BaseStorageRecordView):
         self,
         request: Request,
         request_records: Annotated[
-            List[dict], Body(
+            List[dict],
+            Body(
                 openapi_examples={
                     "example": {
                         "value": load_data_example("samples_analysis.json"),
@@ -63,6 +64,7 @@ class SamplesAnalysisRecordView(BaseStorageRecordView):
 
     def _prepare_post_records_route(self) -> None:
         """Add api route for post_records without dependencies."""
+
         async def validate_request_records(
             request_records: List[OsduStorageRecord],
             storage_service: storage.StorageService = Depends(get_async_storage_service),

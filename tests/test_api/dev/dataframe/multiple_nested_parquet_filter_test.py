@@ -47,13 +47,15 @@ def sample_schema(sample_dataframe):
 
 def test_columns_filter(sample_dataframe, sample_schema):
     df_filter = DFMultipleNestedFilterValidator(
-        sample_schema, raw_columns_filter='["TextColumn", "FloatColumn"]',
+        sample_schema,
+        raw_columns_filter='["TextColumn", "FloatColumn"]',
     )
 
     query_df = PandasDFQueryNested(sample_dataframe)
     columns_filter_processor = ColumnsFilterProcessor()
     result_df = columns_filter_processor.apply_columns_filter(
-        query_df, df_filter.valid_columns_filter,
+        query_df,
+        df_filter.valid_columns_filter,
     ).df
 
     expected_columns = ["TextColumn", "FloatColumn"]
@@ -66,14 +68,16 @@ def test_columns_filter_all(sample_dataframe, sample_schema):
     query_df = PandasDFQueryNested(sample_dataframe)
     columns_filter_processor = ColumnsFilterProcessor()
     result_df = columns_filter_processor.apply_columns_filter(
-        query_df, df_filter.valid_columns_filter,
+        query_df,
+        df_filter.valid_columns_filter,
     ).df
 
     assert list(result_df.columns) == list(sample_dataframe.columns)
 
 
 @pytest.mark.parametrize(
-    "raw_rows_filter", [
+    "raw_rows_filter",
+    [
         ('{"TextColumn": {"$lt": "Row3"}}'),
         ('{"IntColumn": {"$lte": 30}}'),
         ('{"FloatColumn": {"$lt": 2.1}}'),
@@ -83,13 +87,15 @@ def test_columns_filter_all(sample_dataframe, sample_schema):
 )
 def test_rows_filter_no_array(sample_dataframe, sample_schema, raw_rows_filter):
     df_filter = DFMultipleNestedFilterValidator(
-        schema=sample_schema, raw_rows_filter=raw_rows_filter,
+        schema=sample_schema,
+        raw_rows_filter=raw_rows_filter,
     )
 
     query_df = PandasDFQueryNested(sample_dataframe)
     rows_filter_processor = RowsFilterProcessor()
     result_df = rows_filter_processor.apply_rows_filter(
-        query_df, df_filter.valid_rows_filter,
+        query_df,
+        df_filter.valid_rows_filter,
     ).df
 
     expected_df = sample_dataframe.iloc[[0, 1]]
@@ -97,7 +103,8 @@ def test_rows_filter_no_array(sample_dataframe, sample_schema, raw_rows_filter):
 
 
 @pytest.mark.parametrize(
-    "raw_rows_filter", [
+    "raw_rows_filter",
+    [
         ('{"ObjectColumnNestedArray.ArrayProperty.number": {"$lte": 8.0}}'),
         ('{"ArrayColumn.number": {"$lt": 9.0}}'),
         ('{"ArrayColumnNestedArray.ArrayProperty.number": {"$lte": 8.0}}'),
@@ -105,13 +112,15 @@ def test_rows_filter_no_array(sample_dataframe, sample_schema, raw_rows_filter):
 )
 def test_rows_filter_array(sample_dataframe, sample_schema, raw_rows_filter):
     df_filter = DFMultipleNestedFilterValidator(
-        schema=sample_schema, raw_rows_filter=raw_rows_filter,
+        schema=sample_schema,
+        raw_rows_filter=raw_rows_filter,
     )
 
     query_df = PandasDFQueryNested(sample_dataframe)
     rows_filter_processor = RowsFilterProcessor()
     result_df = rows_filter_processor.apply_rows_filter(
-        query_df, df_filter.valid_rows_filter,
+        query_df,
+        df_filter.valid_rows_filter,
     ).df
 
     expected_df = sample_dataframe.iloc[[0, 1]]
@@ -119,7 +128,8 @@ def test_rows_filter_array(sample_dataframe, sample_schema, raw_rows_filter):
 
 
 @pytest.mark.parametrize(
-    "raw_columns_aggregation,result", [
+    "raw_columns_aggregation,result",
+    [
         (
             '["ObjectColumnNestedArray.ArrayProperty.number", "mean"]',
             8.5,
@@ -148,7 +158,8 @@ def test_colums_aggregation(sample_dataframe, sample_schema, raw_columns_aggrega
 
     query_df = PandasDFQueryNested(sample_dataframe)
     aggregated_df = columns_aggregation_processor.apply_columns_aggregation_filter(
-        query_df, df_filter.valid_columns_aggregation,
+        query_df,
+        df_filter.valid_columns_aggregation,
     ).df
 
     column_name = df_filter.valid_columns_aggregation.column.replace("[]", "")
@@ -157,7 +168,8 @@ def test_colums_aggregation(sample_dataframe, sample_schema, raw_columns_aggrega
 
 
 @pytest.mark.parametrize(
-    "raw_rows_filter,raw_columns_aggregation,result", [
+    "raw_rows_filter,raw_columns_aggregation,result",
+    [
         (
             '{"FloatColumn": {"$lte": 2.0}}',
             '["ObjectColumnNestedArray.ArrayProperty.number", "mean"]',
@@ -201,7 +213,8 @@ def test_colums_aggregation_after_row_filter(
 
 
 @pytest.mark.parametrize(
-    "raw_rows_multiple_filter,expected_df", [
+    "raw_rows_multiple_filter,expected_df",
+    [
         (
             """
             {
@@ -316,7 +329,8 @@ def test_rows_multiple_filter(sample_dataframe, sample_schema, raw_rows_multiple
     query_df = PandasDFQueryNested(sample_dataframe)
     rows_multiple_filter_processor = RowsMultipleFilterProcessor()
     result_df = rows_multiple_filter_processor.apply_rows_multiple_filter(
-        query_df, df_filter.valid_rows_multiple_filter,
+        query_df,
+        df_filter.valid_rows_multiple_filter,
     ).df
 
     assert result_df.equals(expected_df)

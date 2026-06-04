@@ -14,7 +14,7 @@
 
 import io
 import uuid
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 import pyarrow
@@ -27,6 +27,7 @@ from starlette import status
 
 from app.api.dependencies.request import (
     get_content_schema_version,
+    get_response_mime_type,
     validate_bulkdata_content_type,
 )
 from app.api.dependencies.services import (
@@ -87,6 +88,8 @@ def _cast_float_columns(df: pd.DataFrame, model: type) -> None:
 
 
 class BaseDataView(object):
+    _record_id_column: str = "SamplesAnalysisID"
+
     def __init__(
         self,
         router: APIRouter,
@@ -105,7 +108,7 @@ class BaseDataView(object):
             "Upload the bulk data for a given `{record_type}` object by record id.<br>\
             It creates a new version of the record. <br>\
             The previous meta-data with bulk data is available by their `versions`. <br> <br>\
-            Use the `Content-Type` request header to specify payload and response formats \
+            The `Content-Type` request header is **required** to specify payload format \
                 (`application/json` and `application/parquet` are supported).<br>\
             Use the `Accept` request header to specify content schema version \
                 (example header `Accept: */*;version=1.0.0` is supported).",
@@ -204,7 +207,7 @@ class BaseDataView(object):
         api_version = get_api_version_from_url(request.url.path)
         logger.info(f"Post data for api version: {api_version}")
 
-        parquet_file = await self._get_validated_payload(request, model, storage_service)
+        parquet_file = await self._get_validated_payload(request, model, storage_service, record_id)
 
         return await self._upsert_dataset(
             request,
@@ -248,7 +251,7 @@ class BaseDataView(object):
         :rtype: Response
         """
         record = await storage_service.get_record(record_id)
-        mime_type = SupportedMimeTypes.find_by_mime_type(request.headers["content-type"])
+        mime_type = get_response_mime_type(request)
         # Aggregation results only make sense in split format (index holds the function name)
         orient = "split" if df_filter.valid_columns_aggregation else orient
 
@@ -271,7 +274,6 @@ class BaseDataView(object):
             logger.debug(f"Dataset info: {df.size} elements; {df.columns}")
 
             if mime_type == SupportedMimeTypes.PARQUET:
-                df.astype(str)
                 response = Response(content=df.to_parquet(), media_type=SupportedMimeTypes.PARQUET.mime_type)
             else:
                 response = Response(
@@ -302,11 +304,16 @@ class BaseDataView(object):
 
             if missing_fields:
                 fields_str = ", ".join(missing_fields)
-                reason = "Data error: missing required fields: {0}. For records format, wrap the data in an array [{{...}}, ...].".format(  # noqa: E501, WPS326
-                    fields_str,
-                )
+                reason = (
+                    "Data error: missing required fields: {0}. "
+                    "For records format, wrap the data in an array [{{...}}, ...]."
+                ).format(fields_str)
             else:
-                reason = "Data error: invalid 'split' format. Expected 'columns' (list of strings), 'index' (list of integers), and 'data' (list of arrays). For records format, use an array of objects [{{...}}, ...]."  # noqa: E501, WPS326
+                reason = (
+                    "Data error: invalid 'split' format. Expected 'columns' (list of strings), "
+                    "'index' (list of integers), and 'data' (list of arrays). "
+                    "For records format, use an array of objects [{{...}}, ...]."
+                )
 
             logger.debug(f"Raw validation error: {error_msg}")
             raise exceptions.UnprocessableContentException(detail=reason)
@@ -350,12 +357,39 @@ class BaseDataView(object):
             self._handle_validation_exception(v_exc)
             raise  # unreachable; satisfies async checkpoint analysis
 
+    def _validate_record_id_column(
+        self,
+        df: pd.DataFrame,
+        record_id: str,
+        column_name: str,
+    ) -> None:
+        """Validate that ID column values in bulk data match the record_id from the URL.
+
+        :param df: dataframe with bulk data
+        :type df: pd.DataFrame
+        :param record_id: record id from URL path
+        :type record_id: str
+        :param column_name: name of the ID column to validate
+        :type column_name: str
+        """
+        if column_name not in df.columns:
+            return
+        base_record_id, _ = get_id_version(record_id)
+        col = df[column_name].dropna()
+        col_base_ids = col.map(lambda sid: get_id_version(str(sid))[0])
+        mismatched = col[col_base_ids != base_record_id].unique().tolist()
+        if mismatched:
+            self._handle_errors(
+                {"invalid_value": [{column_name: str(sid)} for sid in mismatched]},
+            )
+
     @with_gc_collect
     async def _get_validated_payload(
         self,
         request: Request,
         model: BaseModel,
         storage_service: storage.StorageService,
+        record_id: Optional[str] = None,
     ) -> bytes:
         """Validates payload and returns the parquet file.
 
@@ -365,6 +399,8 @@ class BaseDataView(object):
         :type model: BaseModel
         :param storage_service: storage service instance
         :type storage_service: storage.StorageService
+        :param record_id: record id from URL path (used to validate SamplesAnalysisID)
+        :type record_id: Optional[str]
         :raises exceptions.InvalidDatasetException: when is not possible
             to convert to parquet
         :raises exceptions.DataValidationException: when validation
@@ -387,10 +423,12 @@ class BaseDataView(object):
         if errors:
             self._handle_errors(errors)
 
+        if record_id:
+            self._validate_record_id_column(df, record_id, self._record_id_column)
+
         if not parquet_file:
             try:
                 _cast_float_columns(df, model)
-                df.astype(str)
                 logger.debug(f"Dataset info: {df.size} elements; {df.columns}")
                 parquet_file = df.to_parquet(index=False)
             except Exception as exc:  # noqa: B902
@@ -568,7 +606,6 @@ class BaseDataView(object):
             dependencies=[
                 Depends(validate_record_id),
                 Depends(validate_dataset_id),
-                Depends(validate_bulkdata_content_type),
             ],
         )
 

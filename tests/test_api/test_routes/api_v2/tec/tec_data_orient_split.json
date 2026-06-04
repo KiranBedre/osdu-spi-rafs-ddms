@@ -14,7 +14,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:TEC_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:TEC_Sample:",
       [
         {

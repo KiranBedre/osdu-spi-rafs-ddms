@@ -20,7 +20,7 @@ from tenacity import (
 )
 
 # Suppress insecure request warnings when verify=False
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # pylint: disable=no-member
 
 # Constants
 REQUEST_TIMEOUT = 30
@@ -31,7 +31,7 @@ HTTP_OK = 200
 logging.basicConfig(
     level=logging.INFO,
     format="{asctime} - {levelname} - {message}",
-    style='{',
+    style="{",
 )
 logger = logging.getLogger(__name__)
 

@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from pathlib import Path
+from typing import ClassVar
 
 CONFIG = {}
 
@@ -49,6 +50,8 @@ class DataFiles:
     COMPOSITIONAL_ANALYSIS_SCHEMA_V1_1 = "v2/samples_analysis/compositional_analysis_schema.1.1.0.json"
 
     NMR_DATA_V1 = "v2/samples_analysis/nmr_data.1.0.0.json"
+    NMR_DATA_V1_RECORDS_FORMAT = "v2/samples_analysis/nmr_data_records_format.1.0.0.json"
+    NMR_SCHEMA_V1 = "v2/samples_analysis/nmr_schema.1.0.0.json"
 
     PROPPANT_EMBEDMENT_DATA_V1 = "v2/samples_analysis/proppant_embedment_data.1.0.0.json"
     PROPPANT_EMBEDMENT_SCHEMA_V1 = "v2/samples_analysis/proppant_embedment_schema.1.0.0.json"
@@ -84,12 +87,29 @@ class DataFiles:
     SATURATION_FUNCTION_SET_DATA_V1_RECORDS_FORMAT = "v2/saturation_function_set/sfs_data_records_format.json"
     SATURATION_FUNCTION_SET_SCHEMA = "v2/saturation_function_set/sfs_schema.json"
 
+    SIMULATION_ROCK_PHYSICS = "v2/simulation_rock_physics/rsrp.json"
+    SIMULATION_ROCK_PHYSICS_DATA1_V1 = "v2/simulation_rock_physics/rsrp_data_correlation_compressibility.json"
+    SIMULATION_ROCK_PHYSICS_DATA2_V1 = "v2/simulation_rock_physics/rsrp_data_volume_multiplier.json"
+    SIMULATION_ROCK_PHYSICS_DATA3_V1 = "v2/simulation_rock_physics/rsrp_data_vtp.json"
+    SIMULATION_ROCK_PHYSICS_DATA1_V1_RECORDS_FORMAT = "v2/simulation_rock_physics/rsrp_data_records_format.json"
+    SIMULATION_ROCK_PHYSICS_SCHEMA = "v2/simulation_rock_physics/rsrp_schema.json"
+
+    FLUID_MODEL = "v2/fluid_model/fluid.json"
+
+    DEPTH_SHIFT = "v2/depth_shift/depth_shift.json"
+    CORE_TO_LOG_DEPTH_SHIFT_DATA = "v2/depth_shift/core_to_log_data.json"
+    CORE_TO_LOG_DEPTH_SHIFT_DATA_RECORDS_FORMAT = "v2/depth_shift/core_to_log_data_records_format.json"
+    CORE_TO_LOG_DEPTH_SHIFT_SCHEMA = "v2/depth_shift/core_to_log_schema.json"
+
 
 class DataTemplates:
     ID_DATASET = "{partition}:dataset--File.Generic:"
     ID_SAR = "{partition}:work-product-component--SamplesAnalysesReport:"
     ID_SAMPLE_ANALYSIS = "{partition}:work-product-component--SamplesAnalysis:"
     ID_SATURATION_FUNCTION_SET = "{partition}:work-product-component--SaturationFunctionSet:"
+    ID_SIMULATION_ROCK_PHYSICS = "{partition}:work-product-component--ReservoirSimulationRockPhysicsModel:"
+    ID_FLUID_MODEL = "{partition}:work-product-component--FluidModel:"
+    ID_DEPTH_SHIFT = "{partition}:work-product-component--DepthShift:"
 
 
 class DataTypes:
@@ -102,6 +122,9 @@ class DataTypes:
     SAR = "sar"
     SAMPLE = "sample"
     SATURATION_FUNCTION_SET = "saturation_function_set"
+    SIMULATION_ROCK_PHYSICS = "simulation_rock_physics"
+    FLUID_MODEL = "fluid_model"
+    DEPTH_SHIFT = "depth_shift"
 
 
 class SamplesAnalysisTypes:  # Custom values
@@ -122,58 +145,27 @@ class SamplesAnalysisTypes:  # Custom values
     XRF = "xrf"
 
 
-class DatasetPrefix:
-    # v2
-    CAPILLARY_PRESSURE = "capillarypressure"
-    CAPILLARY_SUCTION_TIME = "capillarysuctiontime"
-    CCE = "constantcompositionexpansion"
-    COMPOSITIONAL_ANALYSIS = "compositionalanalysis"
-    FRACTIONATION = "fractionation"
-    NMR = "nmr"
-    PROPPANT_EMBEDMENT = "proppantembed"
-    RELATIVE_PERMEABILITY = "relativepermeability"
-    ROLLER_OVEN_TEST = "rolleroventest"
-    SATURATION_TEST = "saturationtest"
-    SLIM_TUBE = "slimtube"
-    STOCK_TANK_OIL = "stocktankoilanalysis"
-    VLE = "vaporliquidequilibrium"
-    XRD = "xrd"
-    XRF = "xrf"
-
-
 class VersionedDataFiles:
     VALUES = {
         (SamplesAnalysisTypes.CAPILLARY_PRESSURE, SchemaVersions.V1_1_0): DataFiles.CAPILLARY_PRESSURE_DATA_V1_1,
-
         (SamplesAnalysisTypes.CAPILLARY_SUCTION_TIME, SchemaVersions.V1_0_0): DataFiles.CAPILLARY_SUCTION_TIME_DATA_V1,
-
         (
             SamplesAnalysisTypes.COMPOSITIONAL_ANALYSIS,
             SchemaVersions.V1_1_0,
         ): DataFiles.COMPOSITIONAL_ANALYSIS_DATA_V1_1,
-
         (SamplesAnalysisTypes.NMR, SchemaVersions.V1_0_0): DataFiles.NMR_DATA_V1,
-
         (SamplesAnalysisTypes.PROPPANT_EMBEDMENT, SchemaVersions.V1_0_0): DataFiles.PROPPANT_EMBEDMENT_DATA_V1,
-
         (SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_0_0): DataFiles.RELATIVE_PERMEABILITY_DATA_V1,
-
         (SamplesAnalysisTypes.ROLLER_OVEN_TEST, SchemaVersions.V1_0_0): DataFiles.ROLLER_OVEN_TEST_DATA_V1,
-
         (SamplesAnalysisTypes.SATURATION_TEST, SchemaVersions.V1_0_0): DataFiles.SATURATION_TEST_DATA_V1,
-
         (SamplesAnalysisTypes.SLIM_TUBE, SchemaVersions.V1_0_0): DataFiles.SLIM_TUBE_DATA_V1,
         (SamplesAnalysisTypes.SLIM_TUBE, SchemaVersions.V2_0_0): DataFiles.SLIM_TUBE_DATA_V2,
-
         (SamplesAnalysisTypes.STOCK_TANK_OIL, SchemaVersions.V1_1_0): DataFiles.STOCK_TANK_OIL_DATA_V1_1,
-
         (SamplesAnalysisTypes.VLE, SchemaVersions.V2_0_0): DataFiles.VLE_DATA_V2,
-
         (SamplesAnalysisTypes.XRD, SchemaVersions.V1_1_0): DataFiles.XRD_DATA_V1_1,
-
         (SamplesAnalysisTypes.XRF, SchemaVersions.V1_1_0): DataFiles.XRF_DATA_V1_1,
-
         (DataTypes.SATURATION_FUNCTION_SET, SchemaVersions.V1_0_0): DataFiles.SATURATION_FUNCTION_SET_DATA_V1,
+        (DataTypes.SIMULATION_ROCK_PHYSICS, SchemaVersions.V1_0_0): DataFiles.SIMULATION_ROCK_PHYSICS_DATA1_V1,
     }
 
 
@@ -203,7 +195,7 @@ class SamplesAnalysisConfig:
             "samples_analysis_type": "NMR",
             "parent_report_id": "sar_record_id",
         },
-        SamplesAnalysisTypes.PROPPANT_EMBEDMENT : {
+        SamplesAnalysisTypes.PROPPANT_EMBEDMENT: {
             "samples_analysis_type": "Geomechanics.ProppantEmbedment",
             "parent_report_id": "sar_record_id",
         },
@@ -241,7 +233,6 @@ class SamplesAnalysisConfig:
         },
     }
 
-
     @classmethod
     def get(cls, analysis_type):
         entry = cls._VALUES[analysis_type]
@@ -254,20 +245,17 @@ class SamplesAnalysisConfig:
         }
 
 
-class Endpoints:
+class BaseEndpoints:
 
-    ALL_ENDPOINTS_ARGS = [
-        ("post_record", ()),
-        ("get_record", ("record_id",)),
-        ("get_record_versions", ("record_id",)),
-        ("get_record_version", ("record_id", "version")),
-        ("post_data", ("record_id",)),
-        ("get_data", ("record_id", "dataset_id")),
-        ("get_schema", ()),
-        ("search_records", ()),
-        ("search_data", ()),
-        ("soft_delete_record", ("record_id",)),
-    ]
+    ALL_ENDPOINTS_ARGS: ClassVar[list] = []
+    RECORD_ID_ENDPOINTS_ARGS: ClassVar[list]
+    ENDPOINTS_WITH_FILTERS_ARGS: ClassVar[list]
+    ORIENT_ENDPOINTS_ARGS: ClassVar[list]
+    SEARCH_ENDPOINTS_ARGS: ClassVar[list]
+    CONTENT_TYPE_ENDPOINTS_ARGS: ClassVar[list]
+    ACCEPT_ENDPOINTS_ARGS: ClassVar[list]
+    RETURN_DATA_ENDPOINTS_ARGS: ClassVar[list]
+    SCHEMA_VERSION_ENDPOINTS_ARGS: ClassVar[list]
 
     RECORD_ID_ENDPOINTS = (
         "get_record",
@@ -297,13 +285,11 @@ class Endpoints:
     CONTENT_TYPE_ENDPOINTS = (
         "post_record",
         "post_data",
-        "get_data",
     )
 
     ACCEPT_ENDPOINTS = (
-        "post_data",
-        "get_data",
         "get_schema",
+        "get_data",
         "search_records",
         "search_data",
     )
@@ -313,24 +299,59 @@ class Endpoints:
         "search_data",
     )
 
-    RECORD_ID_ENDPOINTS_ARGS = []
-    ENDPOINTS_WITH_FILTERS_ARGS = []
-    ORIENT_ENDPOINTS_ARGS = []
-    CONTENT_TYPE_ENDPOINTS_ARGS = []
-    ACCEPT_ENDPOINTS_ARGS = []
-    RETURN_DATA_ENDPOINTS_ARGS = []
+    SCHEMA_VERSION_ENDPOINTS = (
+        "get_schema",
+        "post_data",
+        "get_data",
+        "search_records",
+        "search_data",
+    )
 
-    _MAPPING = [
-        (RECORD_ID_ENDPOINTS_ARGS, RECORD_ID_ENDPOINTS),
-        (ENDPOINTS_WITH_FILTERS_ARGS, ENDPOINTS_WITH_FILTERS),
-        (ORIENT_ENDPOINTS_ARGS, ORIENT_ENDPOINTS),
-        (CONTENT_TYPE_ENDPOINTS_ARGS, CONTENT_TYPE_ENDPOINTS),
-        (ACCEPT_ENDPOINTS_ARGS, ACCEPT_ENDPOINTS),
-        (RETURN_DATA_ENDPOINTS_ARGS, RETURN_DATA_ENDPOINTS),
+    _CATEGORIES = (
+        "RECORD_ID_ENDPOINTS",
+        "ENDPOINTS_WITH_FILTERS",
+        "ORIENT_ENDPOINTS",
+        "SEARCH_ENDPOINTS",
+        "CONTENT_TYPE_ENDPOINTS",
+        "ACCEPT_ENDPOINTS",
+        "RETURN_DATA_ENDPOINTS",
+        "SCHEMA_VERSION_ENDPOINTS",
+    )
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        args_by_name = dict(cls.ALL_ENDPOINTS_ARGS)
+        for category in cls._CATEGORIES:
+            names = getattr(cls, category)
+            setattr(cls, f"{category}_ARGS", [(name, args_by_name[name]) for name in names])
+
+
+class Endpoints(BaseEndpoints):
+    ALL_ENDPOINTS_ARGS = [
+        ("post_record", ()),
+        ("get_record", ("record_id",)),
+        ("get_record_versions", ("record_id",)),
+        ("get_record_version", ("record_id", "version")),
+        ("post_data", ("record_id",)),
+        ("get_data", ("record_id", "dataset_id")),
+        ("get_schema", ()),
+        ("search_records", ()),
+        ("search_data", ()),
+        ("soft_delete_record", ("record_id",)),
     ]
 
-    for item in ALL_ENDPOINTS_ARGS:
-        endpoint_name = item[0]
-        for target_list, source_set in _MAPPING:
-            if endpoint_name in source_set:
-                target_list.append(item)
+
+class SamplesAnalysisEndpoints(BaseEndpoints):
+    ALL_ENDPOINTS_ARGS = [
+        ("get_analysis_types", ()),
+        ("post_record", ()),
+        ("get_record", ("record_id",)),
+        ("get_record_versions", ("record_id",)),
+        ("get_record_version", ("record_id", "version")),
+        ("post_data", ("record_id", "analysis_type")),
+        ("get_data", ("record_id", "dataset_id", "analysis_type")),
+        ("get_schema", ("analysis_type",)),
+        ("search_records", ("analysis_type",)),
+        ("search_data", ("analysis_type",)),
+        ("soft_delete_record", ("record_id",)),
+    ]

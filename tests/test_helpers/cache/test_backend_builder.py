@@ -46,7 +46,8 @@ def test_get_cache_backend():
 
 
 @pytest.mark.parametrize(
-    "backend_path", (
+    "backend_path",
+    (
         "test_wrong_path",
         "",
     ),

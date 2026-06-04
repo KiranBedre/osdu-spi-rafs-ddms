@@ -51,8 +51,9 @@ class TestBlobLoader:
         CREDENTIALS_CACHE["expiration"] = expired_time
         mock_s3_client = MagicMock()
 
-        with patch("app.providers.dependencies.aws.blob_loader.datetime") as mock_datetime, \
-                patch("app.providers.dependencies.aws.blob_loader.refresh_credentials") as mock_refresh_credentials:
+        with patch("app.providers.dependencies.aws.blob_loader.datetime") as mock_datetime, patch(
+            "app.providers.dependencies.aws.blob_loader.refresh_credentials"
+        ) as mock_refresh_credentials:
             mock_datetime.now.return_value = datetime.now(timezone.utc)
             mock_refresh_credentials.return_value = None
             CREDENTIALS_CACHE["s3_client"] = mock_s3_client

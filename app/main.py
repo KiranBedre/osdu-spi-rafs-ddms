@@ -19,6 +19,7 @@ from requests.exceptions import HTTPError
 from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
 
+from app.api.errors import unsupported_media_type_error_handler  # noqa: WPS318
 from app.api.errors import (
     data_validation_http_error_handler,
     http422_error_handler,
@@ -40,8 +41,10 @@ from app.exceptions.exceptions import (
     InvalidBodyException,
     InvalidHeaderException,
     OsduApiException,
+    UnsupportedMediaTypeException,
 )
 from app.middleware.correlation_id_middleware import CorrelationIDMiddleware
+from app.middleware.tracing_middleware import TracingMiddleware
 from app.providers.helpers.metric import init_metric
 
 EXCEPTIONS_AND_HANDLERS = (
@@ -51,6 +54,7 @@ EXCEPTIONS_AND_HANDLERS = (
     (HTTPStatusError, osdu_api_httpx_error_handler),
     (InvalidBodyException, invalid_body_error_handler),
     (InvalidHeaderException, invalid_header_error_handler),
+    (UnsupportedMediaTypeException, unsupported_media_type_error_handler),
     (DataValidationException, data_validation_http_error_handler),
     (OsduApiException, osdu_api_custom_exc_handler),
 )
@@ -68,6 +72,9 @@ def get_application() -> FastAPI:
 
     application = FastAPI(**settings.fastapi_kwargs)
 
+    # Middleware registration is LIFO: last-registered = outermost at runtime.
+    # Desired execution order: CORSMiddleware → TracingMiddleware → CorrelationIDMiddleware.
+    # Register in reverse: CORS first, CorrelationID second, Tracing last.
     application.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_hosts,
@@ -76,6 +83,7 @@ def get_application() -> FastAPI:
         allow_headers=["*"],
     )
     application.add_middleware(CorrelationIDMiddleware)
+    application.add_middleware(TracingMiddleware)
     init_metric(application, settings)
 
     application.add_event_handler(

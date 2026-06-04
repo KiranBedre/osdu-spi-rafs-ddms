@@ -27,9 +27,23 @@ The following software have components provided under the terms of this license:
 - fastapi (from https://pypi.org/project/fastapi/, https://pypi.org/project/fastapi/0.86.0/)
 - fastapi-cache2 (from <https://github.com/long2ice/fastapi-cache>, https://github.com/long2ice/fastapi-cache)
 - frozenlist (from <https://github.com/aio-libs/frozenlist>, https://github.com/aio-libs/frozenlist)
+- googleapis-common-protos (from https://github.com/googleapis/google-cloud-python/tree/main/packages/googleapis-common-protos, https://github.com/googleapis/python-api-common-protos, https://pypi.org/project/googleapis-common-protos/)
+- importlib-metadata (from https://pypi.org/project/importlib-metadata/)
 - multidict (from https://github.com/aio-libs/multidict)
 - multimethod (from https://pypi.org/project/multimethod/, https://pypi.org/project/multimethod/1.10/, https://pypi.org/project/multimethod/1.9.1/)
 - numpy (from https://pypi.org/project/numpy/)
+- opentelemetry-api (from https://pypi.org/project/opentelemetry-api/)
+- opentelemetry-exporter-otlp-proto-common (from https://pypi.org/project/opentelemetry-exporter-otlp-proto-common/)
+- opentelemetry-exporter-otlp-proto-http (from https://pypi.org/project/opentelemetry-exporter-otlp-proto-http/)
+- opentelemetry-instrumentation (from https://pypi.org/project/opentelemetry-instrumentation/)
+- opentelemetry-instrumentation-asgi (from https://pypi.org/project/opentelemetry-instrumentation-asgi/)
+- opentelemetry-instrumentation-fastapi (from https://pypi.org/project/opentelemetry-instrumentation-fastapi/)
+- opentelemetry-instrumentation-httpx (from https://pypi.org/project/opentelemetry-instrumentation-httpx/)
+- opentelemetry-propagator-b3 (from https://pypi.org/project/opentelemetry-propagator-b3/)
+- opentelemetry-proto (from https://pypi.org/project/opentelemetry-proto/)
+- opentelemetry-sdk (from https://pypi.org/project/opentelemetry-sdk/)
+- opentelemetry-semantic-conventions (from https://pypi.org/project/opentelemetry-semantic-conventions/)
+- opentelemetry-util-http (from https://pypi.org/project/opentelemetry-util-http/)
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 - prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python)
@@ -52,12 +66,14 @@ The following software have components provided under the terms of this license:
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 - prometheus-client (from <https://github.com/prometheus/client_python>, https://github.com/prometheus/client_python)
+- wrapt (from <https://github.com/GrahamDumpleton/wrapt>, https://github.com/GrahamDumpleton/wrapt, https://pypi.org/project/wrapt/)
 
 ========================================================================
 BSD-3-Clause
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- asgiref (from https://github.com/django/asgiref/)
 - click (from https://palletsprojects.com/p/click/, https://pypi.org/project/click/)
 - cryptography (from <https://github.com/pyca/cryptography>, https://github.com/pyca/cryptography)
 - httpcore (from https://github.com/encode/httpcore, https://pypi.org/project/httpcore/, https://pypi.org/project/httpcore/0.18.0/)
@@ -67,7 +83,8 @@ The following software have components provided under the terms of this license:
 - numpy (from https://pypi.org/project/numpy/)
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
-- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
+- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator, https://pypi.org/project/prometheus-fastapi-instrumentator/)
+- protobuf (from https://developers.google.com/protocol-buffers/)
 - pyarrow (from https://arrow.apache.org/, https://pypi.org/project/pyarrow/, https://pypi.org/project/pyarrow/17.0.0/)
 - pycparser (from <https://github.com/eliben/pycparser>, https://github.com/eliben/pycparser, https://pypi.org/project/pycparser/)
 - python-dateutil (from <https://github.com/dateutil/dateutil>, https://github.com/dateutil/dateutil)
@@ -95,13 +112,14 @@ ISC
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
+- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator, https://pypi.org/project/prometheus-fastapi-instrumentator/)
 
 ========================================================================
 MIT
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Deprecated (from https://github.com/laurent-laporte-pro/deprecated, https://github.com/tantale/deprecated)
 - PyJWT (from http://github.com/jpadilla/pyjwt, https://pypi.org/project/PyJWT/)
 - aiohttp (from https://github.com/aio-libs/aiohttp, https://github.com/aio-libs/aiohttp/, https://pypi.org/project/aiohttp/)
 - annotated-doc (from https://pypi.org/project/annotated-doc/)
@@ -135,7 +153,8 @@ The following software have components provided under the terms of this license:
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 - pandera (from <https://pypi.org/project/pandera/>, https://pypi.org/project/pandera/)
 - pendulum (from <https://pendulum.eustace.io>, https://pendulum.eustace.io)
-- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
+- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator, https://pypi.org/project/prometheus-fastapi-instrumentator/)
+- protobuf (from https://developers.google.com/protocol-buffers/)
 - pydantic (from https://github.com/samuelcolvin/pydantic, https://pypi.org/project/pydantic/)
 - pytz (from <http://pythonhosted.org/pytz>, http://pythonhosted.org/pytz)
 - redis (from <https://github.com/redis/redis-py>, https://github.com/redis/redis-py, https://pypi.org/project/redis/)
@@ -146,6 +165,7 @@ The following software have components provided under the terms of this license:
 - typeguard (from https://pypi.org/project/typeguard/, https://pypi.org/project/typeguard/4.2.1/, https://pypi.org/project/typeguard/4.3.0/)
 - typing-inspect (from <https://github.com/ilevkivskyi/typing_inspect>, https://github.com/ilevkivskyi/typing_inspect)
 - urllib3 (from https://pypi.org/project/urllib3/, https://pypi.org/project/urllib3/2.0.2/, https://pypi.org/project/urllib3/2.0.4/)
+- zipp (from https://pypi.org/project/zipp/, https://pypi.org/project/zipp/3.19.0/, https://pypi.org/project/zipp/3.19.2/)
 
 ========================================================================
 MPL-2.0
@@ -176,6 +196,13 @@ PSF-2.0
 The following software have components provided under the terms of this license:
 
 - aiohappyeyeballs (from https://pypi.org/project/aiohappyeyeballs/)
+
+========================================================================
+Protobuf
+========================================================================
+The following software have components provided under the terms of this license:
+
+- protobuf (from https://developers.google.com/protocol-buffers/)
 
 ========================================================================
 Python-2.0

@@ -153,6 +153,17 @@ def with_patched_storage_get_success_200(storage_method, osdu_record):
 
 
 @pytest.fixture
+def with_patched_storage_get_mismatched_version():
+    """Patch storage to return a record with a mismatched version (simulating fuzzy match)."""
+    with patch.object(
+        storage_record_service_mock,
+        "get_record",
+        return_value={"id": "test:id", "version": 999},
+    ):
+        yield
+
+
+@pytest.fixture
 def with_patched_schema_validate_success():
     """Patch schema with mock to validate success."""
     with patch.object(schema_service_mock, "validate", return_value={}):
@@ -264,6 +275,75 @@ async def test_get_record_version_not_found(storage_method, path, record_id, wit
 
     assert response.json() == EXPECTED_404_RESPONSE
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "path,record_id",
+    [
+        (
+            f"{API_VERSION_V2}/{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR}",
+            storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
+        ),
+        (f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID),
+        (f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
+        (f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
+        (f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
+        (f"{API_VERSION_V2}/depthshift", storage_mock_objects.TEST_DEPTH_SHIFT_ID),
+        (f"{API_VERSION_V2}/masterdata", storage_mock_objects.TEST_SAMPLE_ID),
+    ],
+)
+async def test_get_record_version_mismatch(path, record_id, with_patched_storage_get_mismatched_version):
+    """Test that requesting a version that results in a fuzzy match returns a 404."""
+    with storage_override():
+        requested_version = 123
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(
+                f"/api/os-rafs-ddms/{path}/{record_id}/versions/{requested_version}",
+                headers=TEST_HEADERS,
+            )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    # Relax detail check to avoid KeyError if standard FastAPI handler is overridden.
+    assert f"{requested_version} not found" in response.text.lower()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "path,record_id,version",
+    [
+        (
+            f"{API_VERSION_V2}/samplesanalysis",
+            storage_mock_objects.TEST_SAMPLESANALYSIS_ID,
+            12345678901234567890,
+        ),
+        (
+            f"{API_VERSION_V2}/samplesanalysis",
+            storage_mock_objects.TEST_SAMPLESANALYSIS_ID,
+            0,
+        ),
+        (
+            f"{API_VERSION_V2}/saturationfunctionset",
+            storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
+            12345678901234567890,
+        ),
+        (
+            f"{API_VERSION_V2}/saturationfunctionset",
+            storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID,
+            0,
+        ),
+    ],
+)
+async def test_get_record_version_invalid_version(path, record_id, version):
+    with storage_override():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(
+                f"/api/os-rafs-ddms/{path}/{record_id}/versions/{version}",
+                headers=TEST_HEADERS,
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    storage_record_service_mock.get_record.assert_not_called()
 
 
 @pytest.mark.asyncio

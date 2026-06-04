@@ -35,18 +35,22 @@ def get_blob_loader(settings: AppSettings) -> IBlobLoader:
             from app.providers.dependencies.az.blob_loader import (
                 AzureBlobLoader,
             )
+
             blob_loader = AzureBlobLoader()
         case "aws":
             from app.providers.dependencies.aws.blob_loader import (
                 AWSBlobLoader,
             )
+
             blob_loader = AWSBlobLoader()
         case "gc":
             from app.providers.dependencies.gc.blob_loader import (
                 GoogleBlobLoader,
             )
+
             blob_loader = GoogleBlobLoader()
         case _:
             from app.providers.dependencies.ci.blob_loader import CIBlobLoader
+
             blob_loader = CIBlobLoader()
     return blob_loader

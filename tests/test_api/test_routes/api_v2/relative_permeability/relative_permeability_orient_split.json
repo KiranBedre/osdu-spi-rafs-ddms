@@ -27,7 +27,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:RelPermWPC_110:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:Sample_200:",
       [
         {

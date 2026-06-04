@@ -121,6 +121,7 @@ class DFMultipleNestedFilterValidator(object):
     :raises FilterValidationError: If any validation error occurs
     :raises NotImplementedError: For not implemented features
     """
+
     schema: Optional[Dict[str, Any]] = None
     raw_columns_filter: Optional[str] = None
     raw_rows_filter: Optional[str] = None
@@ -166,6 +167,20 @@ class DFMultipleNestedFilterValidator(object):
             columns_aggregation = self._validate_columns_aggregation()
         return columns_aggregation
 
+    def validate_combination(self) -> None:
+        """Validate that columns_aggregation and columns_filter are compatible.
+
+        :raises FilterValidationError: if aggregation column is excluded by columns_filter
+        """
+        cf = self.valid_columns_filter
+        ca = self.valid_columns_aggregation
+        if cf and ca and ca.column not in set(cf.columns):
+            raise FilterValidationError(
+                f"Filter conflict: 'columns_aggregation' column '{ca.column}' "
+                + "is not included in 'columns_filter'. "
+                + f"Either add '{ca.column}' to 'columns_filter' or remove 'columns_filter'.",
+            )
+
     def _get_filter_from_json_str(self, json_str: str, error_str: str) -> Dict:
         try:
             return json.loads(json_str)
@@ -176,25 +191,29 @@ class DFMultipleNestedFilterValidator(object):
 
     def _validate_rows_filter(self) -> RowsFilter:
         rows_filter_dict = self._get_filter_from_json_str(
-            self.raw_rows_filter, FilterErrorMessage.ROWS_FILTER,
+            self.raw_rows_filter,
+            FilterErrorMessage.ROWS_FILTER,
         )
         return self._rows_filter_validator.validate(rows_filter_dict)
 
     def _validate_rows_multiple_filter(self) -> RowsFilter:
         rows_mutiple_filter_dict = self._get_filter_from_json_str(
-            self.raw_rows_multiple_filter, FilterErrorMessage.ROWS_MULTIPLE_FILTER,
+            self.raw_rows_multiple_filter,
+            FilterErrorMessage.ROWS_MULTIPLE_FILTER,
         )
         return self._rows_filter_validator.validate_multiple_filter(rows_mutiple_filter_dict)
 
     def _validate_columns_aggregation(self) -> ColumnsAggregation:
         columns_aggregation_list = self._get_filter_from_json_str(
-            self.raw_columns_aggregation, FilterErrorMessage.COLUMNS_AGGREGATION,
+            self.raw_columns_aggregation,
+            FilterErrorMessage.COLUMNS_AGGREGATION,
         )
         return self._columns_aggregation_validator.validate(columns_aggregation_list)
 
     def _validate_columns_filter(self) -> ColumnsFilter:
         columns_filter_list = self._get_filter_from_json_str(
-            self.raw_columns_filter, FilterErrorMessage.COLUMNS_FILTER,
+            self.raw_columns_filter,
+            FilterErrorMessage.COLUMNS_FILTER,
         )
         return self._columns_filter_validator.validate(columns_filter_list)
 
@@ -231,9 +250,14 @@ class PropertyInfoProcessor(object):
                 else:
                     raise KeyError(f"Extra property: {prop_name}")
             except KeyError:
-                schema_props = prop_schema.get("properties") or prop_schema.get(
-                    "items", {},
-                ).get("properties") or prop_schema
+                schema_props = (
+                    prop_schema.get("properties")
+                    or prop_schema.get(
+                        "items",
+                        {},
+                    ).get("properties")
+                    or prop_schema
+                )
                 valid_schema_keys = list(schema_props.keys())
                 raise FilterValidationError(
                     f"Wrong property name: {flatten_prop_name}. Reason: {prop_name} not in {valid_schema_keys}",

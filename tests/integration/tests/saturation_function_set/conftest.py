@@ -14,6 +14,7 @@
 
 import copy
 import uuid
+
 import pytest
 
 from tests.integration.config import (
@@ -36,6 +37,18 @@ def saturation_function_set_create_record(create_record):
     # Cleanup is handled by create_record fixture
 
 
+@pytest.fixture(scope="function")
+def saturation_function_set_create_fresh_record(create_record):
+    """Create a fresh SaturationFunctionSet record per test."""
+    record_data, _ = create_record(
+        DataTypes.SATURATION_FUNCTION_SET,
+        DataFiles.SATURATION_FUNCTION_SET,
+        DataTemplates.ID_SATURATION_FUNCTION_SET.format(partition=CONFIG["DATA_PARTITION"]),
+    )
+    yield record_data
+    # Cleanup is handled by create_record fixture
+
+
 @pytest.fixture(scope="module")
 def record_id(saturation_function_set_create_record):
     """Return SaturationFunctionSet record_id."""
@@ -43,9 +56,9 @@ def record_id(saturation_function_set_create_record):
 
 
 @pytest.fixture(scope="function")
-def fresh_record_id(saturation_function_set_create_record):
+def fresh_record_id(saturation_function_set_create_fresh_record):
     """Return SaturationFunctionSet record_id."""
-    return saturation_function_set_create_record["id"]
+    return saturation_function_set_create_fresh_record["id"]
 
 
 @pytest.fixture(scope="module")
@@ -85,12 +98,6 @@ def search_available(api, helper, record_id):
         record_id,
         max_attempts=5,
     )
-
-
-@pytest.fixture(scope="session")
-def data_partition_id():
-    """Return the data partition ID from the session configuration."""
-    return CONFIG["DATA_PARTITION"]
 
 
 @pytest.fixture(scope="module")

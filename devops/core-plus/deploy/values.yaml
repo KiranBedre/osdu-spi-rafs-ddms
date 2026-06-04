@@ -105,6 +105,13 @@ data:
   cronJobClientId: ""
   cronJobClientSecret: ""
 
+  # --------------------
+  # Otel
+  # --------------------
+  pythonToolOptions: ""
+  otelExporterEndpoint: ""
+  otelExporterProtocol: ""
+
 istio:
   redisProxyCPU: "50m"
   redisProxyMemory: "100Mi"

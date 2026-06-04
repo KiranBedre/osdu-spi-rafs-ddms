@@ -26,7 +26,7 @@ from jsonpointer import JsonPointerException, resolve_pointer, set_pointer
 from loguru import logger
 
 from app.api.routes.utils.query import find_osdu_ids_from_string
-from tests.integration.config import DataTypes
+from tests.integration.config import DataFiles, DataTypes
 
 COMPARE_RESPONSES_EXCLUDE_PATHS = (
     "root['id']",
@@ -36,6 +36,7 @@ COMPARE_RESPONSES_EXCLUDE_PATHS = (
     "root['modifyUser']",
     "root['modifyTime']",
 )
+
 
 class CommonHelper():
     """Methods to work with all test."""
@@ -47,12 +48,11 @@ class CommonHelper():
     def extract_only_created_tests_ids(record_id_versions: list) -> list:
         """Extract only tests from created records without updated/created PVT
         id."""
-        return [el for el in record_id_versions if DataTypes.PVT.upper() not in el]
+        return [el for el in record_id_versions if "PVT" not in el]
 
     @staticmethod
     def generate_random_record_id(length: int = 10) -> str:
-        """Generates a random sequence for record_id with a specified
-        length."""
+        """Generates a random sequence for record_id with a specified length."""
         characters = string.ascii_letters + string.digits  # Include uppercase and lowercase letters, as well as digits
         random_id = f"autotest_{''.join(secrets.choice(characters) for _ in range(length))}"
         return random_id
@@ -180,7 +180,7 @@ class CommonHelper():
         except JsonPointerException as exc:
             raise AssertionError(f"Invalid JSON pointer '{path}': {exc}") from exc
 
-    def wait_for_search_record(self, search_func, record_id: str, max_attempts: int = 30,  interval: int = 5) -> dict:
+    def wait_for_search_record(self, search_func, record_id: str, max_attempts: int = 30, interval: int = 5) -> dict:
         """
         Polls the search function until the specified record_id appears in the results or times out.
         :param search_func: Function with no arguments that returns a search response dict (must have 'result' list)
@@ -200,7 +200,8 @@ class CommonHelper():
                 return last_response
 
             logger.info(
-                f"Record '{record_id}' not found yet; retrying in {interval}s (Attempt {attempt + 1}/{max_attempts})")
+                f"Record '{record_id}' not found yet; retrying in {interval}s (Attempt {attempt + 1}/{max_attempts})"
+            )
             if attempt < max_attempts - 1:
                 time.sleep(interval)
 
@@ -209,7 +210,7 @@ class CommonHelper():
             f"Last response: {last_response}"
         )
 
-    def wait_for_search_data(self, search_func, record_id: str, max_attempts: int = 30,  interval: int = 5) -> dict:
+    def wait_for_search_data(self, search_func, record_id: str, max_attempts: int = 30, interval: int = 5) -> dict:
         """
         Polls the search function until the specified record_id appears in the results or times out.
         :param search_func: Function with no arguments that returns a search response dict (must have 'result' list)
@@ -236,7 +237,8 @@ class CommonHelper():
                         return last_response
 
             logger.info(
-                f"Record '{record_id}' not found; retrying in {interval}s (attempt {attempt + 1}/{max_attempts}).")
+                f"Record '{record_id}' not found; retrying in {interval}s (attempt {attempt + 1}/{max_attempts})."
+            )
             if attempt < max_attempts - 1:
                 time.sleep(interval)
 
@@ -244,3 +246,45 @@ class CommonHelper():
             f"Record '{record_id}' not found in search results within {max_attempts * interval}s. "
             f"Last response: {last_response}"
         )
+
+    def create_reference_records(
+            self,
+            api,
+            helper,
+            tests_data,
+            partition: str,
+            storage_dependencies: set,
+            record_to_create: list,
+    ) -> dict:
+        """Create reference records and SAR record; return IDs to share across workers."""
+        osdu_generic_record = tests_data(DataFiles.OSDU_GENERIC_RECORD)
+        records_to_store = []
+        for reference_id in storage_dependencies:
+            if "reference-data" in reference_id:
+                continue
+            api.storage.purge_record(reference_id)
+            record_to_store = copy.deepcopy(osdu_generic_record)
+            record_to_store["id"] = reference_id
+            record_type = reference_id.split(":")[1]
+            record_to_store["kind"] = f"{partition}:wks:{record_type}:1.0.0"
+            records_to_store.append(record_to_store)
+
+        response = api.storage.create_or_update_records(records_to_store)
+        logger.debug(response.json())
+
+        created_ids = {}
+        for data_type, data, id_template in record_to_create:
+            record_data = copy.deepcopy(tests_data(data))
+            record_data["id"] = f"{id_template}{helper.generate_random_record_id()}"
+            getattr(api, data_type).post_record([record_data])
+            created_ids[f"{data_type}_record_id"] = record_data["id"]
+        return created_ids
+
+    def purge_reference_records(self, api, state: dict, storage_dependencies: set, record_to_create: list) -> None:
+        """Purge SAR record and reference records."""
+        for data_type, _, _ in record_to_create:
+            api.storage.purge_record(state[f"{data_type}_record_id"])
+        for reference_id in storage_dependencies:
+            if "reference-data" in reference_id:
+                continue
+            api.storage.purge_record(reference_id)

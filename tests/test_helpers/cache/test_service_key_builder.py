@@ -54,6 +54,7 @@ def test_key_builder_for_service_methods_with_string_arg():
 
 def test_key_builder_for_service_methods_with_list_arg():
     """Test that key builder generates consistent keys for list arguments."""
+
     class DatasetServiceMock(MagicMock):
         __module__ = "app.services.dataset"
         __name__ = "get_signed_urls"

@@ -30,9 +30,9 @@ DATA_PARTITION_ID = "partition"
 TOKEN_STR = "test_token"
 TEST_CORRELATION_ID = "test_id"
 TEST_RECORD_ID = "partition:entity-type--EntityName:id"
-TEST_RECORD_ID_ENCODED = quote(TEST_RECORD_ID, safe='')
+TEST_RECORD_ID_ENCODED = quote(TEST_RECORD_ID, safe="")
 TEST_RECORD_ID_SPECIAL = "opendes:master-data--Sample:7%2F12-A-7%20D_Sample_249"
-TEST_RECORD_ID_SPECIAL_ENCODED = quote(TEST_RECORD_ID_SPECIAL, safe='')
+TEST_RECORD_ID_SPECIAL_ENCODED = quote(TEST_RECORD_ID_SPECIAL, safe="")
 TEST_RESPONSE = {"result_key": "result_value"}
 TEST_VERSION = 1
 TEST_RECORD = {"id": "test", "data": {"key": "value"}}
@@ -55,7 +55,9 @@ class TestStorageServiceApiClient:
 
     @pytest.mark.asyncio
     async def test_get_latest_record(self):
-        with patch.object(AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = StorageServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -73,7 +75,9 @@ class TestStorageServiceApiClient:
 
     @pytest.mark.asyncio
     async def test_get_specific_record(self):
-        with patch.object(AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = StorageServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -91,7 +95,9 @@ class TestStorageServiceApiClient:
 
     @pytest.mark.asyncio
     async def test_get_record_versions(self):
-        with patch.object(AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = StorageServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -145,7 +151,9 @@ class TestStorageServiceApiClient:
 
     @pytest.mark.asyncio
     async def test_create_update_records(self):
-        with patch.object(AsyncClient, "put", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "put", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = StorageServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -157,13 +165,16 @@ class TestStorageServiceApiClient:
         # Verify that the expected headers were set and the expected response was returned
         self.common_get_post_success_assertions(api_client, response)
         httpx_client.assert_called_once_with(
-            f"{StorageServicePaths.RECORDS}", json=[TEST_RECORD],
+            f"{StorageServicePaths.RECORDS}",
+            json=[TEST_RECORD],
             headers=api_client.headers,
         )
 
     @pytest.mark.asyncio
     async def test_query_records(self):
-        with patch.object(AsyncClient, "post", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "post", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = StorageServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,
@@ -175,7 +186,8 @@ class TestStorageServiceApiClient:
         # Verify that the expected headers were set and the expected response was returned
         self.common_get_post_success_assertions(api_client, response)
         httpx_client.assert_called_once_with(
-            f"{StorageServicePaths.QUERY}", json={"records": [TEST_RECORD_ID]},
+            f"{StorageServicePaths.QUERY}",
+            json={"records": [TEST_RECORD_ID]},
             headers=api_client.headers,
         )
 
@@ -186,7 +198,9 @@ class TestStorageServiceApiClient:
         Record IDs like 'opendes:master-data--Sample:7%2F12-A-7%20D_Sample_249'
         must be URL-encoded to prevent 424 errors from Storage service.
         """
-        with patch.object(AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))) as httpx_client:
+        with patch.object(
+            AsyncClient, "get", return_value=Mock(status_code=HTTPStatus.OK, json=Mock(return_value=TEST_RESPONSE))
+        ) as httpx_client:
             api_client = StorageServiceApiClient(
                 base_url=BASE_URL,
                 data_partition_id=DATA_PARTITION_ID,

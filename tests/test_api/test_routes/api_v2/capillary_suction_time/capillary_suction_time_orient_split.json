@@ -17,7 +17,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:CapillarySuctionTime_WPC_001:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:CapillarySuctionTime_Sample_001:",
       [
         {

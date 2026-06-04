@@ -8,12 +8,14 @@ ARG python_version=3.11
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt \
     && pip install --no-cache-dir --upgrade "setuptools>=82.0.1" "wheel==0.46.3" \
-    && pip install --no-cache-dir uvicorn[standard]==0.23.2
+    && pip install --no-cache-dir uvicorn[standard]==0.23.2 \
+    && pip install --no-cache-dir "opentelemetry-distro==0.49b2"
 
 COPY ./app /app/
 WORKDIR /app
 
-RUN cp -v $(which uvicorn) .
+RUN cp -v $(which uvicorn) . \
+    && cp -v $(which opentelemetry-instrument) .
 
 # Python 3.11 on Debian trixie for runtime (patched system libs vs bookworm)
 # Fixes: CVE-2023-45853 (zlib), CVE-2025-7458 (sqlite), CVE-2026-0861 (glibc), CVE-2026-29111 (systemd)
@@ -67,6 +69,7 @@ RUN groupadd --gid $USER_GID $USERNAME \
 COPY --from=build-env /usr/local/lib/python${python_version}/site-packages /usr/local/lib/python${python_version}/site-packages
 COPY --from=build-env --chown=${USERNAME}:${USERNAME} /app /app/app
 COPY --from=build-env --chown=${USERNAME}:${USERNAME} /app/uvicorn /app/uvicorn
+COPY --from=build-env /app/opentelemetry-instrument /usr/local/bin/opentelemetry-instrument
 
 # Patch setuptools vendored deps AFTER COPY — Trivy scans runtime image layers
 # CVE-2026-23949: setuptools vendors jaraco.context 5.3.0 (vulnerable < 6.1.0)
@@ -93,5 +96,9 @@ RUN set -eux; \
 
 USER $USERNAME
 
+# PYTHON_TOOL_OPTIONS acts as a boolean toggle: any non-empty value activates the OTEL agent.
+# The agent command is hardcoded — the variable value is never interpolated into the shell,
+# preventing command injection via ConfigMap or helm --set.
+ENV PYTHON_TOOL_OPTIONS=""
 
-ENTRYPOINT ["python", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--workers", "4", "--loop", "uvloop"]
+ENTRYPOINT ["/bin/sh", "-c", "if [ -n \"$PYTHON_TOOL_OPTIONS\" ]; then exec opentelemetry-instrument python /app/uvicorn app.main:app --host 0.0.0.0 --port 8080 --workers 4 --loop uvloop; else exec python /app/uvicorn app.main:app --host 0.0.0.0 --port 8080 --workers 4 --loop uvloop; fi"]

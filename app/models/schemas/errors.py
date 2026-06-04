@@ -27,6 +27,11 @@ class OsduApiErrorResponse(BadRequestResponse):
     message: str
 
 
+class UnsupportedMediaTypeResponse(BaseModel):
+    code: int = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    reason: str
+
+
 class ValidationErrorResponse(BadRequestResponse):
     code: int = status.HTTP_422_UNPROCESSABLE_CONTENT
     errors: Optional[dict]

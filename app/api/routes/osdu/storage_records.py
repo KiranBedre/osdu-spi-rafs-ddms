@@ -14,7 +14,7 @@
 
 from typing import List
 
-from fastapi import APIRouter, Depends, Path, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Path, Request, Response
 from fastapi_cache.decorator import cache
 from starlette import status
 
@@ -31,6 +31,8 @@ from app.models.schemas.osdu_storage import (
     StorageUpsertResponse,
 )
 from app.services import schema, storage
+
+_VERSION_MAX = 9223372036854775807  # int64 max
 
 
 class BaseStorageRecordView(object):
@@ -85,7 +87,7 @@ class BaseStorageRecordView(object):
     async def get_record_specific_version(
         self,
         version: int,
-        record_id,
+        record_id: str,
         storage_service: storage.StorageService = Depends(get_async_storage_service),
     ) -> dict:
         """Get specific record.
@@ -99,7 +101,16 @@ class BaseStorageRecordView(object):
         :return: specific record
         :rtype: dict
         """
-        return await storage_service.get_record(record_id, version)
+        record = await storage_service.get_record(record_id, version)
+
+        if record:
+            # Handle both dictionary (production) and Pydantic mock objects (testing)
+            record_version = record.get("version") if isinstance(record, dict) else getattr(record, "version", None)
+
+            if record_version is not None and int(record_version) != version:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Record version {version} not found")
+
+        return record
 
     async def post_records(
         self,
@@ -156,7 +167,8 @@ class BaseStorageRecordView(object):
 
     def _prepare_get_record_route(self) -> None:
         """Add api route for get_record."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -179,7 +191,8 @@ class BaseStorageRecordView(object):
 
     def _prepare_get_record_versions_route(self) -> None:
         """Add api route for get_record_versions."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -202,7 +215,8 @@ class BaseStorageRecordView(object):
 
     def _prepare_get_record_specific_version_route(self) -> None:
         """Add api route for get_record_specific_version."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id
@@ -212,6 +226,16 @@ class BaseStorageRecordView(object):
             """
             return record_id
 
+        def validate_version(version: int = Path(default=..., ge=1, le=_VERSION_MAX)) -> int:
+            """Validate version is a positive integer within int64 range.
+
+            :param version: record version
+            :type version: int
+            :return: version
+            :rtype: int
+            """
+            return version
+
         self._router.add_api_route(
             path="/{record_id}/versions/{version}",
             endpoint=self.get_record_specific_version,
@@ -220,11 +244,12 @@ class BaseStorageRecordView(object):
             description=APIDescriptionHelper.append_joined_roles(
                 f"Get the given version of `{self._record_type}` object.",
             ),
-            dependencies=[Depends(validate_record_id)],
+            dependencies=[Depends(validate_record_id), Depends(validate_version)],
         )
 
     def _prepare_post_records_route(self) -> None:
         """Add api route for post_records."""
+
         async def validate_request_records(
             request_records: List[OsduStorageRecord],
             storage_service: storage.StorageService = Depends(get_async_storage_service),
@@ -241,7 +266,9 @@ class BaseStorageRecordView(object):
             :rtype: List[dict]
             """
             return await self._validate_records_payload(
-                request_records, storage_service=storage_service, schema_service=schema_service,
+                request_records,
+                storage_service=storage_service,
+                schema_service=schema_service,
             )
 
         self._router.add_api_route(
@@ -252,7 +279,8 @@ class BaseStorageRecordView(object):
             response_model=StorageUpsertResponse,
             response_model_by_alias=False,
             description=APIDescriptionHelper.append_manage_roles(
-                f"Create or update `{self._record_type}` record(s).",
+                f"Create or update `{self._record_type}` record(s)."
+                + " The `Content-Type: application/json` request header is required.",
             ),
             dependencies=[
                 Depends(validate_request_records),
@@ -262,7 +290,8 @@ class BaseStorageRecordView(object):
 
     def _prepare_soft_delete_record_route(self) -> None:
         """Add api route for soft_delete_record."""
-        async def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
+
+        def validate_record_id(record_id: str = Path(default=..., pattern=self._id_regex_str)) -> str:
             """Validate if record id matches regex.
 
             :param record_id: record id

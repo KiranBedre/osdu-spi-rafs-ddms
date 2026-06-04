@@ -40,7 +40,9 @@ class TestBlobLoader:
     @pytest.mark.asyncio
     async def test_download_blob(self):
         # Patch the BlobClient.download_blob method to return a mock response
-        with patch.object(BlobClient, "download_blob", return_value=AsyncMock(readall=AsyncMock(return_value=TEST_BLOB))) as blob_client:
+        with patch.object(
+            BlobClient, "download_blob", return_value=AsyncMock(readall=AsyncMock(return_value=TEST_BLOB))
+        ) as blob_client:
             blob_loader = AzureBlobLoader()
             response = await blob_loader.download_blob(TEST_BLOB_URL)
         # Verify response and blob client called

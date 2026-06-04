@@ -255,7 +255,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 10,
+                          "T2FullySaturated": 10.0,
                           "IncrementalPorosity": {
                               "Value": 0.142,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -279,7 +279,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 20,
+                          "T2FullySaturated": 20.0,
                           "IncrementalPorosity": {
                               "Value": 0.217,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -335,7 +335,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 100,
+                          "T2FullySaturated": 100.0,
                           "IncrementalPorosity": {
                               "Value": 0.49,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -343,7 +343,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 126,
+                          "T2FullySaturated": 126.0,
                           "IncrementalPorosity": {
                               "Value": 0.595,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -351,7 +351,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 158,
+                          "T2FullySaturated": 158.0,
                           "IncrementalPorosity": {
                               "Value": 0.979,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -359,7 +359,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 200,
+                          "T2FullySaturated": 200.0,
                           "IncrementalPorosity": {
                               "Value": 1.75,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -367,7 +367,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 251,
+                          "T2FullySaturated": 251.0,
                           "IncrementalPorosity": {
                               "Value": 2.895,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -375,7 +375,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 316,
+                          "T2FullySaturated": 316.0,
                           "IncrementalPorosity": {
                               "Value": 4.217,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -383,7 +383,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 398,
+                          "T2FullySaturated": 398.0,
                           "IncrementalPorosity": {
                               "Value": 5.335,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -391,7 +391,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 501,
+                          "T2FullySaturated": 501.0,
                           "IncrementalPorosity": {
                               "Value": 5.784,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -399,7 +399,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 631,
+                          "T2FullySaturated": 631.0,
                           "IncrementalPorosity": {
                               "Value": 5.162,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -407,7 +407,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 794,
+                          "T2FullySaturated": 794.0,
                           "IncrementalPorosity": {
                               "Value": 3.267,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -415,7 +415,7 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 1000,
+                          "T2FullySaturated": 1000.0,
                           "IncrementalPorosity": {
                               "Value": 0.139,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
@@ -423,81 +423,81 @@
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 1259,
+                          "T2FullySaturated": 1259.0,
                           "IncrementalPorosity": {
-                              "Value": 0,
+                              "Value": 0.0,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
                           }
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 1585,
+                          "T2FullySaturated": 1585.0,
                           "IncrementalPorosity": {
-                              "Value": 0,
+                              "Value": 0.0,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
                           }
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 1995,
+                          "T2FullySaturated": 1995.0,
                           "IncrementalPorosity": {
-                              "Value": 0,
+                              "Value": 0.0,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
                           }
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 2512,
+                          "T2FullySaturated": 2512.0,
                           "IncrementalPorosity": {
-                              "Value": 0,
+                              "Value": 0.0,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
                           }
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 3162,
+                          "T2FullySaturated": 3162.0,
                           "IncrementalPorosity": {
-                              "Value": 0,
+                              "Value": 0.0,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
                           }
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 3981,
+                          "T2FullySaturated": 3981.0,
                           "IncrementalPorosity": {
-                              "Value": 0,
+                              "Value": 0.0,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
                           }
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 5012,
+                          "T2FullySaturated": 5012.0,
                           "IncrementalPorosity": {
-                              "Value": 0,
+                              "Value": 0.0,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
                           }
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 6310,
+                          "T2FullySaturated": 6310.0,
                           "IncrementalPorosity": {
-                              "Value": 0,
+                              "Value": 0.0,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
                           }
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 7943,
+                          "T2FullySaturated": 7943.0,
                           "IncrementalPorosity": {
-                              "Value": 0,
+                              "Value": 0.0,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
                           }
                       },
                       {
                           "CumulativeWaterSaturation": 100.0,
-                          "T2FullySaturated": 10000,
+                          "T2FullySaturated": 10000.0,
                           "IncrementalPorosity": {
-                              "Value": 0,
+                              "Value": 0.0,
                               "PorosityMeasurementTypeID": "{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
                           }
                       }

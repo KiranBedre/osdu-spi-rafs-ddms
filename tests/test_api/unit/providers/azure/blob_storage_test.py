@@ -89,7 +89,9 @@ async def test_upload_blob_failure_due_to_azure_exception(blob_metadata, storage
     test_blob = Blob(blob_data=b"data", blob_metadata=blob_metadata)
     blob_storage = AzureBlobStorage(storage_partition_info)
 
-    with patch.object(blob_storage, "_upload_blob", AsyncMock(side_effect=ServiceUnavailableException())) as mock_upload:
+    with patch.object(
+        blob_storage, "_upload_blob", AsyncMock(side_effect=ServiceUnavailableException())
+    ) as mock_upload:
         with pytest.raises(ServiceUnavailableException) as exc_info:
             await blob_storage.create_blob(test_blob)
         assert exc_info.value.status_code == 503

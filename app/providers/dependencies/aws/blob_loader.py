@@ -59,10 +59,10 @@ class AWSBlobLoader(IBlobLoader):
         bucket = bucket_endpoint.split(".")[0]
         return [bucket, key]
 
-    async def upload_blob(self, upload_url: str, blob: bytes):
+    async def upload_blob(self, upload_url: str, blob: bytes):  # noqa: ASYNC910
         bucket, key = self.client_from_url(upload_url)
-        return self.s3_client.put_object(Bucket=bucket, Key=key, Body=blob)
+        return self.s3_client.put_object(Bucket=bucket, Key=key, Body=blob)  # noqa: ASYNC910
 
-    async def download_blob(self, download_url: str) -> bytes:
+    async def download_blob(self, download_url: str) -> bytes:  # noqa: ASYNC910
         bucket, key = self.client_from_url(download_url)
-        return self.s3_client.get_object(Bucket=bucket, Key=key)["Body"].read()
+        return self.s3_client.get_object(Bucket=bucket, Key=key)["Body"].read()  # noqa: ASYNC910

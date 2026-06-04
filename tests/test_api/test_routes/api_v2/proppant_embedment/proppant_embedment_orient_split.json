@@ -22,7 +22,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:ProppantEmbedmentTest_WPC:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:ProppantEmbedmentTest_Sample:",
       [
         {

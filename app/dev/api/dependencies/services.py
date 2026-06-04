@@ -26,7 +26,7 @@ from app.models.schemas.user import User
 from app.resources.common_headers import CORRELATION_ID
 
 
-async def get_async_partition_service(
+def get_async_partition_service(
     data_partition_id: str = Depends(require_data_partition_id),
     settings: AppSettings = Depends(get_app_settings),
     user: User = Depends(require_authorized_user),

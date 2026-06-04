@@ -31,8 +31,7 @@ class NestedModel(BaseModel):
     nested_field: str
 
 
-class Field3(NestedModel):
-    ...
+class Field3(NestedModel): ...
 
 
 class MockModel(BaseModel):
@@ -50,7 +49,8 @@ class MockModelSameNestedName(BaseModel):
 def test_valid_columns_filter():
     expected_columns_filter = ColumnsFilter(["Field1", "Field2"])
     validator = DFMultipleNestedFilterValidator(
-        MockModel.schema(), raw_columns_filter='["Field1" , "Field2"]',
+        MockModel.schema(),
+        raw_columns_filter='["Field1" , "Field2"]',
     )
     assert validator.valid_columns_filter == expected_columns_filter
 
@@ -61,12 +61,17 @@ def test_valid_columns_filter_invalid_columns(raw_columns_filter):
     with pytest.raises(FilterValidationError) as exc_info:
         validator.valid_columns_filter
     wrong_column = json.loads(raw_columns_filter)[-1]
-    assert str(
-        exc_info.value,
-    ) == f"Wrong property name: {wrong_column}. Reason: {wrong_column} not in ['Field1', 'Field2', 'Field3']"
+    assert (
+        str(
+            exc_info.value,
+        )
+        == f"Wrong property name: {wrong_column}. Reason: {wrong_column} not in ['Field1', 'Field2', 'Field3']"
+    )
 
 
-@pytest.mark.parametrize("operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")])
+@pytest.mark.parametrize(
+    "operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")]
+)
 def test_valid_rows_filter(operator_name, operator_value):
     expected_rows_filter = RowsFilter("Field1", operator_value, "value1")
     validator = DFMultipleNestedFilterValidator(
@@ -76,7 +81,9 @@ def test_valid_rows_filter(operator_name, operator_value):
     assert validator.valid_rows_filter == expected_rows_filter
 
 
-@pytest.mark.parametrize("operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")])
+@pytest.mark.parametrize(
+    "operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")]
+)
 def test_valid_rows_filter_with_nested_field(operator_name, operator_value):
     expected_rows_filter = RowsFilter("Field3.nested_field", operator_value, "value1")
     nested_validator = DFMultipleNestedFilterValidator(
@@ -86,7 +93,9 @@ def test_valid_rows_filter_with_nested_field(operator_name, operator_value):
     assert nested_validator.valid_rows_filter == expected_rows_filter
 
 
-@pytest.mark.parametrize("operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")])
+@pytest.mark.parametrize(
+    "operator_name,operator_value", [("eq", "="), ("gt", ">"), ("lt", "<"), ("neq", "!="), ("lte", "<="), ("gte", ">=")]
+)
 def test_valid_rows_filter_with_nested_field_different_name(operator_name, operator_value):
     expected_rows_filter = RowsFilter("Field3.nested_field", operator_value, "value1")
     nested_validator = DFMultipleNestedFilterValidator(

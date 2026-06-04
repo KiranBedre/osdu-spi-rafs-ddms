@@ -32,6 +32,16 @@ async def get_data_file_source(
     storage_service: storage.StorageService = Depends(get_async_storage_service),
     dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
 ):
+    """Resolve a single dataset file source from storage.
+
+    Args:
+        dataset_full_id: Full dataset ID including optional version suffix.
+        storage_service: Async storage service for retrieving dataset records.
+        dataset_service: Async dataset service for downloading file content.
+
+    Returns:
+        DatasetSourceFile containing the dataset ID, MIME type, and file content.
+    """
     dataset_id, version = get_id_version(dataset_full_id)
     dataset_record = await storage_service.get_record(dataset_id, version)
     mime_type = await get_mime_type(dataset_record)
@@ -49,16 +59,20 @@ async def get_data_file_sources(
     dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
     version: Optional[str] = None,
 ) -> List[DatasetSourceFile]:
+    """Resolve all dataset file sources for a given record.
+
+    Args:
+        record_id: The ID of the parent record containing dataset references.
+        storage_service: Async storage service for retrieving records.
+        dataset_service: Async dataset service for downloading file content.
+        version: Optional version of the record to retrieve.
+
+    Returns:
+        List of DatasetSourceFile for all datasets referenced in the record.
+    """
     record = await storage_service.get_record(record_id, version)
     datasets = record["data"].get("Datasets", [])
 
-    tasks = []
-    try:
-        async with asyncio.TaskGroup() as group:
-            for dataset_id in datasets:
-                tasks.append(group.create_task(get_data_file_source(dataset_id, storage_service, dataset_service)))
-    except ExceptionGroup as eg:
-        for exc in eg.exceptions:  # noqa: WPS328 pylint: disable=not-an-iterable
-            raise exc
+    tasks = [get_data_file_source(dataset_id, storage_service, dataset_service) for dataset_id in datasets]
 
-    return [task.result() for task in tasks]
+    return await asyncio.gather(*tasks)

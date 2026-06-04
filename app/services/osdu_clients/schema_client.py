@@ -156,7 +156,10 @@ class SchemaServiceApiClient(object):
             "schema": schema_content,
         }
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             response = await client.put(SchemaServicePaths.SCHEMA, json=payload, headers=self.headers)
             response.raise_for_status()
@@ -172,7 +175,10 @@ class SchemaServiceApiClient(object):
         :rtype: dict
         """
         async with httpx.AsyncClient(
-            base_url=self.base_url, headers=self.headers, timeout=TIMEOUT, transport=self._transport(),
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=TIMEOUT,
+            transport=self._transport(),
         ) as client:
             response = await client.get(f"{SchemaServicePaths.SCHEMA}/{schema_id}", headers=self.headers)
             response.raise_for_status()

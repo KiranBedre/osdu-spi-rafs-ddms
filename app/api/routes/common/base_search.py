@@ -25,7 +25,7 @@ from starlette import status
 
 from app.api.dependencies.request import (
     get_content_schema_version,
-    validate_bulkdata_content_type,
+    get_response_mime_type,
 )
 from app.api.dependencies.services import (
     get_async_dataset_service,
@@ -53,6 +53,16 @@ SEARCH_READ_BATCH_SIZE = 100  # max number of parquet files retrieved
 PaginationParametersType = Tuple[int, int, Optional[date], Optional[date]]
 
 
+def _coerce_mixed_type_columns(df: pd.DataFrame) -> pd.DataFrame:
+    # When datasets with mismatched column types are concatenated, pandas
+    # produces object-dtype columns containing mixed Python types (e.g. int + str).
+    # PyArrow rejects these during to_parquet(); cast such columns to str.
+    for col in df.select_dtypes(include="object").columns:
+        if df[col].map(type).nunique() > 1:
+            df[col] = df[col].astype(str)
+    return df
+
+
 class GenericSearchDataView(object):
     def __init__(
         self,
@@ -64,8 +74,8 @@ class GenericSearchDataView(object):
         self._router = router
         self.description_template_search_data = APIDescriptionHelper.append_joined_roles(
             "Get the (`queried`) bulk data from every `{analysis_type}` found in search service. <br><br>\
-            Use the `Accept` request header to specify content schema version \
-                (example header `Accept: */*;version=1.0.0` is supported).<br><br>\
+            Use the `content_schema_version` query parameter to specify content schema version \
+                (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>\
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
                 query parameters can be used to manage data in response. <br><br>\
             Use the `orient` query parameter to select the JSON output format (`split` or `records`).<br><br>\
@@ -74,8 +84,8 @@ class GenericSearchDataView(object):
         )
         self.description_template_search = APIDescriptionHelper.append_joined_roles(
             "Get the (`samples analysis`) ids list that comply with `{query}` for given`{analysis_type}`. <br><br>\
-            Use the `Accept` request header to specify content schema version \
-                (example header `Accept: */*;version=1.0.0` is supported).<br><br>\
+            Use the `content_schema_version` query parameter to specify content schema version \
+                (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>\
             The  `columns_filter`, `rows_filter`, and  `columns_aggregation` \
                 query parameters can be used to manage data in response. <br><br> \
             Use `offset`, `page_limit` query parameters to control response data size. \
@@ -92,7 +102,7 @@ class GenericSearchDataView(object):
         if kwargs:
             self.__dict__.update(kwargs)
 
-    async def get_search_data(  # noqa: CCR001, WPS210, WPS211, WPS231
+    async def get_search_data(  # noqa: CCR001, CFQ001, WPS210, WPS211, WPS231
         self,
         request: Request,
         analysis_type: str,
@@ -139,9 +149,7 @@ class GenericSearchDataView(object):
         """
         # TODO: perfomance tuning
         data_partition_id = request.headers.get("data-partition-id")
-        mime_type = SupportedMimeTypes.find_by_mime_type(
-            request.headers.get("content-type", SupportedMimeTypes.JSON.mime_type),
-        )
+        mime_type = get_response_mime_type(request)
         # Aggregation results only make sense in split format (index holds the function name)
         orient = "split" if df_filter.valid_columns_aggregation else orient
         offset, page_limit, indexed_start_date, indexed_end_date = pagination_parameters
@@ -168,22 +176,30 @@ class GenericSearchDataView(object):
             )
 
             result_df, total_size = await self._build_result_df(
-                df_triplets_gen, df_filter, offset, page_limit, analysis_type_ids,
+                df_triplets_gen,
+                df_filter,
+                offset,
+                page_limit,
+                analysis_type_ids,
             )
         else:
             df_triplets_gen = await self._get_search_data(
-                analysis_type_ids=analysis_type_ids[offset:offset + page_limit],
+                analysis_type_ids=analysis_type_ids[offset : offset + page_limit],
                 dataset_service=dataset_service,
                 blob_storage_service=blob_storage_service,
                 df_filter=df_filter,
             )
             total_size = len(analysis_type_ids)
             result_df, _ = await self._build_result_df(
-                df_triplets_gen, df_filter, 0, page_limit, analysis_type_ids,
+                df_triplets_gen,
+                df_filter,
+                0,
+                page_limit,
+                analysis_type_ids,
             )
 
         if mime_type == SupportedMimeTypes.PARQUET:
-            content_response = result_df.to_parquet() if result_df.any else b""
+            content_response = _coerce_mixed_type_columns(result_df).to_parquet() if result_df.any else b""
             response = Response(
                 content=content_response,
                 media_type=SupportedMimeTypes.PARQUET.mime_type,
@@ -256,6 +272,7 @@ class GenericSearchDataView(object):
         :rtype: Response
         """
         data_partition_id = request.headers.get("data-partition-id")
+        get_response_mime_type(request)
         offset, page_limit, indexed_start_date, indexed_end_date = pagination_parameters
         query_date_range = (indexed_start_date, indexed_end_date)
 
@@ -294,7 +311,7 @@ class GenericSearchDataView(object):
             result_set = [samplesanalysis_ids for _, samplesanalysis_ids in analysis_type_ids]
 
         response = {
-            "result": result_set[offset:offset + page_limit],
+            "result": result_set[offset : offset + page_limit],
             "offset": offset,
             "page_limit": page_limit,
             "total_size": len(result_set),
@@ -333,9 +350,9 @@ class GenericSearchDataView(object):
                 dataset_service=dataset_service,
                 df_filter=df_filter,
             )
-        return df_payload_gen
+        return df_payload_gen  # noqa: ASYNC910
 
-    async def _get_search_data_for_blobs(  # noqa: WPS234
+    async def _get_search_data_for_blobs(  # noqa: WPS234, ASYNC900, ASYNC911
         self,
         analysis_type_ids: List[Tuple[str, str]],
         blob_storage_service: IBlobStorage,
@@ -349,15 +366,15 @@ class GenericSearchDataView(object):
 
         for n_batch in range((len(blob_ids) // self._batch_size) + 1):
             batch_offset = self._batch_size * n_batch
-            blob_ids_batch = blob_ids[batch_offset:batch_offset + self._batch_size]
-            df_triplets = await parquet_loader.read_parquet_files(
+            blob_ids_batch = blob_ids[batch_offset : batch_offset + self._batch_size]
+            df_triplets = await parquet_loader.read_parquet_files(  # noqa: WPS476
                 blob_ids=blob_ids_batch,
                 blob_storage_service=blob_storage_service,
                 df_filter_processor=df_filter_processor,
             )
             yield df_triplets
 
-    async def _get_search_data_for_datasets(  # noqa: WPS234
+    async def _get_search_data_for_datasets(  # noqa: WPS234, ASYNC900, ASYNC911
         self,
         analysis_type_ids: List[Tuple[str, str]],
         dataset_service: dataset.DatasetService,
@@ -371,10 +388,11 @@ class GenericSearchDataView(object):
 
         for n_batch in range((len(dataset_ids) // self._batch_size) + 1):
             batch_offset = self._batch_size * n_batch
-            dataset_ids_batch = dataset_ids[batch_offset:batch_offset + self._batch_size]
-            signed_urls_for_datasets = await dataset_service.get_signed_urls(dataset_ids_batch)
-            df_triplets = await parquet_loader.read_parquet_files(
-                signed_urls_for_datasets, df_filter_processor,
+            dataset_ids_batch = dataset_ids[batch_offset : batch_offset + self._batch_size]
+            signed_urls_for_datasets = await dataset_service.get_signed_urls(dataset_ids_batch)  # noqa: WPS476
+            df_triplets = await parquet_loader.read_parquet_files(  # noqa: WPS476
+                signed_urls_for_datasets,
+                df_filter_processor,
             )
             yield df_triplets
 
@@ -414,9 +432,13 @@ class GenericSearchDataView(object):
         if df_filter.valid_columns_aggregation:
             df_filter_processor = DFFilterProcessor(df_filter=df_filter)
             paged_dfs, total_size, errors = await self._paginate_dfs(filtered_df_triplets, offset=0, select_all=True)
-            result_df = df_filter_processor.apply_filters_from_df(
-                pd.concat(paged_dfs, ignore_index=True),
-            ) if paged_dfs else pd.DataFrame()
+            result_df = (
+                df_filter_processor.apply_filters_from_df(
+                    pd.concat(paged_dfs, ignore_index=True),
+                )
+                if paged_dfs
+                else pd.DataFrame()
+            )
         else:
             paged_dfs, total_size, errors = await self._paginate_dfs(filtered_df_triplets, offset, page_limit)
             result_df = pd.concat(paged_dfs, ignore_index=True) if paged_dfs else pd.DataFrame()
@@ -426,7 +448,7 @@ class GenericSearchDataView(object):
 
         return result_df, total_size
 
-    async def _filter_dfs(
+    async def _filter_dfs(  # noqa: ASYNC900
         self,
         df_triplets: AsyncGenerator[DFPayload, None],
     ) -> AsyncGenerator[DFPayload, None]:
@@ -435,7 +457,7 @@ class GenericSearchDataView(object):
         async for batch_df_triplets in df_triplets:
             for dataset_id, df, error_msg in batch_df_triplets:
                 if not (df.empty and error_msg is None):
-                    yield dataset_id, df, error_msg
+                    yield dataset_id, df, error_msg  # noqa: ASYNC911
 
     def _handle_errors(self, analysis_type_ids: List[Tuple[str, str]], errors: List[Tuple[str, str]]):
         """Handle errors."""
@@ -458,9 +480,6 @@ class GenericSearchDataView(object):
             methods=["GET"],
             status_code=status.HTTP_200_OK,
             description=self.description_template_search_data,
-            dependencies=[
-                Depends(validate_bulkdata_content_type),
-            ],
         )
 
     def _prepare_get_search_route(self) -> None:

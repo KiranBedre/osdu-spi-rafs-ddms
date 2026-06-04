@@ -45,7 +45,8 @@ class SamplesAnalysesReportView(BaseStorageRecordView):
         self,
         request: Request,
         request_records: Annotated[
-            List[dict], Body(
+            List[dict],
+            Body(
                 openapi_examples={
                     "example": {
                         "value": load_data_example("samples_analyses_report.json"),

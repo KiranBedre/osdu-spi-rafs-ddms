@@ -43,7 +43,7 @@
   ],
   "data":[
     [
-      "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
+      "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:Sample-33F:",
       [
         {
@@ -156,10 +156,10 @@
         }
       ],
       [
-        "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
-        "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
-        "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:",
-        "opendes:work-product-component--SamplesAnalysis:STO_SamplesAnalysis:"
+        "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+        "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+        "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+        "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:"
       ],
       9,
       6,

@@ -35,11 +35,13 @@ from tests.test_api.test_routes.osdu.storage_mock_objects import (
 
 
 def build_reason(status_code: int, reason_detail: str, message: str):
-    return json.dumps({
-        "code": status_code,
-        "reason": reason_detail,
-        "message": message,
-    })
+    return json.dumps(
+        {
+            "code": status_code,
+            "reason": reason_detail,
+            "message": message,
+        }
+    )
 
 
 @pytest.fixture
@@ -79,18 +81,19 @@ def mock_get_response(mock_record_client, storage_service):
 
 @pytest.fixture
 def with_patched_storage_client_error(
-        storage_service,
-        storage_method,
-        response_code,
-        response_json=None,
-        response_text="",
+    storage_service,
+    storage_method,
+    response_code,
+    response_json=None,
+    response_text="",
 ):
     """Patch storage client to throw an error."""
+
     class Response(object):
         status_code = response_code
         text = response_text
 
-        def json(_):
+        def json(self):
             raise json.decoder.JSONDecodeError(msg="", doc="", pos=1)
 
     error = HTTPStatusError(message="", request=object(), response=Response())
@@ -100,17 +103,20 @@ def with_patched_storage_client_error(
 
 @pytest.fixture
 def with_patched_storage_client_error_json_from_dependecy(
-        storage_service,
-        storage_method,
-        response_code,
-        response_json,
-        response_text="",
+    storage_service,
+    storage_method,
+    response_code,
+    response_json,
+    response_text="",
 ):
     """Patch storage client to throw an error."""
+
     class Response(object):
         status_code = response_code
         text = response_text
-        def json(_): return response_json
+
+        def json(self):
+            return response_json
 
     error = HTTPStatusError(message="", request=object(), response=Response())
     with patch.object(storage_service.storage_client, storage_method, side_effect=error):
@@ -136,7 +142,8 @@ async def test_get_specific_record(storage_service, mock_record_client, mock_use
 
     assert record == OSDU_GENERIC_RECORD.dict(exclude_none=True)
     mock_record_client.get_specific_record.assert_called_once_with(
-        record_id, version,
+        record_id,
+        version,
     )
 
 
@@ -192,16 +199,18 @@ async def test_soft_delete_record(storage_service, mock_record_client, mock_user
 
 
 @pytest.mark.parametrize(
-    "storage_method,response_code", [
-        ("get_latest_record", status.HTTP_400_BAD_REQUEST),
-        ("get_latest_record", status.HTTP_429_TOO_MANY_REQUESTS),
-        ("get_latest_record", status.HTTP_500_INTERNAL_SERVER_ERROR),
+    "storage_method,response_code,expected_status_code",
+    [
+        ("get_latest_record", status.HTTP_400_BAD_REQUEST, status.HTTP_400_BAD_REQUEST),
+        ("get_latest_record", status.HTTP_429_TOO_MANY_REQUESTS, status.HTTP_502_BAD_GATEWAY),
+        ("get_latest_record", status.HTTP_500_INTERNAL_SERVER_ERROR, status.HTTP_502_BAD_GATEWAY),
     ],
 )
 @pytest.mark.asyncio
 async def test_error_handler_get_record(
     storage_method,
     response_code,
+    expected_status_code,
     storage_service,
     mock_record_client,
     mock_user,
@@ -212,7 +221,7 @@ async def test_error_handler_get_record(
     with pytest.raises(OsduApiException) as exc:
         await storage_service.get_record(record_id)
 
-    assert exc.value.status_code == status.HTTP_424_FAILED_DEPENDENCY
+    assert exc.value.status_code == expected_status_code
     reason = build_reason(
         status_code=response_code,
         reason_detail=build_storage_service_exception_detail("retrieve"),
@@ -222,16 +231,18 @@ async def test_error_handler_get_record(
 
 
 @pytest.mark.parametrize(
-    "storage_method,response_code", [
-        ("get_specific_record", status.HTTP_400_BAD_REQUEST),
-        ("get_specific_record", status.HTTP_429_TOO_MANY_REQUESTS),
-        ("get_specific_record", status.HTTP_500_INTERNAL_SERVER_ERROR),
+    "storage_method,response_code,expected_status_code",
+    [
+        ("get_specific_record", status.HTTP_400_BAD_REQUEST, status.HTTP_400_BAD_REQUEST),
+        ("get_specific_record", status.HTTP_429_TOO_MANY_REQUESTS, status.HTTP_502_BAD_GATEWAY),
+        ("get_specific_record", status.HTTP_500_INTERNAL_SERVER_ERROR, status.HTTP_502_BAD_GATEWAY),
     ],
 )
 @pytest.mark.asyncio
 async def test_error_handler_get_record_version(
     storage_method,
     response_code,
+    expected_status_code,
     storage_service,
     mock_record_client,
     mock_user,
@@ -243,7 +254,7 @@ async def test_error_handler_get_record_version(
     with pytest.raises(OsduApiException) as exc:
         await storage_service.get_record(record_id, version)
 
-    assert exc.value.status_code == status.HTTP_424_FAILED_DEPENDENCY
+    assert exc.value.status_code == expected_status_code
     reason = build_reason(
         status_code=response_code,
         reason_detail=build_storage_service_exception_detail("retrieve"),
@@ -253,27 +264,29 @@ async def test_error_handler_get_record_version(
 
 
 @pytest.mark.parametrize(
-    "storage_method,response_code", [
-        ("soft_delete_record", status.HTTP_400_BAD_REQUEST),
-        ("soft_delete_record", status.HTTP_429_TOO_MANY_REQUESTS),
-        ("soft_delete_record", status.HTTP_500_INTERNAL_SERVER_ERROR),
+    "storage_method,response_code,expected_status_code",
+    [
+        ("soft_delete_record", status.HTTP_400_BAD_REQUEST, status.HTTP_400_BAD_REQUEST),
+        ("soft_delete_record", status.HTTP_429_TOO_MANY_REQUESTS, status.HTTP_502_BAD_GATEWAY),
+        ("soft_delete_record", status.HTTP_500_INTERNAL_SERVER_ERROR, status.HTTP_502_BAD_GATEWAY),
     ],
 )
 @pytest.mark.asyncio
 async def test_error_handler_soft_delete_record(
-        storage_method,
-        response_code,
-        storage_service,
-        mock_record_client,
-        mock_user,
-        with_patched_storage_client_error,
+    storage_method,
+    response_code,
+    expected_status_code,
+    storage_service,
+    mock_record_client,
+    mock_user,
+    with_patched_storage_client_error,
 ):
     record_id = "test-id"
 
     with pytest.raises(OsduApiException) as exc:
         await storage_service.soft_delete_record(record_id)
 
-    assert exc.value.status_code == status.HTTP_424_FAILED_DEPENDENCY
+    assert exc.value.status_code == expected_status_code
     reason = build_reason(
         status_code=response_code,
         reason_detail=build_storage_service_exception_detail("delete"),
@@ -283,24 +296,26 @@ async def test_error_handler_soft_delete_record(
 
 
 @pytest.mark.parametrize(
-    "storage_method,response_code", [
-        ("create_update_records", status.HTTP_429_TOO_MANY_REQUESTS),
-        ("create_update_records", status.HTTP_500_INTERNAL_SERVER_ERROR),
+    "storage_method,response_code,expected_status_code",
+    [
+        ("create_update_records", status.HTTP_429_TOO_MANY_REQUESTS, status.HTTP_502_BAD_GATEWAY),
+        ("create_update_records", status.HTTP_500_INTERNAL_SERVER_ERROR, status.HTTP_502_BAD_GATEWAY),
     ],
 )
 @pytest.mark.asyncio
 async def test_error_handler_upsert_records(
-        storage_method,
-        response_code,
-        storage_service,
-        mock_record_client,
-        mock_user,
-        with_patched_storage_client_error,
+    storage_method,
+    response_code,
+    expected_status_code,
+    storage_service,
+    mock_record_client,
+    mock_user,
+    with_patched_storage_client_error,
 ):
     with pytest.raises(OsduApiException) as exc:
         await storage_service.upsert_records([])
 
-    assert exc.value.status_code == status.HTTP_424_FAILED_DEPENDENCY
+    assert exc.value.status_code == expected_status_code
     reason = build_reason(
         status_code=response_code,
         reason_detail=build_storage_service_exception_detail("upsert"),
@@ -310,26 +325,28 @@ async def test_error_handler_upsert_records(
 
 
 @pytest.mark.parametrize(
-    "storage_method,response_code", [
-        ("query_records", status.HTTP_400_BAD_REQUEST),
-        ("query_records", status.HTTP_404_NOT_FOUND),
-        ("query_records", status.HTTP_429_TOO_MANY_REQUESTS),
-        ("query_records", status.HTTP_500_INTERNAL_SERVER_ERROR),
+    "storage_method,response_code,expected_status_code",
+    [
+        ("query_records", status.HTTP_400_BAD_REQUEST, status.HTTP_400_BAD_REQUEST),
+        ("query_records", status.HTTP_404_NOT_FOUND, status.HTTP_404_NOT_FOUND),
+        ("query_records", status.HTTP_429_TOO_MANY_REQUESTS, status.HTTP_502_BAD_GATEWAY),
+        ("query_records", status.HTTP_500_INTERNAL_SERVER_ERROR, status.HTTP_502_BAD_GATEWAY),
     ],
 )
 @pytest.mark.asyncio
 async def test_error_handler_query_records(
-        storage_method,
-        response_code,
-        storage_service,
-        mock_record_client,
-        mock_user,
-        with_patched_storage_client_error,
+    storage_method,
+    response_code,
+    expected_status_code,
+    storage_service,
+    mock_record_client,
+    mock_user,
+    with_patched_storage_client_error,
 ):
     with pytest.raises(OsduApiException) as exc:
         await storage_service.query_records([])
 
-    assert exc.value.status_code == status.HTTP_424_FAILED_DEPENDENCY
+    assert exc.value.status_code == expected_status_code
     reason = build_reason(
         status_code=response_code,
         reason_detail=build_storage_service_exception_detail("query"),
@@ -339,11 +356,13 @@ async def test_error_handler_query_records(
 
 
 @pytest.mark.parametrize(
-    "storage_method,response_code,response_json", [
+    "storage_method,response_code,response_json",
+    [
         ("get_latest_record", status.HTTP_500_INTERNAL_SERVER_ERROR, {"code": status.HTTP_500_INTERNAL_SERVER_ERROR}),
         ("get_latest_record", status.HTTP_500_INTERNAL_SERVER_ERROR, {"code": status.HTTP_500_INTERNAL_SERVER_ERROR}),
         (
-            "create_update_records", status.HTTP_500_INTERNAL_SERVER_ERROR,
+            "create_update_records",
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
             {"code": status.HTTP_500_INTERNAL_SERVER_ERROR},
         ),
         ("soft_delete_record", status.HTTP_500_INTERNAL_SERVER_ERROR, {"code": status.HTTP_500_INTERNAL_SERVER_ERROR}),
@@ -374,5 +393,5 @@ async def test_error_handler_message_from_service(
         if storage_method == "query_records":
             await storage_service.query_records([])
 
-    assert exc.value.status_code == status.HTTP_424_FAILED_DEPENDENCY
+    assert exc.value.status_code == status.HTTP_502_BAD_GATEWAY
     assert exc.value.detail == json.dumps(response_json)

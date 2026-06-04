@@ -55,7 +55,7 @@ TEST_PARAMS_AGGREGATION = {
 }
 TEST_PARAMS_FILTERS = {
     "columns_filter": "SamplesAnalysisID,TestNumber,SampleID",
-    "rows_filter": "SamplesAnalysisID,eq,opendes:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+    "rows_filter": "SamplesAnalysisID,eq,partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
 }
 with open(f"{dir_path}/vle_orient_split.json") as fp:
     TEST_DATA = json.load(fp)
@@ -85,7 +85,7 @@ TEST_FILTERED_DATA = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "test_number",
             "opendes:master-data--Sample:fluid_sample_test:",
         ],
@@ -101,7 +101,7 @@ INCORRECT_SCHEMA_TEST_DATA = {
     "index": [0],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:1:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "opendes:master-data--:1:",  # Incorrect Coring value
         ],
     ],
@@ -127,7 +127,7 @@ with open(f"{dir_path}/vle_orient_split_v2.json") as fp:
 
 TEST_PARAMS_FILTERS_V2 = {
     "columns_filter": "SamplesAnalysisID,TestNumber,SampleID",
-    "rows_filter": "SamplesAnalysisID,eq,opendes:work-product-component--SamplesAnalysis:VLE_WPC_001:",
+    "rows_filter": "SamplesAnalysisID,eq,partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
 }
 
 TEST_AGGREGATED_DATA_V2 = {
@@ -155,7 +155,7 @@ TEST_FILTERED_DATA_V2 = {
     ],
     "data": [
         [
-            "opendes:work-product-component--SamplesAnalysis:VLE_WPC_001:",
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
             "VLE-001",
             "opendes:master-data--Sample:VLE_Sample_001:",
         ],

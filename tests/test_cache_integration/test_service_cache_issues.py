@@ -58,6 +58,7 @@ async def app_settings():
 async def redis_backend():
     """Create a real Redis backend instance for testing."""
     from app.core.helpers.cache.backends.redis_cache import LoggingRedisBackend
+
     backend = RedisCacheBackend()
     backend_instance = await backend.get_backend()
     # Wrap with LoggingRedisBackend for cache operation logging
@@ -102,7 +103,7 @@ async def test_schema_service_cache_miss_issue(app_settings, initialized_cache, 
     data_partition_id = "opendes"
     user = User(x_user_id="test-user", access_token="test-token")
 
-    with patch('app.services.osdu_clients.schema_client.SchemaServiceApiClient') as MockClient:
+    with patch("app.services.osdu_clients.schema_client.SchemaServiceApiClient") as MockClient:
         mock_client = MockClient.return_value
         mock_client.get_schema = AsyncMock(return_value=mock_schema_response)
 
@@ -134,10 +135,11 @@ async def test_schema_service_cache_miss_issue(app_settings, initialized_cache, 
 
         # MAIN ASSERTION: Verify cache is working by checking API was called only once
         # If cache wasn't working, API would be called 3 times
-        assert mock_client.get_schema.call_count == 1, \
-            f"Cache is working! API should be called only once (first call). " \
-            f"Got {mock_client.get_schema.call_count} calls. " \
+        assert mock_client.get_schema.call_count == 1, (
+            f"Cache is working! API should be called only once (first call). "
+            f"Got {mock_client.get_schema.call_count} calls. "
             f"Subsequent calls use cache, reducing OSDU API load by ~66%."
+        )
 
 
 @pytest.mark.skip(reason="Dataset service cache has known issues with asyncio.TaskGroup() - see XOM-RESM-issue-608")
@@ -181,8 +183,9 @@ async def test_dataset_service_cache_miss_issue(app_settings, initialized_cache,
     data_partition_id = "opendes"
     user = User(x_user_id="test-user", access_token="test-token")
 
-    with patch('app.services.osdu_clients.dataset_client.DatasetServiceApiClient') as MockClient, \
-            patch('app.services.dataset.get_blob_loader') as MockBlobLoader:
+    with patch("app.services.osdu_clients.dataset_client.DatasetServiceApiClient") as MockClient, patch(
+        "app.services.dataset.get_blob_loader"
+    ) as MockBlobLoader:
         mock_client = MockClient.return_value
         mock_client.retrieval_instructions = AsyncMock(return_value=mock_signed_urls_response)
 
@@ -225,10 +228,11 @@ async def test_dataset_service_cache_miss_issue(app_settings, initialized_cache,
 
         # MAIN ASSERTION: Verify cache is working by checking API was called only once
         # If cache wasn't working, API would be called 3 times
-        assert mock_client.retrieval_instructions.call_count == 1, \
-            f"Cache is working! API should be called only once (first call). " \
-            f"Got {mock_client.retrieval_instructions.call_count} calls. " \
+        assert mock_client.retrieval_instructions.call_count == 1, (
+            f"Cache is working! API should be called only once (first call). "
+            f"Got {mock_client.retrieval_instructions.call_count} calls. "
             f"Subsequent calls use cache, reducing OSDU API load by ~66%."
+        )
 
 
 @pytest.mark.asyncio
@@ -279,9 +283,10 @@ async def test_cache_key_generation_inconsistency(redis_backend):
         print(f"Keys match: {key1 == key2}")
 
         # Keys should match for cache to work, but they won't due to request=None
-        assert key1 != key2 or "None" in key1, \
-            "BUG REPRODUCED! Cache keys either don't match or include None, " \
+        assert key1 != key2 or "None" in key1, (
+            "BUG REPRODUCED! Cache keys either don't match or include None, "
             "proving key generation is broken for service methods."
+        )
 
     except AttributeError as e:
         # This exception proves the bug - key_builder tries to access request.headers
@@ -301,6 +306,7 @@ async def test_partition_cache_with_alru_and_fastapi_cache(app_settings, initial
     correctly.
     """
     import logging
+
     caplog.set_level(logging.DEBUG)
 
     # This test would require mocking Azure credentials and partition client

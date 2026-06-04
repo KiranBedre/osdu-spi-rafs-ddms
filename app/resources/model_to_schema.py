@@ -60,8 +60,7 @@ def _normalize_schema(node: Any) -> Any:  # noqa: WPS231, CCR001
     for prop_key, prop_value in node.items():
         if prop_key == "properties" and isinstance(prop_value, dict):
             schema_result[prop_key] = {
-                prop_name: _normalize_schema(prop_schema)
-                for prop_name, prop_schema in prop_value.items()
+                prop_name: _normalize_schema(prop_schema) for prop_name, prop_schema in prop_value.items()
             }
         elif prop_key == "items":
             schema_result[prop_key] = _normalize_schema(prop_value)

@@ -14,9 +14,12 @@
 
 """Azure-specific Redis client factory with Entra ID authentication."""
 
-from loguru import logger
+# Pylint cannot always resolve Azure namespace packages in static analysis.
+# pylint: disable=no-name-in-module
+
 from azure.identity.aio import DefaultAzureCredential
 from azure.keyvault.secrets.aio import SecretClient
+from loguru import logger
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool, SSLConnection
 
@@ -91,7 +94,7 @@ class AzureRedisClientFactory(RedisClientFactory):
             pool_params = await self._build_pool_params(credential_provider, connection_class, connection_kwargs)
             pool = ConnectionPool(**pool_params)
 
-            return Redis(connection_pool=pool)
+            return Redis(connection_pool=pool)  # noqa: ASYNC910
 
         except Exception as exc:  # noqa: B902
             logger.error(f"Error setting up Entra auth, falling back to password: {exc}")

@@ -20,6 +20,7 @@ from pydantic.types import conint
 
 class RedisCacheConfig(BaseSettings):
     """Config with settings for redis instance."""
+
     redis_hostname: Optional[str] = None
 
     redis_password: str = None

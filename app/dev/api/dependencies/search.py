@@ -35,7 +35,7 @@ from app.search.ddms_dataset_ids_fetcher import (
 from app.services import entitlements, search
 
 
-async def get_analysis_type_ids_fetcher(
+async def get_analysis_type_ids_fetcher(  # noqa: ASYNC910
     search_service: search.SearchService = Depends(get_async_search_service),
     partition: str = Depends(require_data_partition_id),
     entitlements_service: entitlements.EntitlementsService = Depends(get_async_entitlements_service),
@@ -47,4 +47,4 @@ async def get_analysis_type_ids_fetcher(
     else:
         logger.info("Using search service to fetch ids")
         fetcher = SearchServiceSamplesAnalysisTypeIdsFetcher(search_service)
-    return fetcher
+    return fetcher  # noqa: ASYNC910
