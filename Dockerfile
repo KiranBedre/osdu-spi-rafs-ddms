@@ -9,7 +9,7 @@ COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt \
     && pip install --no-cache-dir --upgrade "setuptools>=82.0.1" "wheel==0.46.3" \
     && pip install --no-cache-dir uvicorn[standard]==0.23.2 \
-    && pip install --no-cache-dir "opentelemetry-distro==0.48b0"
+    && pip install --no-cache-dir "opentelemetry-distro==0.49b2"
 
 COPY ./app /app/
 WORKDIR /app

@@ -83,7 +83,7 @@ The following software have components provided under the terms of this license:
 - numpy (from https://pypi.org/project/numpy/)
 - packaging (from https://pypi.org/project/packaging/, https://pypi.org/project/packaging/22.0/)
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
-- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
+- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator, https://pypi.org/project/prometheus-fastapi-instrumentator/)
 - protobuf (from https://developers.google.com/protocol-buffers/)
 - pyarrow (from https://arrow.apache.org/, https://pypi.org/project/pyarrow/, https://pypi.org/project/pyarrow/17.0.0/)
 - pycparser (from <https://github.com/eliben/pycparser>, https://github.com/eliben/pycparser, https://pypi.org/project/pycparser/)
@@ -112,7 +112,7 @@ ISC
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
+- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator, https://pypi.org/project/prometheus-fastapi-instrumentator/)
 
 ========================================================================
 MIT
@@ -153,7 +153,8 @@ The following software have components provided under the terms of this license:
 - pandas (from http://pandas.pydata.org, https://pandas.pydata.org)
 - pandera (from <https://pypi.org/project/pandera/>, https://pypi.org/project/pandera/)
 - pendulum (from <https://pendulum.eustace.io>, https://pendulum.eustace.io)
-- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator)
+- prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator, https://pypi.org/project/prometheus-fastapi-instrumentator/)
+- protobuf (from https://developers.google.com/protocol-buffers/)
 - pydantic (from https://github.com/samuelcolvin/pydantic, https://pypi.org/project/pydantic/)
 - pytz (from <http://pythonhosted.org/pytz>, http://pythonhosted.org/pytz)
 - redis (from <https://github.com/redis/redis-py>, https://github.com/redis/redis-py, https://pypi.org/project/redis/)
@@ -195,6 +196,13 @@ PSF-2.0
 The following software have components provided under the terms of this license:
 
 - aiohappyeyeballs (from https://pypi.org/project/aiohappyeyeballs/)
+
+========================================================================
+Protobuf
+========================================================================
+The following software have components provided under the terms of this license:
+
+- protobuf (from https://developers.google.com/protocol-buffers/)
 
 ========================================================================
 Python-2.0

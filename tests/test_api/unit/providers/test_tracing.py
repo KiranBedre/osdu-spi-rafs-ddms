@@ -57,14 +57,14 @@ from app.providers.helpers.tracing import initialize_tracer, restart_otel_span_p
 # Stub BatchSpanProcessor subclass used to simulate the post-fork state where
 # the export thread is dead.  Bypasses the real __init__ so no background
 # thread is started, then exposes exactly the public attributes accessed by
-# restart_otel_span_processors() (as they exist in opentelemetry-sdk==1.27.0).
+# restart_otel_span_processors() (as they exist in opentelemetry-sdk==1.28.2).
 # ---------------------------------------------------------------------------
 class _FakeBatchSpanProcessor(BatchSpanProcessor):
     def __new__(cls, dead_thread):  # noqa: WPS110
         return object.__new__(cls)
 
     def __init__(self, dead_thread):
-        self.worker_thread = dead_thread  # SDK 1.27 (0.48b0) uses public names
+        self.worker_thread = dead_thread  # SDK 1.28 (0.49b2) uses public names
         self.done = False
 
     def worker(self):

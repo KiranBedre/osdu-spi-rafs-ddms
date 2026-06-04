@@ -52,6 +52,8 @@ azure-keyvault-secrets==4.10.0
     # via azure-keyvault
 azure-storage-blob==12.28.0
     # via -r requirements.in
+backports-tarfile==1.2.0
+    # via jaraco-context
 boto3==1.35.0
     # via -r requirements.in
 botocore==1.35.99
@@ -154,7 +156,7 @@ numpy==1.26.4
     # via
     #   pandas
     #   pyarrow
-opentelemetry-api==1.27.0
+opentelemetry-api==1.28.2
     # via
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-instrumentation
@@ -164,44 +166,46 @@ opentelemetry-api==1.27.0
     #   opentelemetry-propagator-b3
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
-opentelemetry-exporter-otlp-proto-common==1.27.0
+opentelemetry-exporter-otlp-proto-common==1.28.2
     # via opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-http==1.27.0
+opentelemetry-exporter-otlp-proto-http==1.28.2
     # via -r requirements.in
-opentelemetry-instrumentation==0.48b0
+opentelemetry-instrumentation==0.49b2
     # via
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
     #   opentelemetry-instrumentation-httpx
-opentelemetry-instrumentation-asgi==0.48b0
+opentelemetry-instrumentation-asgi==0.49b2
     # via opentelemetry-instrumentation-fastapi
-opentelemetry-instrumentation-fastapi==0.48b0
+opentelemetry-instrumentation-fastapi==0.49b2
     # via -r requirements.in
-opentelemetry-instrumentation-httpx==0.48b0
+opentelemetry-instrumentation-httpx==0.49b2
     # via -r requirements.in
-opentelemetry-propagator-b3==1.27.0
+opentelemetry-propagator-b3==1.28.2
     # via -r requirements.in
-opentelemetry-proto==1.27.0
+opentelemetry-proto==1.28.2
     # via
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-sdk==1.27.0
+opentelemetry-sdk==1.28.2
     # via
     #   -r requirements.in
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-semantic-conventions==0.48b0
+opentelemetry-semantic-conventions==0.49b2
     # via
+    #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
     #   opentelemetry-instrumentation-httpx
     #   opentelemetry-sdk
-opentelemetry-util-http==0.48b0
+opentelemetry-util-http==0.49b2
     # via
     #   opentelemetry-instrumentation-asgi
     #   opentelemetry-instrumentation-fastapi
     #   opentelemetry-instrumentation-httpx
 packaging==25.0
     # via
+    #   opentelemetry-instrumentation
     #   pandera
     #   wheel
 pandas==2.2.0
@@ -218,8 +222,9 @@ propcache==0.4.1
     # via
     #   aiohttp
     #   yarl
-protobuf==4.25.9
+protobuf==5.29.6
     # via
+    #   -r requirements.in
     #   googleapis-common-protos
     #   opentelemetry-proto
 pyarrow==14.0.2
@@ -311,6 +316,7 @@ wrapt==1.17.3
     # via
     #   deprecated
     #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-httpx
 yarl==1.22.0
     # via aiohttp
 zipp==3.23.0
