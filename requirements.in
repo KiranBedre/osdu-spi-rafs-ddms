@@ -35,8 +35,9 @@ azure-identity==1.25.3
 azure-keyvault==4.2.0
 azure-storage-blob==12.28.0
 # opentelemetry deps
-opentelemetry-sdk==1.27.0
-opentelemetry-instrumentation-fastapi==0.48b0
-opentelemetry-instrumentation-httpx==0.48b0
-opentelemetry-exporter-otlp-proto-http==1.27.0
-opentelemetry-propagator-b3==1.27.0
+opentelemetry-sdk==1.28.2
+opentelemetry-instrumentation-fastapi==0.49b2
+opentelemetry-instrumentation-httpx==0.49b2
+opentelemetry-exporter-otlp-proto-http==1.28.2
+opentelemetry-propagator-b3==1.28.2
+protobuf==5.29.6  # CVE-2026-0994 fix
