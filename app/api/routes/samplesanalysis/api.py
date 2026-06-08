@@ -31,8 +31,8 @@ from app.api.routes.common.endpoints import (
 from app.api.routes.osdu.storage_records import BaseStorageRecordView
 from app.api.routes.samplesanalysis.endpoints import (
     SAMPLESANALYSIS_ID_REGEX_STR,
+    SamplesAnalysisDataView,
 )
-from app.api.routes.v2.data.endpoints import BaseDataViewV2
 from app.models.data_schemas.base import MAPS_TO_DATA_MODEL, SAMPLES_ANALYSIS
 from app.search.ddms_dataset_ids_fetcher import (
     SearchServiceSamplesAnalysisTypeIdsFetcher,
@@ -66,7 +66,7 @@ GenericSchemasView(
     },
 )
 
-BaseDataViewV2(
+SamplesAnalysisDataView(
     router=sa_router,
     id_regex_str=SAMPLESANALYSIS_ID_REGEX_STR,
 )

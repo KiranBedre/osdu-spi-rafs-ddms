@@ -81,8 +81,8 @@ GenericSchemasView(
         "mapping": MAPS_TO_DATA_MODEL["v2"][DEPTH_SHIFT_STR],
         "param_extractor": infer_content_type_from_url,
         "description": "Get the (`content schema`) for `{DepthShift}`. <br><br>"
-        "Use the `Accept` request header to specify content schema version "  # noqa: WPS326
-        "(example header `Accept: application/json;version=1.0.0` is supported).",  # noqa: WPS326
+        "Use the `content_schema_version` query parameter to specify content schema version "  # noqa: WPS326
+        "(e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.",  # noqa: WPS326
     },
 )
 

@@ -25,6 +25,7 @@ from app.api.dependencies.schema_version import (
 )
 from app.exceptions import exceptions
 from app.middleware.correlation_id_middleware import set_correlation_id
+from app.models.schemas.depth_shift_query import DepthShiftQueryParams
 from app.resources.common_headers import ACCEPT, CONTENT_TYPE, CORRELATION_ID
 from app.resources.mime_types import SupportedMimeTypes
 
@@ -192,6 +193,51 @@ def get_response_mime_type(request: Request) -> SupportedMimeTypes:
     )
     logger.debug(reason)
     raise exceptions.NotAcceptableException(detail=reason)
+
+
+async def get_depth_shift_params(
+    depth_shift_id: Optional[str] = Query(
+        default=None,
+        description="DepthShift WPC record ID to apply to the response data.",
+    ),
+    abstract_definitive_depth_shift_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "OSDU record ID that embeds the AbstractDefinitiveDepthShift schema fragment. "
+            "RAFS reads DefinitiveDepthShiftID from the referenced record and applies that DepthShift WPC."
+        ),
+    ),
+) -> Optional[DepthShiftQueryParams]:
+    """Parse and validate depth-shift query parameters.
+
+    Exactly one of the two IDs may be supplied; supplying both raises 400.
+    Returns None when neither is provided (no-op — existing behaviour).
+
+    :param depth_shift_id: DepthShift WPC record ID
+    :type depth_shift_id: Optional[str]
+    :param abstract_definitive_depth_shift_id: OSDU record ID embedding the
+        AbstractDefinitiveDepthShift schema fragment
+    :type abstract_definitive_depth_shift_id: Optional[str]
+    :return: validated params, or None
+    :rtype: Optional[DepthShiftQueryParams]
+    :raises HTTPException: 400 if both params are supplied
+    """
+    if depth_shift_id and abstract_definitive_depth_shift_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=("Supply only one of 'depth_shift_id' or " "'abstract_definitive_depth_shift_id', not both."),
+        )
+    if depth_shift_id:
+        return DepthShiftQueryParams(
+            depth_shift_id=depth_shift_id,
+            abstract_definitive_depth_shift_id=None,
+        )
+    if abstract_definitive_depth_shift_id:
+        return DepthShiftQueryParams(
+            depth_shift_id=None,
+            abstract_definitive_depth_shift_id=abstract_definitive_depth_shift_id,
+        )
+    return None
 
 
 def get_correlation_id(request: Request):

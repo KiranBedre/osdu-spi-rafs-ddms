@@ -1014,7 +1014,7 @@
     },
     "/api/rafs-ddms/v2/depthshift/data/schema": {
       "get": {
-        "description": "Get the (`content schema`) for `{DepthShift}`. <br><br>Use the `Accept` request header to specify content schema version (example header `Accept: application/json;version=1.0.0` is supported).<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Get the (`content schema`) for `{DepthShift}`. <br><br>Use the `content_schema_version` query parameter to specify content schema version (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "get_content_schema_api_rafs_ddms_v2_depthshift_data_schema_get",
         "parameters": [
           {
@@ -5910,6 +5910,17 @@
             }
           },
           {
+            "description": "OSDU record ID that embeds the AbstractDefinitiveDepthShift schema fragment. RAFS reads DefinitiveDepthShiftID from the referenced record and applies that DepthShift WPC.",
+            "in": "query",
+            "name": "abstract_definitive_depth_shift_id",
+            "required": false,
+            "schema": {
+              "description": "OSDU record ID that embeds the AbstractDefinitiveDepthShift schema fragment. RAFS reads DefinitiveDepthShiftID from the referenced record and applies that DepthShift WPC.",
+              "title": "Abstract Definitive Depth Shift Id",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -5934,6 +5945,17 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "DepthShift WPC record ID to apply to the response data.",
+            "in": "query",
+            "name": "depth_shift_id",
+            "required": false,
+            "schema": {
+              "description": "DepthShift WPC record ID to apply to the response data.",
+              "title": "Depth Shift Id",
               "type": "string"
             }
           },
