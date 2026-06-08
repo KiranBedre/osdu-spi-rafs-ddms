@@ -70,6 +70,7 @@ async def upsert_parquet_data(
     record_id: str,
     blob_storage_service: IBlobStorage,
     storage_service: StorageService,
+    record: Dict[str, Any] = None,
 ) -> Dict[str, Any]:
     """Upsert parquet via blob storage service and update WPC via storage
     service.
@@ -82,11 +83,15 @@ async def upsert_parquet_data(
     :type blob_storage_service: IBlobStorage
     :param storage_service: Instance of storage service
     :type storage_service: storage.StorageService
+    :param record: pre-fetched record dict; if provided the storage
+        fetch is skipped
+    :type record: dict, optional
     :return: Dictionary containing the DDMS URN of the stored Parquet
         file
     :rtype: dict
     """
-    record = await storage_service.get_record(record_id)
+    if record is None:
+        record = await storage_service.get_record(record_id)
     settings = get_app_settings()
 
     record_data = record["data"]

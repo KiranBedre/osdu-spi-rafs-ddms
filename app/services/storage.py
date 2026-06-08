@@ -110,12 +110,12 @@ class StorageService(IStorageService):
 
     @handle_core_services_http_status_error(
         expected_codes=[
-            status.HTTP_400_BAD_REQUEST,
             status.HTTP_401_UNAUTHORIZED,
             status.HTTP_403_FORBIDDEN,
             status.HTTP_404_NOT_FOUND,
         ],
         detail=build_storage_service_exception_detail("upsert"),
+        remap_codes={status.HTTP_400_BAD_REQUEST: status.HTTP_422_UNPROCESSABLE_ENTITY},
     )
     async def upsert_records(self, records: List[dict]) -> dict:
         """Upsert records.

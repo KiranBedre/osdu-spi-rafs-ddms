@@ -44,7 +44,7 @@ def get_reason(status_error: HTTPStatusError, detail: str) -> dict:
     """
     try:
         reason = status_error.response.json()
-    except json.decoder.JSONDecodeError:
+    except (json.JSONDecodeError, ValueError):
         reason = {
             "code": status_error.response.status_code,
             "reason": detail,
@@ -57,30 +57,42 @@ def _build_exception(
     status_error: HTTPStatusError,
     expected_codes: list[int],
     detail: str,
+    remap: dict = None,
 ) -> Exception:
     reason = get_reason(status_error, detail)
     logger.error(reason)
-    if status_error.response.status_code not in expected_codes:
-        translated = translate_upstream_status_code(status_error.response.status_code)
-        return OsduApiException(
-            status_code=translated,
-            detail=json.dumps(reason),
-        )
-    return status_error
+    upstream_code = status_error.response.status_code
+    if upstream_code in expected_codes:
+        return status_error
+    remapped = (remap or {}).get(upstream_code)
+    translated = remapped if remapped is not None else translate_upstream_status_code(upstream_code)
+    return OsduApiException(
+        status_code=translated,
+        detail=json.dumps(reason),
+    )
 
 
-def handle_core_services_http_status_error(expected_codes: list[int], detail: str = OSDU_API_ERROR_DETAIL):
+def handle_core_services_http_status_error(
+    expected_codes: list[int],
+    detail: str = OSDU_API_ERROR_DETAIL,
+    remap_codes: dict[int, int] = None,
+):
     """Decorator to catch errors from osdu services, log them, and raise
     generic service exceptions if unexpected error received.
 
-    :param expected_codes: list of expected error codes
+    :param expected_codes: list of expected error codes to pass through
     :type expected_codes: list
     :param detail: error details
     :type detail: str
+    :param remap_codes: mapping of upstream status codes to output
+        status codes; matched codes raise OsduApiException with the
+        remapped code instead of 424
+    :type remap_codes: dict[int, int], optional
     :raises OsduApiException: when error from OSDU service has
         unexpected status code
-    :raises HTTPStatusError: if status code is expected
+    :raises HTTPStatusError: if status code is in expected_codes
     """
+    remap = remap_codes or {}
 
     def decorator(func):
         @functools.wraps(func)
@@ -88,7 +100,7 @@ def handle_core_services_http_status_error(expected_codes: list[int], detail: st
             try:
                 return await func(*args, **kwargs)
             except HTTPStatusError as status_error:
-                raise _build_exception(status_error, expected_codes, detail)
+                raise _build_exception(status_error, expected_codes, detail, remap)
 
         return wrapper
 
