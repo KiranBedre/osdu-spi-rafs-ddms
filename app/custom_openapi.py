@@ -20,6 +20,8 @@ from app.models.schemas.osdu_storage import OsduStorageRecord
 from app.models.schemas.pandas_dataframe import OrientSplit
 from app.resources.load_model_example import load_data_example
 
+OPENAPI_METHODS = ("get", "put", "post", "delete", "options", "head", "patch", "trace")
+
 
 def _copy_definitions_to_root(schema: dict, openapi_schema: dict) -> None:
     """Copy nested definitions to OpenAPI root for Swagger UI $ref resolution.
@@ -144,6 +146,78 @@ def _mark_content_schema_version_required(openapi_schema: dict) -> None:
                     openapi_param["required"] = True
 
 
+def _is_protected_path(path_key: str) -> bool:
+    """Return whether a path requires auth and partition header in Swagger UI."""
+    return "/v2/" in path_key or "/dev/" in path_key
+
+
+def _ensure_http_bearer_scheme(openapi_schema: dict) -> None:
+    """Ensure HTTP Bearer scheme exists in OpenAPI components."""
+    components = openapi_schema.setdefault("components", {})
+    security_schemes = components.setdefault("securitySchemes", {})
+    security_schemes.setdefault(
+        "HTTPBearer",
+        {
+            "type": "http",
+            "scheme": "bearer",
+        },
+    )
+
+
+def _ensure_operation_security(operation: dict) -> None:
+    """Ensure operation declares HTTPBearer security requirement."""
+    existing = operation.setdefault("security", [])
+    has_http_bearer = any(
+        isinstance(security_entry, dict) and "HTTPBearer" in security_entry for security_entry in existing
+    )
+    if not has_http_bearer:
+        existing.append({"HTTPBearer": []})
+
+
+def _ensure_operation_data_partition_header(operation: dict) -> None:
+    """Ensure operation declares required data-partition-id header parameter."""
+    operation_params = operation.setdefault("parameters", [])
+    has_partition_header = any(
+        openapi_parameter.get("in") == "header" and openapi_parameter.get("name") == "data-partition-id"
+        for openapi_parameter in operation_params
+        if isinstance(openapi_parameter, dict)
+    )
+    if has_partition_header:
+        return
+
+    operation_params.append(
+        {
+            "in": "header",
+            "name": "data-partition-id",
+            "required": True,
+            "description": "Specifies the proper data partition id",
+            "schema": {
+                "title": "data-partition-id",
+                "type": "string",
+                "description": "Specifies the proper data partition id",
+            },
+            "examples": {
+                "example": {
+                    "value": "opendes",
+                },
+            },
+        },
+    )
+
+
+def _apply_swagger_auth_partition_reqs(openapi_schema: dict) -> None:
+    """Ensure protected endpoints expose auth and partition header in Swagger UI."""
+    _ensure_http_bearer_scheme(openapi_schema)
+    for path_key, path_item in openapi_schema.get("paths", {}).items():
+        if not _is_protected_path(path_key):
+            continue
+        for method, operation in path_item.items():
+            if method not in OPENAPI_METHODS or not isinstance(operation, dict):
+                continue
+            _ensure_operation_security(operation)
+            _ensure_operation_data_partition_header(operation)
+
+
 def _sort_and_annotate_parameters(openapi_schema: dict) -> None:  # noqa: WPS231
     """Sort parameters and inject tailored record_id descriptions per resource endpoint.
 
@@ -183,6 +257,7 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
         },
     )
     _apply_request_body_overrides(custom_openapi_schema, settings)
+    _apply_swagger_auth_partition_reqs(custom_openapi_schema)
     _mark_content_schema_version_required(custom_openapi_schema)
     _sort_and_annotate_parameters(custom_openapi_schema)
     return custom_openapi_schema
