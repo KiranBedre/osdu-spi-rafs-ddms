@@ -68,7 +68,7 @@ def _build_exception(
     translated = remapped if remapped is not None else translate_upstream_status_code(upstream_code)
     return OsduApiException(
         status_code=translated,
-        detail=json.dumps(reason),
+        detail=reason,
     )
 
 
