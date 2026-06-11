@@ -85,8 +85,7 @@ def _collect_row_warnings(
 
     warnings: List[str] = []
     record_data = sample_record.get("data", {})
-    depth_measurement = record_data.get("DepthMeasurement", {})
-    vertical_measurements = depth_measurement.get("VerticalMeasurements", [])
+    vertical_measurements = record_data.get("DepthMeasurements", [])
 
     source_warning = _source_quality_warning(vertical_measurements)
     if source_warning:

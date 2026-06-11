@@ -20,23 +20,47 @@ from typing_extensions import TypedDict
 class DepthShiftQueryParams:
     """Validated depth-shift query parameters passed to the route.
 
-    Exactly one of the two IDs is set; the other is None.
+    When *depth_shift_policy* is ``"id_provided"``, *depth_shift_id* must be
+    set.  When it is ``"definitive"``, the WPC ID is resolved from the already-
+    fetched sample records at pipeline time.  When it is ``None``, no depth
+    shift is applied.
     """
 
-    __slots__ = ("depth_shift_id", "abstract_definitive_depth_shift_id")
+    __slots__ = ("depth_shift_id", "depth_shift_policy")
 
     def __init__(
         self,
         depth_shift_id: Optional[str],
-        abstract_definitive_depth_shift_id: Optional[str],
+        depth_shift_policy: Optional[str],
     ) -> None:
         self.depth_shift_id = depth_shift_id
-        self.abstract_definitive_depth_shift_id = abstract_definitive_depth_shift_id
+        self.depth_shift_policy = depth_shift_policy
 
     @property
-    def is_abstract(self) -> bool:
-        """True when using the AbstractDefinitiveDepthShift path."""
-        return self.abstract_definitive_depth_shift_id is not None
+    def is_definitive(self) -> bool:
+        """True when the resolution strategy is 'definitive'."""
+        return self.depth_shift_policy == "definitive"
+
+
+class DepthShiftMetadata(TypedDict, total=False):
+    """Top-level metadata block included in every depth-shifted response.
+
+    This typed dict exists for documentation and type-checking purposes only.
+
+    Fields:
+
+    - appliedDepthShiftId: the DepthShift WPC record ID that was resolved and applied
+    - source: ``"definitive"`` when depth_shift_policy=definitive was used;
+      ``"user-provided"`` when depth_shift_policy=id_provided was used
+    - definitiveDepthShiftAvailable: True if at least one sample in the request
+      carries ``data.DefinitiveDepthShift.DefinitiveDepthShiftID``
+    - usedDefinitive: True only when depth_shift_policy=definitive was applied
+    """
+
+    appliedDepthShiftId: str
+    source: str
+    definitiveDepthShiftAvailable: bool
+    usedDefinitive: bool
 
 
 class DepthShiftAugmentedResponse(TypedDict, total=False):
@@ -53,6 +77,11 @@ class DepthShiftAugmentedResponse(TypedDict, total=False):
     - ShiftedSampleTop: depth-shifted SampleTop using the CoreToLog interval table
     - ShiftedSampleBase: depth-shifted SampleBase; None for point samples
     - DepthShiftWarnings: list of warning strings (non-Driller source, wellbore mismatch, etc.)
+
+    Top-level response keys (outside the DataFrame columns):
+
+    - DepthShiftMetadata: see :class:`DepthShiftMetadata`
+    - DepthShiftWarnings: flat list of all warning strings across all rows
     """
 
     SampleTop: Optional[float]

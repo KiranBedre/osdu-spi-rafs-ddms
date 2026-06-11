@@ -44,52 +44,81 @@ def _make_resolver(get_record_return=None):
 
 class TestResolveDepthShiftWpcId:
     @pytest.mark.asyncio
-    async def test_direct_id_returned_without_storage_call(self):
+    async def test_id_provided_returns_depth_shift_id_without_storage_call(self):
         resolver = _make_resolver()
         params = DepthShiftQueryParams(
             depth_shift_id="ns:work-product-component--DepthShift:abc:",
-            abstract_definitive_depth_shift_id=None,
+            depth_shift_policy="id_provided",
         )
         result = await resolver.resolve_depth_shift_wpc_id(params)
         assert result == "ns:work-product-component--DepthShift:abc:"
         resolver._storage.get_record.assert_not_called()
 
-    @pytest.mark.asyncio
-    async def test_abstract_path_reads_definitive_depth_shift_id(self):
-        """AbstractDefinitiveDepthShift.1.0.0: DefinitiveDepthShiftID field → WPC ID."""
-        resolver = _make_resolver({"data": {"DefinitiveDepthShiftID": "ns:work-product-component--DepthShift:xyz:"}})
-        params = DepthShiftQueryParams(
-            depth_shift_id=None,
-            abstract_definitive_depth_shift_id="ns:some-record:123:",
-        )
-        result = await resolver.resolve_depth_shift_wpc_id(params)
+
+class TestResolveDefinitiveWpcId:
+    """Tests for DepthShiftResolver.resolve_definitive_wpc_id."""
+
+    def _resolver(self):
+        return DepthShiftResolver(storage_service=MagicMock(), dataset_service=MagicMock())
+
+    def _sample_record(self, wpc_id):
+        """Build a minimal sample record with DefinitiveDepthShift set to *wpc_id*."""
+        return {"data": {"DefinitiveDepthShift": {"DefinitiveDepthShiftID": wpc_id}}}
+
+    def test_single_sample_with_definitive_returns_wpc_id(self):
+        resolver = self._resolver()
+        sample_records = {
+            "ns:Sample:s-1:": self._sample_record("ns:work-product-component--DepthShift:xyz:"),
+        }
+        result = resolver.resolve_definitive_wpc_id(sample_records)
         assert result == "ns:work-product-component--DepthShift:xyz:"
-        resolver._storage.get_record.assert_called_once_with("ns:some-record:123:")
 
-    @pytest.mark.asyncio
-    async def test_abstract_path_missing_field_raises_404(self):
-        """Record exists but has no DefinitiveDepthShiftID → 404."""
-        resolver = _make_resolver({"data": {}})
-        params = DepthShiftQueryParams(
-            depth_shift_id=None,
-            abstract_definitive_depth_shift_id="ns:some-record:123:",
-        )
-        with pytest.raises(HTTPException) as exc_info:
-            await resolver.resolve_depth_shift_wpc_id(params)
-        assert exc_info.value.status_code == 404
-        assert "DefinitiveDepthShiftID" in exc_info.value.detail
+    def test_multiple_samples_agreeing_returns_wpc_id(self):
+        resolver = self._resolver()
+        sample_records = {
+            "ns:Sample:s-1:": self._sample_record("ns:work-product-component--DepthShift:xyz:"),
+            "ns:Sample:s-2:": self._sample_record("ns:work-product-component--DepthShift:xyz:"),
+        }
+        result = resolver.resolve_definitive_wpc_id(sample_records)
+        assert result == "ns:work-product-component--DepthShift:xyz:"
 
-    @pytest.mark.asyncio
-    async def test_abstract_path_empty_data_raises_404(self):
-        """Record has no data key → 404."""
-        resolver = _make_resolver({})
-        params = DepthShiftQueryParams(
-            depth_shift_id=None,
-            abstract_definitive_depth_shift_id="ns:some-record:123:",
-        )
+    def test_no_definitive_depth_shift_raises_422(self):
+        resolver = self._resolver()
+        sample_records = {
+            "ns:Sample:s-1:": {"data": {}},
+            "ns:Sample:s-2:": {"data": {}},
+        }
         with pytest.raises(HTTPException) as exc_info:
-            await resolver.resolve_depth_shift_wpc_id(params)
-        assert exc_info.value.status_code == 404
+            resolver.resolve_definitive_wpc_id(sample_records)
+        assert exc_info.value.status_code == 422
+        assert "No DefinitiveDepthShift" in exc_info.value.detail
+
+    def test_samples_disagree_raises_422(self):
+        resolver = self._resolver()
+        sample_records = {
+            "ns:Sample:s-1:": self._sample_record("ns:work-product-component--DepthShift:wpc-1:"),
+            "ns:Sample:s-2:": self._sample_record("ns:work-product-component--DepthShift:wpc-2:"),
+        }
+        with pytest.raises(HTTPException) as exc_info:
+            resolver.resolve_definitive_wpc_id(sample_records)
+        assert exc_info.value.status_code == 422
+        assert "multiple" in exc_info.value.detail.lower()
+
+    def test_empty_sample_records_raises_422(self):
+        resolver = self._resolver()
+        with pytest.raises(HTTPException) as exc_info:
+            resolver.resolve_definitive_wpc_id({})
+        assert exc_info.value.status_code == 422
+
+    def test_partial_samples_with_definitive_uses_found_id(self):
+        """Samples where some lack DefinitiveDepthShift are ignored; only present ones count."""
+        resolver = self._resolver()
+        sample_records = {
+            "ns:Sample:s-1:": {"data": {}},
+            "ns:Sample:s-2:": self._sample_record("ns:work-product-component--DepthShift:xyz:"),
+        }
+        result = resolver.resolve_definitive_wpc_id(sample_records)
+        assert result == "ns:work-product-component--DepthShift:xyz:"
 
 
 class TestFetchCoretologDepthShiftDataKindValidation:

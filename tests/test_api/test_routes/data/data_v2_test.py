@@ -7098,20 +7098,18 @@ _DEPTH_SHIFT_SAMPLE_RECORD = {
     "kind": "osdu:wks:master-data--Sample:2.0.0",
     "data": {
         "WellboreID": "namespace:master-data--Wellbore:wellbore-001:",
-        "DepthMeasurement": {
-            "VerticalMeasurements": [
-                {
-                    "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleTop:",
-                    "VerticalMeasurementValue": 1005.0,
-                    "VerticalMeasurementSourceID": "osdu:reference-data--VerticalMeasurementSource:Driller:",
-                },
-                {
-                    "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleBase:",
-                    "VerticalMeasurementValue": 1008.0,
-                    "VerticalMeasurementSourceID": "osdu:reference-data--VerticalMeasurementSource:Driller:",
-                },
-            ],
-        },
+        "DepthMeasurements": [
+            {
+                "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleTop:",
+                "VerticalMeasurement": 1005.0,
+                "VerticalMeasurementSourceID": "osdu:reference-data--VerticalMeasurementSource:DRL:",
+            },
+            {
+                "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleBase:",
+                "VerticalMeasurement": 1008.0,
+                "VerticalMeasurementSourceID": "osdu:reference-data--VerticalMeasurementSource:DRL:",
+            },
+        ],
     },
 }
 
@@ -7177,7 +7175,10 @@ async def test_get_data_with_depth_shift_id_returns_augmented_columns():
                         response = await client.get(
                             f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
                             headers=_headers_json("1.0.0"),
-                            params={"depth_shift_id": depth_shift_wpc_id},
+                            params={
+                                "depth_shift_id": depth_shift_wpc_id,
+                                "depth_shift_policy": "id_provided",
+                            },
                         )
 
     assert response.status_code == status.HTTP_200_OK
@@ -7195,10 +7196,22 @@ async def test_get_data_with_depth_shift_id_returns_augmented_columns():
     assert abs(first_row[top_idx] - 1005.0) < 1e-6
     assert abs(first_row[shifted_top_idx] - 1006.5) < 1e-6
 
+    # DepthShiftMetadata must be present as a top-level key.
+    assert "DepthShiftMetadata" in body
+    metadata = body["DepthShiftMetadata"]
+    assert metadata["appliedDepthShiftId"] == depth_shift_wpc_id
+    assert metadata["source"] == "user-provided"
+    assert metadata["usedDefinitive"] is False
+    assert isinstance(metadata["definitiveDepthShiftAvailable"], bool)
+
+    # DepthShiftWarnings must be present as a top-level flat list.
+    assert "DepthShiftWarnings" in body
+    assert isinstance(body["DepthShiftWarnings"], list)
+
 
 @pytest.mark.asyncio
-async def test_get_data_with_both_depth_shift_params_returns_400():
-    """Issue #751: supplying both depth_shift_id and abstract_definitive_depth_shift_id returns 400."""
+async def test_get_data_with_id_provided_policy_without_depth_shift_id_returns_400():
+    """depth_shift_policy=id_provided without depth_shift_id returns 400."""
     from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
 
     rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
@@ -7208,10 +7221,7 @@ async def test_get_data_with_both_depth_shift_params_returns_400():
             response = await client.get(
                 f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
                 headers=_headers_json("1.0.0"),
-                params={
-                    "depth_shift_id": "ds-001",
-                    "abstract_definitive_depth_shift_id": "abs-001",
-                },
+                params={"depth_shift_policy": "id_provided"},
             )
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -7246,19 +7256,111 @@ async def test_get_data_without_depth_shift_params_unchanged():
 
 
 @pytest.mark.asyncio
-async def test_get_data_abstract_depth_shift_no_definitive_id_returns_404():
-    """Issue #751: abstract path record with no DefinitiveDepthShiftID field returns 404."""
+async def test_get_data_definitive_policy_no_definitive_depth_shift_in_sample_returns_422():
+    """depth_shift_policy=definitive but no DefinitiveDepthShift in sample records returns 422."""
     from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
 
     rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+    rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
 
-    with patch.object(async_storage_record_service_mock, "get_record", return_value={"data": {}}):
-        with services_overrides():
-            async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
-                response = await client.get(
-                    f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
-                    headers=_headers_json("1.0.0"),
-                    params={"abstract_definitive_depth_shift_id": "abs-001"},
-                )
+    # Sample record has no DefinitiveDepthShift data
+    sample_record_no_definitive = dict(_DEPTH_SHIFT_SAMPLE_RECORD)
+    sample_record_no_definitive = {k: v for k, v in _DEPTH_SHIFT_SAMPLE_RECORD.items() if k != "data"}
+    sample_record_no_definitive["data"] = {}
 
-    assert response.status_code == status.HTTP_404_NOT_FOUND
+    query_records_response = {"records": [sample_record_no_definitive]}
+
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=[rca_record_data]):
+        with patch.object(
+            async_dataset_service_mock,
+            "download_file",
+            side_effect=[_build_rca_parquet()],
+        ):
+            with patch.object(
+                async_storage_record_service_mock,
+                "query_records",
+                return_value=query_records_response,
+            ):
+                with services_overrides():
+                    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                        response = await client.get(
+                            f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                            headers=_headers_json("1.0.0"),
+                            params={"depth_shift_policy": "definitive"},
+                        )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+@pytest.mark.asyncio
+async def test_get_data_id_provided_with_different_definitive_id_emits_warning():
+    """Issue #751: id_provided + different definitive ID in sample → warning in DepthShiftWarnings."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    provided_wpc_id = TEST_DEPTH_SHIFT_ID
+    definitive_wpc_id = "opendes:work-product-component--DepthShift:definitive-001:"
+    rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+    rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
+
+    # Sample record that carries a DefinitiveDepthShiftID different from the provided one.
+    sample_with_definitive = {
+        **_DEPTH_SHIFT_SAMPLE_RECORD,
+        "data": {
+            **_DEPTH_SHIFT_SAMPLE_RECORD["data"],
+            "DefinitiveDepthShift": {
+                "DefinitiveDepthShiftID": definitive_wpc_id,
+            },
+        },
+    }
+
+    storage_side_effects = [
+        _DEPTH_SHIFT_WPC_WITH_DATASETS,
+        rca_record_data,
+    ]
+    dataset_side_effects = [
+        _build_coretolog_parquet(),
+        _build_rca_parquet(),
+    ]
+    query_records_response = {"records": [sample_with_definitive]}
+
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=storage_side_effects):
+        with patch.object(async_dataset_service_mock, "download_file", side_effect=dataset_side_effects):
+            with patch.object(
+                async_storage_record_service_mock,
+                "query_records",
+                return_value=query_records_response,
+            ):
+                with services_overrides():
+                    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                        response = await client.get(
+                            f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                            headers=_headers_json("1.0.0"),
+                            params={
+                                "depth_shift_id": provided_wpc_id,
+                                "depth_shift_policy": "id_provided",
+                            },
+                        )
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+
+    # Top-level DepthShiftMetadata must reflect id_provided with definitive available.
+    assert "DepthShiftMetadata" in body
+    metadata = body["DepthShiftMetadata"]
+    assert metadata["appliedDepthShiftId"] == provided_wpc_id
+    assert metadata["source"] == "user-provided"
+    assert metadata["usedDefinitive"] is False
+    assert metadata["definitiveDepthShiftAvailable"] is True
+
+    # Warning must be emitted listing both IDs.
+    assert "DepthShiftWarnings" in body
+    top_level_warnings = body["DepthShiftWarnings"]
+    assert isinstance(top_level_warnings, list)
+    conflict_warning = next(
+        (w for w in top_level_warnings if definitive_wpc_id in w and provided_wpc_id in w),
+        None,
+    )
+    assert conflict_warning is not None, (
+        f"Expected a warning mentioning both definitive ID ({definitive_wpc_id}) "
+        f"and provided ID ({provided_wpc_id}), got: {top_level_warnings}"
+    )

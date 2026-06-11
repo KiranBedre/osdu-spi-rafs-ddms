@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import io
+import json
 from typing import Annotated, List, Optional
 
 import pandas as pd
@@ -285,6 +286,12 @@ class SamplesAnalysisDataView(BaseDataViewV2):
     ) -> Response:
         """Core depth-shift pipeline: resolve → fetch → augment → respond.
 
+        Two execution paths depending on *depth_shift_params.depth_shift_policy*:
+
+        - ``id_provided``: resolve WPC ID first, then fetch base data and samples.
+        - ``definitive``: fetch base data and samples first so the WPC ID can be
+          resolved from the sample records before downloading the CoreToLog parquet.
+
         :return: augmented JSON response
         :rtype: Response
         """
@@ -293,39 +300,102 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             dataset_service=dataset_service,
         )
 
-        wpc_id = await resolver.resolve_depth_shift_wpc_id(depth_shift_params)
-        shift_set, shift_meta, shift_wellbore = await resolver.fetch_coretolog_depth_shift_data(wpc_id)
+        if not depth_shift_params.is_definitive:
+            # id_provided path: WPC ID is explicit, resolve it first.
+            wpc_id = await resolver.resolve_depth_shift_wpc_id(depth_shift_params)
+            shift_set, shift_meta, shift_wellbore = await resolver.fetch_coretolog_depth_shift_data(wpc_id)
 
-        base_response = await super().get_data_v2(
-            request=request,
-            record_id=record_id,
-            analysis_type=analysis_type,
-            content_id=content_id,
-            dataset_service=dataset_service,
-            storage_service=storage_service,
-            blob_storage_service=blob_storage_service,
-            df_filter=df_filter,
-            content_schema_version=content_schema_version,
-            orient="split",
-        )
-
-        if base_response.status_code != status.HTTP_200_OK:
-            return base_response
-
-        base_df = self._response_to_dataframe(base_response, "split")
-        if "SampleID" not in base_df.columns:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=(
-                    "Depth-shift augmentation requires a 'SampleID' column in the "
-                    "bulk data, but it was not found. Only analysis types that carry "
-                    "per-row SampleID are supported for depth-shift retrieval."
-                ),
+            base_response = await super().get_data_v2(
+                request=request,
+                record_id=record_id,
+                analysis_type=analysis_type,
+                content_id=content_id,
+                dataset_service=dataset_service,
+                storage_service=storage_service,
+                blob_storage_service=blob_storage_service,
+                df_filter=df_filter,
+                content_schema_version=content_schema_version,
+                orient="split",
             )
-        sample_ids = base_df["SampleID"].dropna().astype(str).unique().tolist()
-        sample_records = await resolver.fetch_sample_records(sample_ids)
 
-        augmented_df, _ = augment_dataframe(
+            if base_response.status_code != status.HTTP_200_OK:
+                return base_response
+
+            base_df = self._response_to_dataframe(base_response, "split")
+            if "SampleID" not in base_df.columns:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        "Depth-shift augmentation requires a 'SampleID' column in the "
+                        "bulk data, but it was not found. Only analysis types that carry "
+                        "per-row SampleID are supported for depth-shift retrieval."
+                    ),
+                )
+            sample_ids = base_df["SampleID"].dropna().astype(str).unique().tolist()
+            sample_records = await resolver.fetch_sample_records(sample_ids)
+
+        else:
+            # definitive path: need sample records first to resolve the WPC ID.
+            base_response = await super().get_data_v2(
+                request=request,
+                record_id=record_id,
+                analysis_type=analysis_type,
+                content_id=content_id,
+                dataset_service=dataset_service,
+                storage_service=storage_service,
+                blob_storage_service=blob_storage_service,
+                df_filter=df_filter,
+                content_schema_version=content_schema_version,
+                orient="split",
+            )
+
+            if base_response.status_code != status.HTTP_200_OK:
+                return base_response
+
+            base_df = self._response_to_dataframe(base_response, "split")
+            if "SampleID" not in base_df.columns:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        "Depth-shift augmentation requires a 'SampleID' column in the "
+                        "bulk data, but it was not found. Only analysis types that carry "
+                        "per-row SampleID are supported for depth-shift retrieval."
+                    ),
+                )
+            sample_ids = base_df["SampleID"].dropna().astype(str).unique().tolist()
+            sample_records = await resolver.fetch_sample_records(sample_ids)
+
+            # May raise 422 if no DefinitiveDepthShift or samples disagree.
+            wpc_id = resolver.resolve_definitive_wpc_id(sample_records)
+            shift_set, shift_meta, shift_wellbore = await resolver.fetch_coretolog_depth_shift_data(wpc_id)
+
+        # --- Build DepthShiftMetadata ---
+        definitive_available = any(
+            record.get("data", {}).get("DefinitiveDepthShift", {}).get("DefinitiveDepthShiftID")
+            for record in sample_records.values()
+        )
+        used_definitive = depth_shift_params.is_definitive
+        source = "definitive" if used_definitive else "user-provided"
+
+        # Collect extra warnings before augmentation (id_provided + definitive conflict).
+        extra_warnings: List[str] = []
+        if not used_definitive and definitive_available:
+            definitive_id = next(
+                (
+                    record.get("data", {}).get("DefinitiveDepthShift", {}).get("DefinitiveDepthShiftID")
+                    for record in sample_records.values()
+                    if record.get("data", {}).get("DefinitiveDepthShift", {}).get("DefinitiveDepthShiftID")
+                ),
+                None,
+            )
+            if definitive_id and definitive_id != wpc_id:
+                extra_warnings.append(
+                    f"Sample references a definitive depth shift ({definitive_id}) that differs from "
+                    f"the requested depth_shift_id ({wpc_id}). RAFS applied the requested depth_shift_id "
+                    f"because depth_shift_policy=id_provided."
+                )
+
+        augmented_df, warnings = augment_dataframe(
             base_df=base_df,
             resolver=resolver,
             shift_set=shift_set,
@@ -337,8 +407,17 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         logger.info(
             f"Depth-shift augmentation applied for WPC {wpc_id}; " f"{len(sample_ids)} unique samples.",
         )
+
+        result = json.loads(augmented_df.to_json(orient=orient))
+        result["DepthShiftMetadata"] = {
+            "appliedDepthShiftId": wpc_id,
+            "source": source,
+            "definitiveDepthShiftAvailable": definitive_available,
+            "usedDefinitive": used_definitive,
+        }
+        result["DepthShiftWarnings"] = extra_warnings + warnings
         return Response(
-            content=augmented_df.to_json(orient=orient),
+            content=json.dumps(result),
             media_type="application/json",
         )
 

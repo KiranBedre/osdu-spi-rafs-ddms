@@ -22,42 +22,65 @@ from app.models.schemas.depth_shift_query import DepthShiftQueryParams
 
 
 class TestGetDepthShiftParams:
-    @pytest.mark.asyncio
-    async def test_neither_param_returns_none(self):
-        result = await get_depth_shift_params(
+    def test_neither_param_returns_none(self):
+        result = get_depth_shift_params(
             depth_shift_id=None,
-            abstract_definitive_depth_shift_id=None,
+            depth_shift_policy=None,
         )
         assert result is None
 
-    @pytest.mark.asyncio
-    async def test_depth_shift_id_only_returns_params(self):
-        result = await get_depth_shift_params(
+    def test_id_provided_policy_with_depth_shift_id_returns_params(self):
+        result = get_depth_shift_params(
             depth_shift_id="opendes:work-product-component--DepthShift:ds-001:",
-            abstract_definitive_depth_shift_id=None,
+            depth_shift_policy="id_provided",
         )
         assert isinstance(result, DepthShiftQueryParams)
         assert result.depth_shift_id == "opendes:work-product-component--DepthShift:ds-001:"
-        assert result.abstract_definitive_depth_shift_id is None
-        assert result.is_abstract is False
+        assert result.depth_shift_policy == "id_provided"
+        assert result.is_definitive is False
 
-    @pytest.mark.asyncio
-    async def test_abstract_id_only_returns_params(self):
-        result = await get_depth_shift_params(
+    def test_definitive_policy_only_returns_params(self):
+        result = get_depth_shift_params(
             depth_shift_id=None,
-            abstract_definitive_depth_shift_id="opendes:work-product-component--AbstractDS:abs-001:",
+            depth_shift_policy="definitive",
         )
         assert isinstance(result, DepthShiftQueryParams)
         assert result.depth_shift_id is None
-        assert result.abstract_definitive_depth_shift_id == "opendes:work-product-component--AbstractDS:abs-001:"
-        assert result.is_abstract is True
+        assert result.depth_shift_policy == "definitive"
+        assert result.is_definitive is True
 
-    @pytest.mark.asyncio
-    async def test_both_params_raises_400(self):
+    def test_depth_shift_id_without_policy_raises_400(self):
         with pytest.raises(HTTPException) as exc_info:
-            await get_depth_shift_params(
+            get_depth_shift_params(
                 depth_shift_id="ds-001",
-                abstract_definitive_depth_shift_id="abs-001",
+                depth_shift_policy=None,
             )
         assert exc_info.value.status_code == 400
-        assert "only one" in exc_info.value.detail.lower()
+        assert "depth_shift_policy" in exc_info.value.detail
+
+    def test_id_provided_policy_without_depth_shift_id_raises_400(self):
+        with pytest.raises(HTTPException) as exc_info:
+            get_depth_shift_params(
+                depth_shift_id=None,
+                depth_shift_policy="id_provided",
+            )
+        assert exc_info.value.status_code == 400
+        assert "depth_shift_id" in exc_info.value.detail
+
+    def test_definitive_policy_with_depth_shift_id_raises_400(self):
+        with pytest.raises(HTTPException) as exc_info:
+            get_depth_shift_params(
+                depth_shift_id="ds-001",
+                depth_shift_policy="definitive",
+            )
+        assert exc_info.value.status_code == 400
+        assert "depth_shift_id" in exc_info.value.detail
+
+    def test_invalid_policy_value_raises_400(self):
+        with pytest.raises(HTTPException) as exc_info:
+            get_depth_shift_params(
+                depth_shift_id=None,
+                depth_shift_policy="unknown_policy",
+            )
+        assert exc_info.value.status_code == 400
+        assert "depth_shift_policy" in exc_info.value.detail

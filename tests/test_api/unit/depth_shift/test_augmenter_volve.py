@@ -18,7 +18,7 @@ These tests exercise the full in-process pipeline:
 
     base_df (SampleID) → augment_dataframe
         → _collect_row_warnings (extractor validators)
-        → extract_depths (VerticalMeasurements navigation)
+        → extract_depths (DepthMeasurements navigation)
         → shift_sample (calculator)
         → output columns (SampleTop, ShiftedSampleTop, DepthShiftWarnings)
 
@@ -79,15 +79,13 @@ def _build_sample_records(rows: List[dict], wellbore_id: str) -> Dict[str, dict]
         f"sample-{i}": {
             "data": {
                 "WellboreID": wellbore_id,
-                "DepthMeasurement": {
-                    "VerticalMeasurements": [
-                        {
-                            "VerticalMeasurementTypeID": "SampleTop",
-                            "VerticalMeasurementSourceID": "Driller",
-                            "VerticalMeasurementValue": row["DEPTH"],
-                        }
-                    ]
-                },
+                "DepthMeasurements": [
+                    {
+                        "VerticalMeasurementTypeID": "SampleTop",
+                        "VerticalMeasurementSourceID": "DRL",
+                        "VerticalMeasurement": row["DEPTH"],
+                    }
+                ],
             }
         }
         for i, row in enumerate(rows)
@@ -162,7 +160,7 @@ class TestWarnings:
     """Warning propagation through the augmenter pipeline."""
 
     def test_no_warnings_when_wellbore_matches(self, volve_augmented):
-        """Matching wellbore + Driller source produces no warnings."""
+        """Matching wellbore + DRL source produces no warnings."""
         result_df, _, all_warnings = volve_augmented
         assert all_warnings == []
         assert all(len(w) == 0 for w in result_df["DepthShiftWarnings"])
@@ -184,13 +182,11 @@ class TestWarnings:
         assert "mismatch" in all_warnings[0].lower()
 
     def test_non_driller_source_warns(self, volve_data):
-        """VerticalMeasurementSourceID other than Driller triggers a warning."""
+        """VerticalMeasurementSourceID other than DRL triggers a warning."""
         rows, shift_set = volve_data
         # Override source on just the first plug
         sample_records = _build_sample_records(rows, _WELLBORE_SAMPLE)
-        sample_records["sample-0"]["data"]["DepthMeasurement"]["VerticalMeasurements"][0][
-            "VerticalMeasurementSourceID"
-        ] = "Logger"
+        sample_records["sample-0"]["data"]["DepthMeasurements"][0]["VerticalMeasurementSourceID"] = "Logger"
         base_df = _build_base_df(rows[:1])
         _, all_warnings = augment_dataframe(
             base_df,
@@ -200,22 +196,22 @@ class TestWarnings:
             sample_records=sample_records,
         )
         assert len(all_warnings) == 1
-        assert "not 'Driller'" in all_warnings[0]
+        assert "not 'DRL:'" in all_warnings[0]
 
     def test_unrelated_measurement_non_driller_does_not_warn(self, volve_data):
-        """Non-Driller source on a non-Sample measurement must not warn.
+        """Non-DRL source on a non-Sample measurement must not warn.
 
-        Only SampleTop/SampleBase entries drive the shift, so a non-Driller
+        Only SampleTop/SampleBase entries drive the shift, so a non-DRL
         source on e.g. a KB elevation entry is irrelevant (review finding #2).
         """
         rows, shift_set = volve_data
         sample_records = _build_sample_records(rows[:1], _WELLBORE_SAMPLE)
-        # SampleTop entry stays Driller; append an unrelated non-Driller entry.
-        sample_records["sample-0"]["data"]["DepthMeasurement"]["VerticalMeasurements"].append(
+        # SampleTop entry stays DRL; append an unrelated non-DRL entry.
+        sample_records["sample-0"]["data"]["DepthMeasurements"].append(
             {
                 "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:KB:",
                 "VerticalMeasurementSourceID": "Logger",
-                "VerticalMeasurementValue": 25.0,
+                "VerticalMeasurement": 25.0,
             }
         )
         base_df = _build_base_df(rows[:1])
@@ -294,20 +290,18 @@ class TestCrossIntervalGuard:
             "sample-0": {
                 "data": {
                     "WellboreID": _WELLBORE_SAMPLE,
-                    "DepthMeasurement": {
-                        "VerticalMeasurements": [
-                            {
-                                "VerticalMeasurementTypeID": "SampleTop",
-                                "VerticalMeasurementSourceID": "Driller",
-                                "VerticalMeasurementValue": sample_top_depth,
-                            },
-                            {
-                                "VerticalMeasurementTypeID": "SampleBase",
-                                "VerticalMeasurementSourceID": "Driller",
-                                "VerticalMeasurementValue": sample_base_depth,
-                            },
-                        ]
-                    },
+                    "DepthMeasurements": [
+                        {
+                            "VerticalMeasurementTypeID": "SampleTop",
+                            "VerticalMeasurementSourceID": "DRL",
+                            "VerticalMeasurement": sample_top_depth,
+                        },
+                        {
+                            "VerticalMeasurementTypeID": "SampleBase",
+                            "VerticalMeasurementSourceID": "DRL",
+                            "VerticalMeasurement": sample_base_depth,
+                        },
+                    ],
                 }
             }
         }

@@ -457,6 +457,18 @@
                 ]
             }
         ],
-        "ExtensionProperties": {}
+        "ExtensionProperties": {},
+        "DepthMeasurements": [
+            {
+                "VerticalMeasurementTypeID": "{data_partition_id}:reference-data--VerticalMeasurementType:SampleTop:",
+                "VerticalMeasurement": 10000.0,
+                "VerticalMeasurementSourceID": "{data_partition_id}:reference-data--VerticalMeasurementSource:DRL:"
+            },
+            {
+                "VerticalMeasurementTypeID": "{data_partition_id}:reference-data--VerticalMeasurementType:SampleBase:",
+                "VerticalMeasurement": 20000.0,
+                "VerticalMeasurementSourceID": "{data_partition_id}:reference-data--VerticalMeasurementSource:DRL:"
+            }
+        ]
     }
 }

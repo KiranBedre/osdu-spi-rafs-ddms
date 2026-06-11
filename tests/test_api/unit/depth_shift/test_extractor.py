@@ -21,24 +21,22 @@ from app.depth_shift.extractor import (
 )
 
 
-def _make_sample(top=1872.0, base=1900.0, source="Driller", wellbore="ns:master-data--Wellbore:wb-001:"):
+def _make_sample(top=1872.0, base=1900.0, source="DRL", wellbore="ns:master-data--Wellbore:wb-001:"):
     return {
         "data": {
             "WellboreID": wellbore,
-            "DepthMeasurement": {
-                "VerticalMeasurements": [
-                    {
-                        "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleTop:",
-                        "VerticalMeasurementValue": top,
-                        "VerticalMeasurementSourceID": f"osdu:reference-data--VerticalMeasurementSource:{source}:",
-                    },
-                    {
-                        "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleBase:",
-                        "VerticalMeasurementValue": base,
-                        "VerticalMeasurementSourceID": f"osdu:reference-data--VerticalMeasurementSource:{source}:",
-                    },
-                ],
-            },
+            "DepthMeasurements": [
+                {
+                    "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleTop:",
+                    "VerticalMeasurement": top,
+                    "VerticalMeasurementSourceID": f"osdu:reference-data--VerticalMeasurementSource:{source}:",
+                },
+                {
+                    "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleBase:",
+                    "VerticalMeasurement": base,
+                    "VerticalMeasurementSourceID": f"osdu:reference-data--VerticalMeasurementSource:{source}:",
+                },
+            ],
         },
     }
 
@@ -55,15 +53,13 @@ class TestExtractDepths:
         record = {
             "data": {
                 "WellboreID": "wb-x",
-                "DepthMeasurement": {
-                    "VerticalMeasurements": [
-                        {
-                            "VerticalMeasurementTypeID": "SampleBase",
-                            "VerticalMeasurementValue": 1900.0,
-                            "VerticalMeasurementSourceID": "Driller",
-                        },
-                    ],
-                },
+                "DepthMeasurements": [
+                    {
+                        "VerticalMeasurementTypeID": "SampleBase",
+                        "VerticalMeasurement": 1900.0,
+                        "VerticalMeasurementSourceID": "DRL",
+                    },
+                ],
             },
         }
         top, base, _ = extract_depths(record)
@@ -73,15 +69,13 @@ class TestExtractDepths:
     def test_bare_string_type_ids_accepted(self):
         record = {
             "data": {
-                "DepthMeasurement": {
-                    "VerticalMeasurements": [
-                        {
-                            "VerticalMeasurementTypeID": "SampleTop",
-                            "VerticalMeasurementValue": 100.0,
-                            "VerticalMeasurementSourceID": "Driller",
-                        },
-                    ],
-                },
+                "DepthMeasurements": [
+                    {
+                        "VerticalMeasurementTypeID": "SampleTop",
+                        "VerticalMeasurement": 100.0,
+                        "VerticalMeasurementSourceID": "DRL",
+                    },
+                ],
             },
         }
         top, base, wellbore = extract_depths(record)
@@ -105,14 +99,12 @@ class TestExtractDepths:
     def test_point_measurement_no_base(self):
         record = {
             "data": {
-                "DepthMeasurement": {
-                    "VerticalMeasurements": [
-                        {
-                            "VerticalMeasurementTypeID": "SampleTop",
-                            "VerticalMeasurementValue": 555.0,
-                        },
-                    ],
-                },
+                "DepthMeasurements": [
+                    {
+                        "VerticalMeasurementTypeID": "SampleTop",
+                        "VerticalMeasurement": 555.0,
+                    },
+                ],
             },
         }
         top, base, _ = extract_depths(record)
@@ -121,9 +113,9 @@ class TestExtractDepths:
 
 
 class TestValidateMeasurementSource:
-    def test_driller_returns_none(self):
+    def test_drl_returns_none(self):
         entry = {
-            "VerticalMeasurementSourceID": "osdu:reference-data--VerticalMeasurementSource:Driller:",
+            "VerticalMeasurementSourceID": "osdu:reference-data--VerticalMeasurementSource:DRL:",
         }
         assert validate_measurement_source(entry) is None
 
@@ -140,8 +132,8 @@ class TestValidateMeasurementSource:
         result = validate_measurement_source(entry)
         assert result is not None
 
-    def test_bare_driller_string_returns_none(self):
-        entry = {"VerticalMeasurementSourceID": "Driller"}
+    def test_bare_drl_string_returns_none(self):
+        entry = {"VerticalMeasurementSourceID": "DRL:"}
         assert validate_measurement_source(entry) is None
 
 

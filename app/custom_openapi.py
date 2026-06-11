@@ -238,6 +238,64 @@ def _sort_and_annotate_parameters(openapi_schema: dict) -> None:  # noqa: WPS231
             operation["parameters"].sort(key=_get_parameter_sort_key)
 
 
+_DEPTH_SHIFT_PARAMS = [  # noqa: WPS407
+    {
+        "in": "query",
+        "name": "depth_shift_policy",
+        "required": False,
+        "description": (
+            "Depth shift resolution strategy: 'definitive' uses the sample's definitive "
+            "depth shift, 'id_provided' uses the explicit depth_shift_id."
+        ),
+        "schema": {
+            "title": "Depth Shift Policy",
+            "type": "string",
+            "description": (
+                "Depth shift resolution strategy: 'definitive' uses the sample's definitive "
+                "depth shift, 'id_provided' uses the explicit depth_shift_id."
+            ),
+        },
+    },
+    {
+        "in": "query",
+        "name": "depth_shift_id",
+        "required": False,
+        "description": "DepthShift WPC record ID to apply to the response data.",
+        "schema": {
+            "title": "Depth Shift Id",
+            "type": "string",
+            "description": "DepthShift WPC record ID to apply to the response data.",
+        },
+    },
+]
+
+_SEARCH_DATA_DEPTH_SHIFT_PATHS = frozenset(("samplesanalysis",))
+
+
+def _inject_depth_shift_params_into_search_data(openapi_schema: dict) -> None:  # noqa: WPS231, CCR001
+    """Add depth_shift_policy and depth_shift_id query parameters to search-data endpoints.
+
+    The search-data endpoints for SamplesAnalysis support the same depth-shift
+    augmentation as the get-data endpoint.  FastAPI does not automatically include
+    these parameters in the generated schema for the search endpoint (they are
+    injected at route-build time only for the get-data route).  This function adds
+    them manually so that Swagger UI and API consumers see the correct contract.
+    """
+    for path_key, path_item in openapi_schema.get("paths", {}).items():
+        route_segment = _get_route_segment(path_key)
+        if route_segment not in _SEARCH_DATA_DEPTH_SHIFT_PATHS:
+            continue
+        if not path_key.endswith("/search/data"):
+            continue
+        operation = path_item.get("get")
+        if not isinstance(operation, dict):
+            continue
+        existing_names = {op_param.get("name") for op_param in operation.get("parameters", [])}
+        for ds_param in _DEPTH_SHIFT_PARAMS:
+            if ds_param["name"] not in existing_names:
+                operation.setdefault("parameters", []).append(ds_param)
+
+
 def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
     """Override openapi with custom values.
 
@@ -259,6 +317,7 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
     _apply_request_body_overrides(custom_openapi_schema, settings)
     _apply_swagger_auth_partition_reqs(custom_openapi_schema)
     _mark_content_schema_version_required(custom_openapi_schema)
+    _inject_depth_shift_params_into_search_data(custom_openapi_schema)
     _sort_and_annotate_parameters(custom_openapi_schema)
     return custom_openapi_schema
 

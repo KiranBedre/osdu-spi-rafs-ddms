@@ -16,7 +16,7 @@
 
 All logic is pure dict manipulation — no I/O, no service calls.
 
-Navigates data.DepthMeasurement.VerticalMeasurements[] and matches
+Navigates data.DepthMeasurements[] and matches
 VerticalMeasurementTypeID by trailing suffix ("SampleTop" / "SampleBase")
 to handle both bare strings and full OSDU reference-data IDs.
 """
@@ -48,15 +48,14 @@ def extract_depths(  # noqa: WPS231
     record_data = sample_record.get("data", {})
     wellbore_id: Optional[str] = record_data.get("WellboreID")
 
-    depth_measurement = record_data.get("DepthMeasurement", {})
-    vertical_measurements: List[dict] = depth_measurement.get("VerticalMeasurements", [])
+    vertical_measurements: List[dict] = record_data.get("DepthMeasurements", [])
 
     sample_top: Optional[float] = None
     sample_base: Optional[float] = None
 
     for entry in vertical_measurements:
         type_id = entry.get("VerticalMeasurementTypeID", "")
-        raw_value = entry.get("VerticalMeasurementValue")
+        raw_value = entry.get("VerticalMeasurement")
         if raw_value is None:
             continue
         try:
@@ -88,16 +87,16 @@ def is_sample_depth_entry(vm_entry: dict) -> bool:
 
 
 def validate_measurement_source(vm_entry: dict) -> Optional[str]:
-    """Return a warning string when VerticalMeasurementSourceID is not Driller.
+    """Return a warning string when VerticalMeasurementSourceID does not end with 'DRL:'.
 
     :param vm_entry: a single VerticalMeasurements entry
     :type vm_entry: dict
-    :return: warning string, or None if source is Driller
+    :return: warning string, or None if source ends with 'DRL:'
     :rtype: Optional[str]
     """
     source_id = vm_entry.get("VerticalMeasurementSourceID", "")
-    if not source_id or not _matches_type(source_id, "Driller"):
-        return f"VerticalMeasurementSourceID '{source_id}' is not 'Driller'. " "Depth shift accuracy may be reduced."
+    if not source_id or not _matches_type(source_id, "DRL"):
+        return f"VerticalMeasurementSourceID '{source_id}' is not 'DRL:'. " "Depth shift accuracy may be reduced."
     return None
 
 

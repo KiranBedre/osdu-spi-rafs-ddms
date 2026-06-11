@@ -195,49 +195,74 @@ def get_response_mime_type(request: Request) -> SupportedMimeTypes:
     raise exceptions.NotAcceptableException(detail=reason)
 
 
-async def get_depth_shift_params(
+def get_depth_shift_params(  # noqa: WPS238
     depth_shift_id: Optional[str] = Query(
         default=None,
         description="DepthShift WPC record ID to apply to the response data.",
     ),
-    abstract_definitive_depth_shift_id: Optional[str] = Query(
+    depth_shift_policy: Optional[str] = Query(
         default=None,
         description=(
-            "OSDU record ID that embeds the AbstractDefinitiveDepthShift schema fragment. "
-            "RAFS reads DefinitiveDepthShiftID from the referenced record and applies that DepthShift WPC."
+            "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, "
+            "'id_provided' uses the explicit depth_shift_id."
         ),
     ),
 ) -> Optional[DepthShiftQueryParams]:
     """Parse and validate depth-shift query parameters.
 
-    Exactly one of the two IDs may be supplied; supplying both raises 400.
-    Returns None when neither is provided (no-op — existing behaviour).
+    Validation matrix:
+
+    - No params → return None (no shift)
+    - ``depth_shift_policy=definitive`` → resolve WPC from sample records
+    - ``depth_shift_policy=id_provided`` + ``depth_shift_id`` → use explicit WPC ID
+    - ``depth_shift_id`` without ``depth_shift_policy`` → 400
+    - ``depth_shift_policy=id_provided`` without ``depth_shift_id`` → 400
+    - ``depth_shift_policy=definitive`` + ``depth_shift_id`` → 400
+    - invalid ``depth_shift_policy`` value → 400
 
     :param depth_shift_id: DepthShift WPC record ID
     :type depth_shift_id: Optional[str]
-    :param abstract_definitive_depth_shift_id: OSDU record ID embedding the
-        AbstractDefinitiveDepthShift schema fragment
-    :type abstract_definitive_depth_shift_id: Optional[str]
+    :param depth_shift_policy: depth shift resolution strategy
+    :type depth_shift_policy: Optional[str]
     :return: validated params, or None
     :rtype: Optional[DepthShiftQueryParams]
-    :raises HTTPException: 400 if both params are supplied
+    :raises HTTPException: 400 on any invalid combination
     """
-    if depth_shift_id and abstract_definitive_depth_shift_id:
+    valid_policies = ("definitive", "id_provided")
+
+    if depth_shift_id and not depth_shift_policy:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=("Supply only one of 'depth_shift_id' or " "'abstract_definitive_depth_shift_id', not both."),
+            detail="'depth_shift_id' requires 'depth_shift_policy=id_provided'.",
         )
-    if depth_shift_id:
-        return DepthShiftQueryParams(
-            depth_shift_id=depth_shift_id,
-            abstract_definitive_depth_shift_id=None,
+    if not depth_shift_policy:
+        return None
+
+    if depth_shift_policy not in valid_policies:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                f"Invalid 'depth_shift_policy' value '{depth_shift_policy}'. "
+                f"Must be one of: {list(valid_policies)}."
+            ),
         )
-    if abstract_definitive_depth_shift_id:
-        return DepthShiftQueryParams(
-            depth_shift_id=None,
-            abstract_definitive_depth_shift_id=abstract_definitive_depth_shift_id,
+
+    if depth_shift_policy == "definitive" and depth_shift_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="'depth_shift_id' must not be supplied when 'depth_shift_policy=definitive'.",
         )
-    return None
+
+    if depth_shift_policy == "id_provided" and not depth_shift_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="'depth_shift_policy=id_provided' requires 'depth_shift_id'.",
+        )
+
+    return DepthShiftQueryParams(
+        depth_shift_id=depth_shift_id,
+        depth_shift_policy=depth_shift_policy,
+    )
 
 
 def get_correlation_id(request: Request):

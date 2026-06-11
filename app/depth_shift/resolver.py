@@ -19,6 +19,7 @@ from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 from fastapi import HTTPException
+from httpx import HTTPStatusError
 from starlette import status
 
 from app.models.schemas.depth_shift_query import DepthShiftQueryParams
@@ -47,34 +48,54 @@ class DepthShiftResolver:
         self,
         shift_params: DepthShiftQueryParams,
     ) -> str:
-        """Return the DepthShift WPC record ID to use for the shift.
+        """Return the DepthShift WPC record ID for the ``id_provided`` policy.
 
-        If *depth_shift_id* is set on *shift_params*, it is returned directly.
-        If *abstract_definitive_depth_shift_id* is set, the referenced OSDU record
-        is fetched and its ``DefinitiveDepthShiftID`` field is used as the WPC ID.
+        Returns *depth_shift_id* directly from *shift_params*.  This method is
+        only called when ``depth_shift_policy == "id_provided"``; the
+        ``"definitive"`` policy uses ``resolve_definitive_wpc_id`` instead.
 
         :param shift_params: validated depth-shift query params
         :type shift_params: DepthShiftQueryParams
         :return: DepthShift WPC record ID
         :rtype: str
-        :raises HTTPException: 404 when the abstract record lacks DefinitiveDepthShiftID
         """
-        if shift_params.depth_shift_id:
-            return shift_params.depth_shift_id
+        return shift_params.depth_shift_id
 
-        # AbstractDefinitiveDepthShift.1.0.0 is an abstract schema fragment embedded
-        # in OSDU records. Fetch the referenced record and read DefinitiveDepthShiftID.
-        abstract_id = shift_params.abstract_definitive_depth_shift_id
-        record = await self._storage.get_record(abstract_id)
-        wpc_id = record.get("data", {}).get("DefinitiveDepthShiftID")
-        if not wpc_id:
+    def resolve_definitive_wpc_id(self, sample_records: Dict[str, dict]) -> str:
+        """Resolve the DepthShift WPC ID from already-fetched sample records.
+
+        Iterates *sample_records* and reads
+        ``record["data"]["DefinitiveDepthShift"]["DefinitiveDepthShiftID"]``
+        from each record that carries the field.  All samples must agree on the
+        same WPC ID.
+
+        :param sample_records: mapping of sample record ID → full OSDU record dict
+        :type sample_records: Dict[str, dict]
+        :return: DepthShift WPC record ID
+        :rtype: str
+        :raises HTTPException: 422 when no sample has a DefinitiveDepthShift
+        :raises HTTPException: 422 when samples reference different WPC IDs
+        """
+        found_ids = set()
+        for record in sample_records.values():
+            definitive_depth_shift = record.get("data", {}).get("DefinitiveDepthShift", {})
+            wpc_id = definitive_depth_shift.get("DefinitiveDepthShiftID") if definitive_depth_shift else None
+            if wpc_id:
+                found_ids.add(wpc_id)
+
+        if not found_ids:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Record {abstract_id} has no 'DefinitiveDepthShiftID' (AbstractDefinitiveDepthShift schema).",
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="No DefinitiveDepthShift found in any sample record.",
             )
-        return wpc_id
+        if len(found_ids) > 1:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail="Samples reference multiple different definitive depth shifts.",
+            )
+        return found_ids.pop()
 
-    async def fetch_coretolog_depth_shift_data(
+    async def fetch_coretolog_depth_shift_data(  # noqa: WPS210, WPS238
         self,
         depth_shift_wpc_id: str,
     ) -> Tuple[List[dict], List[dict], Optional[str]]:
@@ -107,7 +128,25 @@ class DepthShiftResolver:
         ddms_datasets = wpc_record.get("data", {}).get("DDMSDatasets", [])
 
         dataset_id = self._find_coretolog_dataset_id(ddms_datasets, depth_shift_wpc_id)
-        parquet_bytes = await self._dataset.download_file(dataset_id)
+        try:
+            parquet_bytes = await self._dataset.download_file(dataset_id)
+        except HTTPStatusError as exc:
+            if exc.response.status_code == status.HTTP_400_BAD_REQUEST:
+                upstream = exc.response.text
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        "The OSDU Dataset Service rejected the retrieval request for DepthShift "
+                        "dataset '{0}' (WPC: {1}). "
+                        "This usually means the dataset kind is not registered with a DMS handler "
+                        "in the Dataset Service for this partition. "
+                        "Verify that the DepthShift WPC record kind contains "
+                        "'work-product-component--DepthShift' and that the Dataset Service in "
+                        "the target partition has a handler registered for that kind. "
+                        "Upstream error: {2}".format(dataset_id, depth_shift_wpc_id, upstream)
+                    ),
+                ) from exc
+            raise
 
         if not parquet_bytes:
             raise HTTPException(
