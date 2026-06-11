@@ -150,6 +150,11 @@ class DataValidator(object):
         for error_case in error_cases:
             failure_case = error_case.get("failure_case", "")
 
+            # Filter NaN in extra columns (column_in_schema with NaN inside row dict)
+            if isinstance(failure_case, dict) and self._is_nan_in_extra_field(failure_case, known_fields):
+                logger.debug(f"Filtering NaN error for extra field in bulk mode: {failure_case}")
+                continue
+
             # Check if this error contains NaN in an optional field
             if self._is_nan_in_optional_field(failure_case, required_fields, known_fields, pydantic_model):
                 logger.debug(f"Filtering NaN error for optional field in bulk mode: {failure_case}")
@@ -256,6 +261,23 @@ class DataValidator(object):
         except (ValueError, TypeError):
             return False
 
+    def _is_nan_in_extra_field(self, failure_case: dict, known_fields: set) -> bool:
+        """Check if failure case contains only NaN values in extra (unknown) fields.
+
+        This helper identifies when a row dict contains only NaN values in fields
+        that are not defined in the Pydantic schema. These represent harmless
+        DataFrame column-alignment artifacts rather than true schema violations.
+
+        :param failure_case: row dict from error
+        :param known_fields: set of field names defined in the Pydantic model
+        :return: True if all fields in failure_case are extra (unknown) with NaN values
+        :rtype: bool
+        """
+        return all(
+            field_name not in known_fields and self._is_scalar_nan(field_value)
+            for field_name, field_value in failure_case.items()
+        )
+
     def _get_required_fields(self) -> set:
         """Extract required field names from the Pydantic model.
 
@@ -330,18 +352,29 @@ class DataValidator(object):
     def _build_expected_desc(field_info) -> str:
         """Build a human-readable expected-type description from a Pydantic FieldInfo.
 
+        Extracts type constraints (regex patterns, simple type names) and formats
+        complex types by removing the 'typing.' module prefix for readability.
+
         :param field_info: Pydantic v1 FieldInfo object
         :return: expected type description string
         :rtype: str
         """
+        if field_info is None:
+            return "unknown"
+
+        type_description = "unknown"
         regex = getattr(field_info.type_, "regex", None)
         type_name = getattr(field_info.type_, "__name__", None)
 
         if regex:
-            return f"pattern: {regex.pattern}"
-        if type_name in {"float", "int", "str", "bool", "date", "datetime"}:
-            return type_name
-        return str(field_info.outer_type_)
+            type_description = f"pattern: {regex.pattern}"
+        elif type_name in {"float", "int", "str", "bool", "date", "datetime"}:
+            type_description = type_name
+        else:
+            # Remove 'typing.' prefix for complex types (e.g. List[Union[...]])
+            type_description = str(field_info.outer_type_).replace("typing.", "")
+
+        return type_description
 
     def _enrich_pydantic_error(self, raw_failure: str) -> list:
         """Parse a PydanticModel failure_case string into field-level error dicts.
@@ -392,6 +425,47 @@ class DataValidator(object):
             return check
         return "invalid_type" if "dtype" in check else "invalid_value"
 
+    def _enrich_error_with_field_info(self, column_name: str, check: str) -> dict:
+        """Enrich missing/extra column errors with field-level details.
+
+        :param column_name: the column name (missing or extra)
+        :type column_name: str
+        :param check: the check type ("column_in_dataframe" or "column_in_schema")
+        :type check: str
+        :return: enriched error dict with field, received, expected keys
+        :rtype: dict
+        """
+        if check == "column_in_dataframe":
+            # Column is in schema but missing from dataframe
+            received = "missing"
+            expected = "required column"
+        elif check == "column_in_schema":
+            # Column is in dataframe but not in schema (extra field)
+            received = "present"
+            expected = "not allowed (extra field)"
+        else:
+            # Fallback for unknown check types
+            received = "unknown"
+            expected = "unknown"
+
+        return {
+            "field": column_name,
+            "received": received,
+            "expected": expected,
+        }
+
+    def _should_enrich_column_error(self, column: str, check: str) -> bool:
+        """Check if error should be enriched as column_in_dataframe/schema error.
+
+        :param column: column name (None for missing/extra column errors)
+        :type column: str
+        :param check: the check type
+        :type check: str
+        :return: True if this is a missing/extra column error to enrich
+        :rtype: bool
+        """
+        return column is None and ("column_in_dataframe" in check or "column_in_schema" in check)
+
     def _collect_errors(self, error_cases: Iterable) -> dict:
         """Collect the errors.
 
@@ -411,6 +485,12 @@ class DataValidator(object):
             if column == "DataSchema":
                 enriched_list = self._enrich_pydantic_error(str(raw_failure))
                 errors.setdefault(check, []).extend(enriched_list)
+                continue
+
+            # Enrich missing/extra column errors (cases 1 & 3)
+            if self._should_enrich_column_error(column, check):
+                enriched_error = self._enrich_error_with_field_info(str(raw_failure), check)
+                errors.setdefault(check, []).append(enriched_error)
                 continue
 
             # If the check type is "column_in_dataframe" or "column_in_schema" the column name is in
