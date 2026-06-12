@@ -35,13 +35,11 @@ from tests.test_api.test_routes.osdu.storage_mock_objects import (
 
 
 def build_reason(status_code: int, reason_detail: str, message: str):
-    return json.dumps(
-        {
-            "code": status_code,
-            "reason": reason_detail,
-            "message": message,
-        }
-    )
+    return {
+        "code": status_code,
+        "reason": reason_detail,
+        "message": message,
+    }
 
 
 @pytest.fixture
@@ -395,4 +393,4 @@ async def test_error_handler_message_from_service(
             await storage_service.query_records([])
 
     assert exc.value.status_code == status.HTTP_502_BAD_GATEWAY
-    assert exc.value.detail == json.dumps(response_json)
+    assert exc.value.detail == response_json

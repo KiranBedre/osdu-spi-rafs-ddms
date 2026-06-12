@@ -22,7 +22,9 @@ from fastapi import HTTPException
 from httpx import HTTPStatusError
 from starlette import status
 
+from app.api.routes.utils.records import find_dataset_id
 from app.models.schemas.depth_shift_query import DepthShiftQueryParams
+from app.resources.paths import DEPTH_SHIFT_STR
 from app.services import dataset as dataset_module
 from app.services import storage as storage_module
 
@@ -95,7 +97,7 @@ class DepthShiftResolver:
             )
         return found_ids.pop()
 
-    async def fetch_coretolog_depth_shift_data(  # noqa: WPS210, WPS238
+    async def fetch_coretolog_depth_shift_data(  # noqa: WPS210
         self,
         depth_shift_wpc_id: str,
     ) -> Tuple[List[dict], List[dict], Optional[str]]:
@@ -115,46 +117,32 @@ class DepthShiftResolver:
         :rtype: Tuple[List[dict], List[dict], Optional[str]]
         :raises HTTPException: 404 if the WPC or its dataset is not found
         :raises HTTPException: 400 if the parquet is missing DepthShiftSet
+        :raises HTTPException: 422 if the CoreToLog parquet contains more than one row
         """
         wpc_record = await self._storage.get_record(depth_shift_wpc_id)
         record_kind = wpc_record.get("kind", "")
         if "work-product-component--DepthShift" not in record_kind:
             kind_str = record_kind if record_kind else "(missing)"
             detail = "Record {0} is not a DepthShift WPC (kind: {1}).".format(depth_shift_wpc_id, kind_str)
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=detail,
-            )
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail)
         ddms_datasets = wpc_record.get("data", {}).get("DDMSDatasets", [])
-
-        dataset_id = self._find_coretolog_dataset_id(ddms_datasets, depth_shift_wpc_id)
-        try:
-            parquet_bytes = await self._dataset.download_file(dataset_id)
-        except HTTPStatusError as exc:
-            if exc.response.status_code == status.HTTP_400_BAD_REQUEST:
-                upstream = exc.response.text
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=(
-                        "The OSDU Dataset Service rejected the retrieval request for DepthShift "
-                        "dataset '{0}' (WPC: {1}). "
-                        "This usually means the dataset kind is not registered with a DMS handler "
-                        "in the Dataset Service for this partition. "
-                        "Verify that the DepthShift WPC record kind contains "
-                        "'work-product-component--DepthShift' and that the Dataset Service in "
-                        "the target partition has a handler registered for that kind. "
-                        "Upstream error: {2}".format(dataset_id, depth_shift_wpc_id, upstream)
-                    ),
-                ) from exc
-            raise
-
-        if not parquet_bytes:
+        dataset_id = find_dataset_id(ddms_datasets, DEPTH_SHIFT_STR)
+        if dataset_id is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"CoreToLog dataset {dataset_id} has no content.",
+                detail=f"No CoreToLog dataset found in DepthShift WPC {depth_shift_wpc_id}.",
             )
-
+        parquet_bytes = await self._download_parquet(dataset_id, depth_shift_wpc_id)
         df = pd.read_parquet(io.BytesIO(parquet_bytes))
+        if len(df) != 1:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "CoreToLog content for DepthShift WPC {0} must contain exactly 1 row, "
+                    "but {1} rows were found. Each DepthShift WPC must reference a single "
+                    "CoreToLog record.".format(depth_shift_wpc_id, len(df))
+                ),
+            )
         shift_set = self._extract_depth_shift_set(df, depth_shift_wpc_id)
         shift_meta = self._extract_meta(df)
         return (shift_set, shift_meta, wpc_record.get("data", {}).get("WellboreID"))
@@ -186,33 +174,43 @@ class DepthShiftResolver:
 
         return records_by_id
 
-    def _is_dataset_part(self, part: str) -> bool:
-        """Return True if *part* looks like an OSDU dataset record ID."""
-        return ":dataset--" in part or part.startswith("opendes:") or part.startswith("osdu:")
+    async def _download_parquet(self, dataset_id: str, wpc_id: str) -> bytes:
+        """Download parquet bytes from the Dataset Service with error normalisation.
 
-    def _find_coretolog_dataset_id(
-        self,
-        ddms_datasets: List[str],
-        wpc_id: str,
-    ) -> str:
-        """Extract dataset ID from DDMSDatasets URN list.
-
-        :param ddms_datasets: list of DDMSDatasets URN strings
-        :type ddms_datasets: List[str]
-        :param wpc_id: WPC id (used in error messages)
+        :param dataset_id: OSDU dataset record ID
+        :type dataset_id: str
+        :param wpc_id: DepthShift WPC ID (used in error messages)
         :type wpc_id: str
-        :return: OSDU dataset record ID
-        :rtype: str
-        :raises HTTPException: 404 if no matching dataset found
+        :return: raw parquet bytes
+        :rtype: bytes
+        :raises HTTPException: 400 when the Dataset Service rejects the request
+        :raises HTTPException: 404 when the dataset has no content
         """
-        for urn in ddms_datasets:
-            for part in urn.split("/"):
-                if self._is_dataset_part(part):
-                    return part
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No CoreToLog dataset found in DepthShift WPC {wpc_id}.",
-        )
+        try:
+            parquet_bytes = await self._dataset.download_file(dataset_id)
+        except HTTPStatusError as exc:
+            if exc.response.status_code == status.HTTP_400_BAD_REQUEST:
+                upstream = exc.response.text
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=(
+                        "The OSDU Dataset Service rejected the retrieval request for DepthShift "
+                        "dataset '{0}' (WPC: {1}). "
+                        "This usually means the dataset kind is not registered with a DMS handler "
+                        "in the Dataset Service for this partition. "
+                        "Verify that the DepthShift WPC record kind contains "
+                        "'work-product-component--DepthShift' and that the Dataset Service in "
+                        "the target partition has a handler registered for that kind. "
+                        "Upstream error: {2}".format(dataset_id, wpc_id, upstream)
+                    ),
+                ) from exc
+            raise
+        if not parquet_bytes:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"CoreToLog dataset {dataset_id} has no content.",
+            )
+        return parquet_bytes
 
     def _extract_depth_shift_set(
         self,

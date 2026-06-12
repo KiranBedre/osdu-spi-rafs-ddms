@@ -28,6 +28,7 @@ class RecordKeys(NamedTuple):
 
 
 ID_PART_INDEX = 2
+RECORD_TYPE_INDEX = 1
 ENTITY_TYPE_INDEX = 2
 VERSION_SPLIT_INDEX = 3
 VERSION_SPLIT_INDEX_COLON_IN_ID = -1
@@ -35,6 +36,7 @@ SCHEMA_VERSION_INDEX = -1
 DATASET_ID_INDEX = -2
 FULLID_ID_INDEX = 0
 FULLID_VERSION_INDEX = 1
+DATASET_KIND_PREFIX = "dataset--"
 
 # Blob id
 URN_OBJECT_NAME_INDEX = -4
@@ -110,8 +112,13 @@ def find_dataset_id(ddms_datasets: List[str], prefix: str) -> Optional[str]:
     for ddms_dataset in ddms_datasets:
         dataset_id = ddms_dataset.split("/")[DATASET_ID_INDEX]
         try:
-            if dataset_id and dataset_id.split(":")[ENTITY_TYPE_INDEX].startswith(prefix):  # noqa: WPS221
-                return ":".join(dataset_id.split(":")[:VERSION_SPLIT_INDEX])  # noqa: WPS221
+            parts = dataset_id.split(":")
+            if (  # noqa: WPS221
+                dataset_id
+                and parts[RECORD_TYPE_INDEX].startswith(DATASET_KIND_PREFIX)
+                and parts[ENTITY_TYPE_INDEX].startswith(prefix)
+            ):
+                return ":".join(parts[:VERSION_SPLIT_INDEX])  # noqa: WPS221
         except IndexError:
             logger.error(f"The dataset id {dataset_id} is invalid")
 
@@ -130,9 +137,17 @@ def update_dataset_id(ddms_datasets: List[str], ddms_urn: str, prefix: str) -> L
     """
     for index, ddms_dataset in enumerate(ddms_datasets):
         dataset_id = ddms_dataset.split("/")[DATASET_ID_INDEX]
-        if dataset_id and dataset_id.split(":")[ENTITY_TYPE_INDEX].startswith(prefix):  # noqa: WPS221
-            ddms_datasets[index] = ddms_urn
-            return ddms_datasets
+        try:
+            parts = dataset_id.split(":")
+            if (  # noqa: WPS221
+                dataset_id
+                and parts[RECORD_TYPE_INDEX].startswith(DATASET_KIND_PREFIX)
+                and parts[ENTITY_TYPE_INDEX].startswith(prefix)
+            ):
+                ddms_datasets[index] = ddms_urn
+                return ddms_datasets
+        except IndexError:
+            logger.error(f"The dataset id {dataset_id} is invalid")
 
 
 def generate_dataset_urn(

@@ -164,12 +164,15 @@ class TestFetchCoretologDepthShiftDataContent:
         dataset.download_file = AsyncMock(return_value=parquet_bytes)
         return DepthShiftResolver(storage_service=storage, dataset_service=dataset)
 
+    _DATASET_ID = "opendes:dataset--File.Generic:depthshift-ds-1"
+    _DDMS_URN = f"urn://rafs-v2/depthshiftdata/{_WPC_ID}/{_DATASET_ID}/1.0.0"
+
     def _wpc_record(self, wellbore="opendes:master-data--Wellbore:wb-1:"):
         return {
             "kind": "opendes:wks:work-product-component--DepthShift:1.0.0",
             "data": {
                 "WellboreID": wellbore,
-                "DDMSDatasets": ["opendes:dataset--File.Generic:ds-1:"],
+                "DDMSDatasets": [self._DDMS_URN],
             },
         }
 
@@ -204,6 +207,22 @@ class TestFetchCoretologDepthShiftDataContent:
             await resolver.fetch_coretolog_depth_shift_data(self._WPC_ID)
         assert exc_info.value.status_code == 400
         assert "missing 'DepthShiftSet'" in exc_info.value.detail
+
+    @pytest.mark.asyncio
+    async def test_multiple_rows_raises_422(self):
+        """CoreToLog parquet with more than one row must be rejected with 422."""
+        multi_row_parquet = pd.DataFrame(
+            [
+                {"DepthShiftSet": [_SHIFT_INTERVAL]},
+                {"DepthShiftSet": [_SHIFT_INTERVAL]},
+            ]
+        ).to_parquet()
+        resolver = self._make_resolver(self._wpc_record(), multi_row_parquet)
+
+        with pytest.raises(HTTPException) as exc_info:
+            await resolver.fetch_coretolog_depth_shift_data(self._WPC_ID)
+        assert exc_info.value.status_code == 422
+        assert "exactly 1 row" in exc_info.value.detail
 
 
 class TestExtractDepthShiftSet:

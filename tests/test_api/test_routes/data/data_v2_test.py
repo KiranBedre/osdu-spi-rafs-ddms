@@ -7087,6 +7087,31 @@ async def test_post_ds_data_rejects_mismatched_id():
     assert any("DepthShiftWPCID" in entry for entry in body["errors"]["Invalid value"])
 
 
+@pytest.mark.asyncio
+async def test_post_ds_data_rejects_multi_row_payload():
+    """POST CoreToLog with more than one row must be rejected at write time with 422."""
+    single_row = coretologdepthshift_mock_objects.TEST_DATA
+    multi_row = {
+        "columns": single_row["columns"],
+        "index": [0, 1],
+        "data": [single_row["data"][0], single_row["data"][0]],
+    }
+    with post_overrides(
+        coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
+        multi_row,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(multi_row),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert "exactly 1 row" in response.json()["reason"]
+
+
 # ---------------------------------------------------------------------------
 # Issue #751 — Depth-shift augmentation on SA GET data
 # ---------------------------------------------------------------------------
@@ -7114,10 +7139,10 @@ _DEPTH_SHIFT_SAMPLE_RECORD = {
 }
 
 _DEPTH_SHIFT_WPC_WITH_DATASETS = {
-    **coretologdepthshift_mock_objects.RECORD_DATA,
+    **coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
     "kind": TEST_DEPTH_SHIFT_KIND,
     "data": {
-        **coretologdepthshift_mock_objects.RECORD_DATA.get("data", {}),
+        **coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION.get("data", {}),
         "WellboreID": "namespace:master-data--Wellbore:wellbore-001:",
     },
 }

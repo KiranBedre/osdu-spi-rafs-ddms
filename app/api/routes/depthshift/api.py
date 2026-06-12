@@ -27,8 +27,7 @@ from app.api.routes.common.endpoints import (
     GenericSchemasView,
     infer_content_type_from_url,
 )
-from app.api.routes.depthshift.endpoints import DepthShiftRecordView
-from app.api.routes.v2.data.endpoints import DynamicContentTypeDataViewV2
+from app.api.routes.depthshift.endpoints import DepthShiftDataViewV2, DepthShiftRecordView
 from app.models.data_schemas.base import MAPS_TO_DATA_MODEL
 from app.resources.paths import DEPTH_SHIFT_STR
 from app.search.depth_shift_ids_fetcher import SearchServiceDepthShiftIdsFetcher
@@ -86,7 +85,7 @@ GenericSchemasView(
     },
 )
 
-DynamicContentTypeDataViewV2(
+DepthShiftDataViewV2(
     router=ds_record_router_v2,
     id_regex_str=DS_ID_REGEX_STR,
     single_content_type=DEPTH_SHIFT_STR,

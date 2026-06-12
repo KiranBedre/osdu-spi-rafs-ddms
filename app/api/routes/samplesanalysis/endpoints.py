@@ -305,17 +305,15 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             wpc_id = await resolver.resolve_depth_shift_wpc_id(depth_shift_params)
             shift_set, shift_meta, shift_wellbore = await resolver.fetch_coretolog_depth_shift_data(wpc_id)
 
-            base_response = await super().get_data_v2(
-                request=request,
-                record_id=record_id,
-                analysis_type=analysis_type,
-                content_id=content_id,
-                dataset_service=dataset_service,
-                storage_service=storage_service,
-                blob_storage_service=blob_storage_service,
-                df_filter=df_filter,
-                content_schema_version=content_schema_version,
-                orient="split",
+            base_response = await self._get_data(
+                request,
+                record_id,
+                content_id,
+                dataset_service,
+                storage_service,
+                df_filter,
+                content_schema_version,
+                "split",
             )
 
             if base_response.status_code != status.HTTP_200_OK:
@@ -336,17 +334,15 @@ class SamplesAnalysisDataView(BaseDataViewV2):
 
         else:
             # definitive path: need sample records first to resolve the WPC ID.
-            base_response = await super().get_data_v2(
-                request=request,
-                record_id=record_id,
-                analysis_type=analysis_type,
-                content_id=content_id,
-                dataset_service=dataset_service,
-                storage_service=storage_service,
-                blob_storage_service=blob_storage_service,
-                df_filter=df_filter,
-                content_schema_version=content_schema_version,
-                orient="split",
+            base_response = await self._get_data(
+                request,
+                record_id,
+                content_id,
+                dataset_service,
+                storage_service,
+                df_filter,
+                content_schema_version,
+                "split",
             )
 
             if base_response.status_code != status.HTTP_200_OK:

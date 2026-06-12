@@ -12,12 +12,17 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Annotated, List
+import io
+from typing import Annotated, List, Optional
 
-from fastapi import Body, Depends, Request
+import pandas as pd
+from fastapi import Body, Depends, HTTPException, Request
+from pydantic import BaseModel
+from starlette import status
 
 from app.api.dependencies.services import get_async_storage_service
 from app.api.routes.osdu.storage_records import BaseStorageRecordView
+from app.api.routes.v2.data.endpoints import DynamicContentTypeDataViewV2
 from app.models.schemas.osdu_storage import StorageUpsertResponse
 from app.resources.load_model_example import load_data_example
 from app.services import storage
@@ -32,6 +37,30 @@ DepthShiftBody = Annotated[
         },
     ),
 ]
+
+
+class DepthShiftDataViewV2(DynamicContentTypeDataViewV2):
+    """DepthShift data view with single-row enforcement on POST."""
+
+    async def _get_validated_payload(
+        self,
+        request: Request,
+        model: BaseModel,
+        storage_service: storage.StorageService,
+        record_id: Optional[str] = None,
+    ) -> bytes:
+        parquet_file = await super()._get_validated_payload(request, model, storage_service, record_id)
+        df = pd.read_parquet(io.BytesIO(parquet_file))
+        if len(df) != 1:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "CoreToLog content for DepthShift WPC {0} must contain exactly 1 row, "
+                    "but {1} rows were found. Each DepthShift WPC must reference a single "
+                    "CoreToLog record.".format(record_id or "unknown", len(df))
+                ),
+            )
+        return parquet_file
 
 
 class DepthShiftRecordView(BaseStorageRecordView):
