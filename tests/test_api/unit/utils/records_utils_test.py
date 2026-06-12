@@ -22,6 +22,7 @@ from app.api.routes.utils.records import (
     generate_blob_urn,
     get_family_type_from_url,
     get_id_version,
+    is_valid_semver,
 )
 from app.exceptions.exceptions import UnprocessableContentException
 
@@ -164,3 +165,13 @@ def test_find_schema_versions_for_object_name(ddms_datasets, blob_id, expected_v
 )
 def test_find_object_name_from_type(ddms_datasets, full_analysis_type, expected):
     assert find_object_name_from_type(ddms_datasets, full_analysis_type) == expected
+
+
+@pytest.mark.parametrize("version", ["1.0.0", "2.1.0", "0.0.0", "100.200.300", "3.0.0"])
+def test_is_valid_semver_valid(version):
+    assert is_valid_semver(version) is True
+
+
+@pytest.mark.parametrize("version", ["1.0", "1.0.0.0", "1.a.0", "v1.0.0", "1.0.0-alpha", "", "abc", "type_version"])
+def test_is_valid_semver_invalid(version):
+    assert is_valid_semver(version) is False

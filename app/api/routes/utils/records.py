@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import re
 from typing import List, NamedTuple, Optional, Tuple
 
 from loguru import logger
@@ -237,6 +238,13 @@ def parse_kind(kind: str) -> dict:
         "entity_type": kind_parts[entity_type_index],
         "version": kind_parts[version_index],
     }
+
+
+_SEMVER_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
+
+
+def is_valid_semver(version: str) -> bool:
+    return bool(_SEMVER_PATTERN.match(version))
 
 
 def get_info_from_urn(urn: str) -> dict:

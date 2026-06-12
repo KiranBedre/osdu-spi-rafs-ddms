@@ -17,7 +17,7 @@ from typing import List, Optional, Tuple
 
 from loguru import logger
 
-from app.models.domain.osdu.base import SATURATION_FUNCTION_SET_KIND
+from app.models.domain.osdu.base import SATURATION_FUNCTION_SET_KIND_BASE
 from app.resources.paths import SATURATION_FUNCTION_SET_STR
 from app.search.ddms_dataset_ids_fetcher import (
     DDMSDatasetIdsFetcher,
@@ -52,7 +52,7 @@ class SearchServiceSaturationFunctionSetIdsFetcher(DDMSDatasetIdsFetcher):
         cursor = None
         while True:
             search_response = await self._search_service.find_records(
-                kind=SATURATION_FUNCTION_SET_KIND,
+                kind=f"{SATURATION_FUNCTION_SET_KIND_BASE}:*",
                 query=query,
                 limit=search.QUERY_LIMIT,
                 cursor=cursor,

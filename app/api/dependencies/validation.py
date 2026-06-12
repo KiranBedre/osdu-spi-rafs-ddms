@@ -33,6 +33,7 @@ from app.api.routes.utils.api_version import (
     get_domain_from_url,
 )
 from app.api.routes.utils.query import divide_chunks, find_osdu_ids_from_string
+from app.api.routes.utils.records import is_valid_semver, parse_kind
 from app.core.config import get_app_settings
 from app.exceptions.exceptions import (
     NotFoundException,
@@ -191,19 +192,37 @@ async def validate_referential_integrity(  # noqa: ASYNC910
         )
 
 
-def validate_kind(kind: str, valid_kinds: List[str]):
-    """Validates kind against supported kinds in given endpoint.
+def validate_kind(kind: str, valid_kind_bases: List[str]):
+    """Validates kind against supported entity types in the given endpoint.
 
-    :param kind: the kind to be validated
+    Accepts any valid semantic version for a recognized entity type.
+
+    :param kind: the kind string from an incoming record
     :type kind: str
-    :param valid_kinds: supported kinds
-    :type valid_kinds: List[str]
-    :raises RuntimeError: If there is no kind that matches supported
-        kinds
+    :param valid_kind_bases: supported base kinds (no version suffix)
+    :type valid_kind_bases: List[str]
+    :raises RecordValidationException: if entity type is unsupported or
+        version is not a valid semver
     """
-    if kind not in valid_kinds:
+    try:
+        parsed = parse_kind(kind)
+    except ValueError:
         raise RecordValidationException(
-            detail=f"Kind `{kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: {valid_kinds}",
+            detail=f"Kind `{kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: {valid_kind_bases}",
+        )
+
+    kind_base = f"{parsed['authority']}:{parsed['source']}:{parsed['entity_type']}"
+    if kind_base not in valid_kind_bases:
+        raise RecordValidationException(
+            detail=f"Kind `{kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: {valid_kind_bases}",
+        )
+
+    if not is_valid_semver(parsed["version"]):
+        raise RecordValidationException(
+            detail=(
+                f"Kind `{kind}` has an invalid version `{parsed['version']}`. "
+                "Version must be in major.minor.patch format with non-negative integers."
+            ),
         )
 
 
@@ -218,7 +237,7 @@ def build_skipped_record_error(record: dict, index: int, error: Exception):
 async def validate_osdu_wks_records(
     records_list: List[OsduStorageRecord],
     schema_service: SchemaService,
-    valid_kinds: List[str],
+    valid_kind_bases: List[str],
 ) -> List[dict]:
     tasks = []
     records = []
@@ -227,7 +246,7 @@ async def validate_osdu_wks_records(
         async with asyncio.TaskGroup() as group:  # pylint: disable=no-member
             for index, record in enumerate(records_list):
                 record_dict = record.dict(exclude_none=True)
-                validate_kind(record_dict.get("kind", ""), valid_kinds=valid_kinds)
+                validate_kind(record_dict.get("kind", ""), valid_kind_bases=valid_kind_bases)
                 records.append(record_dict)
                 tasks.append(
                     group.create_task(
@@ -260,7 +279,7 @@ async def validate_samples_analyses_report_v2_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.SAMPLES_ANALYSES_REPORT_KIND],
+        [osdu_models_base.SAMPLES_ANALYSES_REPORT_KIND_BASE],
     )
     await validate_referential_integrity(
         records,
@@ -278,7 +297,7 @@ async def validate_samplesanalysis_records_v2_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.SAMPLESANALYSIS_KIND],
+        [osdu_models_base.SAMPLESANALYSIS_KIND_BASE],
     )
     await validate_referential_integrity(
         records,
@@ -296,7 +315,7 @@ async def validate_saturation_function_set_v2_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.SATURATION_FUNCTION_SET_KIND],
+        [osdu_models_base.SATURATION_FUNCTION_SET_KIND_BASE],
     )
     await validate_referential_integrity(
         records,
@@ -311,7 +330,9 @@ async def validate_master_data_records_payload(
     schema_service: SchemaService,
     storage_service: StorageService,
 ) -> List[dict]:
-    records = await validate_osdu_wks_records(records_list, schema_service, osdu_models_base.MASTER_DATA_KINDS_V2)
+    records = await validate_osdu_wks_records(
+        records_list, schema_service, list(osdu_models_base.MASTER_DATA_KIND_BASES)
+    )
     await validate_referential_integrity(records, [], storage_service)
     return records
 
@@ -324,7 +345,7 @@ async def validate_reservoir_sim_rock_physics_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND],
+        [osdu_models_base.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND_BASE],
     )
     await validate_referential_integrity(
         records,
@@ -342,7 +363,7 @@ async def validate_fluid_model_v2_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.FLUID_MODEL_KIND],
+        [osdu_models_base.FLUID_MODEL_KIND_BASE],
     )
     await validate_referential_integrity(
         records,
@@ -360,7 +381,7 @@ async def validate_depth_shift_v2_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.DEPTH_SHIFT_KIND],
+        [osdu_models_base.DEPTH_SHIFT_KIND_BASE],
     )
     await validate_referential_integrity(
         records,

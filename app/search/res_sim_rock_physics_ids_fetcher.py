@@ -18,7 +18,7 @@ from typing import List, Optional, Tuple
 from loguru import logger
 
 from app.models.domain.osdu.base import (
-    RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND,
+    RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND_BASE,
 )
 from app.resources.paths import RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR
 from app.search.ddms_dataset_ids_fetcher import (
@@ -54,7 +54,7 @@ class SearchServiceResSimRockPhysicsIdsFetcher(DDMSDatasetIdsFetcher):
         cursor = None
         while True:
             search_response = await self._search_service.find_records(
-                kind=RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND,
+                kind=f"{RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND_BASE}:*",
                 query=query,
                 limit=search.QUERY_LIMIT,
                 cursor=cursor,

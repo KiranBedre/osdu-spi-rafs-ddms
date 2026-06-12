@@ -17,7 +17,7 @@ from typing import List, Optional, Tuple
 
 from loguru import logger
 
-from app.models.domain.osdu.base import DEPTH_SHIFT_KIND
+from app.models.domain.osdu.base import DEPTH_SHIFT_KIND_BASE
 from app.resources.paths import DEPTH_SHIFT_STR
 from app.search.ddms_dataset_ids_fetcher import (
     DDMSDatasetIdsFetcher,
@@ -52,7 +52,7 @@ class SearchServiceDepthShiftIdsFetcher(DDMSDatasetIdsFetcher):
         cursor = None
         while True:
             search_response = await self._search_service.find_records(
-                kind=DEPTH_SHIFT_KIND,
+                kind=f"{DEPTH_SHIFT_KIND_BASE}:*",
                 query=query,
                 limit=search.QUERY_LIMIT,
                 cursor=cursor,

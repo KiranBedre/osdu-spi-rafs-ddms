@@ -19,7 +19,7 @@ from typing import List, Optional, Tuple
 from loguru import logger
 
 from app.api.routes.utils.search import get_valid_ids_from_ddms_datasets
-from app.models.domain.osdu.base import SAMPLESANALYSIS_KIND
+from app.models.domain.osdu.base import SAMPLESANALYSIS_KIND_BASE
 from app.resources.paths import SAMPLESANALYSIS_TYPE_MAPPING
 from app.services import search
 
@@ -88,7 +88,7 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
         cursor = None
         while True:
             search_response = await self._search_service.find_records(
-                kind=SAMPLESANALYSIS_KIND,
+                kind=f"{SAMPLESANALYSIS_KIND_BASE}:*",
                 query=query,
                 limit=search.QUERY_LIMIT,
                 cursor=cursor,

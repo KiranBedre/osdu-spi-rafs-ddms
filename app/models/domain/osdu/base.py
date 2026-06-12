@@ -12,9 +12,17 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import re as _re
+
 from app.core.config import get_app_settings
 
 settings = get_app_settings()
+
+_SEMVER_SUFFIX_RE = _re.compile(r":\d+\.\d+\.\d+$")
+
+
+def _strip_version(kind: str) -> str:
+    return _SEMVER_SUFFIX_RE.sub("", kind)
 
 GENERIC_FACILITY_100_KIND = f"{settings.schema_authority}:wks:master-data--GenericFacility:1.0.0"
 GENERIC_SITE_100_KIND = f"{settings.schema_authority}:wks:master-data--GenericSite:1.0.0"
@@ -45,3 +53,27 @@ SATURATION_FUNCTION_SET_KIND = f"{settings.schema_authority}:wks:work-product-co
 FLUID_MODEL_KIND = f"{settings.schema_authority}:wks:work-product-component--FluidModel:1.0.0"
 
 DEPTH_SHIFT_KIND = f"{settings.schema_authority}:wks:work-product-component--DepthShift:1.0.0"
+
+# Version-agnostic base kinds (authority:source:entity_type — no version suffix)
+GENERIC_FACILITY_KIND_BASE = _strip_version(GENERIC_FACILITY_100_KIND)
+GENERIC_SITE_KIND_BASE = _strip_version(GENERIC_SITE_100_KIND)
+SAMPLE_KIND_BASE = _strip_version(SAMPLE_200_KIND)
+SAMPLE_ACQUISITION_JOB_KIND_BASE = _strip_version(SAMPLE_ACQUISITION_JOB_100_KIND)
+SAMPLE_CHAIN_OF_CUSTODY_EVENT_KIND_BASE = _strip_version(SAMPLE_CHAIN_OF_CUSTODY_EVENT_100_KIND)
+SAMPLE_CONTAINER_KIND_BASE = _strip_version(SAMPLE_CONTAINER_100_KIND)
+
+MASTER_DATA_KIND_BASES = (
+    GENERIC_FACILITY_KIND_BASE,
+    GENERIC_SITE_KIND_BASE,
+    SAMPLE_KIND_BASE,
+    SAMPLE_ACQUISITION_JOB_KIND_BASE,
+    SAMPLE_CHAIN_OF_CUSTODY_EVENT_KIND_BASE,
+    SAMPLE_CONTAINER_KIND_BASE,
+)
+
+SAMPLESANALYSIS_KIND_BASE = _strip_version(SAMPLESANALYSIS_KIND)
+SAMPLES_ANALYSES_REPORT_KIND_BASE = _strip_version(SAMPLES_ANALYSES_REPORT_KIND)
+RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND_BASE = _strip_version(RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND)
+SATURATION_FUNCTION_SET_KIND_BASE = _strip_version(SATURATION_FUNCTION_SET_KIND)
+FLUID_MODEL_KIND_BASE = _strip_version(FLUID_MODEL_KIND)
+DEPTH_SHIFT_KIND_BASE = _strip_version(DEPTH_SHIFT_KIND)
