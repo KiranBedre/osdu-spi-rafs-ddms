@@ -23,6 +23,7 @@ from httpx import HTTPStatusError
 from starlette import status
 
 from app.api.routes.utils.records import find_dataset_id
+from app.depth_shift.calculator import validate_shift_values
 from app.models.schemas.depth_shift_query import DepthShiftQueryParams
 from app.resources.paths import DEPTH_SHIFT_STR
 from app.services import dataset as dataset_module
@@ -80,8 +81,9 @@ class DepthShiftResolver:
         """
         found_ids = set()
         for record in sample_records.values():
-            definitive_depth_shift = record.get("data", {}).get("DefinitiveDepthShift", {})
-            wpc_id = definitive_depth_shift.get("DefinitiveDepthShiftID") if definitive_depth_shift else None
+            record_data = record.get("data", {})
+            nested = record_data.get("DefinitiveDepthShift") or {}
+            wpc_id = nested.get("DefinitiveDepthShiftID") or record_data.get("DefinitiveDepthShiftID")
             if wpc_id:
                 found_ids.add(wpc_id)
 
@@ -168,7 +170,7 @@ class DepthShiftResolver:
             batch = unique_ids[start : start + SAMPLE_BATCH_SIZE]
             response = await self._storage.query_records(batch)  # noqa: WPS476
             for record in response.get("records", []):
-                record_id = record.get("id", "")
+                record_id = record.get("id", "").rstrip(":")
                 if record_id:
                     records_by_id[record_id] = record
 
@@ -247,6 +249,13 @@ class DepthShiftResolver:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"DepthShift WPC {wpc_id} has an empty or invalid 'DepthShiftSet'.",
             )
+        try:
+            validate_shift_values(shift_set)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=str(exc),
+            ) from exc
         return shift_set
 
     def _extract_meta(self, df: pd.DataFrame) -> List[dict]:

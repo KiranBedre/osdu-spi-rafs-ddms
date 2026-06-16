@@ -41,7 +41,7 @@ from app.core.helpers.cache.key_builder import key_builder_using_token
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.depth_shift.augmenter import augment_dataframe
 from app.depth_shift.resolver import DepthShiftResolver
-from app.models.schemas.depth_shift_query import DepthShiftQueryParams
+from app.models.schemas.depth_shift_query import DepthShiftMetadata, DepthShiftQueryParams, DepthShiftRowData
 from app.models.schemas.osdu_storage import (
     OsduStorageRecord,
     StorageUpsertResponse,
@@ -52,6 +52,17 @@ from app.resources.load_model_example import load_data_example
 from app.services import dataset, storage
 
 SAMPLESANALYSIS_ID_REGEX_STR = r"^[\w\-\.]+:work-product-component--SamplesAnalysis:[\w\-\.\:\%]+$"
+
+
+def _get_definitive_wpc_id(record: dict) -> Optional[str]:
+    """Read DefinitiveDepthShiftID from a Sample record, checking both storage paths.
+
+    Sample 3.1.0 stores it nested: data.DefinitiveDepthShift.DefinitiveDepthShiftID.
+    Older or flat-stored records may use: data.DefinitiveDepthShiftID.
+    """
+    record_data = record.get("data", {})
+    nested = record_data.get("DefinitiveDepthShift", {})
+    return (nested.get("DefinitiveDepthShiftID") if nested else None) or record_data.get("DefinitiveDepthShiftID")
 
 
 class SamplesAnalysisRecordView(BaseStorageRecordView):
@@ -175,17 +186,15 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         :rtype: Response
         """
         if depth_shift_params is None:
-            return await super().get_data_v2(
-                request=request,
-                record_id=record_id,
-                analysis_type=analysis_type,
-                content_id=content_id,
-                dataset_service=dataset_service,
-                storage_service=storage_service,
-                blob_storage_service=blob_storage_service,
-                df_filter=df_filter,
-                content_schema_version=content_schema_version,
-                orient=orient,
+            return await self._get_data(
+                request,
+                record_id,
+                content_id,
+                dataset_service,
+                storage_service,
+                df_filter,
+                content_schema_version,
+                orient,
             )
 
         return await self._get_data_with_depth_shift(
@@ -329,7 +338,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
                         "per-row SampleID are supported for depth-shift retrieval."
                     ),
                 )
-            sample_ids = base_df["SampleID"].dropna().astype(str).unique().tolist()
+            sample_ids = [sid.rstrip(":") for sid in base_df["SampleID"].dropna().astype(str).unique().tolist()]
             sample_records = await resolver.fetch_sample_records(sample_ids)
 
         else:
@@ -358,7 +367,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
                         "per-row SampleID are supported for depth-shift retrieval."
                     ),
                 )
-            sample_ids = base_df["SampleID"].dropna().astype(str).unique().tolist()
+            sample_ids = [sid.rstrip(":") for sid in base_df["SampleID"].dropna().astype(str).unique().tolist()]
             sample_records = await resolver.fetch_sample_records(sample_ids)
 
             # May raise 422 if no DefinitiveDepthShift or samples disagree.
@@ -366,10 +375,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             shift_set, shift_meta, shift_wellbore = await resolver.fetch_coretolog_depth_shift_data(wpc_id)
 
         # --- Build DepthShiftMetadata ---
-        definitive_available = any(
-            record.get("data", {}).get("DefinitiveDepthShift", {}).get("DefinitiveDepthShiftID")
-            for record in sample_records.values()
-        )
+        definitive_available = any(_get_definitive_wpc_id(record) for record in sample_records.values())
         used_definitive = depth_shift_params.is_definitive
         source = "definitive" if used_definitive else "user-provided"
 
@@ -378,9 +384,9 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         if not used_definitive and definitive_available:
             definitive_id = next(
                 (
-                    record.get("data", {}).get("DefinitiveDepthShift", {}).get("DefinitiveDepthShiftID")
+                    _get_definitive_wpc_id(record)
                     for record in sample_records.values()
-                    if record.get("data", {}).get("DefinitiveDepthShift", {}).get("DefinitiveDepthShiftID")
+                    if _get_definitive_wpc_id(record)
                 ),
                 None,
             )
@@ -404,14 +410,32 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             f"Depth-shift augmentation applied for WPC {wpc_id}; " f"{len(sample_ids)} unique samples.",
         )
 
-        result = json.loads(augmented_df.to_json(orient=orient))
-        result["DepthShiftMetadata"] = {
-            "appliedDepthShiftId": wpc_id,
-            "source": source,
-            "definitiveDepthShiftAvailable": definitive_available,
-            "usedDefinitive": used_definitive,
-        }
-        result["DepthShiftWarnings"] = extra_warnings + warnings
+        _ds_cols = ["SampleTop", "SampleBase", "ShiftedSampleTop", "ShiftedSampleBase", "DepthShiftWarnings"]
+        depth_shift_data = [
+            DepthShiftRowData(
+                SampleTop=row["SampleTop"],
+                SampleBase=row["SampleBase"],
+                ShiftedSampleTop=row["ShiftedSampleTop"],
+                ShiftedSampleBase=row["ShiftedSampleBase"],
+                DepthShiftWarnings=row["DepthShiftWarnings"] if isinstance(row["DepthShiftWarnings"], list) else [],
+            ).dict()
+            for _, row in augmented_df[_ds_cols].iterrows()
+        ]
+        clean_df = augmented_df.drop(columns=_ds_cols)
+
+        if orient == "records":
+            result = {"data": json.loads(clean_df.to_json(orient="records"))}
+        else:
+            result = json.loads(clean_df.to_json(orient=orient))
+
+        result["DepthShiftData"] = depth_shift_data
+        result["DepthShiftMetadata"] = DepthShiftMetadata(
+            appliedDepthShiftId=wpc_id,
+            source=source,
+            definitiveDepthShiftAvailable=definitive_available,
+            usedDefinitive=used_definitive,
+            warnings=extra_warnings,
+        ).dict()
         return Response(
             content=json.dumps(result),
             media_type="application/json",

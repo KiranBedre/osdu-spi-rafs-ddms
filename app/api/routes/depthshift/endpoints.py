@@ -23,6 +23,7 @@ from starlette import status
 from app.api.dependencies.services import get_async_storage_service
 from app.api.routes.osdu.storage_records import BaseStorageRecordView
 from app.api.routes.v2.data.endpoints import DynamicContentTypeDataViewV2
+from app.depth_shift.calculator import validate_shift_values
 from app.models.schemas.osdu_storage import StorageUpsertResponse
 from app.resources.load_model_example import load_data_example
 from app.services import storage
@@ -39,6 +40,15 @@ DepthShiftBody = Annotated[
 ]
 
 
+def _coerce_to_list(raw) -> list:  # noqa: WPS110
+    """Return *raw* as a plain list regardless of whether it is already a list or array-like."""
+    if isinstance(raw, list):
+        return raw
+    if hasattr(raw, "tolist"):
+        return raw.tolist()
+    return []
+
+
 class DepthShiftDataViewV2(DynamicContentTypeDataViewV2):
     """DepthShift data view with single-row enforcement on POST."""
 
@@ -51,16 +61,33 @@ class DepthShiftDataViewV2(DynamicContentTypeDataViewV2):
     ) -> bytes:
         parquet_file = await super()._get_validated_payload(request, model, storage_service, record_id)
         df = pd.read_parquet(io.BytesIO(parquet_file))
-        if len(df) != 1:
+        self._assert_single_row(df, record_id)
+        self._assert_valid_shift_values(df)
+        return parquet_file
+
+    def _assert_single_row(self, df: pd.DataFrame, record_id: Optional[str]) -> None:
+        if len(df) == 1:
+            return
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=(
+                "CoreToLog content for DepthShift WPC {0} must contain exactly 1 row, "
+                "but {1} rows were found. Each DepthShift WPC must reference a single "
+                "CoreToLog record.".format(record_id or "unknown", len(df))
+            ),
+        )
+
+    def _assert_valid_shift_values(self, df: pd.DataFrame) -> None:
+        if "DepthShiftSet" not in df.columns:
+            return
+        shift_set = _coerce_to_list(df["DepthShiftSet"].iloc[0])
+        try:
+            validate_shift_values(shift_set)
+        except ValueError as exc:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail=(
-                    "CoreToLog content for DepthShift WPC {0} must contain exactly 1 row, "
-                    "but {1} rows were found. Each DepthShift WPC must reference a single "
-                    "CoreToLog record.".format(record_id or "unknown", len(df))
-                ),
-            )
-        return parquet_file
+                detail=str(exc),
+            ) from exc
 
 
 class DepthShiftRecordView(BaseStorageRecordView):

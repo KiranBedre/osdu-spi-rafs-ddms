@@ -7112,6 +7112,98 @@ async def test_post_ds_data_rejects_multi_row_payload():
     assert "exactly 1 row" in response.json()["reason"]
 
 
+@pytest.mark.asyncio
+async def test_post_ds_data_rejects_null_depth_shift_values():
+    """POST CoreToLog with a null depth boundary in DepthShiftSet must be rejected with 422.
+
+    For JSON payloads, schema validation catches null values before the parquet
+    validator runs, returning an "Invalid type" error for DepthShiftSet.
+    The parquet-path validator (validate_shift_values) provides the same guard
+    for x-parquet ingestion that bypasses schema validation.
+    """
+    null_payload = {
+        "columns": coretologdepthshift_mock_objects.TEST_DATA["columns"],
+        "index": [0],
+        "data": [
+            [
+                "partition:work-product-component--DepthShift:depth_shift_test_id:",
+                [],
+                [
+                    {
+                        "OriginalTopDepth": None,
+                        "OriginalBaseDepth": 1010.0,
+                        "ShiftedTopDepth": 1001.5,
+                        "ShiftedBaseDepth": 1011.5,
+                    }
+                ],
+            ]
+        ],
+    }
+    with post_overrides(
+        coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
+        null_payload,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(null_payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    body = response.json()
+    # Schema validation catches null before the parquet validator; either path produces 422.
+    assert "DepthShiftSet" in str(body)
+
+
+@pytest.mark.asyncio
+async def test_get_data_with_null_depth_shift_values_returns_422():
+    """GET with depth_shift_id returns 422 when the CoreToLog parquet has null depth boundaries."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    null_shift_set = [
+        {
+            "OriginalTopDepth": 1000.0,
+            "OriginalBaseDepth": None,
+            "ShiftedTopDepth": 1001.5,
+            "ShiftedBaseDepth": 1011.5,
+        }
+    ]
+    null_coretolog_df = pd.DataFrame(
+        [
+            [
+                "partition:work-product-component--DepthShift:depth_shift_test_id:",
+                [],
+                null_shift_set,
+            ]
+        ],
+        columns=["DepthShiftWPCID", "Meta", "DepthShiftSet"],
+    )
+    null_coretolog_parquet = null_coretolog_df.to_parquet()
+
+    storage_side_effects = [
+        _DEPTH_SHIFT_WPC_WITH_DATASETS,
+        rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+    ]
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=storage_side_effects):
+        with patch.object(async_dataset_service_mock, "download_file", return_value=null_coretolog_parquet):
+            with services_overrides():
+                async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                    response = await client.get(
+                        f"{TestContentPathsApiV2.RCA}/{rca_mock_objects.TEST_DATASET_RECORD_ID}",
+                        headers=_headers_json("1.0.0"),
+                        params={
+                            "depth_shift_id": TEST_DEPTH_SHIFT_ID,
+                            "depth_shift_policy": "id_provided",
+                        },
+                    )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert "null" in response.json()["reason"].lower()
+    assert "OriginalBaseDepth" in response.json()["reason"]
+
+
 # ---------------------------------------------------------------------------
 # Issue #751 — Depth-shift augmentation on SA GET data
 # ---------------------------------------------------------------------------
@@ -7208,18 +7300,21 @@ async def test_get_data_with_depth_shift_id_returns_augmented_columns():
 
     assert response.status_code == status.HTTP_200_OK
     body = response.json()
-    columns = body["columns"]
-    assert "ShiftedSampleTop" in columns
-    assert "ShiftedSampleBase" in columns
-    assert "SampleTop" in columns
-    assert "SampleBase" in columns
-    assert "DepthShiftWarnings" in columns
 
-    top_idx = columns.index("SampleTop")
-    shifted_top_idx = columns.index("ShiftedSampleTop")
-    first_row = body["data"][0]
-    assert abs(first_row[top_idx] - 1005.0) < 1e-6
-    assert abs(first_row[shifted_top_idx] - 1006.5) < 1e-6
+    # Depth-shift columns must NOT pollute the original schema columns.
+    columns = body["columns"]
+    for ds_col in ("SampleTop", "SampleBase", "ShiftedSampleTop", "ShiftedSampleBase", "DepthShiftWarnings"):
+        assert ds_col not in columns, f"{ds_col} must not appear in main columns"
+
+    # DepthShiftData must be a parallel list with per-row shift values.
+    assert "DepthShiftData" in body
+    depth_shift_data = body["DepthShiftData"]
+    assert isinstance(depth_shift_data, list)
+    assert len(depth_shift_data) == len(body["data"])
+    first_ds_row = depth_shift_data[0]
+    assert abs(first_ds_row["SampleTop"] - 1005.0) < 1e-6
+    assert abs(first_ds_row["ShiftedSampleTop"] - 1006.5) < 1e-6
+    assert isinstance(first_ds_row["DepthShiftWarnings"], list)
 
     # DepthShiftMetadata must be present as a top-level key.
     assert "DepthShiftMetadata" in body
@@ -7229,9 +7324,8 @@ async def test_get_data_with_depth_shift_id_returns_augmented_columns():
     assert metadata["usedDefinitive"] is False
     assert isinstance(metadata["definitiveDepthShiftAvailable"], bool)
 
-    # DepthShiftWarnings must be present as a top-level flat list.
-    assert "DepthShiftWarnings" in body
-    assert isinstance(body["DepthShiftWarnings"], list)
+    # Metadata-level warnings must be a list (empty when no conflicts).
+    assert isinstance(metadata["warnings"], list)
 
 
 @pytest.mark.asyncio
@@ -7377,15 +7471,117 @@ async def test_get_data_id_provided_with_different_definitive_id_emits_warning()
     assert metadata["usedDefinitive"] is False
     assert metadata["definitiveDepthShiftAvailable"] is True
 
-    # Warning must be emitted listing both IDs.
-    assert "DepthShiftWarnings" in body
-    top_level_warnings = body["DepthShiftWarnings"]
-    assert isinstance(top_level_warnings, list)
+    # Conflict warning must appear in metadata.warnings (not as a top-level key).
+    assert "DepthShiftWarnings" not in body
+    metadata_warnings = metadata["warnings"]
+    assert isinstance(metadata_warnings, list)
     conflict_warning = next(
-        (w for w in top_level_warnings if definitive_wpc_id in w and provided_wpc_id in w),
+        (w for w in metadata_warnings if definitive_wpc_id in w and provided_wpc_id in w),
         None,
     )
     assert conflict_warning is not None, (
         f"Expected a warning mentioning both definitive ID ({definitive_wpc_id}) "
-        f"and provided ID ({provided_wpc_id}), got: {top_level_warnings}"
+        f"and provided ID ({provided_wpc_id}), got: {metadata_warnings}"
     )
+
+
+@pytest.mark.asyncio
+async def test_get_data_with_depth_shift_orient_records_returns_200():
+    """orient=records + depth-shift must return 200 with a 'data' key (not crash with 500)."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+    rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
+
+    storage_side_effects = [_DEPTH_SHIFT_WPC_WITH_DATASETS, rca_record_data]
+    dataset_side_effects = [_build_coretolog_parquet(), _build_rca_parquet()]
+    query_records_response = {"records": [_DEPTH_SHIFT_SAMPLE_RECORD]}
+
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=storage_side_effects):
+        with patch.object(async_dataset_service_mock, "download_file", side_effect=dataset_side_effects):
+            with patch.object(
+                async_storage_record_service_mock,
+                "query_records",
+                return_value=query_records_response,
+            ):
+                with services_overrides():
+                    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                        response = await client.get(
+                            f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                            headers=_headers_json("1.0.0"),
+                            params={
+                                "depth_shift_id": TEST_DEPTH_SHIFT_ID,
+                                "depth_shift_policy": "id_provided",
+                                "orient": "records",
+                            },
+                        )
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+    assert "data" in body, "orient=records response must have a 'data' key"
+    assert isinstance(body["data"], list)
+    assert "DepthShiftData" in body
+    assert "DepthShiftMetadata" in body
+    assert "DepthShiftWarnings" not in body
+
+
+@pytest.mark.asyncio
+async def test_search_data_with_depth_shift_params_returns_501():
+    """search/data endpoint must return 501 when depth-shift params are supplied."""
+    from tests.test_api.test_routes.osdu.storage_mock_objects import SAMPLESANALYSIS_ENDPOINT_PATH
+
+    with services_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(
+                f"{SAMPLESANALYSIS_ENDPOINT_PATH}/routinecoreanalysis/search/data",
+                headers=_headers_json("1.0.0"),
+                params={
+                    "depth_shift_id": TEST_DEPTH_SHIFT_ID,
+                    "depth_shift_policy": "id_provided",
+                },
+            )
+
+    assert response.status_code == status.HTTP_501_NOT_IMPLEMENTED
+    assert "search/data" in response.json()["reason"]
+
+
+@pytest.mark.asyncio
+async def test_get_data_definitive_flat_path_recognized():
+    """DefinitiveDepthShiftID stored flat at data.DefinitiveDepthShiftID (not nested) must be found."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+    rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
+
+    # Sample with flat path — no nested DefinitiveDepthShift object.
+    sample_flat_path = {
+        **_DEPTH_SHIFT_SAMPLE_RECORD,
+        "data": {
+            **_DEPTH_SHIFT_SAMPLE_RECORD["data"],
+            "DefinitiveDepthShiftID": TEST_DEPTH_SHIFT_ID,
+        },
+    }
+
+    storage_side_effects = [rca_record_data, _DEPTH_SHIFT_WPC_WITH_DATASETS]
+    dataset_side_effects = [_build_rca_parquet(), _build_coretolog_parquet()]
+    query_records_response = {"records": [sample_flat_path]}
+
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=storage_side_effects):
+        with patch.object(async_dataset_service_mock, "download_file", side_effect=dataset_side_effects):
+            with patch.object(
+                async_storage_record_service_mock,
+                "query_records",
+                return_value=query_records_response,
+            ):
+                with services_overrides():
+                    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                        response = await client.get(
+                            f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                            headers=_headers_json("1.0.0"),
+                            params={"depth_shift_policy": "definitive"},
+                        )
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+    assert body["DepthShiftMetadata"]["usedDefinitive"] is True
+    assert body["DepthShiftMetadata"]["definitiveDepthShiftAvailable"] is True

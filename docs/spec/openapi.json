@@ -1334,6 +1334,28 @@
             }
           },
           {
+            "description": "DepthShift WPC record ID to apply to the response data.",
+            "in": "query",
+            "name": "depth_shift_id",
+            "required": false,
+            "schema": {
+              "description": "DepthShift WPC record ID to apply to the response data.",
+              "title": "Depth Shift Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, 'id_provided' uses the explicit depth_shift_id.",
+            "in": "query",
+            "name": "depth_shift_policy",
+            "required": false,
+            "schema": {
+              "description": "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, 'id_provided' uses the explicit depth_shift_id.",
+              "title": "Depth Shift Policy",
+              "type": "string"
+            }
+          },
+          {
             "description": "End date in YYYY-MM-DD format",
             "examples": {
               "example": {
@@ -3635,6 +3657,28 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "DepthShift WPC record ID to apply to the response data.",
+            "in": "query",
+            "name": "depth_shift_id",
+            "required": false,
+            "schema": {
+              "description": "DepthShift WPC record ID to apply to the response data.",
+              "title": "Depth Shift Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, 'id_provided' uses the explicit depth_shift_id.",
+            "in": "query",
+            "name": "depth_shift_policy",
+            "required": false,
+            "schema": {
+              "description": "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, 'id_provided' uses the explicit depth_shift_id.",
+              "title": "Depth Shift Policy",
               "type": "string"
             }
           },
@@ -6667,6 +6711,28 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "DepthShift WPC record ID to apply to the response data.",
+            "in": "query",
+            "name": "depth_shift_id",
+            "required": false,
+            "schema": {
+              "description": "DepthShift WPC record ID to apply to the response data.",
+              "title": "Depth Shift Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, 'id_provided' uses the explicit depth_shift_id.",
+            "in": "query",
+            "name": "depth_shift_policy",
+            "required": false,
+            "schema": {
+              "description": "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, 'id_provided' uses the explicit depth_shift_id.",
+              "title": "Depth Shift Policy",
               "type": "string"
             }
           },

@@ -196,7 +196,7 @@ class TestWarnings:
             sample_records=sample_records,
         )
         assert len(all_warnings) == 1
-        assert "not 'DRL:'" in all_warnings[0]
+        assert "may not need to be shifted" in all_warnings[0]
 
     def test_unrelated_measurement_non_driller_does_not_warn(self, volve_data):
         """Non-DRL source on a non-Sample measurement must not warn.

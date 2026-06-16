@@ -12,13 +12,13 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Callable, List
+from typing import Callable, List, Optional
 
-from fastapi import Depends, Request
+from fastapi import Depends, HTTPException, Request
 from fastapi_cache.decorator import cache
 from starlette import status
 
-from app.api.dependencies.request import get_content_schema_version
+from app.api.dependencies.request import get_content_schema_version, get_depth_shift_params
 from app.api.dependencies.services import (
     get_async_dataset_service,
     get_async_search_service,
@@ -36,6 +36,7 @@ from app.api.routes.utils.api_version import get_domain_from_url
 from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
+from app.models.schemas.depth_shift_query import DepthShiftQueryParams
 from app.providers.dependencies.blob_storage import IBlobStorage
 from app.resources.filters import DataFrameFilterValidator
 from app.services import dataset, search
@@ -111,7 +112,13 @@ class DynamicGenericSearchView(GenericSearchDataView):
                 blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
                 search_service: search.SearchService = Depends(get_async_search_service),
                 orient: str = Depends(get_orient),
+                depth_shift_params: Optional[DepthShiftQueryParams] = Depends(get_depth_shift_params),
             ):
+                if depth_shift_params is not None:
+                    raise HTTPException(
+                        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+                        detail="Depth-shift augmentation is not yet supported on the search/data endpoint.",
+                    )
                 dynamic_param = self._inject_param(request, extractor)
                 return await parent_method(
                     request=request,

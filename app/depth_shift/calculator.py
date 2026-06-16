@@ -25,6 +25,31 @@ import bisect
 from typing import List, Optional
 
 _FLOAT_TOLERANCE = 1e-9
+_REQUIRED_INTERVAL_FIELDS = (
+    "OriginalTopDepth",
+    "OriginalBaseDepth",
+    "ShiftedTopDepth",
+    "ShiftedBaseDepth",
+)
+
+
+def validate_shift_values(shift_set: List[dict]) -> None:
+    """Raise ValueError if any required depth boundary in shift_set is null or missing.
+
+    Called both at write time (POST CoreToLog data) and at read time (GET with
+    depth shift) so that null intervals are rejected regardless of the ingestion path.
+
+    :param shift_set: list of shift-set interval dicts
+    :type shift_set: List[dict]
+    :raises ValueError: when any of the four depth boundary fields is None or absent
+    """
+    for idx, row in enumerate(shift_set):
+        for field in _REQUIRED_INTERVAL_FIELDS:
+            if row.get(field) is None:
+                raise ValueError(
+                    "DepthShiftSet row at index {0} has null or missing '{1}'. "
+                    "Cannot apply a depth shift with null interval boundaries.".format(idx, field)
+                )
 
 
 def _validate_intervals(shift_set: List[dict]) -> None:

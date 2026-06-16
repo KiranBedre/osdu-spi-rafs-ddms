@@ -21,6 +21,7 @@ from app.depth_shift.calculator import (
     compute_shifted_depth,
     find_interval,
     shift_sample,
+    validate_shift_values,
 )
 
 # ---------------------------------------------------------------------------
@@ -265,3 +266,53 @@ class TestShiftSample:
         shifted_top, shifted_base = shift_sample(1000.0, 1010.0, MULTI_INTERVAL_SHIFT_SET)
         assert abs(shifted_top - 1001.5) < 1e-6
         assert abs(shifted_base - 1011.5) < 1e-6
+
+
+# ---------------------------------------------------------------------------
+# validate_shift_values
+# ---------------------------------------------------------------------------
+
+_VALID_INTERVAL = {
+    "OriginalTopDepth": 100.0,
+    "OriginalBaseDepth": 110.0,
+    "ShiftedTopDepth": 101.5,
+    "ShiftedBaseDepth": 111.5,
+}
+
+
+class TestValidateShiftValues:
+    def test_valid_set_passes(self):
+        validate_shift_values([_VALID_INTERVAL])
+
+    def test_zero_shifted_depth_passes(self):
+        """Zero is a valid depth value (no shift)."""
+        interval = {**_VALID_INTERVAL, "ShiftedTopDepth": 0.0, "ShiftedBaseDepth": 0.0}
+        validate_shift_values([interval])
+
+    @pytest.mark.parametrize(
+        "null_field",
+        [
+            "OriginalTopDepth",
+            "OriginalBaseDepth",
+            "ShiftedTopDepth",
+            "ShiftedBaseDepth",
+        ],
+    )
+    def test_null_field_raises(self, null_field):
+        bad = {**_VALID_INTERVAL, null_field: None}
+        with pytest.raises(ValueError, match=null_field):
+            validate_shift_values([bad])
+
+    def test_missing_field_raises(self):
+        bad = {k: v for k, v in _VALID_INTERVAL.items() if k != "ShiftedTopDepth"}
+        with pytest.raises(ValueError, match="ShiftedTopDepth"):
+            validate_shift_values([bad])
+
+    def test_reports_row_index(self):
+        bad = {**_VALID_INTERVAL, "OriginalBaseDepth": None}
+        with pytest.raises(ValueError, match="index 1"):
+            validate_shift_values([_VALID_INTERVAL, bad])
+
+    def test_empty_set_passes(self):
+        """Empty shift set has no rows to validate — caught separately by _extract_depth_shift_set."""
+        validate_shift_values([])

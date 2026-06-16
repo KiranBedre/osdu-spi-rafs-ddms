@@ -12,9 +12,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Optional
+from typing import List, Optional
 
-from typing_extensions import TypedDict
+from pydantic import BaseModel
 
 
 class DepthShiftQueryParams:
@@ -42,10 +42,8 @@ class DepthShiftQueryParams:
         return self.depth_shift_policy == "definitive"
 
 
-class DepthShiftMetadata(TypedDict, total=False):
+class DepthShiftMetadata(BaseModel):
     """Top-level metadata block included in every depth-shifted response.
-
-    This typed dict exists for documentation and type-checking purposes only.
 
     Fields:
 
@@ -55,37 +53,30 @@ class DepthShiftMetadata(TypedDict, total=False):
     - definitiveDepthShiftAvailable: True if at least one sample in the request
       carries ``data.DefinitiveDepthShift.DefinitiveDepthShiftID``
     - usedDefinitive: True only when depth_shift_policy=definitive was applied
+    - warnings: metadata-level warnings (e.g. id_provided conflicts with definitive)
     """
 
     appliedDepthShiftId: str
     source: str
     definitiveDepthShiftAvailable: bool
     usedDefinitive: bool
+    warnings: List[str] = []
 
 
-class DepthShiftAugmentedResponse(TypedDict, total=False):
-    """Documents the extra columns added to SA bulk data during depth-shift augmentation.
+class DepthShiftRowData(BaseModel):
+    """Per-row depth-shift output included in the DepthShiftData parallel array.
 
-    This typed dict exists for documentation and type-checking purposes only.
-    It is NOT used as a FastAPI response_model because the route returns dynamic
-    DataFrame content.  Reference it in the augmenter output docstring.
+    Fields:
 
-    Extra columns added alongside the original SA DataFrame columns:
-
-    - SampleTop: original measured top depth of the sample (metres, from VerticalMeasurements)
-    - SampleBase: original measured base depth of the sample (metres); None for point samples
+    - SampleTop: original measured top depth (metres, from VerticalMeasurements)
+    - SampleBase: original measured base depth; None for point samples
     - ShiftedSampleTop: depth-shifted SampleTop using the CoreToLog interval table
     - ShiftedSampleBase: depth-shifted SampleBase; None for point samples
-    - DepthShiftWarnings: list of warning strings (non-Driller source, wellbore mismatch, etc.)
-
-    Top-level response keys (outside the DataFrame columns):
-
-    - DepthShiftMetadata: see :class:`DepthShiftMetadata`
-    - DepthShiftWarnings: flat list of all warning strings across all rows
+    - DepthShiftWarnings: per-row warnings (non-Driller source, wellbore mismatch, etc.)
     """
 
-    SampleTop: Optional[float]
-    SampleBase: Optional[float]
-    ShiftedSampleTop: Optional[float]
-    ShiftedSampleBase: Optional[float]
-    DepthShiftWarnings: list
+    SampleTop: Optional[float] = None
+    SampleBase: Optional[float] = None
+    ShiftedSampleTop: Optional[float] = None
+    ShiftedSampleBase: Optional[float] = None
+    DepthShiftWarnings: List[str] = []

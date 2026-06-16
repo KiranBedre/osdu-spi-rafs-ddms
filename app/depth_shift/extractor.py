@@ -87,16 +87,22 @@ def is_sample_depth_entry(vm_entry: dict) -> bool:
 
 
 def validate_measurement_source(vm_entry: dict) -> Optional[str]:
-    """Return a warning string when VerticalMeasurementSourceID does not end with 'DRL:'.
+    """Return a warning string when VerticalMeasurementSourceID does not end with 'DRL'.
 
     :param vm_entry: a single VerticalMeasurements entry
     :type vm_entry: dict
-    :return: warning string, or None if source ends with 'DRL:'
+    :return: warning string, or None if source ends with 'DRL'
     :rtype: Optional[str]
     """
     source_id = vm_entry.get("VerticalMeasurementSourceID", "")
     if not source_id or not _matches_type(source_id, "DRL"):
-        return f"VerticalMeasurementSourceID '{source_id}' is not 'DRL:'. " "Depth shift accuracy may be reduced."
+        source_display = source_id.rstrip(":").rsplit(":", 1)[-1] if source_id else "(not set)"
+        return (
+            "Warning: Sample depths (SampleTop and SampleBase) are reported as "
+            "'{0}' depth and may not need to be shifted. "
+            "Expected source is Driller (DRL). "
+            "Shifted depths may need to be validated.".format(source_display)
+        )
     return None
 
 

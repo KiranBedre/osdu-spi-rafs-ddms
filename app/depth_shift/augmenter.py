@@ -14,7 +14,7 @@
 
 """Augmenter: merge depth-shift columns onto a SA bulk-data DataFrame.
 
-Output shape is documented by DepthShiftAugmentedResponse in
+Output shape is documented by DepthShiftRowData in
 app.models.schemas.depth_shift_query.  The extra columns added are:
 
   SampleTop          – original measured top depth (from Sample VerticalMeasurements)
@@ -192,7 +192,7 @@ def augment_dataframe(  # noqa: WPS210
 
     for sample_id in base_df["SampleID"]:
         top, base, s_top, s_base, warnings = _augment_row(  # noqa: WPS236
-            "" if sample_id is None else str(sample_id),
+            "" if sample_id is None else str(sample_id).rstrip(":"),
             sample_records,
             shift_set,
             shift_wellbore,
