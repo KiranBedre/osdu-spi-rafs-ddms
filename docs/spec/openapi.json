@@ -2501,7 +2501,7 @@
     },
     "/api/rafs-ddms/v2/masterdata": {
       "post": {
-        "description": "Create or update `(osdu:wks:master-data--GenericFacility:1.0.0|osdu:wks:master-data--GenericSite:1.0.0|osdu:wks:master-data--Sample:2.0.0|osdu:wks:master-data--Sample:2.1.0|osdu:wks:master-data--SampleAcquisitionJob:1.0.0|osdu:wks:master-data--SampleChainOfCustodyEvent:1.0.0|osdu:wks:master-data--SampleContainer:1.0.0)` record(s). The `Content-Type: application/json` request header is required.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Create or update `(osdu:wks:master-data--GenericFacility:<major>.<minor>.<patch>|osdu:wks:master-data--GenericSite:<major>.<minor>.<patch>|osdu:wks:master-data--Sample:<major>.<minor>.<patch>|osdu:wks:master-data--SampleAcquisitionJob:<major>.<minor>.<patch>|osdu:wks:master-data--SampleChainOfCustodyEvent:<major>.<minor>.<patch>|osdu:wks:master-data--SampleContainer:<major>.<minor>.<patch>)` record(s). The `Content-Type: application/json` request header is required.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "post_records_api_rafs_ddms_v2_masterdata_post",
         "parameters": [
           {
@@ -3057,7 +3057,7 @@
     },
     "/api/rafs-ddms/v2/masterdata/{record_id}": {
       "delete": {
-        "description": "Delete the `(osdu:wks:master-data--GenericFacility:1.0.0|osdu:wks:master-data--GenericSite:1.0.0|osdu:wks:master-data--Sample:2.0.0|osdu:wks:master-data--Sample:2.1.0|osdu:wks:master-data--SampleAcquisitionJob:1.0.0|osdu:wks:master-data--SampleChainOfCustodyEvent:1.0.0|osdu:wks:master-data--SampleContainer:1.0.0)` object by record id.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Delete the `(osdu:wks:master-data--GenericFacility:<major>.<minor>.<patch>|osdu:wks:master-data--GenericSite:<major>.<minor>.<patch>|osdu:wks:master-data--Sample:<major>.<minor>.<patch>|osdu:wks:master-data--SampleAcquisitionJob:<major>.<minor>.<patch>|osdu:wks:master-data--SampleChainOfCustodyEvent:<major>.<minor>.<patch>|osdu:wks:master-data--SampleContainer:<major>.<minor>.<patch>)` object by record id.<br><br>        Required roles: `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "soft_delete_record_api_rafs_ddms_v2_masterdata__record_id__delete",
         "parameters": [
           {
@@ -3066,7 +3066,7 @@
             "name": "record_id",
             "required": true,
             "schema": {
-              "pattern": "^[\\w\\-\\.]+:(master-data--GenericFacility|master-data--GenericSite|master-data--Sample|master-data--Sample|master-data--SampleAcquisitionJob|master-data--SampleChainOfCustodyEvent|master-data--SampleContainer):[\\w\\-\\.\\:\\%]+$",
+              "pattern": "^[\\w\\-\\.]+:(master-data--GenericFacility|master-data--GenericSite|master-data--Sample|master-data--SampleAcquisitionJob|master-data--SampleChainOfCustodyEvent|master-data--SampleContainer):[\\w\\-\\.\\:\\%]+$",
               "title": "Record Id",
               "type": "string"
             }
@@ -3114,7 +3114,7 @@
         ]
       },
       "get": {
-        "description": "Get the latest version of `(osdu:wks:master-data--GenericFacility:1.0.0|osdu:wks:master-data--GenericSite:1.0.0|osdu:wks:master-data--Sample:2.0.0|osdu:wks:master-data--Sample:2.1.0|osdu:wks:master-data--SampleAcquisitionJob:1.0.0|osdu:wks:master-data--SampleChainOfCustodyEvent:1.0.0|osdu:wks:master-data--SampleContainer:1.0.0)` object by record id.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Get the latest version of `(osdu:wks:master-data--GenericFacility:<major>.<minor>.<patch>|osdu:wks:master-data--GenericSite:<major>.<minor>.<patch>|osdu:wks:master-data--Sample:<major>.<minor>.<patch>|osdu:wks:master-data--SampleAcquisitionJob:<major>.<minor>.<patch>|osdu:wks:master-data--SampleChainOfCustodyEvent:<major>.<minor>.<patch>|osdu:wks:master-data--SampleContainer:<major>.<minor>.<patch>)` object by record id.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "get_record_api_rafs_ddms_v2_masterdata__record_id__get",
         "parameters": [
           {
@@ -3123,7 +3123,7 @@
             "name": "record_id",
             "required": true,
             "schema": {
-              "pattern": "^[\\w\\-\\.]+:(master-data--GenericFacility|master-data--GenericSite|master-data--Sample|master-data--Sample|master-data--SampleAcquisitionJob|master-data--SampleChainOfCustodyEvent|master-data--SampleContainer):[\\w\\-\\.\\:\\%]+$",
+              "pattern": "^[\\w\\-\\.]+:(master-data--GenericFacility|master-data--GenericSite|master-data--Sample|master-data--SampleAcquisitionJob|master-data--SampleChainOfCustodyEvent|master-data--SampleContainer):[\\w\\-\\.\\:\\%]+$",
               "title": "Record Id",
               "type": "string"
             }
@@ -3181,7 +3181,7 @@
     },
     "/api/rafs-ddms/v2/masterdata/{record_id}/versions": {
       "get": {
-        "description": "Get a list of `(osdu:wks:master-data--GenericFacility:1.0.0|osdu:wks:master-data--GenericSite:1.0.0|osdu:wks:master-data--Sample:2.0.0|osdu:wks:master-data--Sample:2.1.0|osdu:wks:master-data--SampleAcquisitionJob:1.0.0|osdu:wks:master-data--SampleChainOfCustodyEvent:1.0.0|osdu:wks:master-data--SampleContainer:1.0.0)` object versions by record id.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Get a list of `(osdu:wks:master-data--GenericFacility:<major>.<minor>.<patch>|osdu:wks:master-data--GenericSite:<major>.<minor>.<patch>|osdu:wks:master-data--Sample:<major>.<minor>.<patch>|osdu:wks:master-data--SampleAcquisitionJob:<major>.<minor>.<patch>|osdu:wks:master-data--SampleChainOfCustodyEvent:<major>.<minor>.<patch>|osdu:wks:master-data--SampleContainer:<major>.<minor>.<patch>)` object versions by record id.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "get_record_versions_api_rafs_ddms_v2_masterdata__record_id__versions_get",
         "parameters": [
           {
@@ -3190,7 +3190,7 @@
             "name": "record_id",
             "required": true,
             "schema": {
-              "pattern": "^[\\w\\-\\.]+:(master-data--GenericFacility|master-data--GenericSite|master-data--Sample|master-data--Sample|master-data--SampleAcquisitionJob|master-data--SampleChainOfCustodyEvent|master-data--SampleContainer):[\\w\\-\\.\\:\\%]+$",
+              "pattern": "^[\\w\\-\\.]+:(master-data--GenericFacility|master-data--GenericSite|master-data--Sample|master-data--SampleAcquisitionJob|master-data--SampleChainOfCustodyEvent|master-data--SampleContainer):[\\w\\-\\.\\:\\%]+$",
               "title": "Record Id",
               "type": "string"
             }
@@ -3248,7 +3248,7 @@
     },
     "/api/rafs-ddms/v2/masterdata/{record_id}/versions/{version}": {
       "get": {
-        "description": "Get the given version of `(osdu:wks:master-data--GenericFacility:1.0.0|osdu:wks:master-data--GenericSite:1.0.0|osdu:wks:master-data--Sample:2.0.0|osdu:wks:master-data--Sample:2.1.0|osdu:wks:master-data--SampleAcquisitionJob:1.0.0|osdu:wks:master-data--SampleChainOfCustodyEvent:1.0.0|osdu:wks:master-data--SampleContainer:1.0.0)` object.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
+        "description": "Get the given version of `(osdu:wks:master-data--GenericFacility:<major>.<minor>.<patch>|osdu:wks:master-data--GenericSite:<major>.<minor>.<patch>|osdu:wks:master-data--Sample:<major>.<minor>.<patch>|osdu:wks:master-data--SampleAcquisitionJob:<major>.<minor>.<patch>|osdu:wks:master-data--SampleChainOfCustodyEvent:<major>.<minor>.<patch>|osdu:wks:master-data--SampleContainer:<major>.<minor>.<patch>)` object.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.",
         "operationId": "get_record_specific_version_api_rafs_ddms_v2_masterdata__record_id__versions__version__get",
         "parameters": [
           {
@@ -3257,7 +3257,7 @@
             "name": "record_id",
             "required": true,
             "schema": {
-              "pattern": "^[\\w\\-\\.]+:(master-data--GenericFacility|master-data--GenericSite|master-data--Sample|master-data--Sample|master-data--SampleAcquisitionJob|master-data--SampleChainOfCustodyEvent|master-data--SampleContainer):[\\w\\-\\.\\:\\%]+$",
+              "pattern": "^[\\w\\-\\.]+:(master-data--GenericFacility|master-data--GenericSite|master-data--Sample|master-data--SampleAcquisitionJob|master-data--SampleChainOfCustodyEvent|master-data--SampleContainer):[\\w\\-\\.\\:\\%]+$",
               "title": "Record Id",
               "type": "string"
             }

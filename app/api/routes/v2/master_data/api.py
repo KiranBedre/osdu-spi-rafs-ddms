@@ -18,11 +18,12 @@ from app.api.dependencies.validation import (
     validate_master_data_records_payload,
 )
 from app.api.routes.osdu.storage_records import BaseStorageRecordView
-from app.api.routes.utils.records import parse_kind
-from app.models.domain.osdu.base import MASTER_DATA_KINDS_V2
+from app.models.domain.osdu.base import MASTER_DATA_KIND_BASES
 
-RECORD_TYPE_STR = f'({"|".join(MASTER_DATA_KINDS_V2)})'  # noqa: WPS237
-SUPPORTED_TYPES = f'({"|".join([parse_kind(kind)["entity_type"] for kind in MASTER_DATA_KINDS_V2])})'  # noqa: WPS237
+RECORD_TYPE_STR = (
+    f'({"|".join(f"{kind_base}:<major>.<minor>.<patch>" for kind_base in MASTER_DATA_KIND_BASES)})'  # noqa: WPS237
+)
+SUPPORTED_TYPES = f'({"|".join(kind_base.split(":")[2] for kind_base in MASTER_DATA_KIND_BASES)})'  # noqa: WPS237
 MD_ID_REGEX_STR = rf"^[\w\-\.]+:{SUPPORTED_TYPES}:[\w\-\.\:\%]+$"  # noqa: W605
 
 md_router = APIRouter()

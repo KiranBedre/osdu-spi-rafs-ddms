@@ -22,6 +22,7 @@ pandera==0.25.0
 prometheus-fastapi-instrumentator==6.1.0
 pyarrow==14.0.2
 pydantic[dotenv]==1.10.18
+pyyaml==6.0.2
 pyjwt[crypto]==2.12.1
 requests==2.33.0
 setuptools==82.0.1

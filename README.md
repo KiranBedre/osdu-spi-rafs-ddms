@@ -66,11 +66,16 @@ Step 2: Install the runtime dependencies required to import the FastAPI applicat
 pip install -r requirements.txt
 ```
 
-Step 3: Regenerate the committed OpenAPI specification.
+Step 3: Regenerate the committed OpenAPI specifications.
 
 ```bash
 python -m scripts.generate_openapi
 ```
+
+This command updates both `docs/spec/openapi.json` (pipeline validation source) and
+`docs/api/community/v<detected>/openapi.yaml` (community scan source; currently `v2`).
+The generated `info.title` and `info.version` values are sourced from the application settings
+(`AppSettings.app_name` and `AppSettings.app_version`) to keep docs aligned with code metadata.
 
 Step 4: Check that the committed specification is still in sync with the codebase.
 

@@ -1,12 +1,16 @@
 import argparse
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Type
 
+import yaml
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_OUTPUT_PATH = REPO_ROOT / "docs" / "spec" / "openapi.json"
+DEFAULT_API_VERSION_SEGMENT = "v2"
 FALLBACK_APP_NAME = "Rock and Fluid Sample DDMS"
 FALLBACK_APP_VERSION = "0.2.0"
 
@@ -42,6 +46,15 @@ def parse_args() -> argparse.Namespace:
         "--output",
         default=str(DEFAULT_OUTPUT_PATH),
         help="Path to the generated OpenAPI JSON file.",
+    )
+    parser.add_argument(
+        "--yaml-output",
+        default=None,
+        help=(
+            "Path to the generated OpenAPI YAML file. "
+            "If omitted, defaults to docs/api/community/v<detected>/openapi.yaml. "
+            "Use an empty value to skip YAML generation."
+        ),
     )
     parser.add_argument(
         "--app-env",
@@ -109,10 +122,60 @@ def mark_content_schema_version_required(schema: dict) -> dict:
     return schema
 
 
+def sync_schema_app_metadata(schema: dict, app_name: str, app_version: str) -> dict:
+    """Keep OpenAPI info metadata aligned with code-level app settings."""
+    info = schema.setdefault("info", {})
+    info["title"] = app_name
+    info["version"] = app_version
+    return schema
+
+
+def detect_api_version_segment(schema: dict) -> str:
+    """Detect highest /v<integer> path segment in OpenAPI paths."""
+    versions = []
+    for path in schema.get("paths", {}).keys():
+        matches = re.findall(r"/v(\d+)(?:/|$)", path)
+        versions.extend(int(match) for match in matches)
+
+    if not versions:
+        return DEFAULT_API_VERSION_SEGMENT
+
+    return f"v{max(versions)}"
+
+
+def get_default_yaml_output_path(schema: dict) -> Path:
+    """Compute community OpenAPI path using the detected API version."""
+    version_segment = detect_api_version_segment(schema)
+    return REPO_ROOT / "docs" / "api" / "community" / version_segment / "openapi.yaml"
+
+
 def write_openapi_schema(schema: dict, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
         json.dumps(schema, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def write_openapi_yaml_schema(schema: dict, output_path: Path) -> None:
+    """Write classic block-style YAML for community scanners."""
+
+    class NoAliasSafeDumper(yaml.SafeDumper):
+        def ignore_aliases(self, data):  # noqa: WPS110
+            return True
+
+    # Normalize pydantic/url subclasses to plain JSON-native types.
+    normalized_schema = json.loads(json.dumps(schema, ensure_ascii=False, sort_keys=True))
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        yaml.dump(
+            normalized_schema,
+            Dumper=NoAliasSafeDumper,
+            allow_unicode=True,
+            sort_keys=True,
+            default_flow_style=False,
+        ),
         encoding="utf-8",
     )
 
@@ -122,9 +185,23 @@ def main() -> int:
     configure_environment(args)
     schema = load_openapi_schema()
     schema = mark_content_schema_version_required(schema)
+    schema = sync_schema_app_metadata(schema, args.app_name, args.app_version)
     output_path = Path(args.output).resolve()
     write_openapi_schema(schema, output_path)
-    print(f"Generated OpenAPI spec: {output_path}")
+    print(f"Generated OpenAPI JSON spec: {output_path}")
+
+    if args.yaml_output == "":
+        return 0
+
+    if args.yaml_output is None:
+        yaml_output_path = get_default_yaml_output_path(schema).resolve()
+    else:
+        yaml_output_path = Path(args.yaml_output).resolve()
+
+    if yaml_output_path:
+        write_openapi_yaml_schema(schema, yaml_output_path)
+        print(f"Generated OpenAPI YAML spec: {yaml_output_path}")
+
     return 0
 
 
