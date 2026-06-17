@@ -383,24 +383,24 @@ def test_depth_shift_negative_create_unsupported_kind(api, tests_data, helper):
     body = response.json()
     assert (
         f"Kind `{unsupported_kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: "
-        f"['{DATA_PARTITION_ID}:wks:work-product-component--DepthShift:1.0.0']"
+        f"['{DATA_PARTITION_ID}:wks:work-product-component--DepthShift']"
     ) in body["reason"]
 
 
 def test_depth_shift_negative_create_invalid_record_id(api, tests_data, helper):
-    """Reject record creation with invalid record ID format with 400 Bad Request."""
+    """Reject record creation with invalid record ID format with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.DEPTH_SHIFT))
     invalid_record_id = "WrongID:work-product-component--DepthShift:WrongID"
     helper.set_by_path(data_payload, "/id", invalid_record_id)
 
     response = api.depth_shift.post_record(
         body=[data_payload],
-        allowed_codes=[status.HTTP_400_BAD_REQUEST],
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
         raw=True,
     )
 
     # Assert
-    assert response.status_code == 400
+    assert response.status_code == 422
     body = response.json()
     assert "Invalid record id" in body["reason"]
     assert (

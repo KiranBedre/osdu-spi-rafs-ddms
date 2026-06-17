@@ -76,7 +76,6 @@ def test_nmr_negative_invalid_data_partition_id_record_id_in_url(
     })
 
     if endpoint == "post_data":
-        pytest.skip(reason="#733")
         data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         call_kwargs["body"] = data_payload
@@ -86,7 +85,8 @@ def test_nmr_negative_invalid_data_partition_id_record_id_in_url(
     # Assert
     assert response.status_code == 400
     body = response.json()
-    assert f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'" in body["reason"]
+    assert f"Invalid record ID" in body["reason"]
+    assert f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'" in body["message"]
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RECORD_ID_ENDPOINTS_ARGS)
@@ -107,7 +107,6 @@ def test_nmr_negative_non_existing_record_id_in_url(
     })
 
     if endpoint == "post_data":
-        pytest.skip(reason="#733")
         data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         call_kwargs["body"] = data_payload

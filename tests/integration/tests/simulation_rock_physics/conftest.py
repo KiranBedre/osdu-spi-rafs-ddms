@@ -26,7 +26,7 @@ from tests.integration.config import (
 
 
 @pytest.fixture(scope="module")
-def simulation_rock_physics_create_record(create_record):
+def simulation_rock_physics_create_record(api, create_record):
     """Create a ReservoirSimulationRockPhysicsModel record."""
     record_data, _ = create_record(
         DataTypes.SIMULATION_ROCK_PHYSICS,
@@ -34,11 +34,11 @@ def simulation_rock_physics_create_record(create_record):
         DataTemplates.ID_SIMULATION_ROCK_PHYSICS.format(partition=CONFIG["DATA_PARTITION"]),
     )
     yield record_data
-    # Cleanup is handled by create_record fixture
+    api.storage.purge_record(record_data["id"])
 
 
 @pytest.fixture(scope="function")
-def simulation_rock_physics_create_fresh_record(create_record):
+def simulation_rock_physics_create_fresh_record(api, create_record):
     """Create a fresh ReservoirSimulationRockPhysicsModel record."""
     record_data, _ = create_record(
         DataTypes.SIMULATION_ROCK_PHYSICS,
@@ -46,7 +46,7 @@ def simulation_rock_physics_create_fresh_record(create_record):
         DataTemplates.ID_SIMULATION_ROCK_PHYSICS.format(partition=CONFIG["DATA_PARTITION"]),
     )
     yield record_data
-    # Cleanup is handled by create_record fixture
+    api.storage.purge_record(record_data["id"])
 
 
 @pytest.fixture(scope="module")

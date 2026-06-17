@@ -71,7 +71,6 @@ def test_sfs_negative_invalid_data_partition_id_record_id_in_url(api, tests_data
     }
 
     if endpoint == "post_data":
-        pytest.skip(reason="#733")
         data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
@@ -81,7 +80,8 @@ def test_sfs_negative_invalid_data_partition_id_record_id_in_url(api, tests_data
     # Assert
     assert response.status_code == 400
     body = response.json()
-    assert f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'" in body["reason"]
+    assert f"Invalid record ID" in body["reason"]
+    assert f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'" in body["message"]
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.RECORD_ID_ENDPOINTS_ARGS)
@@ -98,7 +98,6 @@ def test_sfs_negative_non_existing_record_id_in_url(api, tests_data, endpoint, a
     }
 
     if endpoint == "post_data":
-        pytest.skip(reason="#733")
         data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload

@@ -25,7 +25,7 @@ from tests.integration.config import (
 
 
 @pytest.fixture(scope="module")
-def fluid_create_record(create_record):
+def fluid_create_record(api, create_record):
     """Create a FluidModel record."""
     record_data, _ = create_record(
         DataTypes.FLUID_MODEL,
@@ -33,7 +33,7 @@ def fluid_create_record(create_record):
         DataTemplates.ID_FLUID_MODEL.format(partition=CONFIG["DATA_PARTITION"]),
     )
     yield record_data
-    # Cleanup is handled by create_record fixture
+    api.storage.purge_record(record_data["id"])
 
 
 @pytest.fixture(scope="module")

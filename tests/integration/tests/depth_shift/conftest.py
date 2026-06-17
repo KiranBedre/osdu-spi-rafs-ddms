@@ -26,7 +26,7 @@ from tests.integration.config import (
 
 
 @pytest.fixture(scope="module")
-def depth_shift_create_record(create_record):
+def depth_shift_create_record(api, create_record):
     """Create a Depth Shift record."""
     record_data, _ = create_record(
         DataTypes.DEPTH_SHIFT,
@@ -34,11 +34,11 @@ def depth_shift_create_record(create_record):
         DataTemplates.ID_DEPTH_SHIFT.format(partition=CONFIG["DATA_PARTITION"]),
     )
     yield record_data
-    # Cleanup is handled by create_record fixture
+    api.storage.purge_record(record_data["id"])
 
 
 @pytest.fixture(scope="function")
-def depth_shift_create_fresh_record(create_record):
+def depth_shift_create_fresh_record(api, create_record):
     """Create a fresh Depth Shift record per test."""
     record_data, _ = create_record(
         DataTypes.DEPTH_SHIFT,
@@ -46,7 +46,7 @@ def depth_shift_create_fresh_record(create_record):
         DataTemplates.ID_DEPTH_SHIFT.format(partition=CONFIG["DATA_PARTITION"]),
     )
     yield record_data
-    # Cleanup is handled by create_record fixture
+    api.storage.purge_record(record_data["id"])
 
 
 @pytest.fixture(scope="module")
