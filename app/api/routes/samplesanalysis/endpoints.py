@@ -40,6 +40,7 @@ from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.depth_shift.augmenter import augment_dataframe
+from app.depth_shift.extractor import extract_sample_wellbore_id
 from app.depth_shift.metadata import resolve_metadata_warning_state
 from app.depth_shift.resolver import DepthShiftResolver
 from app.models.schemas.depth_shift_query import DepthShiftMetadata, DepthShiftQueryParams, DepthShiftRowData
@@ -387,13 +388,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
     @staticmethod
     def _extract_sample_wellbore_id(sample_record: dict) -> Optional[str]:
         """Resolve the sample wellbore from nested acquisition data when present."""
-        record_data = sample_record.get("data", {}) if isinstance(sample_record, dict) else {}
-        acquisition = record_data.get("SampleAcquisition", {}) if isinstance(record_data, dict) else {}
-        detail = acquisition.get("SampleAcquisitionDetail", {}) if isinstance(acquisition, dict) else {}
-        nested_wellbore_id = detail.get("WellboreID") if isinstance(detail, dict) else None
-        if nested_wellbore_id:
-            return nested_wellbore_id
-        return record_data.get("WellboreID")
+        return extract_sample_wellbore_id(sample_record)
 
     def _validate_single_wellbore_scope(self, sample_records: dict) -> None:
         """Reject depth-shift requests that span multiple wellbores."""

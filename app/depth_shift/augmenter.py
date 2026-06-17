@@ -31,9 +31,10 @@ from fastapi import HTTPException
 from loguru import logger
 from starlette import status
 
-from app.depth_shift.calculator import _validate_intervals, shift_sample  # noqa: WPS450
+from app.depth_shift.calculator import shift_sample
 from app.depth_shift.extractor import (
     extract_depths,
+    extract_sample_wellbore_id,
     is_sample_depth_entry,
     validate_depth_shift_uom,
     validate_measurement_source,
@@ -116,7 +117,7 @@ def _collect_row_warnings(  # noqa: CCR001,WPS210,WPS231
         warnings.append(source_warning)
         logger.warning(f"[depth-shift audit] {source_warning}")
 
-    wellbore_id = record_data.get("WellboreID")
+    wellbore_id = extract_sample_wellbore_id(sample_record)
     wellbore_warning = validate_wellbore_match(wellbore_id, shift_wellbore)
     if wellbore_warning:
         warnings.append(wellbore_warning)
@@ -205,6 +206,10 @@ def augment_dataframe(  # noqa: WPS210,CCR001,WPS231
     :return: (augmented DataFrame, flat list of all warning strings)
     :rtype: Tuple[pd.DataFrame, List[str]]
     :raises HTTPException: 400 if 'SampleID' column is absent from base_df
+
+    .. note:: *shift_set* is assumed to have been validated by the resolver
+        (via ``validate_shift_values``) before this function is called.
+        Interval ordering and boundary checks are not repeated here.
     """
     if "SampleID" not in base_df.columns:
         raise HTTPException(
@@ -214,8 +219,6 @@ def augment_dataframe(  # noqa: WPS210,CCR001,WPS231
                 + " Only analysis types that carry per-row SampleID are supported for depth-shift retrieval."
             ),
         )
-
-    _validate_intervals(shift_set)
 
     tops: List[Optional[float]] = []
     bases: List[Optional[float]] = []
