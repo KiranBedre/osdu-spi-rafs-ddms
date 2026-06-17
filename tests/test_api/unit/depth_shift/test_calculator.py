@@ -196,9 +196,19 @@ class TestFindInterval:
         result = find_interval(MULTI_INTERVAL_SHIFT_SET, sample_top=1500.0)
         assert result is None
 
-    def test_exact_base_of_last_interval_is_contained(self):
-        """Sample exactly at the last interval's OriginalBaseDepth is contained."""
+    def test_exact_base_of_last_interval_is_not_contained(self):
+        """Sample exactly at the last interval's OriginalBaseDepth is NOT contained.
+
+        The interval is half-open [OriginalTopDepth, OriginalBaseDepth), so a
+        sample depth equal to OriginalBaseDepth falls outside the interval.
+        """
         result = find_interval(MULTI_INTERVAL_SHIFT_SET, sample_top=1900.0)
+        assert result is None
+
+    def test_just_inside_last_interval_is_contained(self):
+        """Sample just below the last interval's OriginalBaseDepth is contained."""
+        result = find_interval(MULTI_INTERVAL_SHIFT_SET, sample_top=1899.999)
+        assert result is not None
         assert result["OriginalTopDepth"] == 1870.0
 
 

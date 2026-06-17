@@ -23,6 +23,28 @@ to handle both bare strings and full OSDU reference-data IDs.
 
 from typing import List, Optional, Tuple
 
+from app.api.routes.utils.records import get_id
+
+
+def extract_sample_wellbore_id(sample_record: dict) -> Optional[str]:
+    """Resolve the WellboreID from a Sample OSDU record.
+
+    Checks nested path ``data.SampleAcquisition.SampleAcquisitionDetail.WellboreID``
+    first, then falls back to the top-level ``data.WellboreID``.
+
+    :param sample_record: full Sample OSDU record dict
+    :type sample_record: dict
+    :return: WellboreID string, or None if absent
+    :rtype: Optional[str]
+    """
+    record_data = sample_record.get("data", {}) if isinstance(sample_record, dict) else {}
+    acquisition = record_data.get("SampleAcquisition", {}) if isinstance(record_data, dict) else {}
+    detail = acquisition.get("SampleAcquisitionDetail", {}) if isinstance(acquisition, dict) else {}
+    nested_wellbore_id = detail.get("WellboreID") if isinstance(detail, dict) else None
+    if nested_wellbore_id:
+        return nested_wellbore_id
+    return record_data.get("WellboreID") if isinstance(record_data, dict) else None
+
 
 def _matches_type(type_id: str, suffix: str) -> bool:
     """Return True if *type_id* ends with *suffix* (case-insensitive).
@@ -139,7 +161,7 @@ def validate_wellbore_match(
     """
     if sample_wellbore is None or shift_wellbore is None:
         return None
-    if sample_wellbore != shift_wellbore:
+    if get_id(sample_wellbore) != get_id(shift_wellbore):
         return (
             f"Wellbore mismatch: sample wellbore '{sample_wellbore}'"
             + f" differs from depth-shift wellbore '{shift_wellbore}'."

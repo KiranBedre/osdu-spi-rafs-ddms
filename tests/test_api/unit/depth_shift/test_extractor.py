@@ -16,6 +16,7 @@
 
 from app.depth_shift.extractor import (
     extract_depths,
+    extract_sample_wellbore_id,
     validate_measurement_source,
     validate_wellbore_match,
 )
@@ -159,6 +160,54 @@ class TestValidateWellboreMatch:
     def test_both_none_returns_none(self):
         result = validate_wellbore_match(None, None)
         assert result is None
+
+    def test_same_wellbore_with_trailing_colon_difference(self):
+        """Trailing colon difference must not produce a warning (normalised via get_id)."""
+        result = validate_wellbore_match("ns:wb:001", "ns:wb:001:")
+        assert result is None
+
+    def test_same_wellbore_with_version_suffix_difference(self):
+        """Version suffix difference must not produce a warning (normalised via get_id)."""
+        result = validate_wellbore_match("ns:wb:001:1", "ns:wb:001:")
+        assert result is None
+
+
+class TestExtractSampleWellboreId:
+    def test_top_level_wellbore_returned(self):
+        record = {"data": {"WellboreID": "ns:wb:001:"}}
+        assert extract_sample_wellbore_id(record) == "ns:wb:001:"
+
+    def test_nested_wellbore_preferred_over_top_level(self):
+        record = {
+            "data": {
+                "WellboreID": "ns:wb:top-level:",
+                "SampleAcquisition": {
+                    "SampleAcquisitionDetail": {
+                        "WellboreID": "ns:wb:nested:",
+                    }
+                },
+            }
+        }
+        assert extract_sample_wellbore_id(record) == "ns:wb:nested:"
+
+    def test_nested_only_wellbore_returned(self):
+        record = {
+            "data": {
+                "SampleAcquisition": {
+                    "SampleAcquisitionDetail": {
+                        "WellboreID": "ns:wb:nested-only:",
+                    }
+                }
+            }
+        }
+        assert extract_sample_wellbore_id(record) == "ns:wb:nested-only:"
+
+    def test_missing_wellbore_returns_none(self):
+        record = {"data": {}}
+        assert extract_sample_wellbore_id(record) is None
+
+    def test_empty_record_returns_none(self):
+        assert extract_sample_wellbore_id({}) is None
 
 
 class TestValidateDepthShiftUom:

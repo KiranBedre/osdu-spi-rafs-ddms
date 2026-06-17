@@ -169,7 +169,7 @@ def find_interval(shift_set: List[dict], sample_top: float) -> Optional[dict]:
     if pos < 0:
         return None
     interval = shift_set[pos]
-    if sample_top > interval["OriginalBaseDepth"]:
+    if sample_top >= interval["OriginalBaseDepth"]:
         return None
     return interval
 
