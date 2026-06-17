@@ -171,8 +171,12 @@ class TestEdgeCases:
             abs(shifted_base - expected_base_wrong) > 1e-4
         ), "Cross-interval guard did not fire — base was computed with wrong interval"
 
-    def test_bulk_shift_forced_by_none_method(self, volve_data):
-        """DepthShiftInterpolationMethodID='None' forces bulk shift even when spans differ."""
+    def test_none_method_with_unequal_spans_uses_linear_interpolation(self, volve_data):
+        """DepthShiftInterpolationMethodID='None' with unequal spans uses linear interpolation.
+
+        'None' means method not specified (auto-detect), not force-bulk shift.
+        When spans differ, the span-comparison auto-detect path selects linear interpolation.
+        """
         rows, shift_set = volve_data
         # Row 13 interval has unequal spans (would normally interpolate)
         r0, r1 = rows[13], rows[14]
@@ -184,7 +188,12 @@ class TestEdgeCases:
             "DepthShiftInterpolationMethodID": "None",
         }
         mid_depth = (r0["DEPTH"] + r1["DEPTH"]) / 2
-        expected_bulk = mid_depth + (r0["NEW_DEPTH"] - r0["DEPTH"])
+
+        # Linear interpolation: relative_pos = (mid - orig_top) / orig_span
+        orig_span = r1["DEPTH"] - r0["DEPTH"]
+        shifted_span = r1["NEW_DEPTH"] - r0["NEW_DEPTH"]
+        relative_pos = (mid_depth - r0["DEPTH"]) / orig_span
+        expected_linear = r0["NEW_DEPTH"] + relative_pos * shifted_span
 
         shifted_top, _ = shift_sample(mid_depth, None, [forced_interval])
-        assert shifted_top == pytest.approx(expected_bulk, abs=1e-6)
+        assert shifted_top == pytest.approx(expected_linear, abs=1e-6)

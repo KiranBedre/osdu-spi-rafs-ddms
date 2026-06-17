@@ -18,6 +18,9 @@ import pytest
 
 from app.depth_shift.calculator import (
     _validate_intervals,
+    _validate_no_bilinear,
+    _validate_no_inversion,
+    _validate_no_overlap,
     compute_shifted_depth,
     find_interval,
     shift_sample,
@@ -67,6 +70,22 @@ INTERP_INTERVAL_LINEAR_METHOD = {
     "ShiftedTopDepth": 1875.0,
     "ShiftedBaseDepth": 1910.0,
     "DepthShiftInterpolationMethodID": "Linear",
+}
+
+INTERP_INTERVAL_BILINEAR_METHOD = {
+    "OriginalTopDepth": 1870.0,
+    "OriginalBaseDepth": 1900.0,
+    "ShiftedTopDepth": 1875.0,
+    "ShiftedBaseDepth": 1910.0,
+    "DepthShiftInterpolationMethodID": "Bilinear",
+}
+
+INTERP_INTERVAL_BILINEAR_FULL_OSDU_ID = {
+    "OriginalTopDepth": 1870.0,
+    "OriginalBaseDepth": 1900.0,
+    "ShiftedTopDepth": 1875.0,
+    "ShiftedBaseDepth": 1910.0,
+    "DepthShiftInterpolationMethodID": "osdu:reference-data--DepthShiftInterpolationMethod:Bilinear:",
 }
 
 MULTI_INTERVAL_SHIFT_SET = [
@@ -212,16 +231,48 @@ class TestComputeShiftedDepth:
         result = compute_shifted_depth(1900.0, INTERP_INTERVAL)
         assert abs(result - 1910.0) < 1e-6
 
-    def test_none_method_forces_bulk_shift_even_with_unequal_spans(self):
-        """DepthShiftInterpolationMethodID='None' must force bulk shift, ignoring span diff."""
-        result = compute_shifted_depth(1872.0, INTERP_INTERVAL_NONE_METHOD)
-        # Bulk shift: 1872.0 + (1875.0 - 1870.0) = 1877.0
-        assert abs(result - 1877.0) < 1e-6
+    def test_none_method_unequal_spans_uses_linear_interpolation(self):
+        """DepthShiftInterpolationMethodID='None' with unequal spans must use linear interpolation.
 
-    def test_none_method_full_osdu_id_forces_bulk_shift(self):
-        """Full OSDU reference ID ending in ':None:' must also force bulk shift."""
+        'None' means method not specified (auto-detect), NOT force-bulk.
+        AC3 from Issue-752 was wrong; the correct rule is span-comparison auto-detect.
+        """
+        result = compute_shifted_depth(1872.0, INTERP_INTERVAL_NONE_METHOD)
+        # Linear interpolation: 1875.0 + (2.0/30.0)*35.0 ≈ 1877.333
+        expected = 1875.0 + (2.0 / 30.0) * 35.0
+        assert abs(result - expected) < 1e-6
+
+    def test_none_method_full_osdu_id_unequal_spans_uses_linear(self):
+        """Full OSDU reference ID ':None:' with unequal spans must also use linear interpolation."""
         result = compute_shifted_depth(1872.0, INTERP_INTERVAL_NONE_METHOD_FULL_ID)
-        assert abs(result - 1877.0) < 1e-6
+        expected = 1875.0 + (2.0 / 30.0) * 35.0
+        assert abs(result - expected) < 1e-6
+
+    def test_none_method_equal_spans_uses_bulk_shift(self):
+        """Explicit 'None' with equal spans → bulk shift (span-equality path works correctly)."""
+        equal_span_interval_none = {
+            "OriginalTopDepth": 1000.0,
+            "OriginalBaseDepth": 1010.0,
+            "ShiftedTopDepth": 1001.5,
+            "ShiftedBaseDepth": 1011.5,
+            "DepthShiftInterpolationMethodID": "None",
+        }
+        result = compute_shifted_depth(1005.0, equal_span_interval_none)
+        # Bulk shift: 1005.0 + (1001.5 - 1000.0) = 1006.5
+        assert abs(result - 1006.5) < 1e-6
+
+    def test_absent_method_unequal_spans_uses_linear(self):
+        """Absent DepthShiftInterpolationMethodID with unequal spans → linear interpolation."""
+        result = compute_shifted_depth(1872.0, INTERP_INTERVAL)
+        expected = 1875.0 + (2.0 / 30.0) * 35.0
+        assert abs(result - expected) < 1e-6
+
+    def test_empty_string_method_unequal_spans_uses_linear(self):
+        """Empty string DepthShiftInterpolationMethodID with unequal spans → linear interpolation."""
+        interval_empty_method = {**INTERP_INTERVAL, "DepthShiftInterpolationMethodID": ""}
+        result = compute_shifted_depth(1872.0, interval_empty_method)
+        expected = 1875.0 + (2.0 / 30.0) * 35.0
+        assert abs(result - expected) < 1e-6
 
     def test_linear_method_explicit_uses_interpolation(self):
         """DepthShiftInterpolationMethodID='Linear' with unequal spans uses linear interpolation."""
@@ -316,3 +367,176 @@ class TestValidateShiftValues:
     def test_empty_set_passes(self):
         """Empty shift set has no rows to validate — caught separately by _extract_depth_shift_set."""
         validate_shift_values([])
+
+    def test_inverted_interval_raises(self):
+        """Issue 4: OriginalBaseDepth < OriginalTopDepth must raise ValueError."""
+        inverted = {
+            "OriginalTopDepth": 1000.0,
+            "OriginalBaseDepth": 990.0,  # inverted: base < top
+            "ShiftedTopDepth": 1001.0,
+            "ShiftedBaseDepth": 991.0,
+        }
+        with pytest.raises(ValueError, match="OriginalBaseDepth"):
+            validate_shift_values([inverted])
+
+    def test_zero_width_interval_raises(self):
+        """Issue 4: OriginalBaseDepth == OriginalTopDepth must raise ValueError."""
+        zero_width = {
+            "OriginalTopDepth": 1000.0,
+            "OriginalBaseDepth": 1000.0,
+            "ShiftedTopDepth": 1001.0,
+            "ShiftedBaseDepth": 1001.0,
+        }
+        with pytest.raises(ValueError, match="OriginalBaseDepth"):
+            validate_shift_values([zero_width])
+
+    def test_overlapping_intervals_raises(self):
+        """Issue 3: intervals [1000,1100] and [1050,1200] overlap → ValueError."""
+        overlapping = [
+            {
+                "OriginalTopDepth": 1000.0,
+                "OriginalBaseDepth": 1100.0,
+                "ShiftedTopDepth": 1001.0,
+                "ShiftedBaseDepth": 1101.0,
+            },
+            {
+                "OriginalTopDepth": 1050.0,
+                "OriginalBaseDepth": 1200.0,
+                "ShiftedTopDepth": 1051.0,
+                "ShiftedBaseDepth": 1201.0,
+            },
+        ]
+        with pytest.raises(ValueError, match="overlap"):
+            validate_shift_values(overlapping)
+
+    def test_adjacent_touching_intervals_pass(self):
+        """Issue 3: touching intervals (base[i] == top[i+1]) must not raise.
+
+        MULTI_INTERVAL_SHIFT_SET has interval 0 base=1010 and interval 1 top=1010.
+        These are touching, not overlapping — the existing fixture must keep passing.
+        """
+        validate_shift_values(MULTI_INTERVAL_SHIFT_SET)  # must not raise
+
+    def test_bilinear_method_raises(self):
+        """Issue 2: DepthShiftInterpolationMethodID='Bilinear' must raise ValueError."""
+        bilinear_set = [
+            {
+                "OriginalTopDepth": 1000.0,
+                "OriginalBaseDepth": 1010.0,
+                "ShiftedTopDepth": 1001.0,
+                "ShiftedBaseDepth": 1011.0,
+                "DepthShiftInterpolationMethodID": "Bilinear",
+            }
+        ]
+        with pytest.raises(ValueError, match="[Bb]ilinear"):
+            validate_shift_values(bilinear_set)
+
+    def test_bilinear_full_osdu_id_raises(self):
+        """Issue 2: full OSDU reference ID ending in ':Bilinear:' must raise ValueError."""
+        bilinear_full_id_set = [
+            {
+                "OriginalTopDepth": 1000.0,
+                "OriginalBaseDepth": 1010.0,
+                "ShiftedTopDepth": 1001.0,
+                "ShiftedBaseDepth": 1011.0,
+                "DepthShiftInterpolationMethodID": ("osdu:reference-data--DepthShiftInterpolationMethod:Bilinear:"),
+            }
+        ]
+        with pytest.raises(ValueError, match="[Bb]ilinear"):
+            validate_shift_values(bilinear_full_id_set)
+
+    def test_linear_method_passes(self):
+        """Issue 2: explicit 'Linear' is a supported method and must not raise."""
+        linear_set = [
+            {
+                "OriginalTopDepth": 1000.0,
+                "OriginalBaseDepth": 1010.0,
+                "ShiftedTopDepth": 1001.0,
+                "ShiftedBaseDepth": 1011.0,
+                "DepthShiftInterpolationMethodID": "Linear",
+            }
+        ]
+        validate_shift_values(linear_set)  # must not raise
+
+
+# ---------------------------------------------------------------------------
+# _validate_no_inversion, _validate_no_overlap, _validate_no_bilinear
+# ---------------------------------------------------------------------------
+
+
+class TestValidateNoInversion:
+    """Direct tests for the _validate_no_inversion helper."""
+
+    def test_valid_interval_passes(self):
+        _validate_no_inversion([_VALID_INTERVAL])  # must not raise
+
+    def test_inverted_raises_with_index(self):
+        second_inverted = {
+            "OriginalTopDepth": 2000.0,
+            "OriginalBaseDepth": 1999.0,
+            "ShiftedTopDepth": 2001.0,
+            "ShiftedBaseDepth": 2000.0,
+        }
+        with pytest.raises(ValueError, match="index 1"):
+            _validate_no_inversion([_VALID_INTERVAL, second_inverted])
+
+
+class TestValidateNoOverlap:
+    """Direct tests for the _validate_no_overlap helper."""
+
+    def test_no_overlap_passes(self):
+        _validate_no_overlap(MULTI_INTERVAL_SHIFT_SET)  # touching intervals, must not raise
+
+    def test_overlap_raises(self):
+        overlap_set = [
+            {
+                "OriginalTopDepth": 100.0,
+                "OriginalBaseDepth": 200.0,
+                "ShiftedTopDepth": 101.0,
+                "ShiftedBaseDepth": 201.0,
+            },
+            {
+                "OriginalTopDepth": 150.0,
+                "OriginalBaseDepth": 300.0,
+                "ShiftedTopDepth": 151.0,
+                "ShiftedBaseDepth": 301.0,
+            },
+        ]
+        with pytest.raises(ValueError, match="overlap"):
+            _validate_no_overlap(overlap_set)
+
+    def test_touching_does_not_raise(self):
+        touching = [
+            {
+                "OriginalTopDepth": 100.0,
+                "OriginalBaseDepth": 200.0,
+                "ShiftedTopDepth": 101.0,
+                "ShiftedBaseDepth": 201.0,
+            },
+            {
+                "OriginalTopDepth": 200.0,
+                "OriginalBaseDepth": 300.0,
+                "ShiftedTopDepth": 201.0,
+                "ShiftedBaseDepth": 301.0,
+            },
+        ]
+        _validate_no_overlap(touching)  # must not raise
+
+
+class TestValidateNoBilinear:
+    """Direct tests for the _validate_no_bilinear helper."""
+
+    def test_no_method_passes(self):
+        _validate_no_bilinear([_VALID_INTERVAL])  # must not raise
+
+    def test_linear_method_passes(self):
+        linear_row = {**_VALID_INTERVAL, "DepthShiftInterpolationMethodID": "Linear"}
+        _validate_no_bilinear([linear_row])  # must not raise
+
+    def test_bilinear_bare_raises(self):
+        with pytest.raises(ValueError, match="[Bb]ilinear"):
+            _validate_no_bilinear([INTERP_INTERVAL_BILINEAR_METHOD])
+
+    def test_bilinear_full_osdu_id_raises(self):
+        with pytest.raises(ValueError, match="[Bb]ilinear"):
+            _validate_no_bilinear([INTERP_INTERVAL_BILINEAR_FULL_OSDU_ID])

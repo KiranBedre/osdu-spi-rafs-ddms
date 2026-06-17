@@ -225,6 +225,62 @@ class TestWarnings:
         assert all_warnings == []
 
 
+class TestOutOfRangePassThrough:
+    """Issue 1: sample depth outside all intervals must pass through unchanged with a warning."""
+
+    def test_out_of_range_sample_passes_through_with_warning(self, volve_data):
+        """SampleTop beyond the last interval returns ShiftedSampleTop==SampleTop + warning."""
+        rows, shift_set = volve_data
+        # Use a depth well beyond the last interval in the Volve shift set.
+        out_of_range_depth = 9999.0
+
+        sample_records = {
+            "sample-oor": {
+                "data": {
+                    "WellboreID": _WELLBORE_SAMPLE,
+                    "DepthMeasurements": [
+                        {
+                            "VerticalMeasurementTypeID": "SampleTop",
+                            "VerticalMeasurementSourceID": "DRL",
+                            "VerticalMeasurement": out_of_range_depth,
+                        }
+                    ],
+                }
+            }
+        }
+        base_df = pd.DataFrame({"SampleID": ["sample-oor"]})
+        result_df, all_warnings = augment_dataframe(
+            base_df,
+            resolver=None,
+            shift_set=shift_set,
+            shift_wellbore=_WELLBORE_SHIFT,
+            sample_records=sample_records,
+        )
+
+        shifted_top = result_df.iloc[0]["ShiftedSampleTop"]
+        assert shifted_top == pytest.approx(out_of_range_depth, abs=1e-6), (
+            f"Expected ShiftedSampleTop == SampleTop ({out_of_range_depth}) for out-of-range sample, "
+            f"got {shifted_top}"
+        )
+
+        row_warnings = result_df.iloc[0]["DepthShiftWarnings"]
+        assert any(
+            "Sample not shifted" in warning_msg for warning_msg in row_warnings
+        ), f"Expected 'Sample not shifted' warning for out-of-range sample, got: {row_warnings}"
+        assert any(
+            "9999" in warning_msg for warning_msg in row_warnings
+        ), f"Expected warning to include depth value, got: {row_warnings}"
+        assert len(all_warnings) >= 1
+
+    def test_in_range_sample_does_not_get_out_of_range_warning(self, volve_augmented):
+        """Samples within the shift set must not receive an out-of-range warning."""
+        result_df, _, all_warnings = volve_augmented
+        for row_warnings in result_df["DepthShiftWarnings"]:
+            assert not any(
+                "Sample not shifted" in warning_msg for warning_msg in row_warnings
+            ), f"Unexpected out-of-range warning on in-range sample: {row_warnings}"
+
+
 class TestMissingSampleRecords:
     """Rows with no matching sample record must degrade gracefully."""
 

@@ -141,6 +141,17 @@ def _augment_row(
         return (sample_top, sample_base, None, None, warnings)
 
     shifted_top, shifted_base = shift_sample(sample_top, sample_base, shift_set)
+
+    if shifted_top is None:
+        # Sample depth found but outside all shift intervals — pass through unchanged.
+        shifted_top = sample_top
+        shifted_base = sample_base
+        out_of_range_msg = "Sample not shifted: SampleTop {0:.3f} falls outside all shift intervals.".format(
+            sample_top,
+        )
+        warnings.append(out_of_range_msg)
+        logger.warning(f"[depth-shift audit] {out_of_range_msg}")
+
     return (sample_top, sample_base, shifted_top, shifted_base, warnings)
 
 

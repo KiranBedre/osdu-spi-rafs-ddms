@@ -33,15 +33,86 @@ _REQUIRED_INTERVAL_FIELDS = (
 )
 
 
-def validate_shift_values(shift_set: List[dict]) -> None:
-    """Raise ValueError if any required depth boundary in shift_set is null or missing.
+def _validate_no_inversion(shift_set: List[dict]) -> None:
+    """Raise ValueError when any interval has OriginalBaseDepth <= OriginalTopDepth.
 
-    Called both at write time (POST CoreToLog data) and at read time (GET with
-    depth shift) so that null intervals are rejected regardless of the ingestion path.
+    :param shift_set: list of shift-set interval dicts (boundaries already non-null)
+    :type shift_set: List[dict]
+    :raises ValueError: when any interval is inverted or zero-width
+    """
+    for idx, row in enumerate(shift_set):
+        orig_top = row["OriginalTopDepth"]
+        orig_base = row["OriginalBaseDepth"]
+        if orig_base <= orig_top:
+            raise ValueError(
+                "DepthShiftSet row at index {0}: OriginalBaseDepth ({1}) must be greater than "
+                "OriginalTopDepth ({2}). Inverted or zero-width intervals are not allowed.".format(
+                    idx,
+                    orig_base,
+                    orig_top,
+                )
+            )
+
+
+def _validate_no_overlap(shift_set: List[dict]) -> None:
+    """Raise ValueError when any two consecutive intervals overlap.
+
+    Touching boundaries (interval_i base == interval_{i+1} top) are valid.
+    Overlap means strict: interval_i base > interval_{i+1} top.
+
+    :param shift_set: list of shift-set interval dicts sorted by OriginalTopDepth
+    :type shift_set: List[dict]
+    :raises ValueError: when consecutive intervals overlap
+    """
+    for interval_idx in range(len(shift_set) - 1):
+        current_base = shift_set[interval_idx]["OriginalBaseDepth"]
+        next_top = shift_set[interval_idx + 1]["OriginalTopDepth"]
+        if current_base > next_top:
+            raise ValueError(
+                "DepthShiftSet has overlapping intervals: interval at index {0} "
+                "(OriginalBaseDepth={1}) overlaps interval at index {2} "
+                "(OriginalTopDepth={3}). Intervals must not overlap.".format(
+                    interval_idx,
+                    current_base,
+                    interval_idx + 1,
+                    next_top,
+                )
+            )
+
+
+def _validate_no_bilinear(shift_set: List[dict]) -> None:
+    """Raise ValueError when any interval specifies Bilinear interpolation.
+
+    Bilinear interpolation is a 2-D method and is not applicable to 1-D
+    depth-shift calculations.  Clients must use Linear or leave the field absent.
 
     :param shift_set: list of shift-set interval dicts
     :type shift_set: List[dict]
-    :raises ValueError: when any of the four depth boundary fields is None or absent
+    :raises ValueError: when any interval has a Bilinear interpolation method
+    """
+    for idx, row in enumerate(shift_set):
+        method_token = _interpolation_method(row)
+        if method_token == "bilinear":  # noqa: S105
+            raise ValueError(
+                "DepthShiftSet row at index {0}: DepthShiftInterpolationMethodID "
+                "resolves to 'bilinear', which is not supported for 1-D depth-shift "
+                "calculations. Use 'linear' or leave the field absent for auto-detect.".format(idx)
+            )
+
+
+def validate_shift_values(shift_set: List[dict]) -> None:
+    """Raise ValueError if any required depth boundary in shift_set is null or missing.
+
+    Also validates that intervals are non-inverted, non-overlapping, and do not
+    specify an unsupported interpolation method (bilinear).
+
+    Called both at write time (POST CoreToLog data) and at read time (GET with
+    depth shift) so that invalid intervals are rejected regardless of ingestion path.
+
+    :param shift_set: list of shift-set interval dicts
+    :type shift_set: List[dict]
+    :raises ValueError: when any interval boundary is null/absent, inverted,
+        overlapping with its neighbour, or specifies bilinear interpolation
     """
     for idx, row in enumerate(shift_set):
         for field in _REQUIRED_INTERVAL_FIELDS:
@@ -50,6 +121,9 @@ def validate_shift_values(shift_set: List[dict]) -> None:
                     "DepthShiftSet row at index {0} has null or missing '{1}'. "
                     "Cannot apply a depth shift with null interval boundaries.".format(idx, field)
                 )
+    _validate_no_inversion(shift_set)
+    _validate_no_overlap(shift_set)
+    _validate_no_bilinear(shift_set)
 
 
 def _validate_intervals(shift_set: List[dict]) -> None:
@@ -140,10 +214,9 @@ def compute_shifted_depth(depth: float, interval: dict) -> float:
     orig_span = orig_base - orig_top
     shifted_span = shifted_base - shifted_top
 
-    # Issue-752 AC3: explicit method "None" forces bulk shift.
-    force_bulk = _interpolation_method(interval) == "none"
-
-    if force_bulk or abs(orig_span - shifted_span) < _FLOAT_TOLERANCE:  # noqa: WPS459
+    # Auto-detect: absent, empty, or explicit "None" token all fall through to span
+    # comparison.  "None" means "method not specified" — it does not force bulk shift.
+    if abs(orig_span - shifted_span) < _FLOAT_TOLERANCE:  # noqa: WPS459
         return depth + (shifted_top - orig_top)
 
     if orig_span == 0:
