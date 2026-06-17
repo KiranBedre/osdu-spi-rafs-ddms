@@ -26,6 +26,7 @@ def _strip_version(kind: str) -> str:
 
 GENERIC_FACILITY_100_KIND = f"{settings.schema_authority}:wks:master-data--GenericFacility:1.0.0"
 GENERIC_SITE_100_KIND = f"{settings.schema_authority}:wks:master-data--GenericSite:1.0.0"
+WELLBORE_KIND = f"{settings.schema_authority}:wks:master-data--Wellbore:1.0.0"
 SAMPLE_200_KIND = f"{settings.schema_authority}:wks:master-data--Sample:2.0.0"
 SAMPLE_210_KIND = f"{settings.schema_authority}:wks:master-data--Sample:2.1.0"
 SAMPLE_ACQUISITION_JOB_100_KIND = f"{settings.schema_authority}:wks:master-data--SampleAcquisitionJob:1.0.0"
@@ -57,6 +58,7 @@ DEPTH_SHIFT_KIND = f"{settings.schema_authority}:wks:work-product-component--Dep
 # Version-agnostic base kinds (authority:source:entity_type — no version suffix)
 GENERIC_FACILITY_KIND_BASE = _strip_version(GENERIC_FACILITY_100_KIND)
 GENERIC_SITE_KIND_BASE = _strip_version(GENERIC_SITE_100_KIND)
+WELLBORE_KIND_BASE = _strip_version(WELLBORE_KIND)
 SAMPLE_KIND_BASE = _strip_version(SAMPLE_200_KIND)
 SAMPLE_ACQUISITION_JOB_KIND_BASE = _strip_version(SAMPLE_ACQUISITION_JOB_100_KIND)
 SAMPLE_CHAIN_OF_CUSTODY_EVENT_KIND_BASE = _strip_version(SAMPLE_CHAIN_OF_CUSTODY_EVENT_100_KIND)

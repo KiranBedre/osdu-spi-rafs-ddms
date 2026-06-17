@@ -21,7 +21,6 @@ from typing import Iterable, List, Literal, Optional, Set, Tuple, TypeVar
 from fastapi import Depends, HTTPException, Query, Request
 from loguru import logger
 from pydantic import BaseModel
-from starlette import status
 
 from app.api.dependencies.request import get_content_schema_version
 from app.api.dependencies.services import (
@@ -35,6 +34,7 @@ from app.api.routes.utils.api_version import (
 from app.api.routes.utils.query import divide_chunks, find_osdu_ids_from_string
 from app.api.routes.utils.records import is_valid_semver, parse_kind
 from app.core.config import get_app_settings
+from app.core.http_status import HTTP_422_UNPROCESSABLE
 from app.exceptions.exceptions import (
     NotFoundException,
     RecordValidationException,
@@ -44,6 +44,7 @@ from app.models.data_schemas.base import CONTENT_PATTERNS, MAPS_TO_DATA_MODEL
 from app.models.domain.osdu import base as osdu_models_base
 from app.models.schemas.osdu_storage import OsduStorageRecord
 from app.models.schemas.pandas_dataframe import OrientSplit
+from app.models.schemas.search_scope import SearchScope
 from app.resources.errors import FilterValidationError
 from app.resources.filters import DataFrameFilterValidator
 from app.services.schema import SchemaService
@@ -148,7 +149,7 @@ def validate_ids_from_records(
                 errors.append(f"Missing {field} in index {index}")
     if errors:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            status_code=HTTP_422_UNPROCESSABLE,
             detail=errors,
         )
 
@@ -187,7 +188,7 @@ async def validate_referential_integrity(  # noqa: ASYNC910
         reason = f"{error_title} {error_details}"
         logger.debug(reason)
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            status_code=HTTP_422_UNPROCESSABLE,
             detail=reason,
         )
 
@@ -218,11 +219,12 @@ def validate_kind(kind: str, valid_kind_bases: List[str]):
         )
 
     if not is_valid_semver(parsed["version"]):
+        invalid_kind_version_msg = (
+            "Kind `{0}` has an invalid version `{1}`. "
+            + "Version must be in major.minor.patch format with non-negative integers."
+        )
         raise RecordValidationException(
-            detail=(
-                f"Kind `{kind}` has an invalid version `{parsed['version']}`. "
-                "Version must be in major.minor.patch format with non-negative integers."
-            ),
+            detail=invalid_kind_version_msg.format(kind, parsed["version"]),
         )
 
 
@@ -331,7 +333,9 @@ async def validate_master_data_records_payload(
     storage_service: StorageService,
 ) -> List[dict]:
     records = await validate_osdu_wks_records(
-        records_list, schema_service, list(osdu_models_base.MASTER_DATA_KIND_BASES)
+        records_list,
+        schema_service,
+        list(osdu_models_base.MASTER_DATA_KIND_BASES),
     )
     await validate_referential_integrity(records, [], storage_service)
     return records
@@ -674,7 +678,7 @@ def get_search_data_pagination_parameters(
             return datetime.strptime(date_str, "%Y-%m-%d").date()
         except ValueError:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=f"Invalid format for {field_name}: '{date_str}'. Expected format: YYYY-MM-DD.",
             )
 
@@ -684,7 +688,7 @@ def get_search_data_pagination_parameters(
     if start_date_obj and end_date_obj:
         if start_date_obj > end_date_obj:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
     return offset, page_limit, start_date_obj, end_date_obj  # noqa: ASYNC910
@@ -722,7 +726,22 @@ def get_search_pagination_parameters(
     if indexed_start_date and indexed_end_date:
         if indexed_start_date > indexed_end_date:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
     return offset, page_limit, indexed_start_date, indexed_end_date  # noqa: ASYNC910
+
+
+def get_search_scope(
+    basin_id: Optional[str] = Query(default=None, description="Optional BasinID scope"),
+    field_id: Optional[str] = Query(default=None, description="Optional FieldID scope"),
+    well_id: Optional[str] = Query(default=None, description="Optional WellID scope"),
+    wellbore_id: Optional[str] = Query(default=None, description="Optional WellboreID scope"),
+) -> SearchScope:
+    """Parse the progressive search scope parameters."""
+    return SearchScope(
+        basin_id=basin_id,
+        field_id=field_id,
+        well_id=well_id,
+        wellbore_id=wellbore_id,
+    )

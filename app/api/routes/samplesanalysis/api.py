@@ -19,7 +19,7 @@ from app.api.dependencies.validation import (
     validate_samplesanalysis_records_v2_payload,
 )
 from app.api.routes.common.dynamic_search import (
-    DynamicGenericSearchView,
+    SamplesAnalysisDynamicSearchView,
     get_search_data_description_template,
     get_search_description_template,
 )
@@ -72,7 +72,7 @@ SamplesAnalysisDataView(
 )
 
 
-DynamicGenericSearchView(
+SamplesAnalysisDynamicSearchView(
     router=sa_router,
     ddms_dataset_ids_fetcher_class=SearchServiceSamplesAnalysisTypeIdsFetcher,
     endpoints_config=[

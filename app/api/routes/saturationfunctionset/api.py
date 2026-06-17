@@ -33,7 +33,7 @@ from app.api.routes.saturationfunctionset.endpoints import (
 from app.api.routes.v2.data.endpoints import DynamicContentTypeDataViewV2
 from app.models.data_schemas.base import MAPS_TO_DATA_MODEL
 from app.resources.paths import SATURATION_FUNCTION_SET_STR
-from app.search.saruration_function_set_ids_fetcher import (
+from app.search.saturation_function_set_ids_fetcher import (
     SearchServiceSaturationFunctionSetIdsFetcher,
 )
 

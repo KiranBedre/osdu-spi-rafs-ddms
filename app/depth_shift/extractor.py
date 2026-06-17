@@ -33,7 +33,7 @@ def _matches_type(type_id: str, suffix: str) -> bool:
     return type_id.rstrip(":").lower().endswith(suffix.lower())
 
 
-def extract_depths(  # noqa: WPS231
+def extract_depths(  # noqa: WPS231,CCR001,WPS210
     sample_record: dict,
 ) -> Tuple[Optional[float], Optional[float], Optional[str]]:
     """Extract (top, base, wellbore_id) from a Sample OSDU record.
@@ -68,6 +68,25 @@ def extract_depths(  # noqa: WPS231
         elif _matches_type(type_id, "SampleBase"):
             sample_base = depth_value
 
+    if sample_top is None and sample_base is None:
+        acquisition = record_data.get("SampleAcquisition", {}) if isinstance(record_data, dict) else {}
+        detail = acquisition.get("SampleAcquisitionDetail", {}) if isinstance(acquisition, dict) else {}
+        if isinstance(detail, dict):
+            raw_top = detail.get("TopDepth")
+            raw_base = detail.get("BaseDepth")
+            try:
+                sample_top = float(raw_top) if raw_top is not None else None  # noqa: WPS504
+            except (TypeError, ValueError):
+                sample_top = None
+            try:
+                sample_base = float(raw_base) if raw_base is not None else None  # noqa: WPS504
+            except (TypeError, ValueError):
+                sample_base = None
+            if not wellbore_id:
+                nested_wellbore = detail.get("WellboreID")
+                if isinstance(nested_wellbore, str):
+                    wellbore_id = nested_wellbore
+
     return (sample_top, sample_base, wellbore_id)
 
 
@@ -98,10 +117,9 @@ def validate_measurement_source(vm_entry: dict) -> Optional[str]:
     if not source_id or not _matches_type(source_id, "DRL"):
         source_display = source_id.rstrip(":").rsplit(":", 1)[-1] if source_id else "(not set)"
         return (
-            "Warning: Sample depths (SampleTop and SampleBase) are reported as "
-            "'{0}' depth and may not need to be shifted. "
-            "Expected source is Driller (DRL). "
-            "Shifted depths may need to be validated.".format(source_display)
+            "Warning: Sample depths (SampleTop and SampleBase) are reported as"
+            + " '{0}' depth and may not need to be shifted.".format(source_display)
+            + " Expected source is Driller (DRL). Shifted depths may need to be validated."
         )
     return None
 
@@ -123,8 +141,8 @@ def validate_wellbore_match(
         return None
     if sample_wellbore != shift_wellbore:
         return (
-            f"Wellbore mismatch: sample wellbore '{sample_wellbore}' "
-            f"differs from depth-shift wellbore '{shift_wellbore}'."
+            f"Wellbore mismatch: sample wellbore '{sample_wellbore}'"
+            + f" differs from depth-shift wellbore '{shift_wellbore}'."
         )
     return None
 

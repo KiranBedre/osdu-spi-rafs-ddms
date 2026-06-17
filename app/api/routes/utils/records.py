@@ -55,16 +55,21 @@ def get_id_version(full_record_id: str) -> Tuple[str, Optional[int]]:
     """
     logger.debug(f"full record id: {full_record_id}")
     splitted_id = full_record_id.split(":")
-    if len(splitted_id) > VERSION_SPLIT_INDEX:  # this means that there is a ":" in id
+    # Only split a version when the ID has exactly VERSION_SPLIT_INDEX+1 parts
+    # (authority:entity-type:local-id:version).  IDs with colons in the local-id
+    # body produce more parts; treating their last segment as a version would
+    # truncate the ID and mis-parse the local-id fragment as a version number.
+    if len(splitted_id) == VERSION_SPLIT_INDEX + 1:
         record_id, version = (
             ":".join(splitted_id[:VERSION_SPLIT_INDEX_COLON_IN_ID]),
             ":".join(splitted_id[VERSION_SPLIT_INDEX_COLON_IN_ID:]),
         )  # noqa: WPS221
     else:
-        record_id, version = (
-            ":".join(splitted_id[:VERSION_SPLIT_INDEX]),
-            ":".join(splitted_id[VERSION_SPLIT_INDEX:]),
-        )  # noqa: WPS221
+        # Fewer than 4 parts (no version suffix) or more than 4 parts (colons in
+        # local-id body — version cannot be reliably extracted).
+        # Strip a trailing colon if present (OSDU "latest" ref convention).
+        record_id = full_record_id.rstrip(":")
+        version = ""
     try:
         if version:
             version = int(version)

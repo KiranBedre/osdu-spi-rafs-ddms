@@ -17,6 +17,8 @@ from typing import Optional
 from pydantic.main import BaseModel
 from starlette import status
 
+from app.core.http_status import HTTP_422_UNPROCESSABLE
+
 
 class BadRequestResponse(BaseModel):
     code: int = status.HTTP_400_BAD_REQUEST
@@ -33,5 +35,5 @@ class UnsupportedMediaTypeResponse(BaseModel):
 
 
 class ValidationErrorResponse(BadRequestResponse):
-    code: int = status.HTTP_422_UNPROCESSABLE_CONTENT
+    code: int = HTTP_422_UNPROCESSABLE
     errors: Optional[dict]

@@ -31,7 +31,7 @@ from fastapi import HTTPException
 from loguru import logger
 from starlette import status
 
-from app.depth_shift.calculator import _validate_intervals, shift_sample
+from app.depth_shift.calculator import _validate_intervals, shift_sample  # noqa: WPS450
 from app.depth_shift.extractor import (
     extract_depths,
     is_sample_depth_entry,
@@ -61,7 +61,7 @@ def _source_quality_warning(vertical_measurements: List[dict]) -> Optional[str]:
     return None
 
 
-def _collect_row_warnings(
+def _collect_row_warnings(  # noqa: CCR001,WPS210,WPS231
     sample_record: Optional[dict],
     shift_wellbore: Optional[str],
     shift_meta: Optional[List[dict]] = None,
@@ -86,6 +86,30 @@ def _collect_row_warnings(
     warnings: List[str] = []
     record_data = sample_record.get("data", {})
     vertical_measurements = record_data.get("DepthMeasurements", [])
+    if not vertical_measurements:
+        acquisition = record_data.get("SampleAcquisition", {}) if isinstance(record_data, dict) else {}
+        detail = acquisition.get("SampleAcquisitionDetail", {}) if isinstance(acquisition, dict) else {}
+        if isinstance(detail, dict):
+            vm = detail.get("VerticalMeasurement", {})
+            source_id = vm.get("VerticalMeasurementSourceID") if isinstance(vm, dict) else None
+            synthesized: List[dict] = []
+            if detail.get("TopDepth") is not None:
+                synthesized.append(
+                    {
+                        "VerticalMeasurementTypeID": "SampleTop",
+                        "VerticalMeasurement": detail.get("TopDepth"),
+                        "VerticalMeasurementSourceID": source_id,
+                    },
+                )
+            if detail.get("BaseDepth") is not None:
+                synthesized.append(
+                    {
+                        "VerticalMeasurementTypeID": "SampleBase",
+                        "VerticalMeasurement": detail.get("BaseDepth"),
+                        "VerticalMeasurementSourceID": source_id,
+                    },
+                )
+            vertical_measurements = synthesized
 
     source_warning = _source_quality_warning(vertical_measurements)
     if source_warning:
@@ -155,7 +179,7 @@ def _augment_row(
     return (sample_top, sample_base, shifted_top, shifted_base, warnings)
 
 
-def augment_dataframe(  # noqa: WPS210
+def augment_dataframe(  # noqa: WPS210,CCR001,WPS231
     base_df: pd.DataFrame,
     resolver,
     shift_set: List[dict],
@@ -186,9 +210,8 @@ def augment_dataframe(  # noqa: WPS210
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=(
-                "Depth-shift augmentation requires a 'SampleID' column in the "
-                "bulk data, but it was not found. Only analysis types that carry "
-                "per-row SampleID are supported for depth-shift retrieval."
+                "Depth-shift augmentation requires a 'SampleID' column in the bulk data, but it was not found."
+                + " Only analysis types that carry per-row SampleID are supported for depth-shift retrieval."
             ),
         )
 

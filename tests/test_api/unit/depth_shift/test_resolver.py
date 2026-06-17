@@ -71,7 +71,7 @@ class TestResolveDefinitiveWpcId:
             "ns:Sample:s-1:": self._sample_record("ns:work-product-component--DepthShift:xyz:"),
         }
         result = resolver.resolve_definitive_wpc_id(sample_records)
-        assert result == "ns:work-product-component--DepthShift:xyz:"
+        assert result == "ns:work-product-component--DepthShift:xyz"
 
     def test_multiple_samples_agreeing_returns_wpc_id(self):
         resolver = self._resolver()
@@ -80,7 +80,7 @@ class TestResolveDefinitiveWpcId:
             "ns:Sample:s-2:": self._sample_record("ns:work-product-component--DepthShift:xyz:"),
         }
         result = resolver.resolve_definitive_wpc_id(sample_records)
-        assert result == "ns:work-product-component--DepthShift:xyz:"
+        assert result == "ns:work-product-component--DepthShift:xyz"
 
     def test_no_definitive_depth_shift_raises_422(self):
         resolver = self._resolver()
@@ -118,7 +118,7 @@ class TestResolveDefinitiveWpcId:
             "ns:Sample:s-2:": self._sample_record("ns:work-product-component--DepthShift:xyz:"),
         }
         result = resolver.resolve_definitive_wpc_id(sample_records)
-        assert result == "ns:work-product-component--DepthShift:xyz:"
+        assert result == "ns:work-product-component--DepthShift:xyz"
 
 
 class TestFetchCoretologDepthShiftDataKindValidation:
@@ -187,7 +187,8 @@ class TestFetchCoretologDepthShiftDataContent:
         assert shift_set == [_SHIFT_INTERVAL]
         assert shift_meta == [{"unitOfMeasureID": "m"}]
         assert shift_wellbore == "opendes:master-data--Wellbore:wb-1:"
-        resolver._storage.get_record.assert_called_once_with(self._WPC_ID)
+        # Storage should be called with the bare ID (no trailing colon / version) via get_id()
+        resolver._storage.get_record.assert_called_once_with(self._WPC_ID.rstrip(":"))
 
     @pytest.mark.asyncio
     async def test_missing_wellbore_returns_none(self):

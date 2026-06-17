@@ -40,6 +40,8 @@ Instructions and payload examples are presented on [the tutorial page](./docs/tu
 
 Compiled REST API documentation is presented in the [openapi.json](./docs/spec/openapi.json) file.
 
+Depth-shift functional behavior for both GET data and search/data endpoints is documented in [docs/depth-shift/depth_shift_get_search_functionality.md](./docs/depth-shift/depth_shift_get_search_functionality.md).
+
 Run the OpenAPI maintenance commands from the repository root.
 
 Recommended local workflow:

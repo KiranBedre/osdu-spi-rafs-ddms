@@ -36,6 +36,7 @@ from app.api.dependencies.validation import (
     get_orient,
     get_search_data_pagination_parameters,
     get_search_pagination_parameters,
+    get_search_scope,
     validate_filters,
 )
 from app.api.routes.utils.api_description_helper import APIDescriptionHelper
@@ -43,6 +44,7 @@ from app.core.config import get_app_settings
 from app.dataframe.blob_parquet_loader import BlobParquetLoader
 from app.dataframe.filter_processor import DFFilterProcessor
 from app.dataframe.parquet_loader import DFPayload, ParquetLoader
+from app.models.schemas.search_scope import SearchScope
 from app.providers.dependencies.blob_storage import IBlobStorage
 from app.resources.filters import DataFrameFilterValidator
 from app.resources.mime_types import SupportedMimeTypes
@@ -102,7 +104,7 @@ class GenericSearchDataView(object):
         if kwargs:
             self.__dict__.update(kwargs)
 
-    async def get_search_data(  # noqa: CCR001, CFQ001, WPS210, WPS211, WPS231
+    async def get_search_data(  # noqa: CCR001, CFQ001, CFQ002, WPS210, WPS211, WPS231
         self,
         request: Request,
         analysis_type: str,
@@ -113,6 +115,7 @@ class GenericSearchDataView(object):
         content_schema_version: str = Depends(get_content_schema_version),
         pagination_parameters: PaginationParametersType = Depends(get_search_data_pagination_parameters),
         orient: str = Depends(get_orient),
+        search_scope: SearchScope = Depends(get_search_scope),
     ) -> Response:
         """Search Data Endpoint.
 
@@ -163,6 +166,7 @@ class GenericSearchDataView(object):
             analysis_type,
             content_schema_version,
             query_date_range,
+            wks_parameters=search_scope.to_query_dict(),
         )
         analysis_type_ids.sort(key=lambda analysis_type_id: analysis_type_id[1])
         logger.debug("Found analysis types and datasets: ")
@@ -235,6 +239,7 @@ class GenericSearchDataView(object):
         df_filter: DataFrameFilterValidator = Depends(validate_filters),
         content_schema_version: str = Depends(get_content_schema_version),
         pagination_parameters: PaginationParametersType = Depends(get_search_pagination_parameters),
+        search_scope: SearchScope = Depends(get_search_scope),
     ) -> JSONResponse:
         """Search Endpoint.
 
@@ -284,6 +289,7 @@ class GenericSearchDataView(object):
             analysis_type,
             content_schema_version,
             query_date_range,
+            wks_parameters=search_scope.to_query_dict(),
         )
         analysis_type_ids.sort(key=lambda analysis_type_id: analysis_type_id[1])
 

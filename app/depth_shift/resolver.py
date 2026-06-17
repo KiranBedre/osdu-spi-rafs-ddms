@@ -15,6 +15,7 @@
 """DepthShiftResolver: orchestrates OSDU round-trips to prepare shift data."""
 
 import io
+import re
 from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
@@ -22,7 +23,7 @@ from fastapi import HTTPException
 from httpx import HTTPStatusError
 from starlette import status
 
-from app.api.routes.utils.records import find_dataset_id
+from app.api.routes.utils.records import find_dataset_id, get_id
 from app.depth_shift.calculator import validate_shift_values
 from app.models.schemas.depth_shift_query import DepthShiftQueryParams
 from app.resources.paths import DEPTH_SHIFT_STR
@@ -32,7 +33,7 @@ from app.services import storage as storage_module
 SAMPLE_BATCH_SIZE = 100
 
 
-class DepthShiftResolver:
+class DepthShiftResolver(object):  # noqa: WPS306
     """Fetch and resolve the data needed to perform depth-shift augmentation.
 
     All heavy I/O (Storage API, Dataset API) is isolated here so the
@@ -85,7 +86,7 @@ class DepthShiftResolver:
             nested = record_data.get("DefinitiveDepthShift") or {}
             wpc_id = nested.get("DefinitiveDepthShiftID") or record_data.get("DefinitiveDepthShiftID")
             if wpc_id:
-                found_ids.add(wpc_id)
+                found_ids.add(get_id(wpc_id))
 
         if not found_ids:
             raise HTTPException(
@@ -121,7 +122,10 @@ class DepthShiftResolver:
         :raises HTTPException: 400 if the parquet is missing DepthShiftSet
         :raises HTTPException: 422 if the CoreToLog parquet contains more than one row
         """
-        wpc_record = await self._storage.get_record(depth_shift_wpc_id)
+        # Normalise to bare ID using the shared get_id utility from records.py.
+        # This strips trailing colons and version suffixes consistently across the codebase.
+        cleaned_id = get_id(depth_shift_wpc_id)
+        wpc_record = await self._storage.get_record(cleaned_id)
         record_kind = wpc_record.get("kind", "")
         if "work-product-component--DepthShift" not in record_kind:
             kind_str = record_kind if record_kind else "(missing)"
@@ -140,10 +144,9 @@ class DepthShiftResolver:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=(
-                    "CoreToLog content for DepthShift WPC {0} must contain exactly 1 row, "
-                    "but {1} rows were found. Each DepthShift WPC must reference a single "
-                    "CoreToLog record.".format(depth_shift_wpc_id, len(df))
-                ),
+                    "CoreToLog content for DepthShift WPC {0} must contain exactly 1 row,"
+                    + " but {1} rows were found. Each DepthShift WPC must reference a single CoreToLog record."
+                ).format(depth_shift_wpc_id, len(df)),
             )
         shift_set = self._extract_depth_shift_set(df, depth_shift_wpc_id)
         shift_meta = self._extract_meta(df)
@@ -163,7 +166,10 @@ class DepthShiftResolver:
         :return: dict mapping record ID → full record dict
         :rtype: Dict[str, dict]
         """
-        unique_ids = list(dict.fromkeys(sample_ids))
+        id_variants: List[str] = []
+        for sample_id in sample_ids:
+            id_variants.extend(self._expand_id_variants(sample_id))
+        unique_ids = list(dict.fromkeys(id_variants))
         records_by_id: Dict[str, dict] = {}
 
         for start in range(0, len(unique_ids), SAMPLE_BATCH_SIZE):
@@ -175,6 +181,26 @@ class DepthShiftResolver:
                     records_by_id[record_id] = record
 
         return records_by_id
+
+    @staticmethod
+    def _expand_id_variants(record_id: str) -> List[str]:  # noqa: CFQ004
+        """Return equivalent ID forms used across Storage/Search payloads."""
+        if not record_id:
+            return []
+
+        variants: List[str] = [record_id]
+        if record_id.endswith(":"):
+            variants.append(record_id[:-1])
+            return list(dict.fromkeys(variants))
+
+        version_match = re.match(r"^(.*):(\d+)$", record_id)
+        if version_match:
+            base_id = version_match.group(1)
+            variants.extend([base_id, f"{base_id}:"])
+            return list(dict.fromkeys(variants))
+
+        variants.append(f"{record_id}:")
+        return list(dict.fromkeys(variants))
 
     async def _download_parquet(self, dataset_id: str, wpc_id: str) -> bytes:
         """Download parquet bytes from the Dataset Service with error normalisation.
@@ -196,15 +222,14 @@ class DepthShiftResolver:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=(
-                        "The OSDU Dataset Service rejected the retrieval request for DepthShift "
-                        "dataset '{0}' (WPC: {1}). "
-                        "This usually means the dataset kind is not registered with a DMS handler "
-                        "in the Dataset Service for this partition. "
-                        "Verify that the DepthShift WPC record kind contains "
-                        "'work-product-component--DepthShift' and that the Dataset Service in "
-                        "the target partition has a handler registered for that kind. "
-                        "Upstream error: {2}".format(dataset_id, wpc_id, upstream)
-                    ),
+                        "The OSDU Dataset Service rejected the retrieval request for DepthShift"
+                        + " dataset '{0}' (WPC: {1}). This usually means the dataset kind is not"
+                        + " registered with a DMS handler in the Dataset Service for this partition."
+                        + " Verify that the DepthShift WPC record kind contains"
+                        + " 'work-product-component--DepthShift' and that the Dataset Service in"
+                        + " the target partition has a handler registered for that kind."
+                        + " Upstream error: {2}"
+                    ).format(dataset_id, wpc_id, upstream),
                 ) from exc
             raise
         if not parquet_bytes:
@@ -239,7 +264,7 @@ class DepthShiftResolver:
         shift_set = None
         if isinstance(raw, list):
             shift_set = raw
-        elif hasattr(raw, "tolist"):
+        elif hasattr(raw, "tolist"):  # noqa: WPS421
             as_list = raw.tolist()
             if isinstance(as_list, list):
                 shift_set = as_list

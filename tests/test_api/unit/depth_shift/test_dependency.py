@@ -35,7 +35,7 @@ class TestGetDepthShiftParams:
             depth_shift_policy="id_provided",
         )
         assert isinstance(result, DepthShiftQueryParams)
-        assert result.depth_shift_id == "opendes:work-product-component--DepthShift:ds-001:"
+        assert result.depth_shift_id == "opendes:work-product-component--DepthShift:ds-001"
         assert result.depth_shift_policy == "id_provided"
         assert result.is_definitive is False
 

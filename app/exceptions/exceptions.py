@@ -17,6 +17,8 @@ from typing import Any, Dict, Optional
 from fastapi import HTTPException
 from starlette import status
 
+from app.core.http_status import HTTP_422_UNPROCESSABLE
+
 
 class BadRequestException(HTTPException):
     def __init__(
@@ -49,7 +51,7 @@ class UnprocessableContentException(HTTPException):
         detail: Any = None,
         headers: Optional[Dict[str, Any]] = None,
     ) -> None:
-        super().__init__(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=detail, headers=headers)
+        super().__init__(status_code=HTTP_422_UNPROCESSABLE, detail=detail, headers=headers)
 
 
 class RecordValidationException(UnprocessableContentException):

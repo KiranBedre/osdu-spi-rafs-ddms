@@ -40,6 +40,7 @@ from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.depth_shift.augmenter import augment_dataframe
+from app.depth_shift.metadata import resolve_metadata_warning_state
 from app.depth_shift.resolver import DepthShiftResolver
 from app.models.schemas.depth_shift_query import DepthShiftMetadata, DepthShiftQueryParams, DepthShiftRowData
 from app.models.schemas.osdu_storage import (
@@ -52,17 +53,6 @@ from app.resources.load_model_example import load_data_example
 from app.services import dataset, storage
 
 SAMPLESANALYSIS_ID_REGEX_STR = r"^[\w\-\.]+:work-product-component--SamplesAnalysis:[\w\-\.\:\%]+$"
-
-
-def _get_definitive_wpc_id(record: dict) -> Optional[str]:
-    """Read DefinitiveDepthShiftID from a Sample record, checking both storage paths.
-
-    Sample 3.1.0 stores it nested: data.DefinitiveDepthShift.DefinitiveDepthShiftID.
-    Older or flat-stored records may use: data.DefinitiveDepthShiftID.
-    """
-    record_data = record.get("data", {})
-    nested = record_data.get("DefinitiveDepthShift", {})
-    return (nested.get("DefinitiveDepthShiftID") if nested else None) or record_data.get("DefinitiveDepthShiftID")
 
 
 class SamplesAnalysisRecordView(BaseStorageRecordView):
@@ -295,12 +285,6 @@ class SamplesAnalysisDataView(BaseDataViewV2):
     ) -> Response:
         """Core depth-shift pipeline: resolve → fetch → augment → respond.
 
-        Two execution paths depending on *depth_shift_params.depth_shift_policy*:
-
-        - ``id_provided``: resolve WPC ID first, then fetch base data and samples.
-        - ``definitive``: fetch base data and samples first so the WPC ID can be
-          resolved from the sample records before downloading the CoreToLog parquet.
-
         :return: augmented JSON response
         :rtype: Response
         """
@@ -308,94 +292,53 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             storage_service=storage_service,
             dataset_service=dataset_service,
         )
+        base_response = await self._get_data(
+            request,
+            record_id,
+            content_id,
+            dataset_service,
+            storage_service,
+            df_filter,
+            content_schema_version,
+            "split",
+        )
 
-        if not depth_shift_params.is_definitive:
-            # id_provided path: WPC ID is explicit, resolve it first.
-            wpc_id = await resolver.resolve_depth_shift_wpc_id(depth_shift_params)
-            shift_set, shift_meta, shift_wellbore = await resolver.fetch_coretolog_depth_shift_data(wpc_id)
+        if base_response.status_code != status.HTTP_200_OK:
+            return base_response
 
-            base_response = await self._get_data(
-                request,
-                record_id,
-                content_id,
-                dataset_service,
-                storage_service,
-                df_filter,
-                content_schema_version,
-                "split",
+        base_df = self._response_to_dataframe(base_response, "split")
+        if base_df.empty:
+            return base_response
+
+        if "SampleID" not in base_df.columns:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "Depth-shift augmentation requires a 'SampleID' column in the "
+                    "bulk data, but it was not found. Only analysis types that carry "
+                    "per-row SampleID are supported for depth-shift retrieval."
+                ),
             )
+        sample_ids = base_df["SampleID"].dropna().astype(str).unique().tolist()
+        sample_records = await resolver.fetch_sample_records(sample_ids)
+        self._validate_single_wellbore_scope(sample_records)
 
-            if base_response.status_code != status.HTTP_200_OK:
-                return base_response
-
-            base_df = self._response_to_dataframe(base_response, "split")
-            if "SampleID" not in base_df.columns:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=(
-                        "Depth-shift augmentation requires a 'SampleID' column in the "
-                        "bulk data, but it was not found. Only analysis types that carry "
-                        "per-row SampleID are supported for depth-shift retrieval."
-                    ),
-                )
-            sample_ids = [sid.rstrip(":") for sid in base_df["SampleID"].dropna().astype(str).unique().tolist()]
-            sample_records = await resolver.fetch_sample_records(sample_ids)
-
-        else:
-            # definitive path: need sample records first to resolve the WPC ID.
-            base_response = await self._get_data(
-                request,
-                record_id,
-                content_id,
-                dataset_service,
-                storage_service,
-                df_filter,
-                content_schema_version,
-                "split",
-            )
-
-            if base_response.status_code != status.HTTP_200_OK:
-                return base_response
-
-            base_df = self._response_to_dataframe(base_response, "split")
-            if "SampleID" not in base_df.columns:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=(
-                        "Depth-shift augmentation requires a 'SampleID' column in the "
-                        "bulk data, but it was not found. Only analysis types that carry "
-                        "per-row SampleID are supported for depth-shift retrieval."
-                    ),
-                )
-            sample_ids = [sid.rstrip(":") for sid in base_df["SampleID"].dropna().astype(str).unique().tolist()]
-            sample_records = await resolver.fetch_sample_records(sample_ids)
-
+        if depth_shift_params.is_definitive:
             # May raise 422 if no DefinitiveDepthShift or samples disagree.
             wpc_id = resolver.resolve_definitive_wpc_id(sample_records)
-            shift_set, shift_meta, shift_wellbore = await resolver.fetch_coretolog_depth_shift_data(wpc_id)
+        else:
+            wpc_id = await resolver.resolve_depth_shift_wpc_id(depth_shift_params)
 
         # --- Build DepthShiftMetadata ---
-        definitive_available = any(_get_definitive_wpc_id(record) for record in sample_records.values())
         used_definitive = depth_shift_params.is_definitive
         source = "definitive" if used_definitive else "user-provided"
+        definitive_available, extra_warnings = resolve_metadata_warning_state(
+            sample_records=sample_records,
+            applied_wpc_id=wpc_id,
+            used_definitive=used_definitive,
+        )
 
-        # Collect extra warnings before augmentation (id_provided + definitive conflict).
-        extra_warnings: List[str] = []
-        if not used_definitive and definitive_available:
-            definitive_id = next(
-                (
-                    _get_definitive_wpc_id(record)
-                    for record in sample_records.values()
-                    if _get_definitive_wpc_id(record)
-                ),
-                None,
-            )
-            if definitive_id and definitive_id != wpc_id:
-                extra_warnings.append(
-                    f"Sample references a definitive depth shift ({definitive_id}) that differs from "
-                    f"the requested depth_shift_id ({wpc_id}). RAFS applied the requested depth_shift_id "
-                    f"because depth_shift_policy=id_provided."
-                )
+        shift_set, shift_meta, shift_wellbore = await resolver.fetch_coretolog_depth_shift_data(wpc_id)
 
         augmented_df, warnings = augment_dataframe(
             base_df=base_df,
@@ -440,6 +383,41 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             content=json.dumps(result),
             media_type="application/json",
         )
+
+    @staticmethod
+    def _extract_sample_wellbore_id(sample_record: dict) -> Optional[str]:
+        """Resolve the sample wellbore from nested acquisition data when present."""
+        record_data = sample_record.get("data", {}) if isinstance(sample_record, dict) else {}
+        acquisition = record_data.get("SampleAcquisition", {}) if isinstance(record_data, dict) else {}
+        detail = acquisition.get("SampleAcquisitionDetail", {}) if isinstance(acquisition, dict) else {}
+        nested_wellbore_id = detail.get("WellboreID") if isinstance(detail, dict) else None
+        if nested_wellbore_id:
+            return nested_wellbore_id
+        return record_data.get("WellboreID")
+
+    def _validate_single_wellbore_scope(self, sample_records: dict) -> None:
+        """Reject depth-shift requests that span multiple wellbores."""
+        wellbore_ids = {
+            wellbore_id
+            for wellbore_id in (self._extract_sample_wellbore_id(record) for record in sample_records.values())
+            if wellbore_id
+        }
+        if not wellbore_ids:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "Depth shift requires sample records to resolve to a WellboreID. "
+                    "Provide a wellbore-scoped search result set."
+                ),
+            )
+        if len(wellbore_ids) > 1:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "Depth shift requires wellbore-scoped results. "
+                    f"Resolved multiple WellboreIDs: {sorted(wellbore_ids)}."
+                ),
+            )
 
     def _response_to_dataframe(self, response: Response, response_orient: str = "split") -> pd.DataFrame:
         """Deserialise a JSON Response body into a DataFrame.

@@ -17,11 +17,18 @@ from typing import List, Optional, Tuple
 
 from loguru import logger
 
+from app.exceptions.exceptions import UnprocessableContentException
 from app.models.domain.osdu.base import DEPTH_SHIFT_KIND_BASE
+from app.models.schemas.search_scope import SearchScope
 from app.resources.paths import DEPTH_SHIFT_STR
 from app.search.ddms_dataset_ids_fetcher import (
     DDMSDatasetIdsFetcher,
     build_result_ids,
+)
+from app.search.scope import (
+    SCOPE_PROFILE_DEPTH_SHIFT,
+    UnsupportedSearchScopeError,
+    build_search_scope_clauses,
 )
 from app.services import search
 
@@ -78,9 +85,20 @@ class SearchServiceDepthShiftIdsFetcher(DDMSDatasetIdsFetcher):
         wks_parameters: Optional[dict] = None,
     ) -> str:
         """Build a query to be used within search service."""
-        logger.debug(f"Unused params {data_partition_id}, {wks_parameters}")
+        logger.debug(f"Unused params {data_partition_id}")
 
         query_parts = []
+        if wks_parameters:
+            try:
+                query_parts.extend(
+                    build_search_scope_clauses(
+                        SearchScope(**wks_parameters),
+                        scope_profile=SCOPE_PROFILE_DEPTH_SHIFT,
+                        strict=True,
+                    ),
+                )
+            except UnsupportedSearchScopeError as exc:
+                raise UnprocessableContentException(detail=str(exc)) from exc
         # Append time filters based on start and end dates
         if indexed_start_date and indexed_end_date:
             query_parts.append(

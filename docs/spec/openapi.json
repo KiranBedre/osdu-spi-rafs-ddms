@@ -1140,6 +1140,17 @@
             }
           },
           {
+            "description": "Optional BasinID scope",
+            "in": "query",
+            "name": "basin_id",
+            "required": false,
+            "schema": {
+              "description": "Optional BasinID scope",
+              "title": "Basin Id",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -1164,6 +1175,17 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional FieldID scope",
+            "in": "query",
+            "name": "field_id",
+            "required": false,
+            "schema": {
+              "description": "Optional FieldID scope",
+              "title": "Field Id",
               "type": "string"
             }
           },
@@ -1239,6 +1261,28 @@
               "title": "Rows Filter",
               "type": "string"
             }
+          },
+          {
+            "description": "Optional WellID scope",
+            "in": "query",
+            "name": "well_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellID scope",
+              "title": "Well Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellboreID scope",
+            "in": "query",
+            "name": "wellbore_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellboreID scope",
+              "title": "Wellbore Id",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1306,6 +1350,17 @@
             }
           },
           {
+            "description": "Optional BasinID scope",
+            "in": "query",
+            "name": "basin_id",
+            "required": false,
+            "schema": {
+              "description": "Optional BasinID scope",
+              "title": "Basin Id",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -1352,6 +1407,17 @@
             "schema": {
               "description": "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, 'id_provided' uses the explicit depth_shift_id.",
               "title": "Depth Shift Policy",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional FieldID scope",
+            "in": "query",
+            "name": "field_id",
+            "required": false,
+            "schema": {
+              "description": "Optional FieldID scope",
+              "title": "Field Id",
               "type": "string"
             }
           },
@@ -1441,6 +1507,28 @@
             "required": false,
             "schema": {
               "title": "Rows Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellID scope",
+            "in": "query",
+            "name": "well_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellID scope",
+              "title": "Well Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellboreID scope",
+            "in": "query",
+            "name": "wellbore_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellboreID scope",
+              "title": "Wellbore Id",
               "type": "string"
             }
           }
@@ -3467,6 +3555,17 @@
             }
           },
           {
+            "description": "Optional BasinID scope",
+            "in": "query",
+            "name": "basin_id",
+            "required": false,
+            "schema": {
+              "description": "Optional BasinID scope",
+              "title": "Basin Id",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -3491,6 +3590,17 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional FieldID scope",
+            "in": "query",
+            "name": "field_id",
+            "required": false,
+            "schema": {
+              "description": "Optional FieldID scope",
+              "title": "Field Id",
               "type": "string"
             }
           },
@@ -3566,6 +3676,28 @@
               "title": "Rows Filter",
               "type": "string"
             }
+          },
+          {
+            "description": "Optional WellID scope",
+            "in": "query",
+            "name": "well_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellID scope",
+              "title": "Well Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellboreID scope",
+            "in": "query",
+            "name": "wellbore_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellboreID scope",
+              "title": "Wellbore Id",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3633,6 +3765,17 @@
             }
           },
           {
+            "description": "Optional BasinID scope",
+            "in": "query",
+            "name": "basin_id",
+            "required": false,
+            "schema": {
+              "description": "Optional BasinID scope",
+              "title": "Basin Id",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -3679,6 +3822,17 @@
             "schema": {
               "description": "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, 'id_provided' uses the explicit depth_shift_id.",
               "title": "Depth Shift Policy",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional FieldID scope",
+            "in": "query",
+            "name": "field_id",
+            "required": false,
+            "schema": {
+              "description": "Optional FieldID scope",
+              "title": "Field Id",
               "type": "string"
             }
           },
@@ -3768,6 +3922,28 @@
             "required": false,
             "schema": {
               "title": "Rows Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellID scope",
+            "in": "query",
+            "name": "well_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellID scope",
+              "title": "Well Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellboreID scope",
+            "in": "query",
+            "name": "wellbore_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellboreID scope",
+              "title": "Wellbore Id",
               "type": "string"
             }
           }
@@ -5185,6 +5361,17 @@
             }
           },
           {
+            "description": "Optional BasinID scope",
+            "in": "query",
+            "name": "basin_id",
+            "required": false,
+            "schema": {
+              "description": "Optional BasinID scope",
+              "title": "Basin Id",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -5209,6 +5396,17 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional FieldID scope",
+            "in": "query",
+            "name": "field_id",
+            "required": false,
+            "schema": {
+              "description": "Optional FieldID scope",
+              "title": "Field Id",
               "type": "string"
             }
           },
@@ -5282,6 +5480,28 @@
             "required": false,
             "schema": {
               "title": "Rows Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellID scope",
+            "in": "query",
+            "name": "well_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellID scope",
+              "title": "Well Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellboreID scope",
+            "in": "query",
+            "name": "wellbore_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellboreID scope",
+              "title": "Wellbore Id",
               "type": "string"
             }
           }
@@ -5360,6 +5580,17 @@
             }
           },
           {
+            "description": "Optional BasinID scope",
+            "in": "query",
+            "name": "basin_id",
+            "required": false,
+            "schema": {
+              "description": "Optional BasinID scope",
+              "title": "Basin Id",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -5406,6 +5637,17 @@
             "schema": {
               "description": "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, 'id_provided' uses the explicit depth_shift_id.",
               "title": "Depth Shift Policy",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional FieldID scope",
+            "in": "query",
+            "name": "field_id",
+            "required": false,
+            "schema": {
+              "description": "Optional FieldID scope",
+              "title": "Field Id",
               "type": "string"
             }
           },
@@ -5495,6 +5737,28 @@
             "required": false,
             "schema": {
               "title": "Rows Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellID scope",
+            "in": "query",
+            "name": "well_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellID scope",
+              "title": "Well Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellboreID scope",
+            "in": "query",
+            "name": "wellbore_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellboreID scope",
+              "title": "Wellbore Id",
               "type": "string"
             }
           }
@@ -6521,6 +6785,17 @@
             }
           },
           {
+            "description": "Optional BasinID scope",
+            "in": "query",
+            "name": "basin_id",
+            "required": false,
+            "schema": {
+              "description": "Optional BasinID scope",
+              "title": "Basin Id",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -6545,6 +6820,17 @@
             "required": false,
             "schema": {
               "title": "Columns Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional FieldID scope",
+            "in": "query",
+            "name": "field_id",
+            "required": false,
+            "schema": {
+              "description": "Optional FieldID scope",
+              "title": "Field Id",
               "type": "string"
             }
           },
@@ -6620,6 +6906,28 @@
               "title": "Rows Filter",
               "type": "string"
             }
+          },
+          {
+            "description": "Optional WellID scope",
+            "in": "query",
+            "name": "well_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellID scope",
+              "title": "Well Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellboreID scope",
+            "in": "query",
+            "name": "wellbore_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellboreID scope",
+              "title": "Wellbore Id",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -6687,6 +6995,17 @@
             }
           },
           {
+            "description": "Optional BasinID scope",
+            "in": "query",
+            "name": "basin_id",
+            "required": false,
+            "schema": {
+              "description": "Optional BasinID scope",
+              "title": "Basin Id",
+              "type": "string"
+            }
+          },
+          {
             "examples": {
               "example": {
                 "value": "PropertyX[.PropertyXFieldA],mean"
@@ -6733,6 +7052,17 @@
             "schema": {
               "description": "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, 'id_provided' uses the explicit depth_shift_id.",
               "title": "Depth Shift Policy",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional FieldID scope",
+            "in": "query",
+            "name": "field_id",
+            "required": false,
+            "schema": {
+              "description": "Optional FieldID scope",
+              "title": "Field Id",
               "type": "string"
             }
           },
@@ -6822,6 +7152,28 @@
             "required": false,
             "schema": {
               "title": "Rows Filter",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellID scope",
+            "in": "query",
+            "name": "well_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellID scope",
+              "title": "Well Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Optional WellboreID scope",
+            "in": "query",
+            "name": "wellbore_id",
+            "required": false,
+            "schema": {
+              "description": "Optional WellboreID scope",
+              "title": "Wellbore Id",
               "type": "string"
             }
           }

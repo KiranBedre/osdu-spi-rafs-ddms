@@ -58,6 +58,24 @@ def test_get_id_version_ending_without_colon():
     assert version == None
 
 
+def test_get_id_version_colon_in_local_id_no_version():
+    """IDs with colons in the local-id body must not have their last segment mis-parsed as version."""
+    full_id = "dp1:work-product-component--SamplesAnalysis:EX1:SAMP:0000001346"
+    record_id, version = get_id_version(full_id)
+
+    assert record_id == full_id
+    assert version is None
+
+
+def test_get_id_version_colon_in_local_id_with_trailing_colon():
+    """Trailing colon on a multi-colon ID is still treated as latest (version=None)."""
+    full_id = "dp1:work-product-component--SamplesAnalysis:EX1:SAMP:0000001346:"
+    record_id, version = get_id_version(full_id)
+
+    assert record_id == "dp1:work-product-component--SamplesAnalysis:EX1:SAMP:0000001346"
+    assert version is None
+
+
 @pytest.mark.parametrize(
     "url, expected_family",
     [
