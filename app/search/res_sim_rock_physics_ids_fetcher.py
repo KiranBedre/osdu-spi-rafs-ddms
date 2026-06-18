@@ -26,6 +26,7 @@ from app.search.ddms_dataset_ids_fetcher import (
     DDMSDatasetIdsFetcher,
     build_result_ids,
 )
+from app.search.pending_writes import supplement_with_pending_writes
 from app.search.scope import build_search_scope_clauses
 from app.services import search
 
@@ -67,11 +68,18 @@ class SearchServiceResSimRockPhysicsIdsFetcher(DDMSDatasetIdsFetcher):
                 break
             result_records.extend(records)
 
-        return build_result_ids(
+        result_ids = build_result_ids(
             result_records,
             target_schema_version,
             RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR,
             content_type,
+        )
+        return await supplement_with_pending_writes(
+            result_ids=result_ids,
+            data_partition_id=data_partition_id,
+            analysis_family=RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR,
+            analysis_type=content_type,
+            target_schema_version=target_schema_version,
         )
 
     def _build_query(
