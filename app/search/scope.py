@@ -117,6 +117,47 @@ _NESTED_SCOPE_QUERY_FIELDS_BY_PROFILE = MappingProxyType(
 )
 
 
+_GEO_CONTEXT_SCOPE_FIELDS = MappingProxyType(
+    {
+        "BasinID": "basin_id",
+        "FieldID": "field_id",
+        "WellID": "well_id",
+        "WellboreID": "wellbore_id",
+    },
+)
+
+
+def extract_record_scope(record_data: Dict) -> Dict[str, str]:  # noqa: CCR001
+    """Build a scope dict (`SearchScope.to_query_dict()` shape) from a WPC
+    record's own `data` block, for use as the `scope` argument to
+    `record_pending_write`.
+
+    WPC records (SamplesAnalysis, DepthShift, ResSimRockPhysics,
+    SaturationFunctionSet, ...) inherit `GeoContexts` from
+    `AbstractWorkProductComponent`, a list of geo-context objects that may carry
+    `BasinID`/`FieldID`/`WellID`. `WellboreID` is also checked as a flat field
+    (present directly on e.g. DepthShift records, see
+    `deployments/shared-schemas/osdu/work_product_component/DepthShift.1.0.0.json`).
+    Only the first non-empty value found for each key is kept — a record is not
+    expected to carry multiple values for the same scope key.
+
+    Returns an empty dict (matches nothing but an unscoped search) when the record
+    carries none of these fields — e.g. plain SamplesAnalysis records, which only
+    reference Well/Wellbore indirectly via `SampleIDs` and would require an
+    additional Sample-record hop that is out of scope for this write-time check.
+    """
+    scope: Dict[str, str] = {}
+    for geo_context in record_data.get("GeoContexts") or []:
+        for field_name, scope_key in _GEO_CONTEXT_SCOPE_FIELDS.items():
+            if scope_key not in scope and geo_context.get(field_name):
+                scope[scope_key] = geo_context[field_name]
+
+    if "wellbore_id" not in scope and record_data.get("WellboreID"):
+        scope["wellbore_id"] = record_data["WellboreID"]
+
+    return scope
+
+
 class UnsupportedSearchScopeError(ValueError):
     """Raised when a scope value is provided for an unsupported profile key."""
 

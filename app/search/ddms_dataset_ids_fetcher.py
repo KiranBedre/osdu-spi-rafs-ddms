@@ -77,7 +77,7 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
     def __init__(self, search_service: search.SearchService):
         self._search_service = search_service
 
-    async def get_ids(
+    async def get_ids(  # noqa: CCR001
         self,
         data_partition_id: str,
         analysis_type: str,
@@ -133,6 +133,7 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
             analysis_family="samplesanalysis",
             analysis_type=analysis_type,
             target_schema_version=target_schema_version,
+            scope=scope.to_query_dict() if scope else None,
         )
 
     async def _resolve_sample_ids_by_scope(self, scope: SearchScope) -> List[str]:  # noqa: CFQ004

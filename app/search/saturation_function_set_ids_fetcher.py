@@ -44,11 +44,12 @@ class SearchServiceSaturationFunctionSetIdsFetcher(DDMSDatasetIdsFetcher):
     ) -> List[Tuple[str, str]]:
         """Performs a query to search service to build a list of tuples
         dataset_id, samples_analysis_id."""
+        scope = SearchScope(**wks_parameters) if wks_parameters else None
         query = self._build_query(
             data_partition_id,
             query_date_range[0],
             query_date_range[1],
-            wks_parameters,
+            scope,
         )
 
         result_records = []
@@ -78,6 +79,7 @@ class SearchServiceSaturationFunctionSetIdsFetcher(DDMSDatasetIdsFetcher):
             analysis_family=SATURATION_FUNCTION_SET_STR,
             analysis_type=content_type,
             target_schema_version=target_schema_version,
+            scope=scope.to_query_dict() if scope else None,
         )
 
     def _build_query(
@@ -85,16 +87,16 @@ class SearchServiceSaturationFunctionSetIdsFetcher(DDMSDatasetIdsFetcher):
         data_partition_id: str,
         indexed_start_date: date,
         indexed_end_date: date,
-        wks_parameters: Optional[dict] = None,
+        scope: Optional[SearchScope] = None,
     ) -> str:
         """Build a query to be used within search service."""
         logger.debug(f"Unused params {data_partition_id}")
 
         query_parts = []
-        if wks_parameters:
+        if scope:
             # Note: strict scope validation deferred for future enhancement.
             # Currently uses default profile for extensibility.
-            query_parts.extend(build_search_scope_clauses(SearchScope(**wks_parameters)))
+            query_parts.extend(build_search_scope_clauses(scope))
         # Append time filters based on start and end dates
         if indexed_start_date and indexed_end_date:
             query_parts.append(

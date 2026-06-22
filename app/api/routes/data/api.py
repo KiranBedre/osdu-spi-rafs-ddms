@@ -62,6 +62,7 @@ from app.models.data_schemas.data_schema import build_data_schema
 from app.resources.filters import DataFrameFilterValidator
 from app.resources.mime_types import SupportedMimeTypes
 from app.search.pending_writes import record_pending_write  # noqa: WPS201
+from app.search.scope import extract_record_scope
 from app.services import dataset, storage
 
 
@@ -522,7 +523,7 @@ class BaseDataView(object):
         storage_response = await storage_service.upsert_records([record])
         logger.info(f"Updated record: {storage_response}")
 
-        await record_pending_write(data_partition_id, ddms_urn)
+        await record_pending_write(data_partition_id, ddms_urn, scope=extract_record_scope(record_data))
 
         return {"ddms_urn": ddms_urn}
 

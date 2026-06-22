@@ -21,6 +21,7 @@ from app.search.scope import (
     SCOPE_PROFILE_SAMPLESANALYSIS,
     UnsupportedSearchScopeError,
     build_search_scope_clauses,
+    extract_record_scope,
 )
 
 
@@ -130,3 +131,50 @@ def test_build_search_scope_clauses_basin_and_field_are_anded():
     assert len(clauses) == 2
     assert clauses[0].startswith("(")
     assert clauses[1].startswith("(")
+
+
+# --- extract_record_scope (resolves plan's Open Question 1) ---
+
+
+def test_extract_record_scope_empty_record_returns_empty_dict():
+    # Plain SamplesAnalysis records carry no GeoContexts/WellboreID; only SampleIDs,
+    # which require an additional Sample-record hop out of scope for write-time checks.
+    assert extract_record_scope({"SampleIDs": ["partition:master-data--Sample:s-1:"]}) == {}
+
+
+def test_extract_record_scope_reads_basin_and_field_from_geo_contexts():
+    record_data = {
+        "GeoContexts": [
+            {"BasinID": "partition:master-data--Basin:b-1:"},
+            {"FieldID": "partition:master-data--Field:f-1:"},
+        ],
+    }
+    assert extract_record_scope(record_data) == {
+        "basin_id": "partition:master-data--Basin:b-1:",
+        "field_id": "partition:master-data--Field:f-1:",
+    }
+
+
+def test_extract_record_scope_reads_flat_wellbore_id():
+    # DepthShift records carry WellboreID as a flat field (not via GeoContexts).
+    record_data = {"WellboreID": "partition:master-data--Wellbore:wb-1:"}
+    assert extract_record_scope(record_data) == {"wellbore_id": "partition:master-data--Wellbore:wb-1:"}
+
+
+def test_extract_record_scope_geo_context_wellbore_id_takes_precedence_over_flat():
+    record_data = {
+        "GeoContexts": [{"WellboreID": "partition:master-data--Wellbore:from-geo-context:"}],
+        "WellboreID": "partition:master-data--Wellbore:flat-fallback:",
+    }
+    assert extract_record_scope(record_data) == {
+        "wellbore_id": "partition:master-data--Wellbore:from-geo-context:",
+    }
+
+
+def test_extract_record_scope_ignores_geo_context_entries_without_recognized_fields():
+    record_data = {"GeoContexts": [{"GeoTypeID": "Field"}]}
+    assert extract_record_scope(record_data) == {}
+
+
+def test_extract_record_scope_no_geo_contexts_key_does_not_raise():
+    assert extract_record_scope({}) == {}
