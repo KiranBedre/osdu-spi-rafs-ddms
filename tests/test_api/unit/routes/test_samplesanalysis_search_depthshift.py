@@ -22,8 +22,9 @@ import pandas as pd
 import pytest
 from fastapi import HTTPException, Response
 from starlette import status
+from starlette.requests import Request
 
-from app.api.routes.common.dynamic_search import SamplesAnalysisDynamicSearchView
+from app.api.routes.samplesanalysis.dynamic_search import SamplesAnalysisDynamicSearchView
 from app.models.schemas.depth_shift_query import DepthShiftQueryParams
 
 
@@ -123,6 +124,31 @@ class TestSamplesAnalysisDynamicSearchView:
         # Should not raise
         search_view._validate_single_wellbore_scope(sample_records)
 
+    def test_validate_single_wellbore_scope_success_with_requested_wellbore(self, search_view):
+        """Validation should pass when all samples resolve to requested wellbore after normalization."""
+        sample_records = {
+            "sample1": {
+                "data": {
+                    "SampleAcquisition": {
+                        "SampleAcquisitionDetail": {
+                            "WellboreID": "osdu:master-data--Wellbore:wb-1:1",
+                        },
+                    },
+                },
+            },
+            "sample2": {
+                "data": {
+                    "WellboreID": "osdu:master-data--Wellbore:wb-1:",
+                },
+            },
+        }
+
+        # Should not raise
+        search_view._validate_single_wellbore_scope(
+            sample_records,
+            requested_wellbore_id="osdu:master-data--Wellbore:wb-1:",
+        )
+
     def test_validate_single_wellbore_scope_multiple_wellbores(self, search_view):
         """Test validation fails with multiple wellbores."""
         from fastapi import HTTPException
@@ -147,6 +173,30 @@ class TestSamplesAnalysisDynamicSearchView:
             search_view._validate_single_wellbore_scope(sample_records)
         assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert "WellboreID" in str(exc_info.value.detail)
+
+    def test_validate_single_wellbore_scope_one_missing_wellbore(self, search_view):
+        """Validation should fail when any sample cannot resolve a WellboreID."""
+        sample_records = {
+            "sample1": {
+                "data": {
+                    "SampleAcquisition": {
+                        "SampleAcquisitionDetail": {
+                            "WellboreID": "osdu:master-data--Wellbore:wb-1:",
+                        },
+                    },
+                },
+            },
+            "sample2": {
+                "data": {},
+            },
+        }
+
+        with pytest.raises(HTTPException) as exc_info:
+            search_view._validate_single_wellbore_scope(sample_records)
+
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert "Missing WellboreID" in str(exc_info.value.detail)
+        assert "sample2" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio
     async def test_apply_depth_shift_no_depth_shift_params(self, search_view):
@@ -279,6 +329,61 @@ class TestSamplesAnalysisDynamicSearchView:
         assert callable(search_view._build_dynamic_endpoint)
 
     @pytest.mark.asyncio
+    async def test_search_data_without_depth_shift_policy_does_not_require_wellbore_id(self, search_view):
+        """Normal search/data should return parent response unchanged without wellbore scope."""
+        from app.models.schemas.search_scope import SearchScope
+
+        expected_response = Response(
+            content=json.dumps(
+                {
+                    "result": {"index": [], "columns": [], "data": []},
+                    "offset": 0,
+                    "page_limit": 100,
+                    "total_size": 0,
+                }
+            ),
+            media_type="application/json",
+        )
+        search_view.get_search_data = AsyncMock(return_value=expected_response)
+        search_view._apply_depth_shift_to_search_results = AsyncMock()
+
+        endpoint = search_view._build_dynamic_endpoint(
+            method_name="get_search_data",
+            extractor=lambda req: req.path_params.get("analysis_type"),
+            filter_dep=MagicMock(),
+        )
+        handler = endpoint.__wrapped__ if hasattr(endpoint, "__wrapped__") else endpoint
+
+        request = Request(
+            {
+                "type": "http",
+                "method": "GET",
+                "path": "/routinecoreanalysis/search/data",
+                "headers": [],
+                "query_string": b"",
+                "path_params": {"analysis_type": "routinecoreanalysis"},
+            }
+        )
+
+        response = await handler(
+            request=request,
+            df_filter=MagicMock(),
+            content_schema_version="1.0.0",
+            pagination_parameters=MagicMock(),
+            search_scope=SearchScope(),
+            dataset_service=AsyncMock(),
+            blob_storage_service=AsyncMock(),
+            search_service=AsyncMock(),
+            storage_service=AsyncMock(),
+            orient="split",
+            depth_shift_params=None,
+        )
+
+        assert response is expected_response
+        search_view.get_search_data.assert_awaited_once()
+        search_view._apply_depth_shift_to_search_results.assert_not_awaited()
+
+    @pytest.mark.asyncio
     async def test_apply_depth_shift_missing_wellbore_scope(self, search_view):
         """Test error when wellbore_id is not in search scope."""
         from fastapi import HTTPException
@@ -371,7 +476,7 @@ class TestSamplesAnalysisDynamicSearchView:
 
         mock_search = MagicMock()
 
-        with patch("app.api.routes.common.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
+        with patch("app.api.routes.samplesanalysis.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
             with pytest.raises(HTTPException) as exc_info:
                 await search_view._apply_depth_shift_to_search_results(
                     search_response=search_response,
@@ -449,7 +554,7 @@ class TestSamplesAnalysisDynamicSearchView:
             ),
         )
 
-        with patch("app.api.routes.common.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
+        with patch("app.api.routes.samplesanalysis.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
             response = await search_view._apply_depth_shift_to_search_results(
                 search_response=search_response,
                 orient="split",
@@ -524,7 +629,7 @@ class TestSamplesAnalysisDynamicSearchView:
             ),
         )
 
-        with patch("app.api.routes.common.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
+        with patch("app.api.routes.samplesanalysis.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
             with pytest.raises(HTTPException) as exc_info:
                 await search_view._apply_depth_shift_to_search_results(
                     search_response=search_response,
@@ -591,7 +696,7 @@ class TestSamplesAnalysisDynamicSearchView:
             ),
         )
 
-        with patch("app.api.routes.common.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
+        with patch("app.api.routes.samplesanalysis.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
             with pytest.raises(HTTPException) as exc_info:
                 await search_view._apply_depth_shift_to_search_results(
                     search_response=search_response,
@@ -668,7 +773,7 @@ class TestSamplesAnalysisDynamicSearchView:
             ),
         )
 
-        with patch("app.api.routes.common.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
+        with patch("app.api.routes.samplesanalysis.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
             response = await search_view._apply_depth_shift_to_search_results(
                 search_response=search_response,
                 orient="split",
