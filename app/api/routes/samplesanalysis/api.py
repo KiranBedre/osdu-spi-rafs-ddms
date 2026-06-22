@@ -19,7 +19,6 @@ from app.api.dependencies.validation import (
     validate_samplesanalysis_records_v2_payload,
 )
 from app.api.routes.common.dynamic_search import (
-    SamplesAnalysisDynamicSearchView,
     get_search_data_description_template,
     get_search_description_template,
 )
@@ -29,6 +28,7 @@ from app.api.routes.common.endpoints import (
     build_extractor_for_param_name,
 )
 from app.api.routes.osdu.storage_records import BaseStorageRecordView
+from app.api.routes.samplesanalysis.dynamic_search import SamplesAnalysisDynamicSearchView
 from app.api.routes.samplesanalysis.endpoints import (
     SAMPLESANALYSIS_ID_REGEX_STR,
     SamplesAnalysisDataView,
