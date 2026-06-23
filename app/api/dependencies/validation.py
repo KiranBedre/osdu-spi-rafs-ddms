@@ -22,7 +22,7 @@ from fastapi import Depends, HTTPException, Query, Request
 from loguru import logger
 from pydantic import BaseModel
 
-from app.api.dependencies.request import get_content_schema_version
+from app.api.dependencies.request import get_content_schema_version, validate_scope_parameter
 from app.api.dependencies.services import (
     get_async_schema_service,
     get_async_storage_service,
@@ -733,12 +733,66 @@ def get_search_pagination_parameters(
 
 
 def get_search_scope(
-    basin_id: Optional[str] = Query(default=None, description="Optional BasinID scope"),
-    field_id: Optional[str] = Query(default=None, description="Optional FieldID scope"),
-    well_id: Optional[str] = Query(default=None, description="Optional WellID scope"),
-    wellbore_id: Optional[str] = Query(default=None, description="Optional WellboreID scope"),
+    basin_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier'). "
+            "Scope parameters filter results hierarchically: basin -> field -> well -> wellbore."
+        ),
+    ),
+    field_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+    ),
+    well_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific well. "
+            "Must be a valid OSDU record ID of kind 'master-data--Well'. "
+            "Used with or without basin_id/field_id scope."
+        ),
+    ),
+    wellbore_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific wellbore. "
+            "Must be a valid OSDU record ID of kind 'master-data--Wellbore'. "
+            "Most restrictive scope parameter."
+        ),
+    ),
 ) -> SearchScope:
-    """Parse the progressive search scope parameters."""
+    """Parse and validate the progressive search scope parameters.
+
+    Scope parameters allow filtering search results hierarchically from broader
+    (basin) to more specific (wellbore) organizational levels. All are optional
+    and can be combined.
+
+    Each parameter must be a valid OSDU record ID with the expected kind.
+
+    :param basin_id: Basin identifier (OSDU record ID)
+    :type basin_id: Optional[str]
+    :param field_id: Field identifier (OSDU record ID)
+    :type field_id: Optional[str]
+    :param well_id: Well identifier (OSDU record ID)
+    :type well_id: Optional[str]
+    :param wellbore_id: Wellbore identifier (OSDU record ID)
+    :type wellbore_id: Optional[str]
+    :return: validated scope parameters
+    :rtype: SearchScope
+    :raises HTTPException: 400 if any parameter has invalid format
+    """
+    # Validate each scope parameter
+    validate_scope_parameter("basin_id", basin_id)
+    validate_scope_parameter("field_id", field_id)
+    validate_scope_parameter("well_id", well_id)
+    validate_scope_parameter("wellbore_id", wellbore_id)
+
     return SearchScope(
         basin_id=basin_id,
         field_id=field_id,

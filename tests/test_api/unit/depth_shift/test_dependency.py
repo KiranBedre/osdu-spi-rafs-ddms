@@ -18,7 +18,7 @@ import pytest
 from fastapi import HTTPException
 
 from app.api.dependencies.request import get_depth_shift_params
-from app.models.schemas.depth_shift_query import DepthShiftQueryParams
+from app.models.schemas.depth_shift_query import DepthShiftPolicy, DepthShiftQueryParams
 
 
 class TestGetDepthShiftParams:
@@ -52,7 +52,7 @@ class TestGetDepthShiftParams:
     def test_depth_shift_id_without_policy_raises_400(self):
         with pytest.raises(HTTPException) as exc_info:
             get_depth_shift_params(
-                depth_shift_id="ds-001",
+                depth_shift_id="opendes:work-product-component--DepthShift:ds-001",
                 depth_shift_policy=None,
             )
         assert exc_info.value.status_code == 400
@@ -70,7 +70,7 @@ class TestGetDepthShiftParams:
     def test_definitive_policy_with_depth_shift_id_raises_400(self):
         with pytest.raises(HTTPException) as exc_info:
             get_depth_shift_params(
-                depth_shift_id="ds-001",
+                depth_shift_id="opendes:work-product-component--DepthShift:ds-001",
                 depth_shift_policy="definitive",
             )
         assert exc_info.value.status_code == 400
@@ -84,3 +84,20 @@ class TestGetDepthShiftParams:
             )
         assert exc_info.value.status_code == 400
         assert "depth_shift_policy" in exc_info.value.detail
+
+    def test_invalid_depth_shift_id_format_raises_400(self):
+        with pytest.raises(HTTPException) as exc_info:
+            get_depth_shift_params(
+                depth_shift_id="invalid-depth-shift-id",
+                depth_shift_policy="id_provided",
+            )
+        assert exc_info.value.status_code == 400
+        assert "Invalid 'depth_shift_id' format" in exc_info.value.detail
+
+    def test_depth_shift_policy_enum_values(self):
+        """Test that DepthShiftPolicy enum contains expected values."""
+        assert DepthShiftPolicy.DEFINITIVE.value == "definitive"
+        assert DepthShiftPolicy.ID_PROVIDED.value == "id_provided"
+        # Ensure enum members exist
+        assert hasattr(DepthShiftPolicy, "DEFINITIVE")
+        assert hasattr(DepthShiftPolicy, "ID_PROVIDED")

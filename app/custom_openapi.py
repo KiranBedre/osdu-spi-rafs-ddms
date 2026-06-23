@@ -52,7 +52,32 @@ def _get_parameter_sort_key(openapi_param: dict) -> tuple:
     location_order = {"path": 0, "header": 1, "query": 2, "cookie": 3}
     is_optional = 0 if openapi_param.get("required") else 1
     location_rank = location_order.get(openapi_param.get("in", ""), 9)
-    return (is_optional, location_rank, openapi_param.get("name", ""))
+    parameter_rank = _get_parameter_rank(openapi_param.get("name", ""))
+    return (is_optional, location_rank, parameter_rank, openapi_param.get("name", ""))
+
+
+def _get_parameter_rank(parameter_name: str) -> int:
+    """Return a rank to keep query parameters grouped by purpose in Swagger."""
+    parameter_rank = {
+        "content_schema_version": 0,
+        "basin_id": 10,
+        "field_id": 11,
+        "well_id": 12,
+        "wellbore_id": 13,
+        "depth_shift_policy": 20,
+        "depth_shift_id": 21,
+        "columns_filter": 30,
+        "rows_filter": 31,
+        "rows_multiple_filter": 32,
+        "metadata": 33,
+        "columns_aggregation": 34,
+        "orient": 40,
+        "offset": 50,
+        "page_limit": 51,
+        "indexed_start_date": 60,
+        "indexed_end_date": 61,
+    }
+    return parameter_rank.get(parameter_name, 100)
 
 
 def _route_record_id_info() -> dict:
@@ -254,6 +279,7 @@ _DEPTH_SHIFT_PARAMS = [  # noqa: WPS407
                 "Depth shift resolution strategy: 'definitive' uses the sample's definitive "
                 "depth shift, 'id_provided' uses the explicit depth_shift_id."
             ),
+            "enum": ["definitive", "id_provided"],
         },
     },
     {
@@ -265,6 +291,7 @@ _DEPTH_SHIFT_PARAMS = [  # noqa: WPS407
             "title": "Depth Shift Id",
             "type": "string",
             "description": "DepthShift WPC record ID to apply to the response data.",
+            "pattern": r"^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$",
         },
     },
 ]
@@ -296,6 +323,75 @@ def _inject_depth_shift_params_into_search_data(openapi_schema: dict) -> None:  
                 operation.setdefault("parameters", []).append(ds_param)
 
 
+def _annotate_depth_shift_parameter_constraints(openapi_schema: dict) -> None:
+    """Ensure all depth-shift query parameters expose consistent OpenAPI constraints."""
+    for path_item in openapi_schema.get("paths", {}).values():
+        for operation in path_item.values():
+            if not isinstance(operation, dict):
+                continue
+            for openapi_param in operation.get("parameters", []):
+                if openapi_param.get("name") != "depth_shift_id" or openapi_param.get("in") != "query":
+                    continue
+                openapi_param.setdefault("description", "DepthShift WPC record ID to apply to the response data.")
+                schema = openapi_param.setdefault("schema", {})
+                schema.setdefault("type", "string")
+                schema["pattern"] = r"^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$"
+
+
+def _contains_query_parameter(operation: dict, parameter_name: str) -> bool:
+    return any(
+        openapi_param.get("in") == "query" and openapi_param.get("name") == parameter_name
+        for openapi_param in operation.get("parameters", [])
+    )
+
+
+def _append_unique_description_sentence(operation: dict, sentence: str) -> None:
+    """Append a sentence once, preserving existing route descriptions."""
+    description = operation.get("description") or ""
+    if sentence in description:
+        return
+    normalized_description = description.rstrip()
+    while normalized_description.endswith("<br><br>"):
+        normalized_description = normalized_description[: -len("<br><br>")].rstrip()
+    operation["description"] = (
+        "{0}<br><br>{1}".format(normalized_description, sentence) if normalized_description else sentence
+    )
+
+
+def _enrich_depth_shift_descriptions(openapi_schema: dict) -> None:  # noqa: WPS231
+    """Add explicit depth-shift and scope notes to SamplesAnalysis data endpoints."""
+    for path_key, path_item in openapi_schema.get("paths", {}).items():
+        route_segment = _get_route_segment(path_key)
+        if route_segment != "samplesanalysis":
+            continue
+
+        get_operation = path_item.get("get")
+        if not isinstance(get_operation, dict):
+            continue
+
+        has_depth_shift = _contains_query_parameter(get_operation, "depth_shift_policy") or _contains_query_parameter(
+            get_operation,
+            "depth_shift_id",
+        )
+        if not has_depth_shift:
+            continue
+
+        _append_unique_description_sentence(
+            get_operation,
+            "Depth-shift augmentation parameters: use <code>depth_shift_policy</code> "
+            "(<code>definitive</code> or <code>id_provided</code>) and optional "
+            "<code>depth_shift_id</code>.",
+        )
+
+        if path_key.endswith("/search/data"):
+            _append_unique_description_sentence(
+                get_operation,
+                "Scope parameters filter results hierarchically by organizational level: "
+                "<code>basin_id</code> (broadest), <code>field_id</code>, <code>well_id</code>, "
+                "<code>wellbore_id</code> (most restrictive). All are optional OSDU record IDs.",
+            )
+
+
 def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
     """Override openapi with custom values.
 
@@ -318,6 +414,8 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
     _apply_swagger_auth_partition_reqs(custom_openapi_schema)
     _mark_content_schema_version_required(custom_openapi_schema)
     _inject_depth_shift_params_into_search_data(custom_openapi_schema)
+    _annotate_depth_shift_parameter_constraints(custom_openapi_schema)
+    _enrich_depth_shift_descriptions(custom_openapi_schema)
     _sort_and_annotate_parameters(custom_openapi_schema)
     return custom_openapi_schema
 
