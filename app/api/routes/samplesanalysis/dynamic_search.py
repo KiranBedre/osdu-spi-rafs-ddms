@@ -214,13 +214,23 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
             logger.info("Depth-shift augmentation applied to {0} samples; WPC {1}", len(sample_ids), wpc_id)
 
             # Build response with depth shift metadata
-            ds_cols = ["SampleTop", "SampleBase", "ShiftedSampleTop", "ShiftedSampleBase", "DepthShiftWarnings"]
+            ds_cols = [
+                "SampleTop",
+                "SampleBase",
+                "SampleMean",
+                "ShiftedSampleTop",
+                "ShiftedSampleBase",
+                "ShiftedSampleMean",
+                "DepthShiftWarnings",
+            ]
             depth_shift_data = [
                 DepthShiftRowData(
                     SampleTop=row["SampleTop"],
                     SampleBase=row["SampleBase"],
+                    SampleMean=row["SampleMean"],
                     ShiftedSampleTop=row["ShiftedSampleTop"],
                     ShiftedSampleBase=row["ShiftedSampleBase"],
+                    ShiftedSampleMean=row["ShiftedSampleMean"],
                     DepthShiftWarnings=row["DepthShiftWarnings"] if isinstance(row["DepthShiftWarnings"], list) else [],
                 ).dict()
                 for _, row in augmented_df[ds_cols].iterrows()

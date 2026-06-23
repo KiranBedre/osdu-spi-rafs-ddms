@@ -83,18 +83,18 @@ class TestZeroShiftZone:
 
     def test_point_at_top_boundary(self, volve_data):
         _, shift_set = volve_data
-        shifted_top, shifted_base = shift_sample(3643.0, None, shift_set)
+        shifted_top, shifted_base, _ = shift_sample(3643.0, None, None, shift_set)
         assert shifted_top == pytest.approx(3643.0, abs=1e-6)
         assert shifted_base is None
 
     def test_point_inside_zero_shift(self, volve_data):
         _, shift_set = volve_data
-        shifted_top, _ = shift_sample(3644.0, None, shift_set)
+        shifted_top, _, _ = shift_sample(3644.0, None, None, shift_set)
         assert shifted_top == pytest.approx(3644.0, abs=1e-6)
 
     def test_range_entirely_in_zero_shift(self, volve_data):
         _, shift_set = volve_data
-        shifted_top, shifted_base = shift_sample(3643.25, 3643.5, shift_set)
+        shifted_top, shifted_base, _ = shift_sample(3643.25, 3643.5, None, shift_set)
         assert shifted_top == pytest.approx(3643.25, abs=1e-6)
         assert shifted_base == pytest.approx(3643.5, abs=1e-6)
 
@@ -112,7 +112,7 @@ class TestBoundaryPoints:
     def test_sample_at_row_boundary(self, volve_data, row_index):
         rows, shift_set = volve_data
         row = rows[row_index]
-        shifted_top, _ = shift_sample(row["DEPTH"], None, shift_set)
+        shifted_top, _, _ = shift_sample(row["DEPTH"], None, None, shift_set)
         assert shifted_top == pytest.approx(row["NEW_DEPTH"], abs=1e-4), (
             f"row {row_index}: depth={row['DEPTH']}, " f"expected={row['NEW_DEPTH']}, got={shifted_top}"
         )
@@ -128,7 +128,7 @@ class TestLinearInterpolation:
         mid_depth = (r0["DEPTH"] + r1["DEPTH"]) / 2
         expected = (r0["NEW_DEPTH"] + r1["NEW_DEPTH"]) / 2
 
-        shifted_top, _ = shift_sample(mid_depth, None, shift_set)
+        shifted_top, _, _ = shift_sample(mid_depth, None, None, shift_set)
         assert shifted_top == pytest.approx(expected, abs=1e-4), (
             f"midpoint rows {row_index}-{row_index + 1}: " f"depth={mid_depth}, expected={expected}, got={shifted_top}"
         )
@@ -139,7 +139,7 @@ class TestEdgeCases:
 
     def test_shallower_than_first_interval_returns_none(self, volve_data):
         _, shift_set = volve_data
-        shifted_top, shifted_base = shift_sample(100.0, None, shift_set)
+        shifted_top, shifted_base, _ = shift_sample(100.0, None, None, shift_set)
         assert shifted_top is None
         assert shifted_base is None
 
@@ -155,7 +155,7 @@ class TestEdgeCases:
         sample_top = rows[13]["DEPTH"]  # 4328.85 → interval 13
         sample_base = rows[15]["DEPTH"]  # 4329.25 → would be interval 14 if used alone
 
-        shifted_top, shifted_base = shift_sample(sample_top, sample_base, shift_set)
+        shifted_top, shifted_base, _ = shift_sample(sample_top, sample_base, None, shift_set)
 
         # Both must be computed using shift_set[13], not shift_set[14]
         interval_13 = shift_set[13]
@@ -195,5 +195,5 @@ class TestEdgeCases:
         relative_pos = (mid_depth - r0["DEPTH"]) / orig_span
         expected_linear = r0["NEW_DEPTH"] + relative_pos * shifted_span
 
-        shifted_top, _ = shift_sample(mid_depth, None, [forced_interval])
+        shifted_top, _, _ = shift_sample(mid_depth, None, None, [forced_interval])
         assert shifted_top == pytest.approx(expected_linear, abs=1e-6)

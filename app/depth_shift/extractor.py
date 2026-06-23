@@ -17,8 +17,8 @@
 All logic is pure dict manipulation — no I/O, no service calls.
 
 Navigates data.DepthMeasurements[] and matches
-VerticalMeasurementTypeID by trailing suffix ("SampleTop" / "SampleBase")
-to handle both bare strings and full OSDU reference-data IDs.
+VerticalMeasurementTypeID by trailing suffix ("SampleTop" / "SampleBase" /
+"SampleMean") to handle both bare strings and full OSDU reference-data IDs.
 """
 
 from typing import List, Optional, Tuple
@@ -57,15 +57,18 @@ def _matches_type(type_id: str, suffix: str) -> bool:
 
 def extract_depths(  # noqa: WPS231,CCR001,WPS210
     sample_record: dict,
-) -> Tuple[Optional[float], Optional[float], Optional[str]]:
-    """Extract (top, base, wellbore_id) from a Sample OSDU record.
+) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[str]]:
+    """Extract (top, base, mean, wellbore_id) from a Sample OSDU record.
+
+    SampleMean is the single-point depth used for Samples that report
+    neither SampleTop nor SampleBase (e.g. plugs assigned a mean depth).
 
     :param sample_record: full Sample OSDU record dict (must contain a
         'data' key)
     :type sample_record: dict
-    :return: (sample_top, sample_base, wellbore_id); any element may be
-        None if the record does not carry it
-    :rtype: Tuple[Optional[float], Optional[float], Optional[str]]
+    :return: (sample_top, sample_base, sample_mean, wellbore_id); any
+        element may be None if the record does not carry it
+    :rtype: Tuple[Optional[float], Optional[float], Optional[float], Optional[str]]
     """
     record_data = sample_record.get("data", {})
     wellbore_id: Optional[str] = record_data.get("WellboreID")
@@ -74,6 +77,7 @@ def extract_depths(  # noqa: WPS231,CCR001,WPS210
 
     sample_top: Optional[float] = None
     sample_base: Optional[float] = None
+    sample_mean: Optional[float] = None
 
     for entry in vertical_measurements:
         type_id = entry.get("VerticalMeasurementTypeID", "")
@@ -89,8 +93,10 @@ def extract_depths(  # noqa: WPS231,CCR001,WPS210
             sample_top = depth_value
         elif _matches_type(type_id, "SampleBase"):
             sample_base = depth_value
+        elif _matches_type(type_id, "SampleMean"):
+            sample_mean = depth_value
 
-    if sample_top is None and sample_base is None:
+    if sample_top is None and sample_base is None and sample_mean is None:
         acquisition = record_data.get("SampleAcquisition", {}) if isinstance(record_data, dict) else {}
         detail = acquisition.get("SampleAcquisitionDetail", {}) if isinstance(acquisition, dict) else {}
         if isinstance(detail, dict):
@@ -109,22 +115,26 @@ def extract_depths(  # noqa: WPS231,CCR001,WPS210
                 if isinstance(nested_wellbore, str):
                     wellbore_id = nested_wellbore
 
-    return (sample_top, sample_base, wellbore_id)
+    return (sample_top, sample_base, sample_mean, wellbore_id)
 
 
 def is_sample_depth_entry(vm_entry: dict) -> bool:
-    """Return True when the entry measures SampleTop or SampleBase.
+    """Return True when the entry measures SampleTop, SampleBase, or SampleMean.
 
     Used to restrict source-quality warnings to the depth measurements that
     actually drive the shift, ignoring unrelated entries (e.g. KB elevation).
 
     :param vm_entry: a single VerticalMeasurements entry
     :type vm_entry: dict
-    :return: True if VerticalMeasurementTypeID is SampleTop or SampleBase
+    :return: True if VerticalMeasurementTypeID is SampleTop, SampleBase, or SampleMean
     :rtype: bool
     """
     type_id = vm_entry.get("VerticalMeasurementTypeID", "")
-    return _matches_type(type_id, "SampleTop") or _matches_type(type_id, "SampleBase")
+    return (
+        _matches_type(type_id, "SampleTop")
+        or _matches_type(type_id, "SampleBase")
+        or _matches_type(type_id, "SampleMean")
+    )
 
 
 def validate_measurement_source(vm_entry: dict) -> Optional[str]:
@@ -139,7 +149,7 @@ def validate_measurement_source(vm_entry: dict) -> Optional[str]:
     if not source_id or not _matches_type(source_id, "DRL"):
         source_display = source_id.rstrip(":").rsplit(":", 1)[-1] if source_id else "(not set)"
         return (
-            "Warning: Sample depths (SampleTop and SampleBase) are reported as"
+            "Warning: Sample depths (SampleTop, SampleBase, and/or SampleMean) are reported as"
             + " '{0}' depth and may not need to be shifted.".format(source_display)
             + " Expected source is Driller (DRL). Shifted depths may need to be validated."
         )

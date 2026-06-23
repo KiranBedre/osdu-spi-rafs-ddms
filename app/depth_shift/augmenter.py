@@ -18,20 +18,27 @@ Output shape is documented by DepthShiftRowData in
 app.models.schemas.depth_shift_query.  The extra columns added are:
 
   SampleTop          – original measured top depth (from Sample VerticalMeasurements)
-  SampleBase         – original measured base depth (None for point samples)
+  SampleBase         – original measured base depth (None when not present on the sample)
+  SampleMean         – original measured mean/point depth (None when not present on the sample)
   ShiftedSampleTop   – depth-shifted SampleTop
-  ShiftedSampleBase  – depth-shifted SampleBase (None for point samples)
+  ShiftedSampleBase  – depth-shifted SampleBase (None when not present on the sample)
+  ShiftedSampleMean  – depth-shifted SampleMean (None when not present on the sample)
   DepthShiftWarnings – list of warning strings (non-Driller source, wellbore mismatch…)
+
+A Sample provides a depth range (Top+Base) or a single point depth (Top
+alone, Base alone, or Mean alone). The interval used to shift is always
+located via the anchor depth, in SampleTop > SampleBase > SampleMean
+priority order — see app.depth_shift.calculator.select_anchor_depth.
 """
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 import pandas as pd
 from fastapi import HTTPException
 from loguru import logger
 from starlette import status
 
-from app.depth_shift.calculator import shift_sample
+from app.depth_shift.calculator import select_anchor_depth, shift_sample
 from app.depth_shift.extractor import (
     extract_depths,
     extract_sample_wellbore_id,
@@ -40,6 +47,16 @@ from app.depth_shift.extractor import (
     validate_measurement_source,
     validate_wellbore_match,
 )
+
+
+class _RowResult(NamedTuple):
+    sample_top: Optional[float]
+    sample_base: Optional[float]
+    sample_mean: Optional[float]
+    shifted_top: Optional[float]
+    shifted_base: Optional[float]
+    shifted_mean: Optional[float]
+    warnings: List[str]
 
 
 def _source_quality_warning(vertical_measurements: List[dict]) -> Optional[str]:
@@ -130,13 +147,48 @@ def _collect_row_warnings(  # noqa: CCR001,WPS210,WPS231
     return warnings
 
 
-def _augment_row(
+def _depth_source_warning(
+    sample_id: str,
+    anchor_field: Optional[str],
+    sample_mean: Optional[float],
+) -> Optional[str]:
+    """Return a warning when the shift anchor fell back to SampleBase or SampleMean.
+
+    No warning is needed when SampleTop drove the shift — that is the
+    default case for any Sample carrying a single depth.
+
+    :param sample_id: OSDU Sample record ID, used in the warning text
+    :type sample_id: str
+    :param anchor_field: field returned by select_anchor_depth
+        ("SampleTop"/"SampleBase"/"SampleMean"/None)
+    :type anchor_field: Optional[str]
+    :param sample_mean: SampleMean value; used to detect the Base+Mean
+        combination (Mean is ignored, but the warning should say so)
+    :type sample_mean: Optional[float]
+    :return: warning string, or None when the anchor is SampleTop or absent
+    :rtype: Optional[str]
+    """
+    if anchor_field == "SampleBase":
+        mean_note = "" if sample_mean is None else " (SampleMean ignored)"
+        return (
+            f"No SampleTop provided for {sample_id}. Sample has been shifted based on "
+            + f"SampleBase depth{mean_note}."
+        )
+    if anchor_field == "SampleMean":
+        return (
+            f"No SampleTop or SampleBase provided for {sample_id}. "
+            + "Sample has been shifted based on SampleMean depth."
+        )
+    return None
+
+
+def _augment_row(  # noqa: WPS210
     sample_id: str,
     sample_records: Dict[str, dict],
     shift_set: List[dict],
     shift_wellbore: Optional[str],
     shift_meta: Optional[List[dict]] = None,
-) -> Tuple[Optional[float], Optional[float], Optional[float], Optional[float], List[str]]:
+) -> "_RowResult":
     """Compute augmented columns for a single DataFrame row.
 
     :param sample_id: OSDU Sample record ID from the bulk-data row
@@ -149,35 +201,41 @@ def _augment_row(
     :type shift_wellbore: Optional[str]
     :param shift_meta: Meta dicts from CoreToLog parquet (may be None)
     :type shift_meta: Optional[List[dict]]
-    :return: (sample_top, sample_base, shifted_top, shifted_base, warnings)
-    :rtype: Tuple[...]
+    :return: row result with original and shifted depths plus warnings
+    :rtype: _RowResult
     """
     sample_record = sample_records.get(sample_id)
     warnings = _collect_row_warnings(sample_record, shift_wellbore, shift_meta)
 
     if not sample_record:
         logger.warning(f"Sample record not found for ID {sample_id!r}; skipping shift.")
-        return (None, None, None, None, warnings)
+        return _RowResult(None, None, None, None, None, None, warnings)
 
-    sample_top, sample_base, _ = extract_depths(sample_record)
+    sample_top, sample_base, sample_mean, _ = extract_depths(sample_record)
+    anchor_depth, anchor_field = select_anchor_depth(sample_top, sample_base, sample_mean)
 
-    if sample_top is None:
-        logger.warning(f"SampleTop not found in Sample {sample_id!r}; skipping shift.")
-        return (sample_top, sample_base, None, None, warnings)
+    if anchor_depth is None:
+        logger.warning(f"No SampleTop, SampleBase, or SampleMean found in Sample {sample_id!r}; skipping shift.")
+        return _RowResult(sample_top, sample_base, sample_mean, None, None, None, warnings)
 
-    shifted_top, shifted_base = shift_sample(sample_top, sample_base, shift_set)
+    depth_source_warning = _depth_source_warning(sample_id, anchor_field, sample_mean)
+    if depth_source_warning:
+        warnings.append(depth_source_warning)
+        logger.warning(f"[depth-shift audit] {depth_source_warning}")
 
-    if shifted_top is None:
-        # Sample depth found but outside all shift intervals — pass through unchanged.
-        shifted_top = sample_top
-        shifted_base = sample_base
-        out_of_range_msg = "Sample not shifted: SampleTop {0:.3f} falls outside all shift intervals.".format(
-            sample_top,
+    shifted_top, shifted_base, shifted_mean = shift_sample(sample_top, sample_base, sample_mean, shift_set)
+
+    if shifted_top is None and shifted_base is None and shifted_mean is None:
+        # Anchor depth found but outside all shift intervals — pass through unchanged.
+        shifted_top, shifted_base, shifted_mean = sample_top, sample_base, sample_mean
+        out_of_range_msg = "Sample not shifted: {0} {1:.3f} falls outside all shift intervals.".format(
+            anchor_field,
+            anchor_depth,
         )
         warnings.append(out_of_range_msg)
         logger.warning(f"[depth-shift audit] {out_of_range_msg}")
 
-    return (sample_top, sample_base, shifted_top, shifted_base, warnings)
+    return _RowResult(sample_top, sample_base, sample_mean, shifted_top, shifted_base, shifted_mean, warnings)
 
 
 def augment_dataframe(  # noqa: WPS210,CCR001,WPS231
@@ -222,31 +280,37 @@ def augment_dataframe(  # noqa: WPS210,CCR001,WPS231
 
     tops: List[Optional[float]] = []
     bases: List[Optional[float]] = []
+    means: List[Optional[float]] = []
     shifted_tops: List[Optional[float]] = []
     shifted_bases: List[Optional[float]] = []
+    shifted_means: List[Optional[float]] = []
     row_warnings: List[List[str]] = []
     all_warnings: List[str] = []
 
     for sample_id in base_df["SampleID"]:
-        top, base, s_top, s_base, warnings = _augment_row(  # noqa: WPS236
+        row = _augment_row(
             "" if sample_id is None else str(sample_id).rstrip(":"),
             sample_records,
             shift_set,
             shift_wellbore,
             shift_meta,
         )
-        tops.append(top)
-        bases.append(base)
-        shifted_tops.append(s_top)
-        shifted_bases.append(s_base)
-        row_warnings.append(warnings)
-        all_warnings.extend(warnings)
+        tops.append(row.sample_top)
+        bases.append(row.sample_base)
+        means.append(row.sample_mean)
+        shifted_tops.append(row.shifted_top)
+        shifted_bases.append(row.shifted_base)
+        shifted_means.append(row.shifted_mean)
+        row_warnings.append(row.warnings)
+        all_warnings.extend(row.warnings)
 
     df = base_df.copy()
     df["SampleTop"] = tops
     df["SampleBase"] = bases
+    df["SampleMean"] = means
     df["ShiftedSampleTop"] = shifted_tops
     df["ShiftedSampleBase"] = shifted_bases
+    df["ShiftedSampleMean"] = shifted_means
     df["DepthShiftWarnings"] = row_warnings
 
     return (df, all_warnings)

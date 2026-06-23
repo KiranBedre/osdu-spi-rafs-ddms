@@ -23,6 +23,7 @@ from app.depth_shift.calculator import (
     _validate_no_overlap,
     compute_shifted_depth,
     find_interval,
+    select_anchor_depth,
     shift_sample,
     validate_shift_values,
 )
@@ -306,27 +307,78 @@ class TestComputeShiftedDepth:
 class TestShiftSample:
     def test_point_measurement_base_none(self):
         """SampleBase=None → ShiftedSampleBase=None."""
-        shifted_top, shifted_base = shift_sample(1005.0, None, MULTI_INTERVAL_SHIFT_SET)
+        shifted_top, shifted_base, shifted_mean = shift_sample(1005.0, None, None, MULTI_INTERVAL_SHIFT_SET)
         assert abs(shifted_top - 1006.5) < 1e-6
         assert shifted_base is None
+        assert shifted_mean is None
 
     def test_with_base_uses_top_interval(self):
         """Cross-interval guard: SampleBase in different interval still uses SampleTop's interval."""
         # SampleTop=1005 lands in interval [1000–1010]; SampleBase=1015 crosses into [1010–1020].
         # Both should use the [1000–1010] interval (constant shift +1.5).
-        shifted_top, shifted_base = shift_sample(1005.0, 1015.0, MULTI_INTERVAL_SHIFT_SET)
+        shifted_top, shifted_base, _ = shift_sample(1005.0, 1015.0, None, MULTI_INTERVAL_SHIFT_SET)
         assert abs(shifted_top - 1006.5) < 1e-6
         assert abs(shifted_base - 1016.5) < 1e-6
 
     def test_no_enclosing_interval_returns_none(self):
-        shifted_top, shifted_base = shift_sample(500.0, 510.0, MULTI_INTERVAL_SHIFT_SET)
+        shifted_top, shifted_base, shifted_mean = shift_sample(500.0, 510.0, None, MULTI_INTERVAL_SHIFT_SET)
         assert shifted_top is None
         assert shifted_base is None
+        assert shifted_mean is None
 
     def test_both_depths_shifted_correctly(self):
-        shifted_top, shifted_base = shift_sample(1000.0, 1010.0, MULTI_INTERVAL_SHIFT_SET)
+        shifted_top, shifted_base, _ = shift_sample(1000.0, 1010.0, None, MULTI_INTERVAL_SHIFT_SET)
         assert abs(shifted_top - 1001.5) < 1e-6
         assert abs(shifted_base - 1011.5) < 1e-6
+
+    def test_base_only_uses_base_as_anchor(self):
+        """No SampleTop: SampleBase drives interval lookup and is shifted."""
+        shifted_top, shifted_base, shifted_mean = shift_sample(None, 1005.0, None, MULTI_INTERVAL_SHIFT_SET)
+        assert shifted_top is None
+        assert abs(shifted_base - 1006.5) < 1e-6
+        assert shifted_mean is None
+
+    def test_mean_only_uses_mean_as_anchor(self):
+        """Only SampleMean present: it drives interval lookup and is shifted."""
+        shifted_top, shifted_base, shifted_mean = shift_sample(None, None, 1005.0, MULTI_INTERVAL_SHIFT_SET)
+        assert shifted_top is None
+        assert shifted_base is None
+        assert abs(shifted_mean - 1006.5) < 1e-6
+
+    def test_base_and_mean_uses_base_as_anchor(self):
+        """SampleBase + SampleMean (no SampleTop): shift as if SampleBase was used."""
+        shifted_top, shifted_base, shifted_mean = shift_sample(None, 1005.0, 1870.0, MULTI_INTERVAL_SHIFT_SET)
+        assert shifted_top is None
+        assert abs(shifted_base - 1006.5) < 1e-6
+        # SampleMean is still shifted (using SampleBase's interval), just not the anchor.
+        assert shifted_mean is not None
+
+    def test_top_and_mean_uses_top_as_anchor(self):
+        """SampleTop + SampleMean (no SampleBase): shift using SampleTop."""
+        shifted_top, shifted_base, shifted_mean = shift_sample(1005.0, None, 1870.0, MULTI_INTERVAL_SHIFT_SET)
+        assert abs(shifted_top - 1006.5) < 1e-6
+        assert shifted_base is None
+        assert shifted_mean is not None
+
+    def test_no_depth_at_all_returns_all_none(self):
+        shifted_top, shifted_base, shifted_mean = shift_sample(None, None, None, MULTI_INTERVAL_SHIFT_SET)
+        assert shifted_top is None
+        assert shifted_base is None
+        assert shifted_mean is None
+
+
+class TestSelectAnchorDepth:
+    def test_top_wins_when_all_present(self):
+        assert select_anchor_depth(1000.0, 2000.0, 3000.0) == (1000.0, "SampleTop")
+
+    def test_base_wins_when_top_absent(self):
+        assert select_anchor_depth(None, 2000.0, 3000.0) == (2000.0, "SampleBase")
+
+    def test_mean_wins_when_top_and_base_absent(self):
+        assert select_anchor_depth(None, None, 3000.0) == (3000.0, "SampleMean")
+
+    def test_all_absent_returns_none_none(self):
+        assert select_anchor_depth(None, None, None) == (None, None)
 
 
 # ---------------------------------------------------------------------------
