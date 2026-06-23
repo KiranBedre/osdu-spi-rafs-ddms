@@ -17,6 +17,7 @@
 from app.depth_shift.extractor import (
     extract_depths,
     extract_sample_wellbore_id,
+    is_sample_depth_entry,
     validate_measurement_source,
     validate_wellbore_match,
 )
@@ -45,9 +46,10 @@ def _make_sample(top=1872.0, base=1900.0, source="DRL", wellbore="ns:master-data
 class TestExtractDepths:
     def test_happy_path_returns_top_base_wellbore(self):
         record = _make_sample(top=1872.0, base=1900.0)
-        top, base, wellbore = extract_depths(record)
+        top, base, mean, wellbore = extract_depths(record)
         assert abs(top - 1872.0) < 1e-9
         assert abs(base - 1900.0) < 1e-9
+        assert mean is None
         assert wellbore == "ns:master-data--Wellbore:wb-001:"
 
     def test_missing_sample_top_returns_none(self):
@@ -63,7 +65,7 @@ class TestExtractDepths:
                 ],
             },
         }
-        top, base, _ = extract_depths(record)
+        top, base, _, _ = extract_depths(record)
         assert top is None
         assert abs(base - 1900.0) < 1e-9
 
@@ -79,22 +81,25 @@ class TestExtractDepths:
                 ],
             },
         }
-        top, base, wellbore = extract_depths(record)
+        top, base, mean, wellbore = extract_depths(record)
         assert abs(top - 100.0) < 1e-9
         assert base is None
+        assert mean is None
         assert wellbore is None
 
     def test_no_depth_measurement_returns_none_tuple(self):
         record = {"data": {"WellboreID": "wb-x"}}
-        top, base, wellbore = extract_depths(record)
+        top, base, mean, wellbore = extract_depths(record)
         assert top is None
         assert base is None
+        assert mean is None
         assert wellbore == "wb-x"
 
     def test_empty_record_returns_none_tuple(self):
-        top, base, wellbore = extract_depths({})
+        top, base, mean, wellbore = extract_depths({})
         assert top is None
         assert base is None
+        assert mean is None
         assert wellbore is None
 
     def test_point_measurement_no_base(self):
@@ -108,9 +113,75 @@ class TestExtractDepths:
                 ],
             },
         }
-        top, base, _ = extract_depths(record)
+        top, base, _, _ = extract_depths(record)
         assert abs(top - 555.0) < 1e-9
         assert base is None
+
+    def test_base_only_returns_base_no_top(self):
+        """A Sample carrying only SampleBase (e.g. a plug) must populate base, not top."""
+        record = {
+            "data": {
+                "DepthMeasurements": [
+                    {
+                        "VerticalMeasurementTypeID": "SampleBase",
+                        "VerticalMeasurement": 1901.0,
+                        "VerticalMeasurementSourceID": "DRL",
+                    },
+                ],
+            },
+        }
+        top, base, mean, _ = extract_depths(record)
+        assert top is None
+        assert abs(base - 1901.0) < 1e-9
+        assert mean is None
+
+    def test_mean_only_returns_mean(self):
+        record = {
+            "data": {
+                "DepthMeasurements": [
+                    {
+                        "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleMean:",
+                        "VerticalMeasurement": 1903.0,
+                        "VerticalMeasurementSourceID": "DRL",
+                    },
+                ],
+            },
+        }
+        top, base, mean, _ = extract_depths(record)
+        assert top is None
+        assert base is None
+        assert abs(mean - 1903.0) < 1e-9
+
+    def test_top_base_and_mean_all_returned(self):
+        record = {
+            "data": {
+                "DepthMeasurements": [
+                    {"VerticalMeasurementTypeID": "SampleTop", "VerticalMeasurement": 1000.0},
+                    {"VerticalMeasurementTypeID": "SampleBase", "VerticalMeasurement": 1010.0},
+                    {"VerticalMeasurementTypeID": "SampleMean", "VerticalMeasurement": 1005.0},
+                ],
+            },
+        }
+        top, base, mean, _ = extract_depths(record)
+        assert abs(top - 1000.0) < 1e-9
+        assert abs(base - 1010.0) < 1e-9
+        assert abs(mean - 1005.0) < 1e-9
+
+
+class TestIsSampleDepthEntry:
+    def test_sample_top_matches(self):
+        assert is_sample_depth_entry({"VerticalMeasurementTypeID": "SampleTop"})
+
+    def test_sample_base_matches(self):
+        assert is_sample_depth_entry({"VerticalMeasurementTypeID": "SampleBase"})
+
+    def test_sample_mean_matches(self):
+        assert is_sample_depth_entry(
+            {"VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleMean:"},
+        )
+
+    def test_unrelated_entry_does_not_match(self):
+        assert not is_sample_depth_entry({"VerticalMeasurementTypeID": "KB"})
 
 
 class TestValidateMeasurementSource:

@@ -226,35 +226,71 @@ def compute_shifted_depth(depth: float, interval: dict) -> float:
     return shifted_top + relative_pos * shifted_span
 
 
-def shift_sample(
-    sample_top: float,
+def select_anchor_depth(
+    sample_top: Optional[float],
     sample_base: Optional[float],
+    sample_mean: Optional[float],
+) -> tuple:
+    """Return (anchor_depth, anchor_field) used to locate the shift interval.
+
+    Priority order: SampleTop > SampleBase > SampleMean. A Sample is only
+    expected to provide one of these (a range via Top+Base, or a single
+    point via Top, Base, or Mean alone); when more than one is present the
+    higher-priority field wins and the rest are ignored for interval lookup.
+
+    :param sample_top: original top depth, or None
+    :type sample_top: Optional[float]
+    :param sample_base: original base depth, or None
+    :type sample_base: Optional[float]
+    :param sample_mean: original mean (point) depth, or None
+    :type sample_mean: Optional[float]
+    :return: (anchor_depth, anchor_field); both None when no depth is present
+    :rtype: tuple
+    """
+    candidates = ((sample_top, "SampleTop"), (sample_base, "SampleBase"), (sample_mean, "SampleMean"))
+    for depth, field in candidates:
+        if depth is not None:
+            return (depth, field)
+    return (None, None)
+
+
+def shift_sample(
+    sample_top: Optional[float],
+    sample_base: Optional[float],
+    sample_mean: Optional[float],
     shift_set: List[dict],
 ) -> tuple:
-    """Compute shifted top and base for a single sample.
+    """Compute shifted top, base, and mean for a single sample.
 
-    SampleBase uses *SampleTop*'s interval (cross-interval guard, TR-DS-04).
-    If sample_top has no enclosing interval, both outputs are None.
-    If sample_base is None (point measurement), ShiftedSampleBase is also None.
+    The interval is located using the anchor depth returned by
+    select_anchor_depth (SampleTop > SampleBase > SampleMean priority,
+    cross-interval guard TR-DS-04/TR-DS-06). Every other provided field is
+    then shifted using that same interval; fields not present on the
+    sample stay None.
 
-    :param sample_top: original top depth
-    :type sample_top: float
-    :param sample_base: original base depth, or None for a point measurement
+    :param sample_top: original top depth, or None
+    :type sample_top: Optional[float]
+    :param sample_base: original base depth, or None
     :type sample_base: Optional[float]
+    :param sample_mean: original mean (point) depth, or None
+    :type sample_mean: Optional[float]
     :param shift_set: sorted list of shift-set interval dicts
     :type shift_set: List[dict]
-    :return: (shifted_top, shifted_base); either may be None
+    :return: (shifted_top, shifted_base, shifted_mean); any may be None
     :rtype: tuple
     :raises ValueError: when shift_set is non-monotonic (propagated from
         _validate_intervals)
     """
-    interval = find_interval(shift_set, sample_top)
+    anchor_depth, _ = select_anchor_depth(sample_top, sample_base, sample_mean)
+    if anchor_depth is None:
+        return (None, None, None)
+
+    interval = find_interval(shift_set, anchor_depth)
     if interval is None:
-        return (None, None)
+        return (None, None, None)
 
-    shifted_top = compute_shifted_depth(sample_top, interval)
-    shifted_base = None
-    if sample_base is not None:
-        shifted_base = compute_shifted_depth(sample_base, interval)
+    shifted_top = None if sample_top is None else compute_shifted_depth(sample_top, interval)
+    shifted_base = None if sample_base is None else compute_shifted_depth(sample_base, interval)
+    shifted_mean = None if sample_mean is None else compute_shifted_depth(sample_mean, interval)
 
-    return (shifted_top, shifted_base)
+    return (shifted_top, shifted_base, shifted_mean)

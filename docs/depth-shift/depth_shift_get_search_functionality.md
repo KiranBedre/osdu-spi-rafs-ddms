@@ -197,8 +197,10 @@ flowchart LR
 
     C --> E[SampleTop]
     C --> F[SampleBase]
+    C --> F2[SampleMean]
     C --> G[ShiftedSampleTop]
     C --> H[ShiftedSampleBase]
+    C --> H2[ShiftedSampleMean]
     C --> I[DepthShiftWarnings]
 
     D --> J[appliedDepthShiftId]
@@ -214,8 +216,10 @@ The following columns are intentionally excluded from `data` / `result` and retu
 
 * `SampleTop`
 * `SampleBase`
+* `SampleMean`
 * `ShiftedSampleTop`
 * `ShiftedSampleBase`
+* `ShiftedSampleMean`
 * `DepthShiftWarnings`
 
 ---
@@ -228,11 +232,15 @@ Parallel array aligned by row index with the main dataset. Each item:
 {
   "SampleTop": 1872.0,
   "SampleBase": 1873.0,
+  "SampleMean": null,
   "ShiftedSampleTop": 1878.5,
   "ShiftedSampleBase": 1879.5,
+  "ShiftedSampleMean": null,
   "DepthShiftWarnings": []
 }
 ```
+
+Fields that are not present on a given Sample record will always appear in the response as `null`. This lets callers distinguish between "this sample has no base depth" and "an error occurred".
 
 ---
 
@@ -260,6 +268,18 @@ Fields:
 
 ---
 
+# Anchor Depth Priority
+
+RAFS resolves a single "anchor" depth from the Sample record to locate the CoreToLog shift interval. The fields are evaluated in this priority order:
+
+1. **SampleTop** — default for any Sample that carries a single point depth or a top/base range.
+2. **SampleBase** — used only when `SampleTop` is absent. A warning is added to `DepthShiftWarnings`.
+3. **SampleMean** — used only when both `SampleTop` and `SampleBase` are absent. A warning is added.
+
+Once the interval is located via the anchor, all depth fields that **are** present on the sample (`SampleTop`, `SampleBase`, `SampleMean`) are shifted using that same interval (cross-interval guard). Fields that are absent remain `null` in the output.
+
+---
+
 # Warnings
 
 Warnings are informational and do not fail the request.
@@ -282,13 +302,35 @@ Please validate Sample depth information.
 
 Depth-shift proceeds.
 
+### SampleBase used as anchor (no SampleTop)
+
+```
+No SampleTop provided for <SampleID>. Sample has been shifted based on SampleBase depth.
+```
+
+Or, when `SampleMean` is also present:
+
+```
+No SampleTop provided for <SampleID>. Sample has been shifted based on SampleBase depth (SampleMean ignored).
+```
+
+The shift is applied normally; `SampleTop` and `ShiftedSampleTop` remain `null`.
+
+### SampleMean used as anchor (no SampleTop or SampleBase)
+
+```
+No SampleTop or SampleBase provided for <SampleID>. Sample has been shifted based on SampleMean depth.
+```
+
+The shift is applied normally; `SampleTop`, `SampleBase`, `ShiftedSampleTop`, and `ShiftedSampleBase` remain `null`.
+
 ### Sample outside shift intervals
 
 ```
-Sample not shifted: SampleTop falls outside all shift intervals.
+Sample not shifted: <AnchorField> <depth> falls outside all shift intervals.
 ```
 
-Depth-shift does not fail. In this case `ShiftedSampleTop = SampleTop` and `ShiftedSampleBase = SampleBase`.
+Where `<AnchorField>` is whichever of `SampleTop`, `SampleBase`, or `SampleMean` drove the interval lookup. Depth-shift does not fail. Shifted values are passed through unchanged (equal to the originals).
 
 ---
 

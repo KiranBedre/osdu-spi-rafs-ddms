@@ -201,6 +201,14 @@ class TestShiftedDepthsMatchExpected:
         assert result_df["SampleBase"].isna().all()
         assert result_df["ShiftedSampleBase"].isna().all()
 
+    def test_point_samples_have_no_mean(self, volve_augmented):
+        """Volve plugs report SampleTop only — SampleMean column must exist with null values."""
+        result_df, _, _ = volve_augmented
+        assert "SampleMean" in result_df.columns
+        assert "ShiftedSampleMean" in result_df.columns
+        assert result_df["SampleMean"].isna().all()
+        assert result_df["ShiftedSampleMean"].isna().all()
+
 
 class TestWarnings:
     """Warning propagation through the augmenter pipeline."""
@@ -499,3 +507,156 @@ class TestCrossIntervalGuard:
         assert (
             abs(result_df.iloc[0]["ShiftedSampleBase"] - wrong_shifted_base) > 1e-4
         ), "Cross-interval guard did not fire — base was computed with the wrong interval"
+
+
+class TestSampleBaseAndMeanFallback:
+    """Issue 752 QA feedback: Samples reporting only SampleBase or SampleMean must still be shiftable.
+
+    Priority order for the shift anchor is SampleTop > SampleBase > SampleMean.
+    """
+
+    _SHIFT_SET = [
+        {
+            "OriginalTopDepth": 1000.0,
+            "OriginalBaseDepth": 1010.0,
+            "ShiftedTopDepth": 1001.5,
+            "ShiftedBaseDepth": 1011.5,
+        },
+    ]
+    _SHIFT_WELLBORE = "osdu:master-data--Wellbore:shift-wb:"
+
+    @classmethod
+    def _make_sample(cls, depth_measurements: List[dict]) -> dict:
+        return {"data": {"WellboreID": cls._SHIFT_WELLBORE, "DepthMeasurements": depth_measurements}}
+
+    @classmethod
+    def _run(cls, depth_measurements: List[dict]) -> Tuple[pd.DataFrame, List[str]]:
+        sample_records = {"sample-0": cls._make_sample(depth_measurements)}
+        base_df = pd.DataFrame({"SampleID": ["sample-0"]})
+        return augment_dataframe(
+            base_df,
+            resolver=None,
+            shift_set=cls._SHIFT_SET,
+            shift_wellbore=cls._SHIFT_WELLBORE,
+            sample_records=sample_records,
+        )
+
+    def test_top_only_no_warning(self):
+        """Default single-depth case: SampleTop alone needs no warning."""
+        result_df, all_warnings = self._run(
+            [
+                {
+                    "VerticalMeasurementTypeID": "SampleTop",
+                    "VerticalMeasurementSourceID": "DRL",
+                    "VerticalMeasurement": 1005.0,
+                }
+            ],
+        )
+        assert result_df.iloc[0]["ShiftedSampleTop"] == pytest.approx(1006.5, abs=1e-6)
+        assert all_warnings == []
+
+    def test_base_only_is_shifted_with_warning(self):
+        result_df, all_warnings = self._run(
+            [
+                {
+                    "VerticalMeasurementTypeID": "SampleBase",
+                    "VerticalMeasurementSourceID": "DRL",
+                    "VerticalMeasurement": 1005.0,
+                }
+            ],
+        )
+        assert pd.isna(result_df.iloc[0]["SampleTop"])
+        assert result_df.iloc[0]["SampleBase"] == pytest.approx(1005.0, abs=1e-6)
+        assert pd.isna(result_df.iloc[0]["ShiftedSampleTop"])
+        assert result_df.iloc[0]["ShiftedSampleBase"] == pytest.approx(1006.5, abs=1e-6)
+        assert any(
+            "No SampleTop provided" in w and "SampleBase depth" in w for w in all_warnings
+        ), f"Expected SampleBase fallback warning, got: {all_warnings}"
+
+    def test_mean_only_is_shifted_with_warning(self):
+        result_df, all_warnings = self._run(
+            [
+                {
+                    "VerticalMeasurementTypeID": "SampleMean",
+                    "VerticalMeasurementSourceID": "DRL",
+                    "VerticalMeasurement": 1005.0,
+                }
+            ],
+        )
+        assert result_df.iloc[0]["SampleMean"] == pytest.approx(1005.0, abs=1e-6)
+        assert result_df.iloc[0]["ShiftedSampleMean"] == pytest.approx(1006.5, abs=1e-6)
+        assert any(
+            "No SampleTop or SampleBase provided" in w and "SampleMean depth" in w for w in all_warnings
+        ), f"Expected SampleMean fallback warning, got: {all_warnings}"
+
+    def test_base_and_mean_uses_base_and_warns_mean_ignored(self):
+        """SampleBase + SampleMean (no SampleTop): shift as if SampleBase was used."""
+        result_df, all_warnings = self._run(
+            [
+                {
+                    "VerticalMeasurementTypeID": "SampleBase",
+                    "VerticalMeasurementSourceID": "DRL",
+                    "VerticalMeasurement": 1005.0,
+                },
+                {
+                    "VerticalMeasurementTypeID": "SampleMean",
+                    "VerticalMeasurementSourceID": "DRL",
+                    "VerticalMeasurement": 1006.0,
+                },
+            ],
+        )
+        assert result_df.iloc[0]["ShiftedSampleBase"] == pytest.approx(1006.5, abs=1e-6)
+        assert any(
+            "SampleMean ignored" in w for w in all_warnings
+        ), f"Expected ignored-mean warning, got: {all_warnings}"
+
+    def test_top_and_mean_uses_top_no_warning(self):
+        """SampleTop + SampleMean (no SampleBase): shift using SampleTop, no warning."""
+        result_df, all_warnings = self._run(
+            [
+                {
+                    "VerticalMeasurementTypeID": "SampleTop",
+                    "VerticalMeasurementSourceID": "DRL",
+                    "VerticalMeasurement": 1005.0,
+                },
+                {
+                    "VerticalMeasurementTypeID": "SampleMean",
+                    "VerticalMeasurementSourceID": "DRL",
+                    "VerticalMeasurement": 1006.0,
+                },
+            ],
+        )
+        assert result_df.iloc[0]["ShiftedSampleTop"] == pytest.approx(1006.5, abs=1e-6)
+        assert all_warnings == []
+
+    def test_out_of_range_message_names_base_anchor(self):
+        """Generalized out-of-range message must name SampleBase when it is the anchor."""
+        result_df, all_warnings = self._run(
+            [
+                {
+                    "VerticalMeasurementTypeID": "SampleBase",
+                    "VerticalMeasurementSourceID": "DRL",
+                    "VerticalMeasurement": 9999.0,
+                }
+            ],
+        )
+        assert result_df.iloc[0]["ShiftedSampleBase"] == pytest.approx(9999.0, abs=1e-6)
+        assert any(
+            "Sample not shifted: SampleBase 9999.000" in w for w in all_warnings
+        ), f"Expected generalized out-of-range message, got: {all_warnings}"
+
+    def test_out_of_range_message_names_mean_anchor(self):
+        """Generalized out-of-range message must name SampleMean when it is the anchor."""
+        result_df, all_warnings = self._run(
+            [
+                {
+                    "VerticalMeasurementTypeID": "SampleMean",
+                    "VerticalMeasurementSourceID": "DRL",
+                    "VerticalMeasurement": 9999.0,
+                }
+            ],
+        )
+        assert result_df.iloc[0]["ShiftedSampleMean"] == pytest.approx(9999.0, abs=1e-6)
+        assert any(
+            "Sample not shifted: SampleMean 9999.000" in w for w in all_warnings
+        ), f"Expected generalized out-of-range message, got: {all_warnings}"

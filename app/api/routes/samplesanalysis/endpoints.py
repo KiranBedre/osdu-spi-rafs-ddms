@@ -354,13 +354,23 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             f"Depth-shift augmentation applied for WPC {wpc_id}; " f"{len(sample_ids)} unique samples.",
         )
 
-        _ds_cols = ["SampleTop", "SampleBase", "ShiftedSampleTop", "ShiftedSampleBase", "DepthShiftWarnings"]
+        _ds_cols = [
+            "SampleTop",
+            "SampleBase",
+            "SampleMean",
+            "ShiftedSampleTop",
+            "ShiftedSampleBase",
+            "ShiftedSampleMean",
+            "DepthShiftWarnings",
+        ]
         depth_shift_data = [
             DepthShiftRowData(
                 SampleTop=row["SampleTop"],
                 SampleBase=row["SampleBase"],
+                SampleMean=row["SampleMean"],
                 ShiftedSampleTop=row["ShiftedSampleTop"],
                 ShiftedSampleBase=row["ShiftedSampleBase"],
+                ShiftedSampleMean=row["ShiftedSampleMean"],
                 DepthShiftWarnings=row["DepthShiftWarnings"] if isinstance(row["DepthShiftWarnings"], list) else [],
             ).dict()
             for _, row in augmented_df[_ds_cols].iterrows()

@@ -81,14 +81,18 @@ class DepthShiftRowData(BaseModel):
     Fields:
 
     - SampleTop: original measured top depth (metres, from VerticalMeasurements)
-    - SampleBase: original measured base depth; None for point samples
+    - SampleBase: original measured base depth; None when not present on the sample
+    - SampleMean: original measured mean/point depth; None when not present on the sample
     - ShiftedSampleTop: depth-shifted SampleTop using the CoreToLog interval table
-    - ShiftedSampleBase: depth-shifted SampleBase; None for point samples
+    - ShiftedSampleBase: depth-shifted SampleBase; None when not present on the sample
+    - ShiftedSampleMean: depth-shifted SampleMean; None when not present on the sample
     - DepthShiftWarnings: per-row warnings (non-Driller source, wellbore mismatch, etc.)
     """
 
     SampleTop: Optional[float] = None
     SampleBase: Optional[float] = None
+    SampleMean: Optional[float] = None
     ShiftedSampleTop: Optional[float] = None
     ShiftedSampleBase: Optional[float] = None
+    ShiftedSampleMean: Optional[float] = None
     DepthShiftWarnings: List[str] = []
