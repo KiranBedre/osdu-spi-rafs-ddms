@@ -12,9 +12,21 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel
+
+
+class DepthShiftPolicy(str, Enum):
+    """Valid depth shift resolution strategies.
+
+    - DEFINITIVE: Uses the sample's definitive depth shift reference.
+    - ID_PROVIDED: Uses the explicitly provided depth_shift_id.
+    """
+
+    DEFINITIVE = "definitive"
+    ID_PROVIDED = "id_provided"
 
 
 class DepthShiftQueryParams:

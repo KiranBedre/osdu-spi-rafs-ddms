@@ -196,17 +196,6 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: A valid json array with property name and aggregator function
-        examples:
-          example:
-            value: '["ColumnName[.FieldName]", "function"]'
-        in: query
-        name: columns_aggregation
-        required: false
-        schema:
-          description: A valid json array with property name and aggregator function
-          title: Columns Aggregation
-          type: string
       - description: A valid json array of property names
         examples:
           example:
@@ -218,55 +207,6 @@ paths:
           description: A valid json array of property names
           title: Columns Filter
           type: string
-      - examples:
-          example:
-            value: '2023-12-31'
-        in: query
-        name: indexed_end_date
-        required: false
-        schema:
-          format: date
-          title: Indexed End Date
-          type: string
-      - examples:
-          example:
-            value: '2023-01-01'
-        in: query
-        name: indexed_start_date
-        required: false
-        schema:
-          format: date
-          title: Indexed Start Date
-          type: string
-      - description: A valid json object with property name and value.
-        in: query
-        name: metadata
-        required: false
-        schema:
-          description: A valid json object with property name and value.
-          title: Metadata
-          type: string
-      - description: Number of results to skip before returning data
-        in: query
-        name: offset
-        required: false
-        schema:
-          default: 0
-          description: Number of results to skip before returning data
-          minimum: 0.0
-          title: Offset
-          type: integer
-      - description: Maximum number of results to return per page
-        in: query
-        name: page_limit
-        required: false
-        schema:
-          default: 1000
-          description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
-          maximum: 1000.0
-          title: Page Limit
-          type: integer
       - description: A valid json object with property name, operator and value
         examples:
           example:
@@ -292,6 +232,66 @@ paths:
           description: A valid json object with combined rows filters with optional
             $or and $and keys
           title: Rows Multiple Filter
+          type: string
+      - description: A valid json object with property name and value.
+        in: query
+        name: metadata
+        required: false
+        schema:
+          description: A valid json object with property name and value.
+          title: Metadata
+          type: string
+      - description: A valid json array with property name and aggregator function
+        examples:
+          example:
+            value: '["ColumnName[.FieldName]", "function"]'
+        in: query
+        name: columns_aggregation
+        required: false
+        schema:
+          description: A valid json array with property name and aggregator function
+          title: Columns Aggregation
+          type: string
+      - description: Number of results to skip before returning data
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Number of results to skip before returning data
+          minimum: 0.0
+          title: Offset
+          type: integer
+      - description: Maximum number of results to return per page
+        in: query
+        name: page_limit
+        required: false
+        schema:
+          default: 1000
+          description: Maximum number of results to return per page
+          exclusiveMinimum: 0.0
+          maximum: 1000.0
+          title: Page Limit
+          type: integer
+      - examples:
+          example:
+            value: '2023-01-01'
+        in: query
+        name: indexed_start_date
+        required: false
+        schema:
+          format: date
+          title: Indexed Start Date
+          type: string
+      - examples:
+          example:
+            value: '2023-12-31'
+        in: query
+        name: indexed_end_date
+        required: false
+        schema:
+          format: date
+          title: Indexed End Date
           type: string
       responses:
         '200':
@@ -321,7 +321,12 @@ paths:
         `page_limit` and `total_size (found in response)` refers to the number of
         parquet files read.<br><br>        Required roles: `users.datalake.viewers`
         or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition,
-        users must be members of a data group(ACL) to access the data.'
+        users must be members of a data group(ACL) to access the data.<br><br>Depth-shift
+        augmentation parameters: use <code>depth_shift_policy</code> (<code>definitive</code>
+        or <code>id_provided</code>) and optional <code>depth_shift_id</code>.<br><br>Scope
+        parameters filter results hierarchically by organizational level: <code>basin_id</code>
+        (broadest), <code>field_id</code>, <code>well_id</code>, <code>wellbore_id</code>
+        (most restrictive). All are optional OSDU record IDs.'
       operationId: get_search_data_api_rafs_ddms_dev_samplesanalysis__analysis_type__search_data_get
       parameters:
       - in: path
@@ -352,16 +357,27 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: A valid json array with property name and aggregator function
-        examples:
-          example:
-            value: '["ColumnName[.FieldName]", "function"]'
+      - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
+          definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
         in: query
-        name: columns_aggregation
+        name: depth_shift_policy
         required: false
         schema:
-          description: A valid json array with property name and aggregator function
-          title: Columns Aggregation
+          description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
+            definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
+          enum:
+          - definitive
+          - id_provided
+          title: Depth Shift Policy
+          type: string
+      - description: DepthShift WPC record ID to apply to the response data.
+        in: query
+        name: depth_shift_id
+        required: false
+        schema:
+          description: DepthShift WPC record ID to apply to the response data.
+          pattern: ^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$
+          title: Depth Shift Id
           type: string
       - description: A valid json array of property names
         examples:
@@ -374,75 +390,6 @@ paths:
           description: A valid json array of property names
           title: Columns Filter
           type: string
-      - description: DepthShift WPC record ID to apply to the response data.
-        in: query
-        name: depth_shift_id
-        required: false
-        schema:
-          description: DepthShift WPC record ID to apply to the response data.
-          title: Depth Shift Id
-          type: string
-      - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
-          definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
-        in: query
-        name: depth_shift_policy
-        required: false
-        schema:
-          description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
-            definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
-          title: Depth Shift Policy
-          type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
-          example:
-            value: '2023-12-31'
-        in: query
-        name: indexed_end_date
-        required: false
-        schema:
-          description: End date in YYYY-MM-DD format
-          title: Indexed End Date
-          type: string
-      - description: Start date in YYYY-MM-DD format
-        examples:
-          example:
-            value: '2023-01-01'
-        in: query
-        name: indexed_start_date
-        required: false
-        schema:
-          description: Start date in YYYY-MM-DD format
-          title: Indexed Start Date
-          type: string
-      - description: A valid json object with property name and value.
-        in: query
-        name: metadata
-        required: false
-        schema:
-          description: A valid json object with property name and value.
-          title: Metadata
-          type: string
-      - description: Number of results to skip before returning data
-        in: query
-        name: offset
-        required: false
-        schema:
-          default: 0
-          description: Number of results to skip before returning data
-          minimum: 0.0
-          title: Offset
-          type: integer
-      - description: Maximum number of results to return per page
-        in: query
-        name: page_limit
-        required: false
-        schema:
-          default: 100
-          description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
-          maximum: 100.0
-          title: Page Limit
-          type: integer
       - description: A valid json object with property name, operator and value
         examples:
           example:
@@ -468,6 +415,68 @@ paths:
           description: A valid json object with combined rows filters with optional
             $or and $and keys
           title: Rows Multiple Filter
+          type: string
+      - description: A valid json object with property name and value.
+        in: query
+        name: metadata
+        required: false
+        schema:
+          description: A valid json object with property name and value.
+          title: Metadata
+          type: string
+      - description: A valid json array with property name and aggregator function
+        examples:
+          example:
+            value: '["ColumnName[.FieldName]", "function"]'
+        in: query
+        name: columns_aggregation
+        required: false
+        schema:
+          description: A valid json array with property name and aggregator function
+          title: Columns Aggregation
+          type: string
+      - description: Number of results to skip before returning data
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Number of results to skip before returning data
+          minimum: 0.0
+          title: Offset
+          type: integer
+      - description: Maximum number of results to return per page
+        in: query
+        name: page_limit
+        required: false
+        schema:
+          default: 100
+          description: Maximum number of results to return per page
+          exclusiveMinimum: 0.0
+          maximum: 100.0
+          title: Page Limit
+          type: integer
+      - description: Start date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-01-01'
+        in: query
+        name: indexed_start_date
+        required: false
+        schema:
+          description: Start date in YYYY-MM-DD format
+          title: Indexed Start Date
+          type: string
+      - description: End date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-12-31'
+        in: query
+        name: indexed_end_date
+        required: false
+        schema:
+          description: End date in YYYY-MM-DD format
+          title: Indexed End Date
           type: string
       responses:
         '200':
@@ -542,17 +551,6 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: A valid json array with property name and aggregator function
-        examples:
-          example:
-            value: '["ColumnName[.FieldName]", "function"]'
-        in: query
-        name: columns_aggregation
-        required: false
-        schema:
-          description: A valid json array with property name and aggregator function
-          title: Columns Aggregation
-          type: string
       - description: A valid json array of property names
         examples:
           example:
@@ -589,6 +587,17 @@ paths:
           description: A valid json object with combined rows filters with optional
             $or and $and keys
           title: Rows Multiple Filter
+          type: string
+      - description: A valid json array with property name and aggregator function
+        examples:
+          example:
+            value: '["ColumnName[.FieldName]", "function"]'
+        in: query
+        name: columns_aggregation
+        required: false
+        schema:
+          description: A valid json array with property name and aggregator function
+          title: Columns Aggregation
           type: string
       responses:
         '200':
@@ -875,22 +884,55 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: Optional BasinID scope
+      - description: 'Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+          ''authority:master-data--Basin:identifier''). Scope parameters filter results
+          hierarchically: basin -> field -> well -> wellbore.'
         in: query
         name: basin_id
         required: false
         schema:
-          description: Optional BasinID scope
+          description: 'Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+            ''authority:master-data--Basin:identifier''). Scope parameters filter
+            results hierarchically: basin -> field -> well -> wellbore.'
           title: Basin Id
           type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],mean
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
         in: query
-        name: columns_aggregation
+        name: field_id
         required: false
         schema:
-          title: Columns Aggregation
+          description: Optional scope parameter to filter search results to a specific
+            field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+            with or without basin_id scope.
+          title: Field Id
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
+          or without basin_id/field_id scope.
+        in: query
+        name: well_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
+            with or without basin_id/field_id scope.
+          title: Well Id
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+          Most restrictive scope parameter.
+        in: query
+        name: wellbore_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+            Most restrictive scope parameter.
+          title: Wellbore Id
           type: string
       - examples:
           example:
@@ -901,35 +943,23 @@ paths:
         schema:
           title: Columns Filter
           type: string
-      - description: Optional FieldID scope
-        in: query
-        name: field_id
-        required: false
-        schema:
-          description: Optional FieldID scope
-          title: Field Id
-          type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-12-31'
+            value: PropertyX[.PropertyXFieldA],gt,4000
         in: query
-        name: indexed_end_date
+        name: rows_filter
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
-          title: Indexed End Date
+          title: Rows Filter
           type: string
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-01-01'
+            value: PropertyX[.PropertyXFieldA],mean
         in: query
-        name: indexed_start_date
+        name: columns_aggregation
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
-          title: Indexed Start Date
+          title: Columns Aggregation
           type: string
       - description: Number of results to skip before returning data
         in: query
@@ -952,30 +982,27 @@ paths:
           maximum: 100.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
+            value: '2023-01-01'
         in: query
-        name: rows_filter
+        name: indexed_start_date
         required: false
         schema:
-          title: Rows Filter
+          description: Start date in YYYY-MM-DD format
+          title: Indexed Start Date
           type: string
-      - description: Optional WellID scope
+      - description: End date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-12-31'
         in: query
-        name: well_id
+        name: indexed_end_date
         required: false
         schema:
-          description: Optional WellID scope
-          title: Well Id
-          type: string
-      - description: Optional WellboreID scope
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional WellboreID scope
-          title: Wellbore Id
+          description: End date in YYYY-MM-DD format
+          title: Indexed End Date
           type: string
       responses:
         '200':
@@ -1032,39 +1059,55 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: Optional BasinID scope
+      - description: 'Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+          ''authority:master-data--Basin:identifier''). Scope parameters filter results
+          hierarchically: basin -> field -> well -> wellbore.'
         in: query
         name: basin_id
         required: false
         schema:
-          description: Optional BasinID scope
+          description: 'Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+            ''authority:master-data--Basin:identifier''). Scope parameters filter
+            results hierarchically: basin -> field -> well -> wellbore.'
           title: Basin Id
           type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],mean
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
         in: query
-        name: columns_aggregation
+        name: field_id
         required: false
         schema:
-          title: Columns Aggregation
+          description: Optional scope parameter to filter search results to a specific
+            field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+            with or without basin_id scope.
+          title: Field Id
           type: string
-      - examples:
-          example:
-            value: PropertyX,PropertyY,PropertyZ
+      - description: Optional scope parameter to filter search results to a specific
+          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
+          or without basin_id/field_id scope.
         in: query
-        name: columns_filter
+        name: well_id
         required: false
         schema:
-          title: Columns Filter
+          description: Optional scope parameter to filter search results to a specific
+            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
+            with or without basin_id/field_id scope.
+          title: Well Id
           type: string
-      - description: DepthShift WPC record ID to apply to the response data.
+      - description: Optional scope parameter to filter search results to a specific
+          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+          Most restrictive scope parameter.
         in: query
-        name: depth_shift_id
+        name: wellbore_id
         required: false
         schema:
-          description: DepthShift WPC record ID to apply to the response data.
-          title: Depth Shift Id
+          description: Optional scope parameter to filter search results to a specific
+            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+            Most restrictive scope parameter.
+          title: Wellbore Id
           type: string
       - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
           definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
@@ -1076,46 +1119,42 @@ paths:
             definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
           title: Depth Shift Policy
           type: string
-      - description: Optional FieldID scope
+      - description: DepthShift WPC record ID to apply to the response data.
         in: query
-        name: field_id
+        name: depth_shift_id
         required: false
         schema:
-          description: Optional FieldID scope
-          title: Field Id
+          description: DepthShift WPC record ID to apply to the response data.
+          pattern: ^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$
+          title: Depth Shift Id
           type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-12-31'
+            value: PropertyX,PropertyY,PropertyZ
         in: query
-        name: indexed_end_date
+        name: columns_filter
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
-          title: Indexed End Date
+          title: Columns Filter
           type: string
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-01-01'
+            value: PropertyX[.PropertyXFieldA],gt,4000
         in: query
-        name: indexed_start_date
+        name: rows_filter
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
-          title: Indexed Start Date
+          title: Rows Filter
           type: string
-      - description: Number of results to skip before returning data
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
         in: query
-        name: offset
+        name: columns_aggregation
         required: false
         schema:
-          default: 0
-          description: Number of results to skip before returning data
-          minimum: 0.0
-          title: Offset
-          type: integer
+          title: Columns Aggregation
+          type: string
       - description: 'JSON output format: ''split'' returns {columns, index, data},
           ''records'' returns [{field: value}, ...]'
         in: query
@@ -1130,6 +1169,16 @@ paths:
           - records
           title: Orient
           type: string
+      - description: Number of results to skip before returning data
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Number of results to skip before returning data
+          minimum: 0.0
+          title: Offset
+          type: integer
       - description: Maximum number of results to return per page
         in: query
         name: page_limit
@@ -1141,30 +1190,27 @@ paths:
           maximum: 100.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
+            value: '2023-01-01'
         in: query
-        name: rows_filter
+        name: indexed_start_date
         required: false
         schema:
-          title: Rows Filter
+          description: Start date in YYYY-MM-DD format
+          title: Indexed Start Date
           type: string
-      - description: Optional WellID scope
+      - description: End date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-12-31'
         in: query
-        name: well_id
+        name: indexed_end_date
         required: false
         schema:
-          description: Optional WellID scope
-          title: Well Id
-          type: string
-      - description: Optional WellboreID scope
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional WellboreID scope
-          title: Wellbore Id
+          description: End date in YYYY-MM-DD format
+          title: Indexed End Date
           type: string
       responses:
         '200':
@@ -1430,21 +1476,30 @@ paths:
           type: string
       - examples:
           example:
-            value: PropertyX[.PropertyXFieldA],mean
-        in: query
-        name: columns_aggregation
-        required: false
-        schema:
-          title: Columns Aggregation
-          type: string
-      - examples:
-          example:
             value: PropertyX,PropertyY,PropertyZ
         in: query
         name: columns_filter
         required: false
         schema:
           title: Columns Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],gt,4000
+        in: query
+        name: rows_filter
+        required: false
+        schema:
+          title: Rows Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
+        in: query
+        name: columns_aggregation
+        required: false
+        schema:
+          title: Columns Aggregation
           type: string
       - description: 'JSON output format: ''split'' returns {columns, index, data},
           ''records'' returns [{field: value}, ...]'
@@ -1459,15 +1514,6 @@ paths:
           - split
           - records
           title: Orient
-          type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
-        in: query
-        name: rows_filter
-        required: false
-        schema:
-          title: Rows Filter
           type: string
       responses:
         '200':
@@ -2730,22 +2776,55 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: Optional BasinID scope
+      - description: 'Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+          ''authority:master-data--Basin:identifier''). Scope parameters filter results
+          hierarchically: basin -> field -> well -> wellbore.'
         in: query
         name: basin_id
         required: false
         schema:
-          description: Optional BasinID scope
+          description: 'Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+            ''authority:master-data--Basin:identifier''). Scope parameters filter
+            results hierarchically: basin -> field -> well -> wellbore.'
           title: Basin Id
           type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],mean
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
         in: query
-        name: columns_aggregation
+        name: field_id
         required: false
         schema:
-          title: Columns Aggregation
+          description: Optional scope parameter to filter search results to a specific
+            field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+            with or without basin_id scope.
+          title: Field Id
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
+          or without basin_id/field_id scope.
+        in: query
+        name: well_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
+            with or without basin_id/field_id scope.
+          title: Well Id
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+          Most restrictive scope parameter.
+        in: query
+        name: wellbore_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+            Most restrictive scope parameter.
+          title: Wellbore Id
           type: string
       - examples:
           example:
@@ -2756,35 +2835,23 @@ paths:
         schema:
           title: Columns Filter
           type: string
-      - description: Optional FieldID scope
-        in: query
-        name: field_id
-        required: false
-        schema:
-          description: Optional FieldID scope
-          title: Field Id
-          type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-12-31'
+            value: PropertyX[.PropertyXFieldA],gt,4000
         in: query
-        name: indexed_end_date
+        name: rows_filter
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
-          title: Indexed End Date
+          title: Rows Filter
           type: string
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-01-01'
+            value: PropertyX[.PropertyXFieldA],mean
         in: query
-        name: indexed_start_date
+        name: columns_aggregation
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
-          title: Indexed Start Date
+          title: Columns Aggregation
           type: string
       - description: Number of results to skip before returning data
         in: query
@@ -2807,30 +2874,27 @@ paths:
           maximum: 100.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
+            value: '2023-01-01'
         in: query
-        name: rows_filter
+        name: indexed_start_date
         required: false
         schema:
-          title: Rows Filter
+          description: Start date in YYYY-MM-DD format
+          title: Indexed Start Date
           type: string
-      - description: Optional WellID scope
+      - description: End date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-12-31'
         in: query
-        name: well_id
+        name: indexed_end_date
         required: false
         schema:
-          description: Optional WellID scope
-          title: Well Id
-          type: string
-      - description: Optional WellboreID scope
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional WellboreID scope
-          title: Wellbore Id
+          description: End date in YYYY-MM-DD format
+          title: Indexed End Date
           type: string
       responses:
         '200':
@@ -2888,39 +2952,55 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: Optional BasinID scope
+      - description: 'Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+          ''authority:master-data--Basin:identifier''). Scope parameters filter results
+          hierarchically: basin -> field -> well -> wellbore.'
         in: query
         name: basin_id
         required: false
         schema:
-          description: Optional BasinID scope
+          description: 'Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+            ''authority:master-data--Basin:identifier''). Scope parameters filter
+            results hierarchically: basin -> field -> well -> wellbore.'
           title: Basin Id
           type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],mean
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
         in: query
-        name: columns_aggregation
+        name: field_id
         required: false
         schema:
-          title: Columns Aggregation
+          description: Optional scope parameter to filter search results to a specific
+            field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+            with or without basin_id scope.
+          title: Field Id
           type: string
-      - examples:
-          example:
-            value: PropertyX,PropertyY,PropertyZ
+      - description: Optional scope parameter to filter search results to a specific
+          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
+          or without basin_id/field_id scope.
         in: query
-        name: columns_filter
+        name: well_id
         required: false
         schema:
-          title: Columns Filter
+          description: Optional scope parameter to filter search results to a specific
+            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
+            with or without basin_id/field_id scope.
+          title: Well Id
           type: string
-      - description: DepthShift WPC record ID to apply to the response data.
+      - description: Optional scope parameter to filter search results to a specific
+          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+          Most restrictive scope parameter.
         in: query
-        name: depth_shift_id
+        name: wellbore_id
         required: false
         schema:
-          description: DepthShift WPC record ID to apply to the response data.
-          title: Depth Shift Id
+          description: Optional scope parameter to filter search results to a specific
+            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+            Most restrictive scope parameter.
+          title: Wellbore Id
           type: string
       - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
           definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
@@ -2932,46 +3012,42 @@ paths:
             definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
           title: Depth Shift Policy
           type: string
-      - description: Optional FieldID scope
+      - description: DepthShift WPC record ID to apply to the response data.
         in: query
-        name: field_id
+        name: depth_shift_id
         required: false
         schema:
-          description: Optional FieldID scope
-          title: Field Id
+          description: DepthShift WPC record ID to apply to the response data.
+          pattern: ^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$
+          title: Depth Shift Id
           type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-12-31'
+            value: PropertyX,PropertyY,PropertyZ
         in: query
-        name: indexed_end_date
+        name: columns_filter
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
-          title: Indexed End Date
+          title: Columns Filter
           type: string
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-01-01'
+            value: PropertyX[.PropertyXFieldA],gt,4000
         in: query
-        name: indexed_start_date
+        name: rows_filter
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
-          title: Indexed Start Date
+          title: Rows Filter
           type: string
-      - description: Number of results to skip before returning data
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
         in: query
-        name: offset
+        name: columns_aggregation
         required: false
         schema:
-          default: 0
-          description: Number of results to skip before returning data
-          minimum: 0.0
-          title: Offset
-          type: integer
+          title: Columns Aggregation
+          type: string
       - description: 'JSON output format: ''split'' returns {columns, index, data},
           ''records'' returns [{field: value}, ...]'
         in: query
@@ -2986,6 +3062,16 @@ paths:
           - records
           title: Orient
           type: string
+      - description: Number of results to skip before returning data
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Number of results to skip before returning data
+          minimum: 0.0
+          title: Offset
+          type: integer
       - description: Maximum number of results to return per page
         in: query
         name: page_limit
@@ -2997,30 +3083,27 @@ paths:
           maximum: 100.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
+            value: '2023-01-01'
         in: query
-        name: rows_filter
+        name: indexed_start_date
         required: false
         schema:
-          title: Rows Filter
+          description: Start date in YYYY-MM-DD format
+          title: Indexed Start Date
           type: string
-      - description: Optional WellID scope
+      - description: End date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-12-31'
         in: query
-        name: well_id
+        name: indexed_end_date
         required: false
         schema:
-          description: Optional WellID scope
-          title: Well Id
-          type: string
-      - description: Optional WellboreID scope
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional WellboreID scope
-          title: Wellbore Id
+          description: End date in YYYY-MM-DD format
+          title: Indexed End Date
           type: string
       responses:
         '200':
@@ -3389,21 +3472,30 @@ paths:
           type: string
       - examples:
           example:
-            value: PropertyX[.PropertyXFieldA],mean
-        in: query
-        name: columns_aggregation
-        required: false
-        schema:
-          title: Columns Aggregation
-          type: string
-      - examples:
-          example:
             value: PropertyX,PropertyY,PropertyZ
         in: query
         name: columns_filter
         required: false
         schema:
           title: Columns Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],gt,4000
+        in: query
+        name: rows_filter
+        required: false
+        schema:
+          title: Rows Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
+        in: query
+        name: columns_aggregation
+        required: false
+        schema:
+          title: Columns Aggregation
           type: string
       - description: 'JSON output format: ''split'' returns {columns, index, data},
           ''records'' returns [{field: value}, ...]'
@@ -3418,15 +3510,6 @@ paths:
           - split
           - records
           title: Orient
-          type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
-        in: query
-        name: rows_filter
-        required: false
-        schema:
-          title: Rows Filter
           type: string
       responses:
         '200':
@@ -4114,22 +4197,55 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: Optional BasinID scope
+      - description: 'Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+          ''authority:master-data--Basin:identifier''). Scope parameters filter results
+          hierarchically: basin -> field -> well -> wellbore.'
         in: query
         name: basin_id
         required: false
         schema:
-          description: Optional BasinID scope
+          description: 'Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+            ''authority:master-data--Basin:identifier''). Scope parameters filter
+            results hierarchically: basin -> field -> well -> wellbore.'
           title: Basin Id
           type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],mean
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
         in: query
-        name: columns_aggregation
+        name: field_id
         required: false
         schema:
-          title: Columns Aggregation
+          description: Optional scope parameter to filter search results to a specific
+            field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+            with or without basin_id scope.
+          title: Field Id
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
+          or without basin_id/field_id scope.
+        in: query
+        name: well_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
+            with or without basin_id/field_id scope.
+          title: Well Id
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+          Most restrictive scope parameter.
+        in: query
+        name: wellbore_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+            Most restrictive scope parameter.
+          title: Wellbore Id
           type: string
       - examples:
           example:
@@ -4140,35 +4256,23 @@ paths:
         schema:
           title: Columns Filter
           type: string
-      - description: Optional FieldID scope
-        in: query
-        name: field_id
-        required: false
-        schema:
-          description: Optional FieldID scope
-          title: Field Id
-          type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-12-31'
+            value: PropertyX[.PropertyXFieldA],gt,4000
         in: query
-        name: indexed_end_date
+        name: rows_filter
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
-          title: Indexed End Date
+          title: Rows Filter
           type: string
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-01-01'
+            value: PropertyX[.PropertyXFieldA],mean
         in: query
-        name: indexed_start_date
+        name: columns_aggregation
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
-          title: Indexed Start Date
+          title: Columns Aggregation
           type: string
       - description: Number of results to skip before returning data
         in: query
@@ -4191,30 +4295,27 @@ paths:
           maximum: 100.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
+            value: '2023-01-01'
         in: query
-        name: rows_filter
+        name: indexed_start_date
         required: false
         schema:
-          title: Rows Filter
+          description: Start date in YYYY-MM-DD format
+          title: Indexed Start Date
           type: string
-      - description: Optional WellID scope
+      - description: End date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-12-31'
         in: query
-        name: well_id
+        name: indexed_end_date
         required: false
         schema:
-          description: Optional WellID scope
-          title: Well Id
-          type: string
-      - description: Optional WellboreID scope
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional WellboreID scope
-          title: Wellbore Id
+          description: End date in YYYY-MM-DD format
+          title: Indexed End Date
           type: string
       responses:
         '200':
@@ -4246,7 +4347,12 @@ paths:
         read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters
         to filter the data based on indexing  date. <br><br>  - `indexed_start_date`:
         Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`:
-        Filter for data indexed on or before this date. <br><br>'
+        Filter for data indexed on or before this date.<br><br>Depth-shift augmentation
+        parameters: use <code>depth_shift_policy</code> (<code>definitive</code> or
+        <code>id_provided</code>) and optional <code>depth_shift_id</code>.<br><br>Scope
+        parameters filter results hierarchically by organizational level: <code>basin_id</code>
+        (broadest), <code>field_id</code>, <code>well_id</code>, <code>wellbore_id</code>
+        (most restrictive). All are optional OSDU record IDs.'
       operationId: search_endpoint_api_rafs_ddms_v2_samplesanalysis__analysis_type__search_data_get
       parameters:
       - in: path
@@ -4277,39 +4383,55 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: Optional BasinID scope
+      - description: 'Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+          ''authority:master-data--Basin:identifier''). Scope parameters filter results
+          hierarchically: basin -> field -> well -> wellbore.'
         in: query
         name: basin_id
         required: false
         schema:
-          description: Optional BasinID scope
+          description: 'Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+            ''authority:master-data--Basin:identifier''). Scope parameters filter
+            results hierarchically: basin -> field -> well -> wellbore.'
           title: Basin Id
           type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],mean
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
         in: query
-        name: columns_aggregation
+        name: field_id
         required: false
         schema:
-          title: Columns Aggregation
+          description: Optional scope parameter to filter search results to a specific
+            field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+            with or without basin_id scope.
+          title: Field Id
           type: string
-      - examples:
-          example:
-            value: PropertyX,PropertyY,PropertyZ
+      - description: Optional scope parameter to filter search results to a specific
+          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
+          or without basin_id/field_id scope.
         in: query
-        name: columns_filter
+        name: well_id
         required: false
         schema:
-          title: Columns Filter
+          description: Optional scope parameter to filter search results to a specific
+            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
+            with or without basin_id/field_id scope.
+          title: Well Id
           type: string
-      - description: DepthShift WPC record ID to apply to the response data.
+      - description: Optional scope parameter to filter search results to a specific
+          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+          Most restrictive scope parameter.
         in: query
-        name: depth_shift_id
+        name: wellbore_id
         required: false
         schema:
-          description: DepthShift WPC record ID to apply to the response data.
-          title: Depth Shift Id
+          description: Optional scope parameter to filter search results to a specific
+            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+            Most restrictive scope parameter.
+          title: Wellbore Id
           type: string
       - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
           definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
@@ -4321,46 +4443,42 @@ paths:
             definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
           title: Depth Shift Policy
           type: string
-      - description: Optional FieldID scope
+      - description: DepthShift WPC record ID to apply to the response data.
         in: query
-        name: field_id
+        name: depth_shift_id
         required: false
         schema:
-          description: Optional FieldID scope
-          title: Field Id
+          description: DepthShift WPC record ID to apply to the response data.
+          pattern: ^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$
+          title: Depth Shift Id
           type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-12-31'
+            value: PropertyX,PropertyY,PropertyZ
         in: query
-        name: indexed_end_date
+        name: columns_filter
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
-          title: Indexed End Date
+          title: Columns Filter
           type: string
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-01-01'
+            value: PropertyX[.PropertyXFieldA],gt,4000
         in: query
-        name: indexed_start_date
+        name: rows_filter
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
-          title: Indexed Start Date
+          title: Rows Filter
           type: string
-      - description: Number of results to skip before returning data
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
         in: query
-        name: offset
+        name: columns_aggregation
         required: false
         schema:
-          default: 0
-          description: Number of results to skip before returning data
-          minimum: 0.0
-          title: Offset
-          type: integer
+          title: Columns Aggregation
+          type: string
       - description: 'JSON output format: ''split'' returns {columns, index, data},
           ''records'' returns [{field: value}, ...]'
         in: query
@@ -4375,6 +4493,16 @@ paths:
           - records
           title: Orient
           type: string
+      - description: Number of results to skip before returning data
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Number of results to skip before returning data
+          minimum: 0.0
+          title: Offset
+          type: integer
       - description: Maximum number of results to return per page
         in: query
         name: page_limit
@@ -4386,30 +4514,27 @@ paths:
           maximum: 100.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
+            value: '2023-01-01'
         in: query
-        name: rows_filter
+        name: indexed_start_date
         required: false
         schema:
-          title: Rows Filter
+          description: Start date in YYYY-MM-DD format
+          title: Indexed Start Date
           type: string
-      - description: Optional WellID scope
+      - description: End date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-12-31'
         in: query
-        name: well_id
+        name: indexed_end_date
         required: false
         schema:
-          description: Optional WellID scope
-          title: Well Id
-          type: string
-      - description: Optional WellboreID scope
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional WellboreID scope
-          title: Wellbore Id
+          description: End date in YYYY-MM-DD format
+          title: Indexed End Date
           type: string
       responses:
         '200':
@@ -4751,7 +4876,9 @@ paths:
         can be used to manage data in response.<br><br>            Use the `orient`
         query parameter to select the JSON output format (`split` or `records`).<br><br>        Required
         roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In
-        addition, users must be members of a data group(ACL) to access the data.'
+        addition, users must be members of a data group(ACL) to access the data.<br><br>Depth-shift
+        augmentation parameters: use <code>depth_shift_policy</code> (<code>definitive</code>
+        or <code>id_provided</code>) and optional <code>depth_shift_id</code>.'
       operationId: get_data_v2_api_rafs_ddms_v2_samplesanalysis__record_id__data__analysis_type___content_id__get
       parameters:
       - in: path
@@ -4806,14 +4933,24 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],mean
+      - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
+          definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
         in: query
-        name: columns_aggregation
+        name: depth_shift_policy
         required: false
         schema:
-          title: Columns Aggregation
+          description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
+            definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
+          title: Depth Shift Policy
+          type: string
+      - description: DepthShift WPC record ID to apply to the response data.
+        in: query
+        name: depth_shift_id
+        required: false
+        schema:
+          description: DepthShift WPC record ID to apply to the response data.
+          pattern: ^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$
+          title: Depth Shift Id
           type: string
       - examples:
           example:
@@ -4824,23 +4961,23 @@ paths:
         schema:
           title: Columns Filter
           type: string
-      - description: DepthShift WPC record ID to apply to the response data.
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],gt,4000
         in: query
-        name: depth_shift_id
+        name: rows_filter
         required: false
         schema:
-          description: DepthShift WPC record ID to apply to the response data.
-          title: Depth Shift Id
+          title: Rows Filter
           type: string
-      - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
-          definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
         in: query
-        name: depth_shift_policy
+        name: columns_aggregation
         required: false
         schema:
-          description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
-            definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
-          title: Depth Shift Policy
+          title: Columns Aggregation
           type: string
       - description: 'JSON output format: ''split'' returns {columns, index, data},
           ''records'' returns [{field: value}, ...]'
@@ -4855,15 +4992,6 @@ paths:
           - split
           - records
           title: Orient
-          type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
-        in: query
-        name: rows_filter
-        required: false
-        schema:
-          title: Rows Filter
           type: string
       responses:
         '200':
@@ -5202,22 +5330,55 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: Optional BasinID scope
+      - description: 'Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+          ''authority:master-data--Basin:identifier''). Scope parameters filter results
+          hierarchically: basin -> field -> well -> wellbore.'
         in: query
         name: basin_id
         required: false
         schema:
-          description: Optional BasinID scope
+          description: 'Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+            ''authority:master-data--Basin:identifier''). Scope parameters filter
+            results hierarchically: basin -> field -> well -> wellbore.'
           title: Basin Id
           type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],mean
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
         in: query
-        name: columns_aggregation
+        name: field_id
         required: false
         schema:
-          title: Columns Aggregation
+          description: Optional scope parameter to filter search results to a specific
+            field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+            with or without basin_id scope.
+          title: Field Id
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
+          or without basin_id/field_id scope.
+        in: query
+        name: well_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
+            with or without basin_id/field_id scope.
+          title: Well Id
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+          Most restrictive scope parameter.
+        in: query
+        name: wellbore_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+            Most restrictive scope parameter.
+          title: Wellbore Id
           type: string
       - examples:
           example:
@@ -5228,35 +5389,23 @@ paths:
         schema:
           title: Columns Filter
           type: string
-      - description: Optional FieldID scope
-        in: query
-        name: field_id
-        required: false
-        schema:
-          description: Optional FieldID scope
-          title: Field Id
-          type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-12-31'
+            value: PropertyX[.PropertyXFieldA],gt,4000
         in: query
-        name: indexed_end_date
+        name: rows_filter
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
-          title: Indexed End Date
+          title: Rows Filter
           type: string
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-01-01'
+            value: PropertyX[.PropertyXFieldA],mean
         in: query
-        name: indexed_start_date
+        name: columns_aggregation
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
-          title: Indexed Start Date
+          title: Columns Aggregation
           type: string
       - description: Number of results to skip before returning data
         in: query
@@ -5279,30 +5428,27 @@ paths:
           maximum: 100.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
+            value: '2023-01-01'
         in: query
-        name: rows_filter
+        name: indexed_start_date
         required: false
         schema:
-          title: Rows Filter
+          description: Start date in YYYY-MM-DD format
+          title: Indexed Start Date
           type: string
-      - description: Optional WellID scope
+      - description: End date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-12-31'
         in: query
-        name: well_id
+        name: indexed_end_date
         required: false
         schema:
-          description: Optional WellID scope
-          title: Well Id
-          type: string
-      - description: Optional WellboreID scope
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional WellboreID scope
-          title: Wellbore Id
+          description: End date in YYYY-MM-DD format
+          title: Indexed End Date
           type: string
       responses:
         '200':
@@ -5360,39 +5506,55 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: Optional BasinID scope
+      - description: 'Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+          ''authority:master-data--Basin:identifier''). Scope parameters filter results
+          hierarchically: basin -> field -> well -> wellbore.'
         in: query
         name: basin_id
         required: false
         schema:
-          description: Optional BasinID scope
+          description: 'Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+            ''authority:master-data--Basin:identifier''). Scope parameters filter
+            results hierarchically: basin -> field -> well -> wellbore.'
           title: Basin Id
           type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],mean
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
         in: query
-        name: columns_aggregation
+        name: field_id
         required: false
         schema:
-          title: Columns Aggregation
+          description: Optional scope parameter to filter search results to a specific
+            field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+            with or without basin_id scope.
+          title: Field Id
           type: string
-      - examples:
-          example:
-            value: PropertyX,PropertyY,PropertyZ
+      - description: Optional scope parameter to filter search results to a specific
+          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
+          or without basin_id/field_id scope.
         in: query
-        name: columns_filter
+        name: well_id
         required: false
         schema:
-          title: Columns Filter
+          description: Optional scope parameter to filter search results to a specific
+            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
+            with or without basin_id/field_id scope.
+          title: Well Id
           type: string
-      - description: DepthShift WPC record ID to apply to the response data.
+      - description: Optional scope parameter to filter search results to a specific
+          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+          Most restrictive scope parameter.
         in: query
-        name: depth_shift_id
+        name: wellbore_id
         required: false
         schema:
-          description: DepthShift WPC record ID to apply to the response data.
-          title: Depth Shift Id
+          description: Optional scope parameter to filter search results to a specific
+            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+            Most restrictive scope parameter.
+          title: Wellbore Id
           type: string
       - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
           definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
@@ -5404,46 +5566,42 @@ paths:
             definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
           title: Depth Shift Policy
           type: string
-      - description: Optional FieldID scope
+      - description: DepthShift WPC record ID to apply to the response data.
         in: query
-        name: field_id
+        name: depth_shift_id
         required: false
         schema:
-          description: Optional FieldID scope
-          title: Field Id
+          description: DepthShift WPC record ID to apply to the response data.
+          pattern: ^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$
+          title: Depth Shift Id
           type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-12-31'
+            value: PropertyX,PropertyY,PropertyZ
         in: query
-        name: indexed_end_date
+        name: columns_filter
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
-          title: Indexed End Date
+          title: Columns Filter
           type: string
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
-            value: '2023-01-01'
+            value: PropertyX[.PropertyXFieldA],gt,4000
         in: query
-        name: indexed_start_date
+        name: rows_filter
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
-          title: Indexed Start Date
+          title: Rows Filter
           type: string
-      - description: Number of results to skip before returning data
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
         in: query
-        name: offset
+        name: columns_aggregation
         required: false
         schema:
-          default: 0
-          description: Number of results to skip before returning data
-          minimum: 0.0
-          title: Offset
-          type: integer
+          title: Columns Aggregation
+          type: string
       - description: 'JSON output format: ''split'' returns {columns, index, data},
           ''records'' returns [{field: value}, ...]'
         in: query
@@ -5458,6 +5616,16 @@ paths:
           - records
           title: Orient
           type: string
+      - description: Number of results to skip before returning data
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Number of results to skip before returning data
+          minimum: 0.0
+          title: Offset
+          type: integer
       - description: Maximum number of results to return per page
         in: query
         name: page_limit
@@ -5469,30 +5637,27 @@ paths:
           maximum: 100.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
+            value: '2023-01-01'
         in: query
-        name: rows_filter
+        name: indexed_start_date
         required: false
         schema:
-          title: Rows Filter
+          description: Start date in YYYY-MM-DD format
+          title: Indexed Start Date
           type: string
-      - description: Optional WellID scope
+      - description: End date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-12-31'
         in: query
-        name: well_id
+        name: indexed_end_date
         required: false
         schema:
-          description: Optional WellID scope
-          title: Well Id
-          type: string
-      - description: Optional WellboreID scope
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional WellboreID scope
-          title: Wellbore Id
+          description: End date in YYYY-MM-DD format
+          title: Indexed End Date
           type: string
       responses:
         '200':
@@ -5833,21 +5998,30 @@ paths:
           type: string
       - examples:
           example:
-            value: PropertyX[.PropertyXFieldA],mean
-        in: query
-        name: columns_aggregation
-        required: false
-        schema:
-          title: Columns Aggregation
-          type: string
-      - examples:
-          example:
             value: PropertyX,PropertyY,PropertyZ
         in: query
         name: columns_filter
         required: false
         schema:
           title: Columns Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],gt,4000
+        in: query
+        name: rows_filter
+        required: false
+        schema:
+          title: Rows Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
+        in: query
+        name: columns_aggregation
+        required: false
+        schema:
+          title: Columns Aggregation
           type: string
       - description: 'JSON output format: ''split'' returns {columns, index, data},
           ''records'' returns [{field: value}, ...]'
@@ -5862,15 +6036,6 @@ paths:
           - split
           - records
           title: Orient
-          type: string
-      - examples:
-          example:
-            value: PropertyX[.PropertyXFieldA],gt,4000
-        in: query
-        name: rows_filter
-        required: false
-        schema:
-          title: Rows Filter
           type: string
       responses:
         '200':
