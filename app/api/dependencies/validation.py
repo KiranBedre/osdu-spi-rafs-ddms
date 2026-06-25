@@ -764,7 +764,7 @@ def get_search_scope(
             "Optional scope parameter to filter search results to a specific wellbore. "
             "Must be a valid OSDU record ID of kind 'master-data--Wellbore'. "
             "Most restrictive scope parameter. "
-            "Required when depth shift is requested."
+            "Required when depth_shift_policy is provided on SamplesAnalysis search/data."
         ),
     ),
 ) -> SearchScope:
