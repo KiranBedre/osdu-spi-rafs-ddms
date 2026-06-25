@@ -924,14 +924,14 @@ paths:
           type: string
       - description: Optional scope parameter to filter search results to a specific
           wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter.
+          Most restrictive scope parameter. Required when depth shift is requested.
         in: query
         name: wellbore_id
         required: false
         schema:
           description: Optional scope parameter to filter search results to a specific
             wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter.
+            Most restrictive scope parameter. Required when depth shift is requested.
           title: Wellbore Id
           type: string
       - examples:
@@ -1099,14 +1099,14 @@ paths:
           type: string
       - description: Optional scope parameter to filter search results to a specific
           wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter.
+          Most restrictive scope parameter. Required when depth shift is requested.
         in: query
         name: wellbore_id
         required: false
         schema:
           description: Optional scope parameter to filter search results to a specific
             wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter.
+            Most restrictive scope parameter. Required when depth shift is requested.
           title: Wellbore Id
           type: string
       - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
@@ -2816,14 +2816,14 @@ paths:
           type: string
       - description: Optional scope parameter to filter search results to a specific
           wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter.
+          Most restrictive scope parameter. Required when depth shift is requested.
         in: query
         name: wellbore_id
         required: false
         schema:
           description: Optional scope parameter to filter search results to a specific
             wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter.
+            Most restrictive scope parameter. Required when depth shift is requested.
           title: Wellbore Id
           type: string
       - examples:
@@ -2992,14 +2992,14 @@ paths:
           type: string
       - description: Optional scope parameter to filter search results to a specific
           wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter.
+          Most restrictive scope parameter. Required when depth shift is requested.
         in: query
         name: wellbore_id
         required: false
         schema:
           description: Optional scope parameter to filter search results to a specific
             wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter.
+            Most restrictive scope parameter. Required when depth shift is requested.
           title: Wellbore Id
           type: string
       - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
@@ -4237,14 +4237,14 @@ paths:
           type: string
       - description: Optional scope parameter to filter search results to a specific
           wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter.
+          Most restrictive scope parameter. Required when depth shift is requested.
         in: query
         name: wellbore_id
         required: false
         schema:
           description: Optional scope parameter to filter search results to a specific
             wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter.
+            Most restrictive scope parameter. Required when depth shift is requested.
           title: Wellbore Id
           type: string
       - examples:
@@ -4423,14 +4423,14 @@ paths:
           type: string
       - description: Optional scope parameter to filter search results to a specific
           wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter.
+          Most restrictive scope parameter. Required when depth shift is requested.
         in: query
         name: wellbore_id
         required: false
         schema:
           description: Optional scope parameter to filter search results to a specific
             wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter.
+            Most restrictive scope parameter. Required when depth shift is requested.
           title: Wellbore Id
           type: string
       - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
@@ -5370,14 +5370,14 @@ paths:
           type: string
       - description: Optional scope parameter to filter search results to a specific
           wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter.
+          Most restrictive scope parameter. Required when depth shift is requested.
         in: query
         name: wellbore_id
         required: false
         schema:
           description: Optional scope parameter to filter search results to a specific
             wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter.
+            Most restrictive scope parameter. Required when depth shift is requested.
           title: Wellbore Id
           type: string
       - examples:
@@ -5546,14 +5546,14 @@ paths:
           type: string
       - description: Optional scope parameter to filter search results to a specific
           wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter.
+          Most restrictive scope parameter. Required when depth shift is requested.
         in: query
         name: wellbore_id
         required: false
         schema:
           description: Optional scope parameter to filter search results to a specific
             wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter.
+            Most restrictive scope parameter. Required when depth shift is requested.
           title: Wellbore Id
           type: string
       - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s

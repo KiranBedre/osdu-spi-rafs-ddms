@@ -436,8 +436,12 @@ class TestWellboreMismatchNestedRecord:
         assert len(all_warnings) >= 1
         assert any("mismatch" in w.lower() for w in all_warnings)
 
-    def test_nested_wellbore_match_no_warning(self):
-        """No wellbore warning when nested WellboreID matches the shift wellbore."""
+    def test_nested_wellbore_match_no_mismatch_warning(self):
+        """No wellbore mismatch warning when nested WellboreID matches the shift wellbore.
+
+        A SampleAcquisitionDetail fallback warning is still expected because this
+        record has no DepthMeasurements.
+        """
         sample_records = {"sample-0": self._make_nested_sample(self._SHIFT_WELLBORE)}
         base_df = pd.DataFrame({"SampleID": ["sample-0"]})
         _, all_warnings = augment_dataframe(
@@ -448,6 +452,66 @@ class TestWellboreMismatchNestedRecord:
             sample_records=sample_records,
         )
         assert not any("mismatch" in w.lower() for w in all_warnings)
+        assert any("SampleAcquisitionDetail" in w for w in all_warnings)
+
+
+class TestSampleAcquisitionFallbackWarning:
+    """Augmenter must warn when depths come from SampleAcquisitionDetail instead of DepthMeasurements."""
+
+    _SHIFT_SET = [
+        {
+            "OriginalTopDepth": 1000.0,
+            "OriginalBaseDepth": 1010.0,
+            "ShiftedTopDepth": 1001.5,
+            "ShiftedBaseDepth": 1011.5,
+        },
+    ]
+    _SHIFT_WELLBORE = "osdu:master-data--Wellbore:wb:"
+
+    def _run(self, sample_record: dict):
+        base_df = pd.DataFrame({"SampleID": ["sample-0"]})
+        return augment_dataframe(
+            base_df,
+            resolver=None,
+            shift_set=self._SHIFT_SET,
+            shift_wellbore=self._SHIFT_WELLBORE,
+            sample_records={"sample-0": sample_record},
+        )
+
+    def test_fallback_emits_warning(self):
+        """No DepthMeasurements → depths from SampleAcquisitionDetail → warning emitted."""
+        record = {
+            "data": {
+                "WellboreID": self._SHIFT_WELLBORE,
+                "SampleAcquisition": {
+                    "SampleAcquisitionDetail": {
+                        "TopDepth": 1005.0,
+                        "BaseDepth": 1007.0,
+                    }
+                },
+            }
+        }
+        _, all_warnings = self._run(record)
+        assert any(
+            "SampleAcquisitionDetail" in w and "because" in w for w in all_warnings
+        ), f"Expected SampleAcquisitionDetail fallback warning, got: {all_warnings}"
+
+    def test_depth_measurements_present_no_fallback_warning(self):
+        """DepthMeasurements present → no fallback warning."""
+        record = {
+            "data": {
+                "WellboreID": self._SHIFT_WELLBORE,
+                "DepthMeasurements": [
+                    {
+                        "VerticalMeasurementTypeID": "SampleTop",
+                        "VerticalMeasurementSourceID": "DRL",
+                        "VerticalMeasurement": 1005.0,
+                    }
+                ],
+            }
+        }
+        _, all_warnings = self._run(record)
+        assert not any("SampleAcquisitionDetail" in w for w in all_warnings)
 
 
 class TestCrossIntervalGuard:
@@ -660,3 +724,77 @@ class TestSampleBaseAndMeanFallback:
         assert any(
             "Sample not shifted: SampleMean 9999.000" in w for w in all_warnings
         ), f"Expected generalized out-of-range message, got: {all_warnings}"
+
+
+class TestMixedSampleDepthFields:
+    """Regression for NaN-instead-of-null when multiple samples have different optional fields.
+
+    When sample-0 carries SampleTop+SampleBase+SampleMean and sample-1 carries
+    only SampleTop, the missing SampleBase/SampleMean cells of sample-1 must be
+    Python None — not float('nan') — so that JSON serialisation produces null, not NaN.
+    """
+
+    _SHIFT_SET = [
+        {
+            "OriginalTopDepth": 1860.0,
+            "OriginalBaseDepth": 1880.0,
+            "ShiftedTopDepth": 1854.667,
+            "ShiftedBaseDepth": 1874.667,
+        },
+    ]
+    _SHIFT_WELLBORE = "osdu:master-data--Wellbore:mixed-wb:"
+
+    @classmethod
+    def _make_sample(cls, measurements: List[dict]) -> dict:
+        return {"data": {"WellboreID": cls._SHIFT_WELLBORE, "DepthMeasurements": measurements}}
+
+    def test_missing_fields_are_none_not_nan(self):
+        """sample-1 has no SampleBase/SampleMean; those cells must be None, not NaN."""
+        sample_records = {
+            "sample-0": self._make_sample(
+                [
+                    {
+                        "VerticalMeasurementTypeID": "SampleTop",
+                        "VerticalMeasurementSourceID": "DRL",
+                        "VerticalMeasurement": 1872.0,
+                    },
+                    {
+                        "VerticalMeasurementTypeID": "SampleBase",
+                        "VerticalMeasurementSourceID": "DRL",
+                        "VerticalMeasurement": 1874.0,
+                    },
+                    {
+                        "VerticalMeasurementTypeID": "SampleMean",
+                        "VerticalMeasurementSourceID": "DRL",
+                        "VerticalMeasurement": 1869.0,
+                    },
+                ]
+            ),
+            "sample-1": self._make_sample(
+                [
+                    {
+                        "VerticalMeasurementTypeID": "SampleTop",
+                        "VerticalMeasurementSourceID": "DRL",
+                        "VerticalMeasurement": 1875.0,
+                    },
+                ]
+            ),
+        }
+        base_df = pd.DataFrame({"SampleID": ["sample-0", "sample-1"]})
+        result_df, _ = augment_dataframe(
+            base_df,
+            resolver=None,
+            shift_set=self._SHIFT_SET,
+            shift_wellbore=self._SHIFT_WELLBORE,
+            sample_records=sample_records,
+        )
+
+        # sample-0: all three optional fields populated — shifted values must be floats
+        assert result_df.iloc[0]["SampleBase"] is not None and not pd.isna(result_df.iloc[0]["SampleBase"])
+        assert result_df.iloc[0]["SampleMean"] is not None and not pd.isna(result_df.iloc[0]["SampleMean"])
+
+        # sample-1: missing fields must be None, not NaN
+        assert result_df.iloc[1]["SampleBase"] is None, "SampleBase should be None, not NaN"
+        assert result_df.iloc[1]["SampleMean"] is None, "SampleMean should be None, not NaN"
+        assert result_df.iloc[1]["ShiftedSampleBase"] is None, "ShiftedSampleBase should be None, not NaN"
+        assert result_df.iloc[1]["ShiftedSampleMean"] is None, "ShiftedSampleMean should be None, not NaN"
