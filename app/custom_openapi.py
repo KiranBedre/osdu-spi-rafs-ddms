@@ -388,7 +388,8 @@ def _enrich_depth_shift_descriptions(openapi_schema: dict) -> None:  # noqa: WPS
                 get_operation,
                 "Scope parameters filter results hierarchically by organizational level: "
                 "<code>basin_id</code> (broadest), <code>field_id</code>, <code>well_id</code>, "
-                "<code>wellbore_id</code> (most restrictive). All are optional OSDU record IDs.",
+                "<code>wellbore_id</code> (most restrictive). Scope parameters are optional for regular search, "
+                "but <code>wellbore_id</code> is required when <code>depth_shift_policy</code> is provided.",
             )
 
 

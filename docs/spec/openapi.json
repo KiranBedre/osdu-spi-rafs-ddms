@@ -426,7 +426,7 @@
     },
     "/api/rafs-ddms/dev/samplesanalysis/{analysis_type}/search/data": {
       "get": {
-        "description": "Get the (`queried`) bulk data from every `{analysis_type}` found in search service. <br><br>            Use the `Accept` request header to specify content schema version                 (example header `Accept: */*;version=1.0.0` is supported).<br><br>            The  `columns_filter`, `rows_filter`, and  `columns_aggregation`                 query parameters can be used to manage data in response. <br><br>            Use `offset`, `page_limit` query parameters to control response data size.                 The `page_limit` and `total_size (found in response)` refers to the number of parquet files read.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.<br><br>Depth-shift augmentation parameters: use <code>depth_shift_policy</code> (<code>definitive</code> or <code>id_provided</code>) and optional <code>depth_shift_id</code>.<br><br>Scope parameters filter results hierarchically by organizational level: <code>basin_id</code> (broadest), <code>field_id</code>, <code>well_id</code>, <code>wellbore_id</code> (most restrictive). All are optional OSDU record IDs.",
+        "description": "Get the (`queried`) bulk data from every `{analysis_type}` found in search service. <br><br>            Use the `Accept` request header to specify content schema version                 (example header `Accept: */*;version=1.0.0` is supported).<br><br>            The  `columns_filter`, `rows_filter`, and  `columns_aggregation`                 query parameters can be used to manage data in response. <br><br>            Use `offset`, `page_limit` query parameters to control response data size.                 The `page_limit` and `total_size (found in response)` refers to the number of parquet files read.<br><br>        Required roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition, users must be members of a data group(ACL) to access the data.<br><br>Depth-shift augmentation parameters: use <code>depth_shift_policy</code> (<code>definitive</code> or <code>id_provided</code>) and optional <code>depth_shift_id</code>.<br><br>Scope parameters filter results hierarchically by organizational level: <code>basin_id</code> (broadest), <code>field_id</code>, <code>well_id</code>, <code>wellbore_id</code> (most restrictive). Scope parameters are optional for regular search, but <code>wellbore_id</code> is required when <code>depth_shift_policy</code> is provided.",
         "operationId": "get_search_data_api_rafs_ddms_dev_samplesanalysis__analysis_type__search_data_get",
         "parameters": [
           {
@@ -1178,12 +1178,12 @@
             }
           },
           {
-            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
             "in": "query",
             "name": "wellbore_id",
             "required": false,
             "schema": {
-              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
               "title": "Wellbore Id",
               "type": "string"
             }
@@ -1388,12 +1388,12 @@
             }
           },
           {
-            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
             "in": "query",
             "name": "wellbore_id",
             "required": false,
             "schema": {
-              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
               "title": "Wellbore Id",
               "type": "string"
             }
@@ -3594,12 +3594,12 @@
             }
           },
           {
-            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
             "in": "query",
             "name": "wellbore_id",
             "required": false,
             "schema": {
-              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
               "title": "Wellbore Id",
               "type": "string"
             }
@@ -3804,12 +3804,12 @@
             }
           },
           {
-            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
             "in": "query",
             "name": "wellbore_id",
             "required": false,
             "schema": {
-              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
               "title": "Wellbore Id",
               "type": "string"
             }
@@ -5401,12 +5401,12 @@
             }
           },
           {
-            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
             "in": "query",
             "name": "wellbore_id",
             "required": false,
             "schema": {
-              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
               "title": "Wellbore Id",
               "type": "string"
             }
@@ -5546,7 +5546,7 @@
     },
     "/api/rafs-ddms/v2/samplesanalysis/{analysis_type}/search/data": {
       "get": {
-        "description": "Get `{analysis_type}` records bulk data content.<br><br> Use the `content_schema_version` query parameter to specify content schema version (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br> Use the `orient` query parameter to select the JSON output format (`split` or `records`). The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query parameters can be used to manage data in response. <br><br>  Use `offset`, `page_limit` query parameters to control response data size.  The `page_limit` and `total_size` (found in response) <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters to filter the data based on indexing  date. <br><br>  - `indexed_start_date`: Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before this date.<br><br>Depth-shift augmentation parameters: use <code>depth_shift_policy</code> (<code>definitive</code> or <code>id_provided</code>) and optional <code>depth_shift_id</code>.<br><br>Scope parameters filter results hierarchically by organizational level: <code>basin_id</code> (broadest), <code>field_id</code>, <code>well_id</code>, <code>wellbore_id</code> (most restrictive). All are optional OSDU record IDs.",
+        "description": "Get `{analysis_type}` records bulk data content.<br><br> Use the `content_schema_version` query parameter to specify content schema version (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br> Use the `orient` query parameter to select the JSON output format (`split` or `records`). The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query parameters can be used to manage data in response. <br><br>  Use `offset`, `page_limit` query parameters to control response data size.  The `page_limit` and `total_size` (found in response) <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters to filter the data based on indexing  date. <br><br>  - `indexed_start_date`: Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before this date.<br><br>Depth-shift augmentation parameters: use <code>depth_shift_policy</code> (<code>definitive</code> or <code>id_provided</code>) and optional <code>depth_shift_id</code>.<br><br>Scope parameters filter results hierarchically by organizational level: <code>basin_id</code> (broadest), <code>field_id</code>, <code>well_id</code>, <code>wellbore_id</code> (most restrictive). Scope parameters are optional for regular search, but <code>wellbore_id</code> is required when <code>depth_shift_policy</code> is provided.",
         "operationId": "search_endpoint_api_rafs_ddms_v2_samplesanalysis__analysis_type__search_data_get",
         "parameters": [
           {
@@ -5620,12 +5620,12 @@
             }
           },
           {
-            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
             "in": "query",
             "name": "wellbore_id",
             "required": false,
             "schema": {
-              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
               "title": "Wellbore Id",
               "type": "string"
             }
@@ -6827,12 +6827,12 @@
             }
           },
           {
-            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
             "in": "query",
             "name": "wellbore_id",
             "required": false,
             "schema": {
-              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
               "title": "Wellbore Id",
               "type": "string"
             }
@@ -7037,12 +7037,12 @@
             }
           },
           {
-            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+            "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
             "in": "query",
             "name": "wellbore_id",
             "required": false,
             "schema": {
-              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth shift is requested.",
+              "description": "Optional scope parameter to filter search results to a specific wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'. Most restrictive scope parameter. Required when depth_shift_policy is provided on SamplesAnalysis search/data.",
               "title": "Wellbore Id",
               "type": "string"
             }
