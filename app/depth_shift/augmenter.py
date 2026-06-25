@@ -104,7 +104,8 @@ def _collect_row_warnings(  # noqa: CCR001,WPS210,WPS231
     warnings: List[str] = []
     record_data = sample_record.get("data", {})
     vertical_measurements = record_data.get("DepthMeasurements", [])
-    if not vertical_measurements:
+    has_depth_entries = any(is_sample_depth_entry(entry) for entry in vertical_measurements)
+    if not has_depth_entries:
         acquisition = record_data.get("SampleAcquisition", {}) if isinstance(record_data, dict) else {}
         detail = acquisition.get("SampleAcquisitionDetail", {}) if isinstance(acquisition, dict) else {}
         if isinstance(detail, dict):
@@ -126,6 +127,11 @@ def _collect_row_warnings(  # noqa: CCR001,WPS210,WPS231
                         "VerticalMeasurement": detail.get("BaseDepth"),
                         "VerticalMeasurementSourceID": source_id,
                     },
+                )
+            if synthesized:
+                warnings.append(
+                    "Sample depths sourced from SampleAcquisitionDetail (TopDepth/BaseDepth)"
+                    " because DepthMeasurements is absent or contains no recognizable depth entries."
                 )
             vertical_measurements = synthesized
 
@@ -305,12 +311,12 @@ def augment_dataframe(  # noqa: WPS210,CCR001,WPS231
         all_warnings.extend(row.warnings)
 
     df = base_df.copy()
-    df["SampleTop"] = tops
-    df["SampleBase"] = bases
-    df["SampleMean"] = means
-    df["ShiftedSampleTop"] = shifted_tops
-    df["ShiftedSampleBase"] = shifted_bases
-    df["ShiftedSampleMean"] = shifted_means
+    df["SampleTop"] = pd.array(tops, dtype=object)
+    df["SampleBase"] = pd.array(bases, dtype=object)
+    df["SampleMean"] = pd.array(means, dtype=object)
+    df["ShiftedSampleTop"] = pd.array(shifted_tops, dtype=object)
+    df["ShiftedSampleBase"] = pd.array(shifted_bases, dtype=object)
+    df["ShiftedSampleMean"] = pd.array(shifted_means, dtype=object)
     df["DepthShiftWarnings"] = row_warnings
 
     return (df, all_warnings)

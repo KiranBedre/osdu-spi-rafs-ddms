@@ -35,6 +35,7 @@ from app.api.dependencies.services import (
 from app.api.dependencies.validation import get_orient, validate_filters
 from app.api.routes.osdu.storage_records import BaseStorageRecordView
 from app.api.routes.utils.api_description_helper import APIDescriptionHelper
+from app.api.routes.utils.records import get_id
 from app.api.routes.v2.data.endpoints import BaseDataViewV2
 from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
@@ -401,12 +402,24 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         return extract_sample_wellbore_id(sample_record)
 
     def _validate_single_wellbore_scope(self, sample_records: dict) -> None:
-        """Reject depth-shift requests that span multiple wellbores."""
-        wellbore_ids = {
-            wellbore_id
-            for wellbore_id in (self._extract_sample_wellbore_id(record) for record in sample_records.values())
-            if wellbore_id
-        }
+        """Reject depth-shift requests that span multiple wellbores or have samples missing WellboreID."""
+        wellbore_ids: set = set()
+        missing: list = []
+        for sample_id, record in sample_records.items():
+            wid = self._extract_sample_wellbore_id(record)
+            if wid:
+                wellbore_ids.add(get_id(wid))
+            else:
+                missing.append(sample_id)
+
+        if missing:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "Depth shift requires every sample record to resolve to a WellboreID. "
+                    f"Missing WellboreID for sample ids: {sorted(str(s) for s in missing)}."
+                ),
+            )
         if not wellbore_ids:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

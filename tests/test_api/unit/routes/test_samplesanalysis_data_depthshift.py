@@ -91,3 +91,46 @@ async def test_run_depth_shift_pipeline_empty_results_return_unmodified_response
     )
 
     assert result is base_response
+
+
+class TestValidateSingleWellboreScopeGetData:
+    """_validate_single_wellbore_scope on the get-data view must reject mixed/missing wellbores."""
+
+    _WB = "osdu:master-data--Wellbore:KKS1:"
+    _WB2 = "osdu:master-data--Wellbore:NewOne:"
+
+    @pytest.fixture
+    def view(self):
+        return SamplesAnalysisDataView(router=MagicMock(), id_regex_str=r".*")
+
+    @staticmethod
+    def _record(wellbore_id):
+        if wellbore_id is None:
+            return {"data": {}}
+        return {"data": {"WellboreID": wellbore_id}}
+
+    def test_single_wellbore_passes(self, view):
+        records = {"s0": self._record(self._WB), "s1": self._record(self._WB)}
+        view._validate_single_wellbore_scope(records)  # must not raise
+
+    def test_multiple_wellbores_raises_422(self, view):
+        records = {"s0": self._record(self._WB), "s1": self._record(self._WB2)}
+        with pytest.raises(HTTPException) as exc_info:
+            view._validate_single_wellbore_scope(records)
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert "multiple WellboreIDs" in exc_info.value.detail
+
+    def test_one_sample_missing_wellbore_raises_422(self, view):
+        records = {"s0": self._record(self._WB), "s1": self._record(None)}
+        with pytest.raises(HTTPException) as exc_info:
+            view._validate_single_wellbore_scope(records)
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert "Missing WellboreID" in exc_info.value.detail
+        assert "s1" in exc_info.value.detail
+
+    def test_all_samples_missing_wellbore_raises_422(self, view):
+        records = {"s0": self._record(None), "s1": self._record(None)}
+        with pytest.raises(HTTPException) as exc_info:
+            view._validate_single_wellbore_scope(records)
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert "Missing WellboreID" in exc_info.value.detail
