@@ -108,3 +108,41 @@ INCORRECT_SCHEMA_TEST_DATA = {
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
 INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting PermeabilityTestSteps in index row 0
 EXPECTED_ERROR_REASON = "Data error: 21 columns passed, passed data had 20 columns"
+
+# V1.1.0 mock objects
+TEST_SCHEMA_VERSION_V2 = "1.1.0"
+TEST_DDMS_URN_WITH_VERSION_V2 = f"{TEST_DDMS_URN}/{TEST_SCHEMA_VERSION_V2}"
+RECORD_DATA_WITH_SCHEMA_VERSION_V2 = {
+    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **{
+        "data": {"DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION_V2]},
+    },
+}
+with open(f"{dir_path}/relative_permeability_orient_split_v2.json") as fp:
+    TEST_DATA_V2 = json.load(fp)
+
+TEST_AGGREGATED_DATA_V2 = {"columns": ["SampleID"], "index": ["count"], "data": [[1]]}
+
+TEST_FILTERED_DATA_V2 = {
+    "columns": ["SamplesAnalysisID", "SampleID", "PermeabilityTestSteps"],
+    "index": [0],
+    "data": [
+        [
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+            "opendes:master-data--Sample:Sample_200:",
+            TEST_DATA_V2["data"][0][19],
+        ]
+    ],
+}
+
+TEST_PARAMS_FILTERS_V2 = {
+    "columns_filter": "SamplesAnalysisID,SampleID,PermeabilityTestSteps",
+    "rows_filter": "SamplesAnalysisID,eq,partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+}
+
+INCORRECT_DATAFRAME_TEST_DATA_V2 = copy.deepcopy(TEST_DATA_V2)
+INCORRECT_DATAFRAME_TEST_DATA_V2["data"][0].pop()  # deleting EndTime in index row 0
+TEST_DATA_COLUMNS_V2 = len(TEST_DATA_V2["data"][0])
+EXPECTED_ERROR_REASON_V2 = (
+    f"Data error: {TEST_DATA_COLUMNS_V2} columns passed, passed data had {TEST_DATA_COLUMNS_V2 - 1} columns"
+)
