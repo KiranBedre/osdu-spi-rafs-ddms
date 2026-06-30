@@ -27,6 +27,7 @@ from app.api.dependencies.services import (
 from app.api.dependencies.validation import (
     get_orient,
     get_search_data_pagination_parameters,
+    get_search_pagination_parameters,
     get_search_scope,
 )
 from app.api.routes.common.base_search import (
@@ -142,7 +143,7 @@ class DynamicGenericSearchView(GenericSearchDataView):
                 request: Request,
                 df_filter: DataFrameFilterValidator = Depends(filter_dep),
                 content_schema_version: str = Depends(get_content_schema_version),
-                pagination_parameters: PaginationParametersType = Depends(get_search_data_pagination_parameters),
+                pagination_parameters: PaginationParametersType = Depends(get_search_pagination_parameters),
                 search_scope: SearchScope = Depends(get_search_scope),
                 dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
                 blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
