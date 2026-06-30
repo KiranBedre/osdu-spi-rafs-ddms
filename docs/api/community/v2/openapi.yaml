@@ -980,32 +980,30 @@ paths:
         name: page_limit
         required: false
         schema:
-          default: 100
+          default: 1000
           description: Maximum number of results to return per page
           exclusiveMinimum: 0.0
-          maximum: 100.0
+          maximum: 1000.0
           title: Page Limit
           type: integer
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
             value: '2023-01-01'
         in: query
         name: indexed_start_date
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
+          format: date
           title: Indexed Start Date
           type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
             value: '2023-12-31'
         in: query
         name: indexed_end_date
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
+          format: date
           title: Indexed End Date
           type: string
       responses:
@@ -2876,32 +2874,30 @@ paths:
         name: page_limit
         required: false
         schema:
-          default: 100
+          default: 1000
           description: Maximum number of results to return per page
           exclusiveMinimum: 0.0
-          maximum: 100.0
+          maximum: 1000.0
           title: Page Limit
           type: integer
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
             value: '2023-01-01'
         in: query
         name: indexed_start_date
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
+          format: date
           title: Indexed Start Date
           type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
             value: '2023-12-31'
         in: query
         name: indexed_end_date
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
+          format: date
           title: Indexed End Date
           type: string
       responses:
@@ -4301,32 +4297,30 @@ paths:
         name: page_limit
         required: false
         schema:
-          default: 100
+          default: 1000
           description: Maximum number of results to return per page
           exclusiveMinimum: 0.0
-          maximum: 100.0
+          maximum: 1000.0
           title: Page Limit
           type: integer
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
             value: '2023-01-01'
         in: query
         name: indexed_start_date
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
+          format: date
           title: Indexed Start Date
           type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
             value: '2023-12-31'
         in: query
         name: indexed_end_date
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
+          format: date
           title: Indexed End Date
           type: string
       responses:
@@ -5440,32 +5434,30 @@ paths:
         name: page_limit
         required: false
         schema:
-          default: 100
+          default: 1000
           description: Maximum number of results to return per page
           exclusiveMinimum: 0.0
-          maximum: 100.0
+          maximum: 1000.0
           title: Page Limit
           type: integer
-      - description: Start date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
             value: '2023-01-01'
         in: query
         name: indexed_start_date
         required: false
         schema:
-          description: Start date in YYYY-MM-DD format
+          format: date
           title: Indexed Start Date
           type: string
-      - description: End date in YYYY-MM-DD format
-        examples:
+      - examples:
           example:
             value: '2023-12-31'
         in: query
         name: indexed_end_date
         required: false
         schema:
-          description: End date in YYYY-MM-DD format
+          format: date
           title: Indexed End Date
           type: string
       responses:
