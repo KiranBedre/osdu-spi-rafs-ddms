@@ -14,7 +14,9 @@
 #  limitations under the License.
 
 from types import MappingProxyType
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
+
+from loguru import logger
 
 from app.models.schemas.search_scope import SearchScope
 
@@ -141,10 +143,9 @@ def extract_record_scope(record_data: Dict) -> Dict[str, str]:  # noqa: CCR001
     Only the first non-empty value found for each key is kept — a record is not
     expected to carry multiple values for the same scope key.
 
-    Returns an empty dict (matches nothing but an unscoped search) when the record
-    carries none of these fields — e.g. plain SamplesAnalysis records, which only
-    reference Well/Wellbore indirectly via `SampleIDs` and would require an
-    additional Sample-record hop that is out of scope for this write-time check.
+    Returns an empty dict for records that carry no scope fields directly (e.g.
+    SamplesAnalysis). Call `enrich_scope_from_samples` afterwards to resolve
+    Well/Wellbore context via the referenced Sample records.
     """
     scope: Dict[str, str] = {}
     for geo_context in record_data.get("GeoContexts") or []:
@@ -156,6 +157,52 @@ def extract_record_scope(record_data: Dict) -> Dict[str, str]:  # noqa: CCR001
         scope["wellbore_id"] = record_data["WellboreID"]
 
     return scope
+
+
+def _merge_sample_scope(scope: Dict[str, str], sample_data: Dict) -> None:  # noqa: CCR001, WPS231
+    """Merge Well/Wellbore scope keys from a Sample record's data block into scope.
+
+    Checks `SampleAcquisition.SampleAcquisitionDetail.WellboreID` and `GeoContexts`.
+    Never overwrites an already-populated scope key.
+    """
+    if "wellbore_id" not in scope:
+        wellbore_id = sample_data.get("SampleAcquisition", {}).get("SampleAcquisitionDetail", {}).get("WellboreID")
+        if wellbore_id:
+            scope["wellbore_id"] = wellbore_id
+
+    for geo_context in sample_data.get("GeoContexts") or []:
+        for field_name, scope_key in _GEO_CONTEXT_SCOPE_FIELDS.items():
+            if scope_key not in scope and geo_context.get(field_name):
+                scope[scope_key] = geo_context[field_name]
+
+
+async def enrich_scope_from_samples(  # noqa: ASYNC910
+    scope: Dict[str, str],
+    sample_ids: List[str],
+    storage_service: Any,
+) -> Dict[str, str]:
+    """Enrich a scope dict with Well/Wellbore IDs resolved from Sample records.
+
+    SamplesAnalysis WPCs carry no GeoContexts; their Well/Wellbore context lives
+    on the Sample master-data records they reference via `SampleIDs`. This fetches
+    those records in a single batch query and merges any found scope keys into the
+    existing scope without overwriting already-populated keys.
+
+    Adds ~100-300 ms of latency on the write path due to the Storage round-trip.
+    Fails silently — returns the original scope on any error so the pending-write
+    is still recorded (unscoped) rather than dropped.
+    """
+    if not sample_ids:
+        return scope  # noqa: ASYNC910
+    try:
+        response = await storage_service.query_records(sample_ids)
+        enriched = dict(scope)
+        for sample_record in response.get("records") or []:
+            _merge_sample_scope(enriched, sample_record.get("data") or {})
+        return enriched
+    except Exception as exc:  # noqa: B902, WPS329
+        logger.debug("enrich_scope_from_samples: Storage error, returning original scope: {0}", exc)
+        return scope  # noqa: ASYNC910
 
 
 class UnsupportedSearchScopeError(ValueError):
