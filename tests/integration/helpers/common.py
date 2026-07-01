@@ -146,6 +146,20 @@ class CommonHelper():
         if diff:
             assert False, f"Responses do not match!\n{diff.to_json(indent=2)}\n"
 
+    def compare_response_fields(self, actual: dict, expected: dict) -> None:
+        """
+        Assert that every key in ``expected`` exists in ``actual`` with the same value.
+
+        :param actual: Section of an API response.
+        :param expected: Dict of expected field values.
+        :raises AssertionError: With the offending field name and values.
+        """
+        for key, expected_value in expected.items():
+            assert key in actual, f"Missing field: {key}"
+            assert actual[key] == expected_value, (
+                f"{key}: expected {expected_value!r}, got {actual[key]!r}"
+            )
+
     def delete_by_path(self, json_body: dict, path: str) -> None:
         """
         Delete key/element addressed by JSON Pointer.
@@ -255,6 +269,7 @@ class CommonHelper():
             partition: str,
             storage_dependencies: set,
             record_to_create: list,
+            fixed_id_records: list,
     ) -> dict:
         """Create reference records and SAR record; return IDs to share across workers."""
         osdu_generic_record = tests_data(DataFiles.OSDU_GENERIC_RECORD)
@@ -278,6 +293,12 @@ class CommonHelper():
             record_data["id"] = f"{id_template}{helper.generate_random_record_id()}"
             getattr(api, data_type).post_record([record_data])
             created_ids[f"{data_type}_record_id"] = record_data["id"]
+
+        for data in fixed_id_records:
+            record_data = copy.deepcopy(tests_data(data))
+            api.storage.create_or_update_records([record_data])
+            created_ids[f"{data}_fixed_id"] = record_data["id"]
+
         return created_ids
 
     def purge_reference_records(self, api, state: dict, storage_dependencies: set, record_to_create: list) -> None:

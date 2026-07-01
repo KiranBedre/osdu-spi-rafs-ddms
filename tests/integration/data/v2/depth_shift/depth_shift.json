@@ -19,7 +19,7 @@
       "status": "compliant"
     },
     "data": {
-      "WellboreID": "{data_partition_id}:master-data--Wellbore:wellbore-example:",
+      "WellboreID": "{data_partition_id}:master-data--Wellbore:MagmaPulse:",
       "VerticalReferenceRecordID": "{data_partition_id}:work-product-component--WellboreMarkerSet:wls-example:",
       "VerticalReferenceRecordCurveIDs": [
         "GR"
@@ -28,7 +28,7 @@
       "ShiftedSamplingDomainTypeID": "{data_partition_id}:reference-data--WellLogSamplingDomainType:SeismicOneWayTravelTime:",
       "DepthShiftedSamples": [
         {
-          "SampleID": "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+          "SampleID": "{data_partition_id}:master-data--Sample:Master_Sample:",
           "CanDepthShiftBeAppliedToChildSamples": true,
           "CanDepthShiftBeAppliedToSiblingSamples": true
         }

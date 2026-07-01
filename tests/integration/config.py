@@ -104,6 +104,7 @@ class DataFiles:
 
 class DataTemplates:
     ID_DATASET = "{partition}:dataset--File.Generic:"
+    ID_SAMPLE = "{partition}:master-data--Sample:"
     ID_SAR = "{partition}:work-product-component--SamplesAnalysesReport:"
     ID_SAMPLE_ANALYSIS = "{partition}:work-product-component--SamplesAnalysis:"
     ID_SATURATION_FUNCTION_SET = "{partition}:work-product-component--SaturationFunctionSet:"
