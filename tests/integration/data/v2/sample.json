@@ -1,5 +1,5 @@
 {
-    "id": "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test",
+    "id": "{data_partition_id}:master-data--Sample:Master_Sample",
     "kind": "osdu:wks:master-data--Sample:2.0.0",
     "acl": {
         "viewers": [
@@ -307,11 +307,11 @@
                     "VerticalReferenceEntityID": "{data_partition_id}:master-data--Rig:SomeUniqueRigID:",
                     "VerticalMeasurementDescription": "Example VerticalMeasurementDescription"
                 },
-                "TopDepth": 10000.0,
-                "BaseDepth": 20000.0,
+                "TopDepth": 1000.0,
+                "BaseDepth": 1020.0,
                 "ToolKind": "Wireline Formation Tester",
                 "RunNumber": "22",
-                "WellboreID": "{data_partition_id}:master-data--Wellbore:cz2334t678900d53844-4:",
+                "WellboreID": "{data_partition_id}:master-data--Wellbore:MagmaPulse:",
                 "WellheadOperatingCondition": {
                     "Pressure": 1.0,
                     "Temperature": 15.0
@@ -461,14 +461,17 @@
         "DepthMeasurements": [
             {
                 "VerticalMeasurementTypeID": "{data_partition_id}:reference-data--VerticalMeasurementType:SampleTop:",
-                "VerticalMeasurement": 10000.0,
+                "VerticalMeasurement": 1002.0,
                 "VerticalMeasurementSourceID": "{data_partition_id}:reference-data--VerticalMeasurementSource:DRL:"
             },
             {
                 "VerticalMeasurementTypeID": "{data_partition_id}:reference-data--VerticalMeasurementType:SampleBase:",
-                "VerticalMeasurement": 20000.0,
+                "VerticalMeasurement": 1005.0,
                 "VerticalMeasurementSourceID": "{data_partition_id}:reference-data--VerticalMeasurementSource:DRL:"
             }
-        ]
+        ],
+        "DefinitiveDepthShift": {
+                "DefinitiveDepthShiftID": null
+            }
     }
 }

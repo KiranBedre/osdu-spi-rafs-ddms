@@ -45,7 +45,7 @@
     "data": [
         [
       "{data_partition_id}:work-product-component--SamplesAnalysis:StockTankOilV110:",
-      "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+      "{data_partition_id}:master-data--Sample:Master_Sample:",
     [
       {
         "kind": "Unit",

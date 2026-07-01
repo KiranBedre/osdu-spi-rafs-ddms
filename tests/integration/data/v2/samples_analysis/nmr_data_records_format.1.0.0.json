@@ -1,6 +1,6 @@
 {
   "SamplesAnalysisID": "{data_partition_id}:work-product-component--SamplesAnalysis:{record_id}:",
-  "SampleID": "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+  "SampleID": "{data_partition_id}:master-data--Sample:Master_Sample:",
   "Meta": [
     {
       "kind": "Unit",

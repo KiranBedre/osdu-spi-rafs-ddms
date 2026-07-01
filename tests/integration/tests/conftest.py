@@ -84,6 +84,9 @@ def create_referenced_records(api, helper, tests_data, tmp_path_factory, create_
     record_to_create = [
         (DataTypes.SAR, DataFiles.SAR, DataTemplates.ID_SAR.format(partition=partition)),
     ]
+    fixed_id_records = [
+        DataFiles.SAMPLE,
+    ]
 
     shared_dir = tmp_path_factory.getbasetemp().parent
 
@@ -91,7 +94,7 @@ def create_referenced_records(api, helper, tests_data, tmp_path_factory, create_
         shared_dir,
         name="create_referenced_records",
         setup=lambda: helper.create_reference_records(
-            api, helper, tests_data, partition, storage_dependencies, record_to_create,
+            api, helper, tests_data, partition, storage_dependencies, record_to_create, fixed_id_records
         ),
     )
     TEST_DATA_STORE.update(state)
