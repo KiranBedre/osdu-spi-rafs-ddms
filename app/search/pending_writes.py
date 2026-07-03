@@ -153,7 +153,7 @@ async def get_pending_ids(  # noqa: WPS211
     return pending_ids  # noqa: ASYNC910
 
 
-def _filter_scoped_urns(raw_entries: Dict, requested_scope: Dict[str, str]) -> List[str]:
+def _filter_scoped_urns(raw_entries: Dict, requested_scope: Dict[str, str]) -> List[str]:  # noqa: CCR001, WPS231
     """Decode raw Hash entries and return the URNs of those matching the requested scope."""
     urns: List[str] = []
     for raw_payload in raw_entries.values():
@@ -163,8 +163,13 @@ def _filter_scoped_urns(raw_entries: Dict, requested_scope: Dict[str, str]) -> L
         except (TypeError, ValueError) as exc:
             logger.debug("get_pending_ids: could not decode pending entry, skipping: {0}", exc)
             continue
-        if _scope_matches(entry.get("scope") or {}, requested_scope):
-            urns.append(entry["ddms_urn"])
+        if not _scope_matches(entry.get("scope") or {}, requested_scope):
+            continue
+        ddms_urn = entry.get("ddms_urn")
+        if not ddms_urn:
+            logger.debug("get_pending_ids: pending entry missing ddms_urn, skipping")
+            continue
+        urns.append(ddms_urn)
     return urns
 
 
@@ -181,7 +186,7 @@ async def supplement_with_pending_writes(  # noqa: WPS211
     Records written recently may not yet appear in the OSDU Search index
     due to indexer lag. This supplements the search results with any
     matching URNs stored in the write-through Redis cache, deduplicating
-    by wpc_id so already-indexed records are not repeated.
+    by (dataset_id, wpc_id) pair so already-indexed entries are not repeated.
 
     `scope` must be the same scope already resolved for the caller's Search query
     (e.g. `SearchScope.to_query_dict()`) so a pending write cannot leak into a search
@@ -197,12 +202,12 @@ async def supplement_with_pending_writes(  # noqa: WPS211
     if not pending:
         return result_ids
 
-    known_wpc_ids = {wpc_id for _, wpc_id in result_ids}
+    existing_pairs = set(result_ids)
     merged = list(result_ids)
-    for dataset_id, wpc_id in pending:
-        if wpc_id not in known_wpc_ids:
-            merged.append((dataset_id, wpc_id))
-            known_wpc_ids.add(wpc_id)
+    for pair in pending:
+        if pair not in existing_pairs:
+            merged.append(pair)
+            existing_pairs.add(pair)
 
     logger.debug(
         "supplement_with_pending_writes: added {0} pending entries for {1}/{2}.",

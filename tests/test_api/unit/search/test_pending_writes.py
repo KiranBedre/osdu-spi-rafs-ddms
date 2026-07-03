@@ -427,3 +427,65 @@ async def test_supplement_includes_pending_entry_inside_requested_scope():
             scope={"wellbore_id": _WELLBORE_A},
         )
     assert len(result) == 1
+
+
+@pytest.mark.asyncio
+async def test_supplement_adds_new_dataset_for_already_indexed_wpc_id():
+    """A pending entry with a DIFFERENT dataset_id for the same wpc_id must be added
+    even when that wpc_id already appears in result_ids from the Search index.
+    Old wpc_id-only dedup incorrectly dropped it."""
+    redis = _mock_redis()
+    redis.hgetall = AsyncMock(
+        return_value={_DATASET_ID_2.encode(): _entry(urn=_URN_2, wpc_id=_WPC_ID).encode()},
+    )
+    existing = [(_DATASET_ID, _WPC_ID)]
+    with _patch_redis(redis):
+        result = await supplement_with_pending_writes(
+            result_ids=existing,
+            data_partition_id=PARTITION,
+            analysis_family=ANALYSIS_FAMILY,
+            analysis_type=ANALYSIS_TYPE,
+            target_schema_version=SCHEMA_VERSION,
+        )
+    dataset_ids = {ds for ds, _ in result}
+    assert dataset_ids == {_DATASET_ID, _DATASET_ID_2}
+
+
+@pytest.mark.asyncio
+async def test_supplement_deduplicates_exact_pair_already_indexed():
+    """A pending entry with the SAME (dataset_id, wpc_id) as an already-indexed result
+    must not be added again."""
+    redis = _mock_redis()
+    redis.hgetall = AsyncMock(
+        return_value={_DATASET_ID.encode(): _entry(urn=_URN, wpc_id=_WPC_ID).encode()},
+    )
+    existing = [(_DATASET_ID, _WPC_ID)]
+    with _patch_redis(redis):
+        result = await supplement_with_pending_writes(
+            result_ids=existing,
+            data_partition_id=PARTITION,
+            analysis_family=ANALYSIS_FAMILY,
+            analysis_type=ANALYSIS_TYPE,
+            target_schema_version=SCHEMA_VERSION,
+        )
+    assert result == existing
+
+
+@pytest.mark.asyncio
+async def test_get_pending_ids_entry_missing_ddms_urn_is_skipped():
+    """A Redis Hash entry that has no 'ddms_urn' key must be skipped individually
+    without aborting the other entries or raising."""
+    redis = _mock_redis()
+    good_entry = json.dumps({"ddms_urn": _URN, "wpc_id": _WPC_ID, "scope": {}})
+    bad_entry = json.dumps({"wpc_id": _WPC_ID, "scope": {}})  # missing ddms_urn
+    redis.hgetall = AsyncMock(
+        return_value={
+            b"good": good_entry.encode(),
+            b"bad": bad_entry.encode(),
+        },
+    )
+    with _patch_redis(redis):
+        result = await get_pending_ids(PARTITION, ANALYSIS_FAMILY, ANALYSIS_TYPE, SCHEMA_VERSION)
+    dataset_ids = {ds for ds, _ in result}
+    assert _DATASET_ID in dataset_ids
+    assert len(result) == 1

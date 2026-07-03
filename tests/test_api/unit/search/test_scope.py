@@ -12,6 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from unittest.mock import AsyncMock
+
 import pytest
 
 from app.models.schemas.search_scope import SearchScope
@@ -21,6 +23,7 @@ from app.search.scope import (
     SCOPE_PROFILE_SAMPLESANALYSIS,
     UnsupportedSearchScopeError,
     build_search_scope_clauses,
+    enrich_scope_from_samples,
     extract_record_scope,
 )
 
@@ -178,3 +181,78 @@ def test_extract_record_scope_ignores_geo_context_entries_without_recognized_fie
 
 def test_extract_record_scope_no_geo_contexts_key_does_not_raise():
     assert extract_record_scope({}) == {}
+
+
+# --- enrich_scope_from_samples ---
+
+
+def _mock_storage(records):
+    storage = AsyncMock()
+    storage.query_records = AsyncMock(return_value={"records": records})
+    return storage
+
+
+@pytest.mark.asyncio
+async def test_enrich_scope_from_samples_single_sample_sets_wellbore():
+    sample = {
+        "data": {"SampleAcquisition": {"SampleAcquisitionDetail": {"WellboreID": "p:master-data--Wellbore:wb-1:"}}}
+    }
+    result = await enrich_scope_from_samples({}, ["p:master-data--Sample:s-1:"], _mock_storage([sample]))
+    assert result == {"wellbore_id": "p:master-data--Wellbore:wb-1:"}
+
+
+@pytest.mark.asyncio
+async def test_enrich_scope_from_samples_conflicting_wellbore_dropped():
+    """Two samples with different wellbore_ids must not produce a scope entry —
+    the ambiguous record cannot match any wellbore-scoped search."""
+    sample_a = {
+        "data": {"SampleAcquisition": {"SampleAcquisitionDetail": {"WellboreID": "p:master-data--Wellbore:wb-A:"}}}
+    }
+    sample_b = {
+        "data": {"SampleAcquisition": {"SampleAcquisitionDetail": {"WellboreID": "p:master-data--Wellbore:wb-B:"}}}
+    }
+    result = await enrich_scope_from_samples(
+        {},
+        ["p:master-data--Sample:s-1:", "p:master-data--Sample:s-2:"],
+        _mock_storage([sample_a, sample_b]),
+    )
+    assert "wellbore_id" not in result
+
+
+@pytest.mark.asyncio
+async def test_enrich_scope_from_samples_conflicting_geocontext_field_dropped():
+    """Two samples from different basins via GeoContexts must drop basin_id from scope."""
+    sample_a = {"data": {"GeoContexts": [{"BasinID": "p:master-data--Basin:b-A:"}]}}
+    sample_b = {"data": {"GeoContexts": [{"BasinID": "p:master-data--Basin:b-B:"}]}}
+    result = await enrich_scope_from_samples(
+        {},
+        ["p:master-data--Sample:s-1:", "p:master-data--Sample:s-2:"],
+        _mock_storage([sample_a, sample_b]),
+    )
+    assert "basin_id" not in result
+
+
+@pytest.mark.asyncio
+async def test_enrich_scope_from_samples_agreeing_samples_keep_scope():
+    """Two samples with the same wellbore_id must still produce a scope entry."""
+    sample_a = {
+        "data": {"SampleAcquisition": {"SampleAcquisitionDetail": {"WellboreID": "p:master-data--Wellbore:wb-1:"}}}
+    }
+    sample_b = {
+        "data": {"SampleAcquisition": {"SampleAcquisitionDetail": {"WellboreID": "p:master-data--Wellbore:wb-1:"}}}
+    }
+    result = await enrich_scope_from_samples(
+        {},
+        ["p:master-data--Sample:s-1:", "p:master-data--Sample:s-2:"],
+        _mock_storage([sample_a, sample_b]),
+    )
+    assert result == {"wellbore_id": "p:master-data--Wellbore:wb-1:"}
+
+
+@pytest.mark.asyncio
+async def test_enrich_scope_from_samples_storage_error_returns_original_scope():
+    storage = AsyncMock()
+    storage.query_records = AsyncMock(side_effect=RuntimeError("network error"))
+    original = {"wellbore_id": "p:master-data--Wellbore:pre-existing:"}
+    result = await enrich_scope_from_samples(original, ["p:master-data--Sample:s-1:"], storage)
+    assert result == original

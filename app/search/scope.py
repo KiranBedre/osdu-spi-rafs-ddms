@@ -14,7 +14,7 @@
 #  limitations under the License.
 
 from types import MappingProxyType
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from loguru import logger
 
@@ -159,24 +159,40 @@ def extract_record_scope(record_data: Dict) -> Dict[str, str]:  # noqa: CCR001
     return scope
 
 
-def _merge_sample_scope(scope: Dict[str, str], sample_data: Dict) -> None:  # noqa: CCR001, WPS231
+def _merge_sample_scope(scope: Dict[str, str], conflicted: Set[str], sample_data: Dict) -> None:  # noqa: CCR001, WPS231
     """Merge Well/Wellbore scope keys from a Sample record's data block into scope.
 
     Checks `SampleAcquisition.SampleAcquisitionDetail.WellboreID` and `GeoContexts`.
-    Never overwrites an already-populated scope key.
+    When a key already has a value from a prior sample that differs from this sample's
+    value, the key is added to `conflicted` and removed from scope — an ambiguous
+    SamplesAnalysis must not incorrectly match a scoped search.
     """
-    if "wellbore_id" not in scope:
+    if "wellbore_id" not in conflicted:
         wellbore_id = sample_data.get("SampleAcquisition", {}).get("SampleAcquisitionDetail", {}).get("WellboreID")
         if wellbore_id:
-            scope["wellbore_id"] = wellbore_id
+            existing = scope.get("wellbore_id")
+            if existing is None:
+                scope["wellbore_id"] = wellbore_id
+            elif existing != wellbore_id:
+                conflicted.add("wellbore_id")
+                scope.pop("wellbore_id", None)
 
     for geo_context in sample_data.get("GeoContexts") or []:
         for field_name, scope_key in _GEO_CONTEXT_SCOPE_FIELDS.items():
-            if scope_key not in scope and geo_context.get(field_name):
-                scope[scope_key] = geo_context[field_name]
+            if scope_key in conflicted:
+                continue
+            geo_value = geo_context.get(field_name)
+            if not geo_value:
+                continue
+            existing = scope.get(scope_key)
+            if existing is None:
+                scope[scope_key] = geo_value
+            elif existing != geo_value:
+                conflicted.add(scope_key)
+                scope.pop(scope_key, None)
 
 
-async def enrich_scope_from_samples(  # noqa: ASYNC910
+async def enrich_scope_from_samples(  # noqa: ASYNC910, WPS231
     scope: Dict[str, str],
     sample_ids: List[str],
     storage_service: Any,
@@ -185,10 +201,12 @@ async def enrich_scope_from_samples(  # noqa: ASYNC910
 
     SamplesAnalysis WPCs carry no GeoContexts; their Well/Wellbore context lives
     on the Sample master-data records they reference via `SampleIDs`. This fetches
-    those records in a single batch query and merges any found scope keys into the
-    existing scope without overwriting already-populated keys.
+    those records in a single batch query and merges any found scope keys.
 
-    Adds ~100-300 ms of latency on the write path due to the Storage round-trip.
+    When referenced samples carry conflicting values for a scope key (e.g. two
+    samples from different wellbores), that key is dropped from the result so an
+    ambiguous record cannot incorrectly match a scoped search.
+
     Fails silently — returns the original scope on any error so the pending-write
     is still recorded (unscoped) rather than dropped.
     """
@@ -197,8 +215,14 @@ async def enrich_scope_from_samples(  # noqa: ASYNC910
     try:
         response = await storage_service.query_records(sample_ids)
         enriched = dict(scope)
+        conflicted: Set[str] = set()
         for sample_record in response.get("records") or []:
-            _merge_sample_scope(enriched, sample_record.get("data") or {})
+            _merge_sample_scope(enriched, conflicted, sample_record.get("data") or {})
+        if conflicted:
+            logger.debug(
+                "enrich_scope_from_samples: conflicting scope keys dropped (ambiguous samples): {0}",
+                sorted(conflicted),
+            )
         return enriched
     except Exception as exc:  # noqa: B902, WPS329
         logger.debug("enrich_scope_from_samples: Storage error, returning original scope: {0}", exc)
