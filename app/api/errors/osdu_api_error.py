@@ -1,4 +1,4 @@
-#  Copyright 2023 ExxonMobil Technology and Engineering Company
+#  Copyright 2026 ExxonMobil Technology and Engineering Company
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -30,9 +30,25 @@ ERROR_FIELD_REASON = "reason"
 ERROR_FIELD_MESSAGE = "message"
 
 
+def _unwrap_osdu_error(exc_message: dict) -> dict:
+    """Unwrap OSDU {"error": {...}} envelope into a flat error dict."""
+    inner = exc_message.get("error")
+    if not isinstance(inner, dict):
+        return exc_message
+    errors_list = inner.get("errors", [])
+    reason = inner.get(ERROR_FIELD_REASON)
+    if not reason and errors_list:
+        reason = errors_list[0].get(ERROR_FIELD_REASON)
+    return {
+        ERROR_FIELD_CODE: inner.get(ERROR_FIELD_CODE),
+        ERROR_FIELD_REASON: reason,
+        ERROR_FIELD_MESSAGE: inner.get(ERROR_FIELD_MESSAGE),
+    }
+
+
 def format_request_exc(exc: HTTPError) -> dict:
     try:
-        exc_message = json.loads(exc.response.text)
+        exc_message = _unwrap_osdu_error(json.loads(exc.response.text))
         if not isinstance(exc_message, dict):
             raise TypeError("Response is not a JSON object")
         formatted_exc = OsduApiErrorResponse.construct(
@@ -67,7 +83,7 @@ async def osdu_api_http_error_handler(  # noqa: ASYNC910, ASYNC124
 
 def format_exc(exc: HTTPStatusError) -> dict:
     try:
-        exc_message = json.loads(exc.response.text)
+        exc_message = _unwrap_osdu_error(json.loads(exc.response.text))
         if not isinstance(exc_message, dict):
             raise TypeError("Response is not a JSON object")
         formatted_exc = OsduApiErrorResponse.construct(
