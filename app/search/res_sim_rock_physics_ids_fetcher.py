@@ -26,7 +26,10 @@ from app.search.ddms_dataset_ids_fetcher import (
     DDMSDatasetIdsFetcher,
     build_result_ids,
 )
-from app.search.scope import build_search_scope_clauses
+from app.search.scope import (
+    SCOPE_PROFILE_RES_SIM_ROCK_PHYSICS,
+    build_search_scope_clauses,
+)
 from app.services import search
 
 
@@ -86,9 +89,13 @@ class SearchServiceResSimRockPhysicsIdsFetcher(DDMSDatasetIdsFetcher):
 
         query_parts = []
         if wks_parameters:
-            # Note: strict scope validation deferred for future enhancement.
-            # Currently uses default profile for extensibility.
-            query_parts.extend(build_search_scope_clauses(SearchScope(**wks_parameters)))
+            # Use res_sim_rock_physics profile which supports basin_id and field_id only.
+            query_parts.extend(
+                build_search_scope_clauses(
+                    SearchScope(**wks_parameters),
+                    scope_profile=SCOPE_PROFILE_RES_SIM_ROCK_PHYSICS,
+                )
+            )
         # Append time filters based on start and end dates
         if indexed_start_date and indexed_end_date:
             query_parts.append(

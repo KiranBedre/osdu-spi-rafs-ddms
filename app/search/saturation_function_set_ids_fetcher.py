@@ -24,7 +24,10 @@ from app.search.ddms_dataset_ids_fetcher import (
     DDMSDatasetIdsFetcher,
     build_result_ids,
 )
-from app.search.scope import build_search_scope_clauses
+from app.search.scope import (
+    SCOPE_PROFILE_SATURATION_FUNCTION_SET,
+    build_search_scope_clauses,
+)
 from app.services import search
 
 
@@ -59,11 +62,17 @@ class SearchServiceSaturationFunctionSetIdsFetcher(DDMSDatasetIdsFetcher):
                 limit=search.QUERY_LIMIT,
                 cursor=cursor,
             )
+            logger.debug(f"SaturationFunctionSet search response: {search_response}")
+
             records = search_response.get("results", [])
-            cursor = search_response.get("cursor", None)
             if not records:
                 break
+
             result_records.extend(records)
+
+            cursor = search_response.get("cursor")
+            if not cursor:
+                break
 
         return build_result_ids(
             result_records,
@@ -84,9 +93,13 @@ class SearchServiceSaturationFunctionSetIdsFetcher(DDMSDatasetIdsFetcher):
 
         query_parts = []
         if wks_parameters:
-            # Note: strict scope validation deferred for future enhancement.
-            # Currently uses default profile for extensibility.
-            query_parts.extend(build_search_scope_clauses(SearchScope(**wks_parameters)))
+            # Use saturation_function_set profile which supports basin_id and field_id only.
+            query_parts.extend(
+                build_search_scope_clauses(
+                    SearchScope(**wks_parameters),
+                    scope_profile=SCOPE_PROFILE_SATURATION_FUNCTION_SET,
+                )
+            )
         # Append time filters based on start and end dates
         if indexed_start_date and indexed_end_date:
             query_parts.append(

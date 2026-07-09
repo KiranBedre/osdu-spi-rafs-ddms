@@ -59,6 +59,8 @@ def test_build_search_scope_clauses_samplesanalysis_profile_returns_no_direct_cl
 
 
 def test_build_search_scope_clauses_sample_profile_uses_correct_field_paths():
+    # Sample records use direct fields, not nested GeoContexts
+    # GeoContexts are only for WPC records like DepthShift, SaturationFunctionSet, etc.
     clauses = build_search_scope_clauses(
         SearchScope(wellbore_id="opendes:master-data--Wellbore:wb-1:"),
         scope_profile=SCOPE_PROFILE_SAMPLE,
@@ -67,7 +69,8 @@ def test_build_search_scope_clauses_sample_profile_uses_correct_field_paths():
     clause = clauses[0]
     assert 'data.WellboreID:"opendes:master-data--Wellbore:wb-1:"' in clause
     assert 'data.SampleAcquisition.SampleAcquisitionDetail.WellboreID:"opendes:master-data--Wellbore:wb-1:"' in clause
-    assert 'nested(data.GeoContexts, (WellboreID:"opendes:master-data--Wellbore:wb-1:"))' in clause
+    # No nested GeoContexts for Sample records
+    assert "nested(data.GeoContexts" not in clause
 
     clauses = build_search_scope_clauses(
         SearchScope(basin_id="opendes:master-data--Basin:b-1:"),
@@ -76,6 +79,7 @@ def test_build_search_scope_clauses_sample_profile_uses_correct_field_paths():
     assert len(clauses) == 1
     clause = clauses[0]
     assert 'data.BasinID:"opendes:master-data--Basin:b-1:"' in clause
+    # Sample GeoContexts support BasinID (per AbstractGeoBasinContext schema)
     assert 'nested(data.GeoContexts, (BasinID:"opendes:master-data--Basin:b-1:"))' in clause
 
     clauses = build_search_scope_clauses(
@@ -85,19 +89,19 @@ def test_build_search_scope_clauses_sample_profile_uses_correct_field_paths():
     assert len(clauses) == 1
     clause = clauses[0]
     assert 'data.FieldID:"opendes:master-data--Field:f-1:"' in clause
+    # Sample GeoContexts support FieldID (per AbstractGeoFieldContext schema)
     assert 'nested(data.GeoContexts, (FieldID:"opendes:master-data--Field:f-1:"))' in clause
 
 
-def test_build_search_scope_clauses_depth_shift_supports_root_and_geocontexts_wellbore_paths():
+def test_build_search_scope_clauses_depth_shift_supports_root_wellbore_path():
     clauses = build_search_scope_clauses(
         SearchScope(wellbore_id="opendes:master-data--Wellbore:wb-1:"),
         scope_profile=SCOPE_PROFILE_DEPTH_SHIFT,
     )
 
-    assert len(clauses) == 1
-    clause = clauses[0]
-    assert 'data.WellboreID:"opendes:master-data--Wellbore:wb-1:"' in clause
-    assert 'nested(data.GeoContexts, (WellboreID:"opendes:master-data--Wellbore:wb-1:"))' in clause
+    assert clauses == [
+        'data.WellboreID:"opendes:master-data--Wellbore:wb-1:"',
+    ]
 
 
 def test_build_search_scope_clauses_strict_rejects_unsupported_samplesanalysis_scope_key():

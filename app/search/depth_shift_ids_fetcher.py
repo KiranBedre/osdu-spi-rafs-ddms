@@ -64,11 +64,20 @@ class SearchServiceDepthShiftIdsFetcher(DDMSDatasetIdsFetcher):
                 limit=search.QUERY_LIMIT,
                 cursor=cursor,
             )
+
+            logger.debug(f"DepthShift search response: {search_response}")
+
             records = search_response.get("results", [])
-            cursor = search_response.get("cursor", None)
             if not records:
                 break
+
             result_records.extend(records)
+
+            cursor = search_response.get("cursor")
+            if not cursor:
+                break
+
+        logger.debug(f"DepthShift result records: {result_records}")
 
         return build_result_ids(
             result_records,

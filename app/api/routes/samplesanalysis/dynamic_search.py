@@ -59,65 +59,70 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
     to scoped search results before returning to the client.
     """
 
-    def _build_dynamic_endpoint(self, method_name: str, extractor: Callable, filter_dep):  # noqa: CFQ004
+    def _build_dynamic_endpoint(self, method_name: str, extractor: Callable, filter_dep, scope_dep=None):
         """Override to implement depth-shift support in get_search_data."""
 
-        parent_method = getattr(self, method_name)
+        if scope_dep is None:
+            scope_dep = get_search_scope
         uses_orient = method_name == "get_search_data"
 
         if uses_orient:
-            # For get_search_data, we implement depth-shift support
-            async def search_endpoint(  # noqa: WPS430,CFQ002,WPS211
-                request: Request,
-                df_filter: DataFrameFilterValidator = Depends(filter_dep),
-                content_schema_version: str = Depends(get_content_schema_version),
-                pagination_parameters: PaginationParametersType = Depends(get_search_data_pagination_parameters),
-                search_scope: SearchScope = Depends(get_search_scope),
-                dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
-                blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
-                search_service: search.SearchService = Depends(get_async_search_service),
-                storage_service: storage.StorageService = Depends(get_async_storage_service),
-                orient: str = Depends(get_orient),
-                depth_shift_params: Optional[DepthShiftQueryParams] = Depends(get_depth_shift_params),
-            ):
-                dynamic_param = self._inject_param(request, extractor)
+            return self._build_search_data_endpoint_with_depth_shift(extractor, filter_dep, scope_dep)
+        return super()._build_dynamic_endpoint(method_name, extractor, filter_dep, scope_dep=scope_dep)
 
-                # Get search results (returns Response with JSON)
-                result_response = await parent_method(
-                    request=request,
-                    analysis_type=dynamic_param,
-                    dataset_service=dataset_service,
-                    blob_storage_service=blob_storage_service,
-                    search_service=search_service,
-                    df_filter=df_filter,
-                    content_schema_version=content_schema_version,
-                    pagination_parameters=pagination_parameters,
-                    search_scope=search_scope,
-                    orient=orient,
-                )
+    def _build_search_data_endpoint_with_depth_shift(self, extractor: Callable, filter_dep, scope_dep):
+        """Build cached search_data endpoint with optional depth-shift augmentation."""
+        parent_method = getattr(self, "get_search_data")
 
-                # If no depth shift requested, return as-is
-                if depth_shift_params is None:
-                    return result_response
+        async def search_endpoint(  # noqa: WPS430,CFQ002,WPS211
+            request: Request,
+            df_filter: DataFrameFilterValidator = Depends(filter_dep),
+            content_schema_version: str = Depends(get_content_schema_version),
+            pagination_parameters: PaginationParametersType = Depends(get_search_data_pagination_parameters),
+            search_scope: SearchScope = Depends(scope_dep),
+            dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
+            blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
+            search_service: search.SearchService = Depends(get_async_search_service),
+            storage_service: storage.StorageService = Depends(get_async_storage_service),
+            orient: str = Depends(get_orient),
+            depth_shift_params: Optional[DepthShiftQueryParams] = Depends(get_depth_shift_params),
+        ):
+            dynamic_param = self._inject_param(request, extractor)
 
-                # Apply depth shift augmentation, passing search_scope for wellbore context
-                return await self._apply_depth_shift_to_search_results(
-                    search_response=result_response,
-                    orient=orient,
-                    depth_shift_params=depth_shift_params,
-                    storage_service=storage_service,
-                    dataset_service=dataset_service,
-                    search_scope=search_scope,
-                    search_service=search_service,
-                )
+            # Get search results (returns Response with JSON)
+            result_response = await parent_method(
+                request=request,
+                analysis_type=dynamic_param,
+                dataset_service=dataset_service,
+                blob_storage_service=blob_storage_service,
+                search_service=search_service,
+                df_filter=df_filter,
+                content_schema_version=content_schema_version,
+                pagination_parameters=pagination_parameters,
+                search_scope=search_scope,
+                orient=orient,
+            )
 
-            return cache(
-                expire=CACHE_DEFAULT_TTL,
-                coder=ResponseCoder,
-                key_builder=key_builder_using_token,
-            )(search_endpoint)
-        # For get_search, use parent behavior (no depth shift)
-        return super()._build_dynamic_endpoint(method_name, extractor, filter_dep)
+            # If no depth shift requested, return as-is
+            if depth_shift_params is None:
+                return result_response
+
+            # Apply depth shift augmentation, passing search_scope for wellbore context
+            return await self._apply_depth_shift_to_search_results(
+                search_response=result_response,
+                orient=orient,
+                depth_shift_params=depth_shift_params,
+                storage_service=storage_service,
+                dataset_service=dataset_service,
+                search_scope=search_scope,
+                search_service=search_service,
+            )
+
+        return cache(
+            expire=CACHE_DEFAULT_TTL,
+            coder=ResponseCoder,
+            key_builder=key_builder_using_token,
+        )(search_endpoint)
 
     async def _apply_depth_shift_to_search_results(  # noqa: CCR001,CFQ001,WPS238,WPS210,WPS231
         self,
