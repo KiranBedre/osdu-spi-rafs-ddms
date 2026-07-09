@@ -196,6 +196,48 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
+      - description: 'Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+          ''authority:master-data--Basin:identifier''). Scope parameters filter results
+          hierarchically: basin -> field -> well -> wellbore.'
+        in: query
+        name: basin_id
+        required: false
+        schema:
+          pattern: ^[\w\-\.]+:master-data--Basin:[\w\-\.\:\%]+$
+          title: Basin ID
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
+        in: query
+        name: field_id
+        required: false
+        schema:
+          pattern: ^[\w\-\.]+:master-data--Field:[\w\-\.\:\%]+$
+          title: Field ID
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
+          or without basin_id/field_id scope.
+        in: query
+        name: well_id
+        required: false
+        schema:
+          pattern: ^[\w\-\.]+:master-data--Well:[\w\-\.\:\%]+$
+          title: Well ID
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+          Most restrictive scope parameter. Required when depth_shift_policy is provided
+          on SamplesAnalysis search/data.
+        in: query
+        name: wellbore_id
+        required: false
+        schema:
+          pattern: ^[\w\-\.]+:master-data--Wellbore:[\w\-\.\:\%]+$
+          title: Wellbore ID
+          type: string
       - description: A valid json array of property names
         examples:
           example:
@@ -358,6 +400,48 @@ paths:
           description: Content schema version, e.g. `1.0.0`. Takes precedence over
             the Accept header.
           title: Content Schema Version
+          type: string
+      - description: 'Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
+          ''authority:master-data--Basin:identifier''). Scope parameters filter results
+          hierarchically: basin -> field -> well -> wellbore.'
+        in: query
+        name: basin_id
+        required: false
+        schema:
+          pattern: ^[\w\-\.]+:master-data--Basin:[\w\-\.\:\%]+$
+          title: Basin ID
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
+        in: query
+        name: field_id
+        required: false
+        schema:
+          pattern: ^[\w\-\.]+:master-data--Field:[\w\-\.\:\%]+$
+          title: Field ID
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
+          or without basin_id/field_id scope.
+        in: query
+        name: well_id
+        required: false
+        schema:
+          pattern: ^[\w\-\.]+:master-data--Well:[\w\-\.\:\%]+$
+          title: Well ID
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
+          Most restrictive scope parameter. Required when depth_shift_policy is provided
+          on SamplesAnalysis search/data.
+        in: query
+        name: wellbore_id
+        required: false
+        schema:
+          pattern: ^[\w\-\.]+:master-data--Wellbore:[\w\-\.\:\%]+$
+          title: Wellbore ID
           type: string
       - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
           definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
@@ -886,18 +970,16 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: 'Optional scope parameter to filter search results to a specific
-          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-          ''authority:master-data--Basin:identifier''). Scope parameters filter results
-          hierarchically: basin -> field -> well -> wellbore.'
+      - description: Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+          'authority:master-data--Basin:identifier').
         in: query
         name: basin_id
         required: false
         schema:
-          description: 'Optional scope parameter to filter search results to a specific
-            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-            ''authority:master-data--Basin:identifier''). Scope parameters filter
-            results hierarchically: basin -> field -> well -> wellbore.'
+          description: Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+            'authority:master-data--Basin:identifier').
           title: Basin Id
           type: string
       - description: Optional scope parameter to filter search results to a specific
@@ -913,29 +995,15 @@ paths:
           title: Field Id
           type: string
       - description: Optional scope parameter to filter search results to a specific
-          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
-          or without basin_id/field_id scope.
-        in: query
-        name: well_id
-        required: false
-        schema:
-          description: Optional scope parameter to filter search results to a specific
-            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
-            with or without basin_id/field_id scope.
-          title: Well Id
-          type: string
-      - description: Optional scope parameter to filter search results to a specific
           wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter. Required when depth_shift_policy is provided
-          on SamplesAnalysis search/data.
+          DepthShift does not support well_id; only basin_id, field_id, and wellbore_id.
         in: query
         name: wellbore_id
         required: false
         schema:
           description: Optional scope parameter to filter search results to a specific
             wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter. Required when depth_shift_policy is
-            provided on SamplesAnalysis search/data.
+            DepthShift does not support well_id; only basin_id, field_id, and wellbore_id.
           title: Wellbore Id
           type: string
       - examples:
@@ -1061,18 +1129,16 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: 'Optional scope parameter to filter search results to a specific
-          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-          ''authority:master-data--Basin:identifier''). Scope parameters filter results
-          hierarchically: basin -> field -> well -> wellbore.'
+      - description: Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+          'authority:master-data--Basin:identifier').
         in: query
         name: basin_id
         required: false
         schema:
-          description: 'Optional scope parameter to filter search results to a specific
-            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-            ''authority:master-data--Basin:identifier''). Scope parameters filter
-            results hierarchically: basin -> field -> well -> wellbore.'
+          description: Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+            'authority:master-data--Basin:identifier').
           title: Basin Id
           type: string
       - description: Optional scope parameter to filter search results to a specific
@@ -1088,49 +1154,16 @@ paths:
           title: Field Id
           type: string
       - description: Optional scope parameter to filter search results to a specific
-          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
-          or without basin_id/field_id scope.
-        in: query
-        name: well_id
-        required: false
-        schema:
-          description: Optional scope parameter to filter search results to a specific
-            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
-            with or without basin_id/field_id scope.
-          title: Well Id
-          type: string
-      - description: Optional scope parameter to filter search results to a specific
           wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter. Required when depth_shift_policy is provided
-          on SamplesAnalysis search/data.
+          DepthShift does not support well_id; only basin_id, field_id, and wellbore_id.
         in: query
         name: wellbore_id
         required: false
         schema:
           description: Optional scope parameter to filter search results to a specific
             wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter. Required when depth_shift_policy is
-            provided on SamplesAnalysis search/data.
+            DepthShift does not support well_id; only basin_id, field_id, and wellbore_id.
           title: Wellbore Id
-          type: string
-      - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
-          definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
-        in: query
-        name: depth_shift_policy
-        required: false
-        schema:
-          description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
-            definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
-          title: Depth Shift Policy
-          type: string
-      - description: DepthShift WPC record ID to apply to the response data.
-        in: query
-        name: depth_shift_id
-        required: false
-        schema:
-          description: DepthShift WPC record ID to apply to the response data.
-          pattern: ^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$
-          title: Depth Shift Id
           type: string
       - examples:
           example:
@@ -2780,18 +2813,16 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: 'Optional scope parameter to filter search results to a specific
-          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-          ''authority:master-data--Basin:identifier''). Scope parameters filter results
-          hierarchically: basin -> field -> well -> wellbore.'
+      - description: Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+          'authority:master-data--Basin:identifier').
         in: query
         name: basin_id
         required: false
         schema:
-          description: 'Optional scope parameter to filter search results to a specific
-            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-            ''authority:master-data--Basin:identifier''). Scope parameters filter
-            results hierarchically: basin -> field -> well -> wellbore.'
+          description: Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+            'authority:master-data--Basin:identifier').
           title: Basin Id
           type: string
       - description: Optional scope parameter to filter search results to a specific
@@ -2805,32 +2836,6 @@ paths:
             field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
             with or without basin_id scope.
           title: Field Id
-          type: string
-      - description: Optional scope parameter to filter search results to a specific
-          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
-          or without basin_id/field_id scope.
-        in: query
-        name: well_id
-        required: false
-        schema:
-          description: Optional scope parameter to filter search results to a specific
-            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
-            with or without basin_id/field_id scope.
-          title: Well Id
-          type: string
-      - description: Optional scope parameter to filter search results to a specific
-          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter. Required when depth_shift_policy is provided
-          on SamplesAnalysis search/data.
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional scope parameter to filter search results to a specific
-            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter. Required when depth_shift_policy is
-            provided on SamplesAnalysis search/data.
-          title: Wellbore Id
           type: string
       - examples:
           example:
@@ -2956,18 +2961,16 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: 'Optional scope parameter to filter search results to a specific
-          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-          ''authority:master-data--Basin:identifier''). Scope parameters filter results
-          hierarchically: basin -> field -> well -> wellbore.'
+      - description: Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+          'authority:master-data--Basin:identifier').
         in: query
         name: basin_id
         required: false
         schema:
-          description: 'Optional scope parameter to filter search results to a specific
-            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-            ''authority:master-data--Basin:identifier''). Scope parameters filter
-            results hierarchically: basin -> field -> well -> wellbore.'
+          description: Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+            'authority:master-data--Basin:identifier').
           title: Basin Id
           type: string
       - description: Optional scope parameter to filter search results to a specific
@@ -2981,51 +2984,6 @@ paths:
             field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
             with or without basin_id scope.
           title: Field Id
-          type: string
-      - description: Optional scope parameter to filter search results to a specific
-          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
-          or without basin_id/field_id scope.
-        in: query
-        name: well_id
-        required: false
-        schema:
-          description: Optional scope parameter to filter search results to a specific
-            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
-            with or without basin_id/field_id scope.
-          title: Well Id
-          type: string
-      - description: Optional scope parameter to filter search results to a specific
-          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter. Required when depth_shift_policy is provided
-          on SamplesAnalysis search/data.
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional scope parameter to filter search results to a specific
-            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter. Required when depth_shift_policy is
-            provided on SamplesAnalysis search/data.
-          title: Wellbore Id
-          type: string
-      - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
-          definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
-        in: query
-        name: depth_shift_policy
-        required: false
-        schema:
-          description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
-            definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
-          title: Depth Shift Policy
-          type: string
-      - description: DepthShift WPC record ID to apply to the response data.
-        in: query
-        name: depth_shift_id
-        required: false
-        schema:
-          description: DepthShift WPC record ID to apply to the response data.
-          pattern: ^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$
-          title: Depth Shift Id
           type: string
       - examples:
           example:
@@ -5340,18 +5298,16 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: 'Optional scope parameter to filter search results to a specific
-          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-          ''authority:master-data--Basin:identifier''). Scope parameters filter results
-          hierarchically: basin -> field -> well -> wellbore.'
+      - description: Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+          'authority:master-data--Basin:identifier').
         in: query
         name: basin_id
         required: false
         schema:
-          description: 'Optional scope parameter to filter search results to a specific
-            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-            ''authority:master-data--Basin:identifier''). Scope parameters filter
-            results hierarchically: basin -> field -> well -> wellbore.'
+          description: Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+            'authority:master-data--Basin:identifier').
           title: Basin Id
           type: string
       - description: Optional scope parameter to filter search results to a specific
@@ -5365,32 +5321,6 @@ paths:
             field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
             with or without basin_id scope.
           title: Field Id
-          type: string
-      - description: Optional scope parameter to filter search results to a specific
-          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
-          or without basin_id/field_id scope.
-        in: query
-        name: well_id
-        required: false
-        schema:
-          description: Optional scope parameter to filter search results to a specific
-            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
-            with or without basin_id/field_id scope.
-          title: Well Id
-          type: string
-      - description: Optional scope parameter to filter search results to a specific
-          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter. Required when depth_shift_policy is provided
-          on SamplesAnalysis search/data.
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional scope parameter to filter search results to a specific
-            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter. Required when depth_shift_policy is
-            provided on SamplesAnalysis search/data.
-          title: Wellbore Id
           type: string
       - examples:
           example:
@@ -5516,18 +5446,16 @@ paths:
             the Accept header.
           title: Content Schema Version
           type: string
-      - description: 'Optional scope parameter to filter search results to a specific
-          basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-          ''authority:master-data--Basin:identifier''). Scope parameters filter results
-          hierarchically: basin -> field -> well -> wellbore.'
+      - description: Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+          'authority:master-data--Basin:identifier').
         in: query
         name: basin_id
         required: false
         schema:
-          description: 'Optional scope parameter to filter search results to a specific
-            basin. Must be a valid OSDU record ID of kind ''master-data--Basin'' (e.g.,
-            ''authority:master-data--Basin:identifier''). Scope parameters filter
-            results hierarchically: basin -> field -> well -> wellbore.'
+          description: Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+            'authority:master-data--Basin:identifier').
           title: Basin Id
           type: string
       - description: Optional scope parameter to filter search results to a specific
@@ -5541,51 +5469,6 @@ paths:
             field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
             with or without basin_id scope.
           title: Field Id
-          type: string
-      - description: Optional scope parameter to filter search results to a specific
-          well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used with
-          or without basin_id/field_id scope.
-        in: query
-        name: well_id
-        required: false
-        schema:
-          description: Optional scope parameter to filter search results to a specific
-            well. Must be a valid OSDU record ID of kind 'master-data--Well'. Used
-            with or without basin_id/field_id scope.
-          title: Well Id
-          type: string
-      - description: Optional scope parameter to filter search results to a specific
-          wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-          Most restrictive scope parameter. Required when depth_shift_policy is provided
-          on SamplesAnalysis search/data.
-        in: query
-        name: wellbore_id
-        required: false
-        schema:
-          description: Optional scope parameter to filter search results to a specific
-            wellbore. Must be a valid OSDU record ID of kind 'master-data--Wellbore'.
-            Most restrictive scope parameter. Required when depth_shift_policy is
-            provided on SamplesAnalysis search/data.
-          title: Wellbore Id
-          type: string
-      - description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
-          definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
-        in: query
-        name: depth_shift_policy
-        required: false
-        schema:
-          description: 'Depth shift resolution strategy: ''definitive'' uses the sample''s
-            definitive depth shift, ''id_provided'' uses the explicit depth_shift_id.'
-          title: Depth Shift Policy
-          type: string
-      - description: DepthShift WPC record ID to apply to the response data.
-        in: query
-        name: depth_shift_id
-        required: false
-        schema:
-          description: DepthShift WPC record ID to apply to the response data.
-          pattern: ^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$
-          title: Depth Shift Id
           type: string
       - examples:
           example:

@@ -68,21 +68,21 @@ SEARCH_SCOPE_QUERY_FIELDS_BY_PROFILE = MappingProxyType(
         "wellbore": {
             "well_id": ("data.WellID",),
         },
-        # Based on provided depth-shift schema examples.
+        # DepthShift carries WellboreID directly and basin/field under nested GeoContexts.
         SCOPE_PROFILE_DEPTH_SHIFT: {
-            "basin_id": (),
-            "field_id": (),
+            "basin_id": ("data.GeoContexts.BasinID",),
+            "field_id": ("data.GeoContexts.FieldID",),
             "wellbore_id": ("data.WellboreID",),
         },
         # Effective schema fields expose GeoContexts; no direct well/wellbore IDs.
         _SCOPE_PROFILE_SATURATION_FUNCTION_SET: {
-            "basin_id": (),
-            "field_id": (),
+            "basin_id": ("data.GeoContexts.BasinID",),
+            "field_id": ("data.GeoContexts.FieldID",),
         },
         # Effective schema fields expose GeoContexts; no direct well/wellbore IDs.
         _SCOPE_PROFILE_RES_SIM_ROCK_PHYSICS: {
-            "basin_id": (),
-            "field_id": (),
+            "basin_id": ("data.GeoContexts.BasinID",),
+            "field_id": ("data.GeoContexts.FieldID",),
         },
     },
 )
@@ -95,15 +95,15 @@ _NESTED_SCOPE_QUERY_FIELDS_BY_PROFILE = MappingProxyType(
             "well_id": ("nested(data.GeoContexts, (WellID:{value}))",),
             "wellbore_id": ("nested(data.GeoContexts, (WellboreID:{value}))",),
         },
+        # Sample records support nested GeoContexts for basin/field (per AbstractGeoContext schema),
+        # but NOT for wellbore_id (WellboreID lives in SampleAcquisitionDetail, not GeoContexts).
         SCOPE_PROFILE_SAMPLE: {
             "basin_id": ("nested(data.GeoContexts, (BasinID:{value}))",),
             "field_id": ("nested(data.GeoContexts, (FieldID:{value}))",),
-            "wellbore_id": ("nested(data.GeoContexts, (WellboreID:{value}))",),
         },
         SCOPE_PROFILE_DEPTH_SHIFT: {
             "basin_id": ("nested(data.GeoContexts, (BasinID:{value}))",),
             "field_id": ("nested(data.GeoContexts, (FieldID:{value}))",),
-            "wellbore_id": ("nested(data.GeoContexts, (WellboreID:{value}))",),
         },
         _SCOPE_PROFILE_SATURATION_FUNCTION_SET: {
             "basin_id": ("nested(data.GeoContexts, (BasinID:{value}))",),

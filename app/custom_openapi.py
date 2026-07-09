@@ -263,6 +263,152 @@ def _sort_and_annotate_parameters(openapi_schema: dict) -> None:  # noqa: WPS231
             operation["parameters"].sort(key=_get_parameter_sort_key)
 
 
+_SCOPE_PARAMS_FULL = [  # noqa: WPS407
+    {
+        "in": "query",
+        "name": "basin_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier'). "
+            "Scope parameters filter results hierarchically: basin -> field -> well -> wellbore."
+        ),
+        "schema": {
+            "title": "Basin ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Basin:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "field_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+        "schema": {
+            "title": "Field ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Field:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "well_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific well. "
+            "Must be a valid OSDU record ID of kind 'master-data--Well'. "
+            "Used with or without basin_id/field_id scope."
+        ),
+        "schema": {
+            "title": "Well ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Well:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "wellbore_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific wellbore. "
+            "Must be a valid OSDU record ID of kind 'master-data--Wellbore'. "
+            "Most restrictive scope parameter. "
+            "Required when depth_shift_policy is provided on SamplesAnalysis search/data."
+        ),
+        "schema": {
+            "title": "Wellbore ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Wellbore:[\w\-\.\:\%]+$",
+        },
+    },
+]
+
+_SCOPE_PARAMS_GEO_CONTEXT = [  # noqa: WPS407
+    {
+        "in": "query",
+        "name": "basin_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier')."
+        ),
+        "schema": {
+            "title": "Basin ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Basin:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "field_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+        "schema": {
+            "title": "Field ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Field:[\w\-\.\:\%]+$",
+        },
+    },
+]
+
+_SCOPE_PARAMS_DEPTH_SHIFT = [  # noqa: WPS407
+    {
+        "in": "query",
+        "name": "basin_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier')."
+        ),
+        "schema": {
+            "title": "Basin ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Basin:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "field_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+        "schema": {
+            "title": "Field ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Field:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "wellbore_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific wellbore. "
+            "Must be a valid OSDU record ID of kind 'master-data--Wellbore'. "
+            "DepthShift does not support well_id; only basin_id, field_id, and wellbore_id."
+        ),
+        "schema": {
+            "title": "Wellbore ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Wellbore:[\w\-\.\:\%]+$",
+        },
+    },
+]
+
 _DEPTH_SHIFT_PARAMS = [  # noqa: WPS407
     {
         "in": "query",
@@ -336,6 +482,45 @@ def _annotate_depth_shift_parameter_constraints(openapi_schema: dict) -> None:
                 schema = openapi_param.setdefault("schema", {})
                 schema.setdefault("type", "string")
                 schema["pattern"] = r"^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$"
+
+
+def _inject_scope_params_into_endpoints(openapi_schema: dict) -> None:
+    """Add scope parameters (basin_id, field_id, well_id, wellbore_id) to search endpoints.
+
+    Scope parameters are injected dynamically via Depends() in the endpoint builders,
+    which FastAPI's automatic OpenAPI schema generator cannot pick up at route-build time.
+    This function manually adds the appropriate scope parameters to the schema based on
+    the endpoint type:
+    - SamplesAnalysis: all 4 scope params (basin_id, field_id, well_id, wellbore_id)
+    - DepthShift: 3 scope params (basin_id, field_id, wellbore_id - NO well_id)
+    - SaturationFunctionSet: 2 scope params (basin_id, field_id)
+    - ReservoirSimulationRockPhysicsModel: 2 scope params (basin_id, field_id)
+    """
+    for path_key, path_item in openapi_schema.get("paths", {}).items():
+        route_segment = _get_route_segment(path_key)
+
+        # Determine which scope parameters to add based on route
+        if route_segment == "samplesanalysis":
+            scope_params = _SCOPE_PARAMS_FULL
+        elif route_segment == "depthshift":
+            scope_params = _SCOPE_PARAMS_DEPTH_SHIFT
+        elif route_segment in ("saturationfunctionset", "reservoirsimulationrockphysicsmodel"):
+            scope_params = _SCOPE_PARAMS_GEO_CONTEXT
+        else:
+            continue
+
+        # Only add scope params to search endpoints
+        if not path_key.endswith(("/search", "/search/", "/search/data")):
+            continue
+
+        operation = path_item.get("get")
+        if not isinstance(operation, dict):
+            continue
+
+        existing_names = {op_param.get("name") for op_param in operation.get("parameters", [])}
+        for scope_param in scope_params:
+            if scope_param["name"] not in existing_names:
+                operation.setdefault("parameters", []).append(scope_param)
 
 
 def _contains_query_parameter(operation: dict, parameter_name: str) -> bool:
@@ -415,6 +600,7 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
     _apply_swagger_auth_partition_reqs(custom_openapi_schema)
     _mark_content_schema_version_required(custom_openapi_schema)
     _inject_depth_shift_params_into_search_data(custom_openapi_schema)
+    _inject_scope_params_into_endpoints(custom_openapi_schema)
     _annotate_depth_shift_parameter_constraints(custom_openapi_schema)
     _enrich_depth_shift_descriptions(custom_openapi_schema)
     _sort_and_annotate_parameters(custom_openapi_schema)

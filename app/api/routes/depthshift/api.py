@@ -15,6 +15,7 @@
 from fastapi import APIRouter
 
 from app.api.dependencies.validation import (
+    get_depth_shift_scope,
     validate_depth_shift_v2_payload,
     validate_filters_for_domain_inferred_model,
 )
@@ -46,6 +47,7 @@ DynamicGenericSearchView(
             "handler": "get_search",
             "param_name": None,
             "filter_dep": validate_filters_for_domain_inferred_model,
+            "scope_dep": get_depth_shift_scope,
             "description": get_search_description_template("DepthShift"),
         },
         {
@@ -53,6 +55,7 @@ DynamicGenericSearchView(
             "handler": "get_search",
             "param_name": None,
             "filter_dep": validate_filters_for_domain_inferred_model,
+            "scope_dep": get_depth_shift_scope,
             "description": get_search_description_template("DepthShift"),
             "include_in_schema": False,
         },
@@ -61,6 +64,7 @@ DynamicGenericSearchView(
             "handler": "get_search_data",
             "param_name": None,
             "filter_dep": validate_filters_for_domain_inferred_model,
+            "scope_dep": get_depth_shift_scope,
             "description": get_search_data_description_template("DepthShift"),
         },
     ],

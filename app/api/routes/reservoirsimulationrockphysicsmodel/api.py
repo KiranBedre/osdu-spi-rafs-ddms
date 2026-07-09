@@ -15,6 +15,7 @@
 from fastapi import APIRouter
 
 from app.api.dependencies.validation import (
+    get_geo_context_scope,
     validate_filters_for_domain_inferred_model,
     validate_reservoir_sim_rock_physics_payload,
 )
@@ -52,6 +53,7 @@ DynamicGenericSearchView(
             "handler": "get_search",
             "param_name": None,
             "filter_dep": validate_filters_for_domain_inferred_model,
+            "scope_dep": get_geo_context_scope,
             "description": get_search_description_template("ReservoirSimulationRockPhysicsModel"),
         },
         {
@@ -59,6 +61,7 @@ DynamicGenericSearchView(
             "handler": "get_search",
             "param_name": None,
             "filter_dep": validate_filters_for_domain_inferred_model,
+            "scope_dep": get_geo_context_scope,
             "description": get_search_description_template("ReservoirSimulationRockPhysicsModel"),
             "include_in_schema": False,
         },
@@ -67,6 +70,7 @@ DynamicGenericSearchView(
             "handler": "get_search_data",
             "param_name": None,
             "filter_dep": validate_filters_for_domain_inferred_model,
+            "scope_dep": get_geo_context_scope,
             "description": get_search_data_description_template("ReservoirSimulationRockPhysicsModel"),
         },
     ],

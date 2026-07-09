@@ -800,3 +800,87 @@ def get_search_scope(
         well_id=well_id,
         wellbore_id=wellbore_id,
     )
+
+
+def get_geo_context_scope(
+    basin_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier')."
+        ),
+    ),
+    field_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+    ),
+) -> SearchScope:
+    """Parse and validate basin/field scope parameters for types that expose GeoContexts only.
+
+    Used by SaturationFunctionSet and ReservoirSimulationRockPhysicsModel, which do not carry
+    WellID or WellboreID — only data.GeoContexts with BasinID and FieldID entries.
+    Supplying well_id or wellbore_id on those endpoints is not supported.
+
+    :param basin_id: Basin identifier (OSDU record ID)
+    :type basin_id: Optional[str]
+    :param field_id: Field identifier (OSDU record ID)
+    :type field_id: Optional[str]
+    :return: validated scope parameters
+    :rtype: SearchScope
+    :raises HTTPException: 400 if any parameter has invalid format
+    """
+    validate_scope_parameter("basin_id", basin_id)
+    validate_scope_parameter("field_id", field_id)
+    return SearchScope(basin_id=basin_id, field_id=field_id)
+
+
+def get_depth_shift_scope(
+    basin_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier')."
+        ),
+    ),
+    field_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+    ),
+    wellbore_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific wellbore. "
+            "Must be a valid OSDU record ID of kind 'master-data--Wellbore'. "
+            "DepthShift does not support well_id; only basin_id, field_id, and wellbore_id."
+        ),
+    ),
+) -> SearchScope:
+    """Parse and validate basin/field/wellbore scope parameters for DepthShift.
+
+    DepthShift records expose WellboreID directly on data, plus basin/field via GeoContexts.
+    Well_id is not supported — only wellbore_id, basin_id, and field_id.
+
+    :param basin_id: Basin identifier (OSDU record ID)
+    :type basin_id: Optional[str]
+    :param field_id: Field identifier (OSDU record ID)
+    :type field_id: Optional[str]
+    :param wellbore_id: Wellbore identifier (OSDU record ID)
+    :type wellbore_id: Optional[str]
+    :return: validated scope parameters
+    :rtype: SearchScope
+    :raises HTTPException: 400 if any parameter has invalid format
+    """
+    validate_scope_parameter("basin_id", basin_id)
+    validate_scope_parameter("field_id", field_id)
+    validate_scope_parameter("wellbore_id", wellbore_id)
+    return SearchScope(basin_id=basin_id, field_id=field_id, wellbore_id=wellbore_id)
