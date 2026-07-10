@@ -407,6 +407,7 @@
             }
           },
           {
+            "description": "Start date in YYYY-MM-DD format",
             "examples": {
               "example": {
                 "value": "2023-01-01"
@@ -416,12 +417,13 @@
             "name": "indexed_start_date",
             "required": false,
             "schema": {
-              "format": "date",
+              "description": "Start date in YYYY-MM-DD format",
               "title": "Indexed Start Date",
               "type": "string"
             }
           },
           {
+            "description": "End date in YYYY-MM-DD format",
             "examples": {
               "example": {
                 "value": "2023-12-31"
@@ -431,7 +433,7 @@
             "name": "indexed_end_date",
             "required": false,
             "schema": {
-              "format": "date",
+              "description": "End date in YYYY-MM-DD format",
               "title": "Indexed End Date",
               "type": "string"
             }
@@ -1335,6 +1337,7 @@
             }
           },
           {
+            "description": "Start date in YYYY-MM-DD format",
             "examples": {
               "example": {
                 "value": "2023-01-01"
@@ -1344,12 +1347,13 @@
             "name": "indexed_start_date",
             "required": false,
             "schema": {
-              "format": "date",
+              "description": "Start date in YYYY-MM-DD format",
               "title": "Indexed Start Date",
               "type": "string"
             }
           },
           {
+            "description": "End date in YYYY-MM-DD format",
             "examples": {
               "example": {
                 "value": "2023-12-31"
@@ -1359,7 +1363,7 @@
             "name": "indexed_end_date",
             "required": false,
             "schema": {
-              "format": "date",
+              "description": "End date in YYYY-MM-DD format",
               "title": "Indexed End Date",
               "type": "string"
             }
@@ -3693,6 +3697,7 @@
             }
           },
           {
+            "description": "Start date in YYYY-MM-DD format",
             "examples": {
               "example": {
                 "value": "2023-01-01"
@@ -3702,12 +3707,13 @@
             "name": "indexed_start_date",
             "required": false,
             "schema": {
-              "format": "date",
+              "description": "Start date in YYYY-MM-DD format",
               "title": "Indexed Start Date",
               "type": "string"
             }
           },
           {
+            "description": "End date in YYYY-MM-DD format",
             "examples": {
               "example": {
                 "value": "2023-12-31"
@@ -3717,7 +3723,7 @@
             "name": "indexed_end_date",
             "required": false,
             "schema": {
-              "format": "date",
+              "description": "End date in YYYY-MM-DD format",
               "title": "Indexed End Date",
               "type": "string"
             }
@@ -5453,6 +5459,7 @@
             }
           },
           {
+            "description": "Start date in YYYY-MM-DD format",
             "examples": {
               "example": {
                 "value": "2023-01-01"
@@ -5462,12 +5469,13 @@
             "name": "indexed_start_date",
             "required": false,
             "schema": {
-              "format": "date",
+              "description": "Start date in YYYY-MM-DD format",
               "title": "Indexed Start Date",
               "type": "string"
             }
           },
           {
+            "description": "End date in YYYY-MM-DD format",
             "examples": {
               "example": {
                 "value": "2023-12-31"
@@ -5477,7 +5485,7 @@
             "name": "indexed_end_date",
             "required": false,
             "schema": {
-              "format": "date",
+              "description": "End date in YYYY-MM-DD format",
               "title": "Indexed End Date",
               "type": "string"
             }
@@ -6855,6 +6863,7 @@
             }
           },
           {
+            "description": "Start date in YYYY-MM-DD format",
             "examples": {
               "example": {
                 "value": "2023-01-01"
@@ -6864,12 +6873,13 @@
             "name": "indexed_start_date",
             "required": false,
             "schema": {
-              "format": "date",
+              "description": "Start date in YYYY-MM-DD format",
               "title": "Indexed Start Date",
               "type": "string"
             }
           },
           {
+            "description": "End date in YYYY-MM-DD format",
             "examples": {
               "example": {
                 "value": "2023-12-31"
@@ -6879,7 +6889,7 @@
             "name": "indexed_end_date",
             "required": false,
             "schema": {
-              "format": "date",
+              "description": "End date in YYYY-MM-DD format",
               "title": "Indexed End Date",
               "type": "string"
             }

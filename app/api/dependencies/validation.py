@@ -648,6 +648,18 @@ async def get_validated_bulk_data_json(request: Request) -> Tuple[str, str]:
     return bulk_data.json(), "split"
 
 
+def validate_and_parse_date(date_str: Optional[str], field_name: str) -> Optional[date]:
+    if not date_str:
+        return None
+    try:
+        return datetime.strptime(date_str, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(
+            status_code=HTTP_422_UNPROCESSABLE,
+            detail=f"Invalid format for {field_name}: '{date_str}'. Expected format: YYYY-MM-DD.",
+        )
+
+
 def get_search_data_pagination_parameters(
     page_limit: int = Query(
         default=100,
@@ -671,17 +683,6 @@ def get_search_data_pagination_parameters(
         description="End date in YYYY-MM-DD format",
     ),
 ) -> Tuple[int, int, Optional[date], Optional[date]]:
-    def validate_and_parse_date(date_str: Optional[str], field_name: str) -> Optional[date]:  # noqa: WPS430
-        if not date_str:
-            return None
-        try:
-            return datetime.strptime(date_str, "%Y-%m-%d").date()
-        except ValueError:
-            raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE,
-                detail=f"Invalid format for {field_name}: '{date_str}'. Expected format: YYYY-MM-DD.",
-            )
-
     start_date_obj = validate_and_parse_date(indexed_start_date, "indexed_start_date")
     end_date_obj = validate_and_parse_date(indexed_end_date, "indexed_end_date")
 
@@ -706,30 +707,27 @@ def get_search_pagination_parameters(
         description="Number of results to skip before returning data",
         ge=0,
     ),
-    indexed_start_date: Optional[date] = Query(
+    indexed_start_date: Optional[str] = Query(
         default=None,
-        openapi_examples={
-            "example": {
-                "value": "2023-01-01",
-            },
-        },
+        openapi_examples={"example": {"value": "2023-01-01"}},
+        description="Start date in YYYY-MM-DD format",
     ),
-    indexed_end_date: Optional[date] = Query(
+    indexed_end_date: Optional[str] = Query(
         default=None,
-        openapi_examples={
-            "example": {
-                "value": "2023-12-31",
-            },
-        },
+        openapi_examples={"example": {"value": "2023-12-31"}},
+        description="End date in YYYY-MM-DD format",
     ),
 ) -> Tuple[int, int, Optional[date], Optional[date]]:
-    if indexed_start_date and indexed_end_date:
-        if indexed_start_date > indexed_end_date:
+    start_date_obj = validate_and_parse_date(indexed_start_date, "indexed_start_date")
+    end_date_obj = validate_and_parse_date(indexed_end_date, "indexed_end_date")
+
+    if start_date_obj and end_date_obj:
+        if start_date_obj > end_date_obj:
             raise HTTPException(
                 status_code=HTTP_422_UNPROCESSABLE,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
-    return offset, page_limit, indexed_start_date, indexed_end_date  # noqa: ASYNC910
+    return offset, page_limit, start_date_obj, end_date_obj  # noqa: ASYNC910
 
 
 def get_search_scope(
