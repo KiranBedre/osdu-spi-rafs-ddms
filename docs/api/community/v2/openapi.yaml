@@ -315,24 +315,26 @@ paths:
           maximum: 1000.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
             value: '2023-01-01'
         in: query
         name: indexed_start_date
         required: false
         schema:
-          format: date
+          description: Start date in YYYY-MM-DD format
           title: Indexed Start Date
           type: string
-      - examples:
+      - description: End date in YYYY-MM-DD format
+        examples:
           example:
             value: '2023-12-31'
         in: query
         name: indexed_end_date
         required: false
         schema:
-          format: date
+          description: End date in YYYY-MM-DD format
           title: Indexed End Date
           type: string
       responses:
@@ -1054,24 +1056,26 @@ paths:
           maximum: 1000.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
             value: '2023-01-01'
         in: query
         name: indexed_start_date
         required: false
         schema:
-          format: date
+          description: Start date in YYYY-MM-DD format
           title: Indexed Start Date
           type: string
-      - examples:
+      - description: End date in YYYY-MM-DD format
+        examples:
           example:
             value: '2023-12-31'
         in: query
         name: indexed_end_date
         required: false
         schema:
-          format: date
+          description: End date in YYYY-MM-DD format
           title: Indexed End Date
           type: string
       responses:
@@ -2885,24 +2889,26 @@ paths:
           maximum: 1000.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
             value: '2023-01-01'
         in: query
         name: indexed_start_date
         required: false
         schema:
-          format: date
+          description: Start date in YYYY-MM-DD format
           title: Indexed Start Date
           type: string
-      - examples:
+      - description: End date in YYYY-MM-DD format
+        examples:
           example:
             value: '2023-12-31'
         in: query
         name: indexed_end_date
         required: false
         schema:
-          format: date
+          description: End date in YYYY-MM-DD format
           title: Indexed End Date
           type: string
       responses:
@@ -4261,24 +4267,26 @@ paths:
           maximum: 1000.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
             value: '2023-01-01'
         in: query
         name: indexed_start_date
         required: false
         schema:
-          format: date
+          description: Start date in YYYY-MM-DD format
           title: Indexed Start Date
           type: string
-      - examples:
+      - description: End date in YYYY-MM-DD format
+        examples:
           example:
             value: '2023-12-31'
         in: query
         name: indexed_end_date
         required: false
         schema:
-          format: date
+          description: End date in YYYY-MM-DD format
           title: Indexed End Date
           type: string
       responses:
@@ -5370,24 +5378,26 @@ paths:
           maximum: 1000.0
           title: Page Limit
           type: integer
-      - examples:
+      - description: Start date in YYYY-MM-DD format
+        examples:
           example:
             value: '2023-01-01'
         in: query
         name: indexed_start_date
         required: false
         schema:
-          format: date
+          description: Start date in YYYY-MM-DD format
           title: Indexed Start Date
           type: string
-      - examples:
+      - description: End date in YYYY-MM-DD format
+        examples:
           example:
             value: '2023-12-31'
         in: query
         name: indexed_end_date
         required: false
         schema:
-          format: date
+          description: End date in YYYY-MM-DD format
           title: Indexed End Date
           type: string
       responses:
