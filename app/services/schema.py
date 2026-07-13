@@ -20,6 +20,7 @@ import jsonschema
 from async_lru import alru_cache
 from dateutil import parser as date_parser
 from fastapi_cache.decorator import cache
+from httpx import HTTPStatusError
 from loguru import logger
 from starlette import status
 
@@ -157,7 +158,13 @@ class SchemaService(object):
         """
         logger.info(f"Validating {schema_id}")
         logger.info(record["kind"])
-        errors = [error.message for error in await self._validate_against_schema(record, schema_id)]
+        try:
+            errors = [error.message for error in await self._validate_against_schema(record, schema_id)]
+        except HTTPStatusError as exc:
+            if exc.response.status_code == status.HTTP_404_NOT_FOUND:
+                logger.warning(f"Schema '{schema_id}' not found in schema service, skipping validation.")
+                return None  # noqa: ASYNC910
+            raise
         if errors:
             error_dict = {
                 "id": record.get("id", optional_id),
