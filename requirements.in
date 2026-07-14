@@ -29,6 +29,7 @@ tenacity==8.2.3
 uvicorn==0.23.2
 urllib3==2.7.0
 wheel==0.46.3     # CVE-2026-24049 fix
+PyYAML==6.0.3     # For YAML OpenAPI spec generation and validation
 # azure deps
 azure-core==1.38.0  # Fix: azure-core 1.37.0 pulled as transitive dependency has security issues
 azure-identity==1.25.3

@@ -38,7 +38,7 @@ Instructions and payload examples are presented on [the tutorial page](./docs/tu
 
 ## API Specs
 
-Compiled REST API documentation is presented in the [openapi.json](./docs/spec/openapi.json) file.
+Compiled REST API documentation is presented in the [openapi.yaml](./docs/api/community/v2/openapi.yaml) file.
 
 Run the OpenAPI maintenance commands from the repository root.
 
@@ -82,17 +82,17 @@ If local dependency installation is not working on your platform, run the same c
 
 OpenAPI validation currently runs at two different levels in RAFS:
 
-* Pre-merge sync check: `rafs_openapi_sync_check` generates the OpenAPI document directly from the FastAPI codebase and fails the pipeline on drift between generated output and [openapi.json](./docs/spec/openapi.json).
-* Post-deploy CImpl check: `cimpl-check-openapi-spec` compares the committed [openapi.json](./docs/spec/openapi.json) file with the OpenAPI document served by the deployed RAFS service in CImpl.
+* Pre-merge sync check: `rafs_openapi_sync_check` generates the OpenAPI document directly from the FastAPI codebase and fails the pipeline on drift between generated output and [openapi.yaml](./docs/api/community/v2/openapi.yaml).
+* Post-deploy CImpl check: `cimpl-check-openapi-spec` compares the committed [openapi.yaml](./docs/api/community/v2/openapi.yaml) file with the OpenAPI document served by the deployed RAFS service in CImpl.
 
-The post-deploy CImpl check is configured with `CIMPL_OPENAPI_SPEC_PATH` for the committed file location and `CIMPL_OPENAPI_JSON_ROUTE` for the live `openapi.json` endpoint.
+The post-deploy CImpl check is configured with `CIMPL_OPENAPI_SPEC_PATH` for the committed file location and `CIMPL_OPENAPI_YAML_ROUTE` for the live OpenAPI endpoint.
 
 OpenAPI validation flow in GitLab:
 
 * `build_rafs_tests` (`build` stage): builds the RAFS test image used by the pre-merge sync check.
 * `rafs_openapi_sync_check` (`scan` stage): runs `python scripts/check_openapi_sync.py` against the source code before deployment.
 * `cimpl-deploy` (`deploy` flow in CImpl): deploys the current build.
-* `cimpl-check-openapi-spec` (`acceptance` stage, CImpl only): downloads the live `/api/rafs-ddms/openapi.json` document from the deployed service and compares it with the committed [openapi.json](./docs/spec/openapi.json).
+* `cimpl-check-openapi-spec` (`acceptance` stage, CImpl only): downloads the live `/api/rafs-ddms/openapi.json` document from the deployed service, converts it to YAML, and compares it with the committed [openapi.yaml](./docs/api/community/v2/openapi.yaml).
 
 The generator uses deterministic defaults for repository-managed output:
 

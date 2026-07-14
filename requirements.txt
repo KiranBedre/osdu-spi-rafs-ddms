@@ -306,6 +306,8 @@ urllib3==2.7.0
     #   -r requirements.in
     #   botocore
     #   requests
+PyYAML==6.0.3
+    # via -r requirements.in
 uvicorn==0.23.2
     # via
     #   -r requirements.in
