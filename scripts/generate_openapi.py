@@ -5,8 +5,10 @@ import sys
 from pathlib import Path
 from typing import Type
 
+import yaml
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_OUTPUT_PATH = REPO_ROOT / "docs" / "spec" / "openapi.json"
+DEFAULT_OUTPUT_PATH = REPO_ROOT / "docs" / "api" / "community" / "v2" / "openapi.yaml"
 FALLBACK_APP_NAME = "Rock and Fluid Sample DDMS"
 FALLBACK_APP_VERSION = "0.2.0"
 
@@ -41,7 +43,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output",
         default=str(DEFAULT_OUTPUT_PATH),
-        help="Path to the generated OpenAPI JSON file.",
+        help="Path to the generated OpenAPI YAML file.",
     )
     parser.add_argument(
         "--app-env",
@@ -109,10 +111,62 @@ def mark_content_schema_version_required(schema: dict) -> dict:
     return schema
 
 
+def normalize_openapi_schema(schema: dict) -> dict:
+    """Normalize schema keys for deterministic and spec-compliant output.
+
+    Some generated nodes may contain `app_name` where `title` is expected.
+    This pass rewrites those keys recursively.
+    """
+
+    components = schema.setdefault("components", {}) if isinstance(schema, dict) else {}
+    component_schemas = components.setdefault("schemas", {}) if isinstance(components, dict) else {}
+
+    def _normalize(value: object) -> object:
+        if isinstance(value, dict):
+            normalized: dict = {}
+            for key, item in value.items():
+                if key == "definitions" and isinstance(item, dict):
+                    # OpenAPI 3 does not allow `definitions`; move entries to components/schemas.
+                    for schema_name, schema_value in item.items():
+                        component_schemas.setdefault(schema_name, _normalize(schema_value))
+                    continue
+
+                target_key = "title" if key == "app_name" else key
+
+                # OpenAPI 3 requires exclusiveMinimum/exclusiveMaximum as booleans.
+                if key == "exclusiveMinimum" and isinstance(item, (int, float)) and not isinstance(item, bool):
+                    normalized["minimum"] = item
+                    normalized["exclusiveMinimum"] = True
+                    continue
+                if key == "exclusiveMaximum" and isinstance(item, (int, float)) and not isinstance(item, bool):
+                    normalized["maximum"] = item
+                    normalized["exclusiveMaximum"] = True
+                    continue
+
+                normalized[target_key] = _normalize(item)
+
+            ref_value = normalized.get("$ref")
+            if isinstance(ref_value, str) and ref_value.startswith("#/definitions/"):
+                normalized["$ref"] = ref_value.replace("#/definitions/", "#/components/schemas/", 1)
+            return normalized
+        if isinstance(value, list):
+            return [_normalize(item) for item in value]
+        return value
+
+    return _normalize(schema)
+
+
+def canonicalize_openapi_schema(schema: dict) -> dict:
+    """Convert generated schema to a deterministic, plain-data representation."""
+    clean_schema = json.loads(json.dumps(schema, default=str))
+    return normalize_openapi_schema(clean_schema)
+
+
 def write_openapi_schema(schema: dict, output_path: Path) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    clean_schema = canonicalize_openapi_schema(schema)
     output_path.write_text(
-        json.dumps(schema, indent=2, ensure_ascii=False, sort_keys=True) + "\n",
+        yaml.dump(clean_schema, default_flow_style=False, allow_unicode=True, sort_keys=True),
         encoding="utf-8",
     )
 

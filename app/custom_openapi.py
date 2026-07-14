@@ -21,6 +21,65 @@ from app.models.schemas.pandas_dataframe import OrientSplit
 from app.resources.load_model_example import load_data_example
 
 
+def _is_non_boolean_number(raw_value: object) -> bool:
+    """Check if a value is numeric while excluding booleans."""
+    return isinstance(raw_value, (int, float)) and not isinstance(raw_value, bool)
+
+
+def _normalize_ref_path(normalized_mapping: dict) -> None:
+    """Rewrite legacy OpenAPI 2 definitions references to OpenAPI 3 components."""
+    ref_path = normalized_mapping.get("$ref")
+    if isinstance(ref_path, str) and ref_path.startswith("#/definitions/"):
+        normalized_mapping["$ref"] = ref_path.replace("#/definitions/", "#/components/schemas/", 1)
+
+
+def _normalize_openapi_node(raw_node: object, component_schemas: dict) -> object:
+    """Normalize OpenAPI nodes recursively."""
+    normalized_node = raw_node
+    if isinstance(raw_node, dict):
+        normalized_node = _normalize_openapi_mapping(raw_node, component_schemas)
+    elif isinstance(raw_node, list):
+        normalized_node = [
+            _normalize_openapi_node(sequence_item, component_schemas)
+            for sequence_item in raw_node
+        ]
+    return normalized_node
+
+
+def _normalize_openapi_mapping(raw_mapping: dict, component_schemas: dict) -> dict:
+    """Normalize mapping nodes and promote OpenAPI 2 fields to OpenAPI 3 fields."""
+    normalized_mapping = {}
+    for field_name, field_value in raw_mapping.items():
+        if field_name == "definitions" and isinstance(field_value, dict):
+            for schema_name, schema_value in field_value.items():
+                if schema_name not in component_schemas:
+                    component_schemas[schema_name] = _normalize_openapi_node(schema_value, component_schemas)
+            continue
+
+        if field_name == "exclusiveMinimum" and _is_non_boolean_number(field_value):
+            normalized_mapping["minimum"] = field_value
+            normalized_mapping["exclusiveMinimum"] = True
+            continue
+
+        if field_name == "exclusiveMaximum" and _is_non_boolean_number(field_value):
+            normalized_mapping["maximum"] = field_value
+            normalized_mapping["exclusiveMaximum"] = True
+            continue
+
+        normalized_key = "title" if field_name == "app_name" else field_name
+        normalized_mapping[normalized_key] = _normalize_openapi_node(field_value, component_schemas)
+
+    _normalize_ref_path(normalized_mapping)
+    return normalized_mapping
+
+
+def _normalize_openapi_schema(schema: dict) -> dict:
+    """Normalize schema to OpenAPI 3-compatible structure used by committed spec."""
+    components = schema.setdefault("components", {}) if isinstance(schema, dict) else {}
+    component_schemas = components.setdefault("schemas", {}) if isinstance(components, dict) else {}
+    return _normalize_openapi_node(schema, component_schemas)
+
+
 def _copy_definitions_to_root(schema: dict, openapi_schema: dict) -> None:
     """Copy nested definitions to OpenAPI root for Swagger UI $ref resolution.
 
@@ -185,7 +244,7 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
     _apply_request_body_overrides(custom_openapi_schema, settings)
     _mark_content_schema_version_required(custom_openapi_schema)
     _sort_and_annotate_parameters(custom_openapi_schema)
-    return custom_openapi_schema
+    return _normalize_openapi_schema(custom_openapi_schema)
 
 
 def _apply_request_body_overrides(openapi_schema: dict, settings: AppSettings) -> None:

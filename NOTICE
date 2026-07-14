@@ -121,6 +121,7 @@ The following software have components provided under the terms of this license:
 
 - Deprecated (from https://github.com/laurent-laporte-pro/deprecated, https://github.com/tantale/deprecated)
 - PyJWT (from http://github.com/jpadilla/pyjwt, https://pypi.org/project/PyJWT/)
+- PyYAML (from http://pyyaml.org/wiki/PyYAML, https://pyyaml.org/)
 - aiohttp (from https://github.com/aio-libs/aiohttp, https://github.com/aio-libs/aiohttp/, https://pypi.org/project/aiohttp/)
 - annotated-doc (from https://pypi.org/project/annotated-doc/)
 - anyio (from https://pypi.org/project/anyio/, https://pypi.org/project/anyio/3.3.0/)
@@ -196,6 +197,7 @@ PSF-2.0
 The following software have components provided under the terms of this license:
 
 - aiohappyeyeballs (from https://pypi.org/project/aiohappyeyeballs/)
+- typing-extensions (from https://pypi.org/project/typing-extensions/, https://pypi.org/project/typing-extensions/4.4.0/)
 
 ========================================================================
 Protobuf

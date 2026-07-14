@@ -21,7 +21,7 @@
           {
             "name": "rafs",
             "description": "Rock And Fluid Sample DDMS",
-            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/spec/openapi.json"
+            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/api/community/v2/openapi.yaml"
           }
         ],
         "paths": {
@@ -87,7 +87,7 @@
           {
             "name": "rafs",
             "description": "Rock And Fluid Sample DDMS",
-            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/spec/openapi.json"
+            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/api/community/v2/openapi.yaml"
           }
         ],
         "paths": {
@@ -152,7 +152,7 @@
           {
             "name": "rafs",
             "description": "Rock And Fluid Sample DDMS",
-            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/spec/openapi.json"
+            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/api/community/v2/openapi.yaml"
           }
         ],
         "paths": {
@@ -217,7 +217,7 @@
           {
             "name": "rafs",
             "description": "Rock And Fluid Sample DDMS",
-            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/spec/openapi.json"
+            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/api/community/v2/openapi.yaml"
           }
         ],
         "paths": {
@@ -282,7 +282,7 @@
           {
             "name": "rafs",
             "description": "Rock And Fluid Sample DDMS",
-            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/spec/openapi.json"
+            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/api/community/v2/openapi.yaml"
           }
         ],
         "paths": {
@@ -347,7 +347,7 @@
           {
             "name": "rafs",
             "description": "Rock And Fluid Sample DDMS",
-            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/spec/openapi.json"
+            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/api/community/v2/openapi.yaml"
           }
         ],
         "paths": {
@@ -412,7 +412,7 @@
           {
             "name": "rafs",
             "description": "Rock And Fluid Sample DDMS",
-            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/spec/openapi.json"
+            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/api/community/v2/openapi.yaml"
           }
         ],
         "paths": {
@@ -477,7 +477,7 @@
           {
             "name": "rafs",
             "description": "Rock And Fluid Sample DDMS",
-            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/spec/openapi.json"
+            "openspec": "https://gitbud.{{company}}.com/{{osdu}}/{{company}}-osdu/osdu-rafsddms/-/blob/main/docs/api/community/v2/openapi.yaml"
           }
         ],
         "paths": {

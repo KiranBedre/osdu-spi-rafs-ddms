@@ -29,7 +29,7 @@ function _build_register_payload() {
                 {
                     "name": "rafs",
                     "description": "Rock And Fluid Sample DDMS",
-                    "openspec": "https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/docs/spec/openapi.json"
+                    "openspec": "https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/docs/api/community/v2/openapi.yaml"
                 }
             ],
              "paths": ${PATHS_OUT}              
