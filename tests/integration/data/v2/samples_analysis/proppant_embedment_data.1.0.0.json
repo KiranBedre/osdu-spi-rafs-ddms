@@ -99,7 +99,7 @@
         {
           "kind":"Unit",
           "name":"mass fraction",
-          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:mass%25:",
+          "unitOfMeasureID":"{data_partition_id}:reference-data--UnitOfMeasure:%25%5Bmass%5D:",
           "propertyNames":[
             "ProppantAgent.ISO13503_2Properties[*].AcidSolubility",
             "ProppantAgent.ISO13503_2Properties[*].CrushTestData[*].Fines",

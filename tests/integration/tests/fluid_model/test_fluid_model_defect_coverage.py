@@ -18,8 +18,11 @@ import urllib.parse
 from starlette import status
 
 from tests.integration.config import (
+    CONFIG,
     DataFiles,
 )
+
+DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
 
 def test_fluid_create_record_with_special_characters_in_record_id(api, helper, tests_data, spec_char_record_id):
@@ -77,3 +80,22 @@ def test_fluid_delete_record_special_characters_in_record_id(api, spec_char_reco
     }
 
     api.fluid_model.soft_delete_record(encoded_record_id, **kwargs)
+
+
+def test_fluid_create_record_with_kind_matching_semantic_version(api, helper, tests_data, delete_record):
+    """Verify record creation with kind matching only semantic version can be retrieved unchanged via GET."""
+    # Record creation
+    data_payload = copy.deepcopy(tests_data(DataFiles.FLUID_MODEL))
+    data_payload["kind"] = f"{DATA_PARTITION_ID}:wks:work-product-component--FluidModel:5.23.72"
+    response = api.fluid_model.post_record(body=[data_payload])
+    record_id = response["recordIdVersions"][0].rsplit(":", 1)[0]
+
+    # Register record for cleanup
+    delete_record(record_id)
+
+    # Retrieve the record by id and prepare baseline
+    data_payload["id"] = record_id
+    gotten_record = api.fluid_model.get_record(record_id)
+
+    # Response should contain the same business fields as the original POST body
+    helper.compare_responses(gotten_record, data_payload, response_type="json")

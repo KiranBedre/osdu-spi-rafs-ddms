@@ -161,14 +161,21 @@ def create_record(api, helper, tests_data):
 
 
 @pytest.fixture
-def delete_record(api, helper):
+def delete_record(api):
     """Fixture to delete any record with id after test."""
-    container = {"record_id": [], "api_path": ""}
+    tracked_ids = []
 
-    yield container
+    def _register(record_id: str):
+        """Register a record ID for cleanup after the test."""
+        tracked_ids.append(record_id)
 
-    for record_id in container["record_id"]:
-        api.storage.purge_record(record_id)
+    yield _register
+
+    for record_id in tracked_ids:
+        try:
+            api.storage.purge_record(record_id)
+        except Exception as exception:
+            print(f"⚠️ Failed to purge {record_id}: {exception}")
 
 
 @pytest.fixture(scope="session")

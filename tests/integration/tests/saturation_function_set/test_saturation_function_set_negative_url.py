@@ -22,6 +22,7 @@ from tests.integration.config import (
     CONFIG,
     DataFiles,
     Endpoints,
+    SEARCH_PAGE_LIMITS,
 )
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
@@ -566,11 +567,11 @@ def test_sfs_negative_invalid_format_page_limit_param(api, tests_data, endpoint)
     assert "page_limit value is not a valid integer" in body["errors"]
 
 
-@pytest.mark.parametrize("endpoint", Endpoints.SEARCH_ENDPOINTS)
-def test_sfs_negative_boundary_value_page_limit_param(api, tests_data, endpoint):
-    """Reject page_limit exceeding maximum (100) with 422 Unprocessable Content."""
+@pytest.mark.parametrize(("endpoint", "max_limit"), SEARCH_PAGE_LIMITS.items())
+def test_sfs_negative_boundary_value_page_limit_param(api, tests_data, endpoint, max_limit):
+    """Reject page_limit exceeding maximum with 422 Unprocessable Content."""
     method = getattr(api.saturation_function_set, endpoint)
-    params = {"page_limit": 101}
+    params = {"page_limit": max_limit + 1}
 
     kwargs = {
         "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
@@ -583,7 +584,7 @@ def test_sfs_negative_boundary_value_page_limit_param(api, tests_data, endpoint)
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "page_limit ensure this value is less than or equal to 100" in body["errors"]
+    assert f"page_limit ensure this value is less than or equal to {max_limit}" in body["errors"]
 
 
 @pytest.mark.parametrize("endpoint", Endpoints.SEARCH_ENDPOINTS)

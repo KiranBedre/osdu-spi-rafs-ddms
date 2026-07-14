@@ -52,7 +52,8 @@
     "1.0.0"
   ],
   "relativepermeability": [
-    "1.0.0"
+    "1.0.0",
+    "1.1.0"
   ],
   "rockcompressibility": [
     "1.0.0"

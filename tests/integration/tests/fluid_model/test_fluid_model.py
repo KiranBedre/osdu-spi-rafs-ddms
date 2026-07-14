@@ -26,9 +26,9 @@ def test_fluid_create_record(api, fluid_create_record, helper):
     helper.compare_responses(gotten_record, posted_record, response_type="json")
 
 
-def test_fluid_versions(api, record_id, helper):
+def test_fluid_versions(api, fresh_record_id, helper):
     """Verify record versioning: create v2, list versions, compare v1 and v2, confirm latest version."""
-    version_1 = api.fluid_model.get_record(record_id)
+    version_1 = api.fluid_model.get_record(fresh_record_id)
 
     # Create a second version by modifying the Name field
     version_2 = copy.deepcopy(version_1)
@@ -36,20 +36,20 @@ def test_fluid_versions(api, record_id, helper):
     api.fluid_model.post_record([version_2])
 
     # List versions and ensure two versions exist
-    versions_payload = api.fluid_model.get_record_versions(record_id)
+    versions_payload = api.fluid_model.get_record_versions(fresh_record_id)
     assert "versions" in versions_payload
     assert len(versions_payload["versions"]) == 2
 
     v1_version, v2_version = sorted(versions_payload["versions"])
 
     # Fetch concrete versions and compare with expected payloads
-    rec_v1 = api.fluid_model.get_record_version(record_id, v1_version)
-    rec_v2 = api.fluid_model.get_record_version(record_id, v2_version)
+    rec_v1 = api.fluid_model.get_record_version(fresh_record_id, v1_version)
+    rec_v2 = api.fluid_model.get_record_version(fresh_record_id, v2_version)
 
     helper.compare_responses(rec_v1, version_1, response_type="json")
     helper.compare_responses(rec_v2, version_2, response_type="json")
     assert rec_v2["data"]["Name"] == "New version"
 
     # Plain GET should return the latest version
-    latest = api.fluid_model.get_record(record_id)
+    latest = api.fluid_model.get_record(fresh_record_id)
     helper.compare_responses(latest, version_2, response_type="json")

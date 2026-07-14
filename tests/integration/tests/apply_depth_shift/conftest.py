@@ -87,7 +87,7 @@ def analysis_type():
     return SamplesAnalysisTypes.NMR
 
 
-@pytest.fixture(scope="package")
+@pytest.fixture(scope="module")
 def sample_analysis_create_record(api, create_record, analysis_type):
     """Create a Samples Analysis record per type."""
     record_data, _ = create_record(
