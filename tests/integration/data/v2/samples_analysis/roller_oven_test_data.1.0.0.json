@@ -68,7 +68,7 @@
                 {
                     "kind": "Unit",
                     "name": "unitless",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:unitless:",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:mm:",
                     "propertyNames": ["SieveMeshSize"]
                 }
             ],

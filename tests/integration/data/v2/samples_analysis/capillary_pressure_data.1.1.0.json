@@ -97,7 +97,7 @@
       },
       {
         "InjectionFluidID":"{data_partition_id}:reference-data--SampleInjectionFluidType:Water:",
-        "WOGnCycleNotationID":"{data_partition_id}:reference-data--WOGnCycleNotation:Water:",
+        "WOGnCycleNotationID":"{data_partition_id}:reference-data--WOGnCycleNotation:CDI1:",
         "InitialWaterSaturation":0.124,
         "SpontaneousImbibition":0.159,
         "Endpoints":{
@@ -117,7 +117,7 @@
               "PressureMeasurementTypeID":"{data_partition_id}:reference-data--PressureMeasurementType:Ambient:"
             },
             "CalculatedProperties":{
-              "EndFaceEstimationMethodID":"{data_partition_id}:reference-data--EndFaceEstimationMethod:Method1:",
+              "EndFaceEstimationMethodID":"{data_partition_id}:reference-data--EndFaceEstimationMethod:Forbes:",
               "PoreThroatRadius": 0.0001,
               "PoreThroatMedianRadius": 0.0022,
               "EndFacePhaseSaturation": 0.043,
@@ -159,7 +159,7 @@
       },
       {
         "InjectionFluidID":"{data_partition_id}:reference-data--SampleInjectionFluidType:Water:",
-        "WOGnCycleNotationID":"{data_partition_id}:reference-data--WOGnCycleNotation:Water:",
+        "WOGnCycleNotationID":"{data_partition_id}:reference-data--WOGnCycleNotation:CDI1:",
         "InitialWaterSaturation":0.124,
         "SpontaneousImbibition":0.159,
         "Endpoints":{
@@ -177,11 +177,11 @@
             "RotationalSpeed":697,
             "Porosity":{
               "Value":0.054231274,
-              "PorosityMeasurementTypeID":"{data_partition_id}:reference-data--PorosityMeasurementType:Ambient:"
+              "PorosityMeasurementTypeID":"{data_partition_id}:reference-data--PorosityMeasurementType:BrineSaturation:"
             },
             "Permeability":{
               "Value":0.234,
-              "PermeabilityMeasurementTypeID":"{data_partition_id}:reference-data--PermeabilityMeasurementType:Ambient:"
+              "PermeabilityMeasurementTypeID":"{data_partition_id}:reference-data--PermeabilityMeasurementType:Klinkenberg:"
             },
             "CalculatedProperties":{
               "PoreThroatSizeDistribution":[

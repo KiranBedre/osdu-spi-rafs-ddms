@@ -18,8 +18,8 @@
         "status": "compliant"
     },
     "data": {
-            "CompressibilityModelTypeID": "{data_partition_id}:reference-data--CompressibilityModelType:BulkCompressibility:",
-            "ThermalModelTypeID": "{data_partition_id}:reference-data--ThermalModelType:GeometricMeanModel:",
+            "CompressibilityModelTypeID": "{data_partition_id}:reference-data--CompressibilityModelType:Correlation:",
+            "ThermalModelTypeID": "{data_partition_id}:reference-data--ThermalModelType:Correlation:",
             "ParentModelID": "{data_partition_id}:work-product-component--ReservoirSimulationRockPhysicsModel:ParentRecord:",
             "DatePublished": "2024-01-01",
             "Name": "Reservoir Simulation Rock Physics Model",

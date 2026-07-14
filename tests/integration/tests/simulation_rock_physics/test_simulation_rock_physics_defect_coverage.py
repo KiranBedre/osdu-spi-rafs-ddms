@@ -20,9 +20,12 @@ from starlette import status
 
 from app.resources.common_headers import CACHE_CONTROL
 from tests.integration.config import (
+    CONFIG,
     DataFiles,
     Endpoints,
 )
+
+DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.ENDPOINTS_WITH_FILTERS_ARGS)
@@ -194,3 +197,22 @@ def test_rsrp_delete_record_special_characters_in_record_id(api, spec_char_recor
     }
 
     api.simulation_rock_physics.soft_delete_record(encoded_record_id, **kwargs)
+
+
+def test_rsrp_create_record_with_kind_matching_semantic_version(api, helper, tests_data, delete_record):
+    """Verify record creation with kind matching only semantic version can be retrieved unchanged via GET."""
+    # Record creation
+    payload = copy.deepcopy(tests_data(DataFiles.SIMULATION_ROCK_PHYSICS))
+    payload["kind"] = f"{DATA_PARTITION_ID}:wks:work-product-component--ReservoirSimulationRockPhysicsModel:5.23.72"
+    response = api.simulation_rock_physics.post_record(body=[payload])
+    record_id = response["recordIdVersions"][0].rsplit(":", 1)[0]
+
+    # Register record for cleanup
+    delete_record(record_id)
+
+    # Retrieve the record by id and prepare baseline
+    payload["id"] = record_id
+    gotten_record = api.simulation_rock_physics.get_record(record_id)
+
+    # Response should contain the same business fields as the original POST body
+    helper.compare_responses(gotten_record, payload, response_type="json")

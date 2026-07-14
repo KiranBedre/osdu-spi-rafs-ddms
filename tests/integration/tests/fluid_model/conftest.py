@@ -36,10 +36,28 @@ def fluid_create_record(api, create_record):
     api.storage.purge_record(record_data["id"])
 
 
+@pytest.fixture(scope="function")
+def fluid_create_fresh_record(api, create_record):
+    """Create a fresh FluidModel record."""
+    record_data, _ = create_record(
+        DataTypes.FLUID_MODEL,
+        DataFiles.FLUID_MODEL,
+        DataTemplates.ID_FLUID_MODEL.format(partition=CONFIG["DATA_PARTITION"]),
+    )
+    yield record_data
+    api.storage.purge_record(record_data["id"])
+
+
 @pytest.fixture(scope="module")
 def record_id(fluid_create_record):
     """Return FluidModel record_id."""
     return fluid_create_record["id"]
+
+
+@pytest.fixture(scope="function")
+def fresh_record_id(fluid_create_fresh_record):
+    """Return fresh FluidModel record_id."""
+    return fluid_create_fresh_record["id"]
 
 
 @pytest.fixture(scope="module")

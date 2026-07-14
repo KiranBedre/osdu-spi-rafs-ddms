@@ -60,7 +60,7 @@
       1.23,
       [
         {
-          "MineralID":"{data_partition_id}:reference-data--Minerals:kaolinite:",
+          "MineralID":"{data_partition_id}:reference-data--Minerals:Actinolite:",
           "WeightPercent":1.23,
           "VolumePercent":1.23
         }

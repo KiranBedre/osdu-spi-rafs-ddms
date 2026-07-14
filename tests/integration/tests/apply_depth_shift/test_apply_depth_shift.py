@@ -53,6 +53,7 @@ def test_apply_id_provided_depth_shift_with_constant_offset(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -114,6 +115,7 @@ def test_apply_definitive_depth_shift_with_constant_offset(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -177,6 +179,7 @@ def test_apply_id_provided_depth_shift_with_interpolation(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -232,6 +235,7 @@ def test_apply_definitive_depth_shift_with_interpolation(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -297,6 +301,7 @@ def test_apply_depth_shift_with_none_interpolation_method(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -359,6 +364,7 @@ def test_apply_depth_shift_with_sample_top_below_all_intervals(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -422,6 +428,7 @@ def test_apply_depth_shift_with_sample_top_interval_boundary(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -485,6 +492,7 @@ def test_apply_depth_shift_with_sample_top_and_sample_in_different_intervals(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -555,6 +563,7 @@ def test_apply_depth_shift_with_sample_top_in_gap_between_intervals(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -618,6 +627,7 @@ def test_apply_depth_shift_with_measurement_source_not_driller(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -684,6 +694,7 @@ def test_apply_depth_shift_with_different_wellbore_ids(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:TectonicDrift:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -752,6 +763,7 @@ def test_apply_depth_shift_with_different_depth_shift_ids(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -818,6 +830,7 @@ def test_apply_depth_shift_with_sample_top_only(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -882,6 +895,7 @@ def test_apply_depth_shift_with_sample_base_only(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -951,6 +965,7 @@ def test_apply_depth_shift_with_sample_mean_only(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -1025,6 +1040,7 @@ def test_apply_depth_shift_with_sample_top_sample_mean_only(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -1092,6 +1108,7 @@ def test_apply_depth_shift_with_sample_base_sample_mean_only(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 
@@ -1159,6 +1176,7 @@ def test_apply_depth_shift_without_depth_measurements(
     }
     if endpoint == "search_data":
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
+        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
     response = method(*call_args, params=params)
 

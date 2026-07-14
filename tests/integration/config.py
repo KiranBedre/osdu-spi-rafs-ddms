@@ -19,10 +19,11 @@ CONFIG = {}
 
 WPC_VERSION = "1.0.0"
 PARQUET_HEADERS = {"Content-Type": "application/x-parquet"}
-ACCEPT_HEADERS = "*/*;version={version}"
+ACCEPT_HEADERS = "*/*"
 
 DATA_DIR = Path("tests", "integration", "data")
 TEST_DATA_STORE = {}
+SEARCH_PAGE_LIMITS = {"search_records": 1000, "search_data": 100}
 
 
 class SchemaVersions:
@@ -57,7 +58,9 @@ class DataFiles:
     PROPPANT_EMBEDMENT_SCHEMA_V1 = "v2/samples_analysis/proppant_embedment_schema.1.0.0.json"
 
     RELATIVE_PERMEABILITY_DATA_V1 = "v2/samples_analysis/relative_permeability_data.1.0.0.json"
+    RELATIVE_PERMEABILITY_DATA_V1_1 = "v2/samples_analysis/relative_permeability_data.1.1.0.json"
     RELATIVE_PERMEABILITY_SCHEMA_V1 = "v2/samples_analysis/relative_permeability_schema.1.0.0.json"
+    RELATIVE_PERMEABILITY_SCHEMA_V1_1 = "v2/samples_analysis/relative_permeability_schema.1.1.0.json"
 
     ROLLER_OVEN_TEST_DATA_V1 = "v2/samples_analysis/roller_oven_test_data.1.0.0.json"
     ROLLER_OVEN_TEST_SCHEMA_V1 = "v2/samples_analysis/roller_oven_test_schema.1.0.0.json"
@@ -157,6 +160,7 @@ class VersionedDataFiles:
         (SamplesAnalysisTypes.NMR, SchemaVersions.V1_0_0): DataFiles.NMR_DATA_V1,
         (SamplesAnalysisTypes.PROPPANT_EMBEDMENT, SchemaVersions.V1_0_0): DataFiles.PROPPANT_EMBEDMENT_DATA_V1,
         (SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_0_0): DataFiles.RELATIVE_PERMEABILITY_DATA_V1,
+        (SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_1_0): DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1,
         (SamplesAnalysisTypes.ROLLER_OVEN_TEST, SchemaVersions.V1_0_0): DataFiles.ROLLER_OVEN_TEST_DATA_V1,
         (SamplesAnalysisTypes.SATURATION_TEST, SchemaVersions.V1_0_0): DataFiles.SATURATION_TEST_DATA_V1,
         (SamplesAnalysisTypes.SLIM_TUBE, SchemaVersions.V1_0_0): DataFiles.SLIM_TUBE_DATA_V1,
