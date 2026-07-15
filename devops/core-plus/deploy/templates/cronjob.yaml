@@ -41,13 +41,19 @@ spec:
                 - name: OAUTH_TOKEN_URL
                   value: {{ .Values.data.oauthTokenUrl | default (printf "https://keycloak.%s/realms/osdu/protocol/openid-connect/token" .Values.global.domain) }}
                 - name: CLIENT_ID
-                  value: {{ .Values.data.cronJobClientId | quote }}
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.conf.cronJobSecretName | quote }}
+                      key: CLIENT_ID
                 - name: CLIENT_SECRET
-                  value: {{ .Values.data.cronJobClientSecret | quote }}
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.conf.cronJobSecretName | quote }}
+                      key: CLIENT_SECRET
                 - name: OAUTH_SCOPE
                   value: {{ .Values.data.oauthScope | quote }}
                 - name: RAFS_URI
-                  value: {{ printf "https://%s.%s" .Values.global.dataPartitionId .Values.global.domain | quote }}
+                  value: {{ .Values.global.RAFS_URI | default (printf "https://%s.%s" .Values.global.dataPartitionId .Values.global.domain) | quote }}
                 - name: DATA_PARTITION_ID
                   value: {{ .Values.global.dataPartitionId | quote }}
               resources:
