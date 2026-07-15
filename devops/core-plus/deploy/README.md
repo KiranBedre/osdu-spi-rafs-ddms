@@ -140,8 +140,9 @@ Use any code editor to set variables in the **values.yaml** file. Some of the va
 | **data.cronJobSchedule** | Cron schedule for indexer trigger | string | `0 2 * * *` | no |
 | **data.oauthTokenUrl** | OAuth token endpoint URL | string | `https://keycloak.dev1.osdu-cimpl.opengroup.org/realms/osdu/protocol/openid-connect/token` | only if cronJobImage is set |
 | **data.oauthScope** | OAuth scope | string | `openid profile offline_access email` | only if cronJobImage is set |
-| **data.cronJobClientId** | OAuth client ID for cronjob | string | `""` | only if cronJobImage is set |
-| **data.cronJobClientSecret** | OAuth client secret for cronjob | string | `""` | only if cronJobImage is set |
+
+CronJob OAuth credentials are read from Kubernetes Secret `conf.cronJobSecretName` (`rafs-ddms-secret` by default),
+which is created by infra-bootstrap. The client ID is fixed to dedicated Keycloak client `rafs-ddms`.
 
 ### Istio Variables
 

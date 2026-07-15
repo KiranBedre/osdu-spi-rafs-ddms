@@ -145,8 +145,6 @@ cimpl-deploy:
       --set global.dataPartitionId=osdu
       --set global.RAFS_URI=$CIMPL_TENANT.$CIMPL_DOMAIN
       --set data.serviceAccountName=$CIMPL_SERVICE
-      --set data.cronJobClientId=$CIMPL_CLIENT_ID
-      --set data.cronJobClientSecret=$CIMPL_CLIENT_SECRET
       --set data.logLevel=INFO
       --set data.bucketPrefix="refi"
       --set data.groupId=$GROUP_ID
@@ -227,8 +225,6 @@ cimpl-dev2-deploy:
       --set global.dataPartitionId=osdu
       --set global.RAFS_URI=$CIMPL_TENANT.$CIMPL_DOMAIN
       --set data.serviceAccountName=$CIMPL_SERVICE
-      --set data.cronJobClientId=$CIMPL_CLIENT_ID
-      --set data.cronJobClientSecret=$CIMPL_CLIENT_SECRET
       --set data.logLevel=INFO
       --set data.bucketPrefix="refi"
       --set data.groupId=$GROUP_ID
