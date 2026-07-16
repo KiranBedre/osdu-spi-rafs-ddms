@@ -240,8 +240,6 @@ pyjwt[crypto]==2.12.1
     # via
     #   -r requirements.in
     #   msal
-pyyaml==6.0.2
-    # via -r requirements.in
 python-dateutil==2.9.0.post0
     # via
     #   botocore
@@ -251,6 +249,8 @@ python-dotenv==1.2.1
     # via pydantic
 pytz==2025.2
     # via pandas
+pyyaml==6.0.3
+    # via -r requirements.in
 redis==5.2.1
     # via -r requirements.in
 referencing==0.37.0
@@ -281,6 +281,7 @@ typeguard==4.4.4
     # via pandera
 typing-extensions==4.15.0
     # via
+    #   aiohttp
     #   aiosignal
     #   anyio
     #   azure-core
@@ -308,8 +309,6 @@ urllib3==2.7.0
     #   -r requirements.in
     #   botocore
     #   requests
-PyYAML==6.0.3
-    # via -r requirements.in
 uvicorn==0.23.2
     # via
     #   -r requirements.in
