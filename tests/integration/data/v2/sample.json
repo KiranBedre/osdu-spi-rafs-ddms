@@ -148,7 +148,7 @@
             },
             {
                 "BasinID": "{data_partition_id}:master-data--Basin:SomeUniqueBasinID:",
-                "GeoTypeID": "{data_partition_id}:reference-data--BasinType:ArcWrenchOceanContinent:"
+                "GeoTypeID": "{data_partition_id}:reference-data--BasinType:PassiveMargin:"
             },
             {
                 "FieldID": "{data_partition_id}:master-data--Field:SomeUniqueFieldID:",
