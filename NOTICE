@@ -197,6 +197,7 @@ PSF-2.0
 The following software have components provided under the terms of this license:
 
 - aiohappyeyeballs (from https://pypi.org/project/aiohappyeyeballs/)
+- typing-extensions (from https://pypi.org/project/typing-extensions/, https://pypi.org/project/typing-extensions/4.4.0/)
 
 ========================================================================
 Protobuf

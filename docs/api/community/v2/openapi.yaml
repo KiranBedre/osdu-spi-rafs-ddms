@@ -1,5 +1,23 @@
 components:
   schemas:
+    Acl:
+      additionalProperties: false
+      properties:
+        owners:
+          items:
+            type: string
+          title: Owners
+          type: array
+        viewers:
+          items:
+            type: string
+          title: Viewers
+          type: array
+      required:
+      - viewers
+      - owners
+      title: Acl
+      type: object
     BadRequestResponse:
       properties:
         code:
@@ -16,9 +34,9 @@ components:
     HTTPValidationError:
       properties:
         errors:
-          app_name: Errors
           items:
             $ref: '#/components/schemas/ValidationError'
+          title: Errors
           type: array
       title: HTTPValidationError
       type: object
@@ -46,6 +64,27 @@ components:
           title: Release Version
           type: string
       title: InfoResponse
+      type: object
+    Legal:
+      additionalProperties: false
+      properties:
+        legaltags:
+          items:
+            type: string
+          title: Legaltags
+          type: array
+        otherRelevantDataCountries:
+          items:
+            type: string
+          title: Otherrelevantdatacountries
+          type: array
+        status:
+          title: Status
+          type: string
+      required:
+      - legaltags
+      - otherRelevantDataCountries
+      title: Legal
       type: object
     StorageUpsertResponse:
       properties:
@@ -82,17 +121,17 @@ components:
     ValidationError:
       properties:
         loc:
-          app_name: Location
           items:
             anyOf:
             - type: string
             - type: integer
+          title: Location
           type: array
         msg:
-          app_name: Message
+          title: Message
           type: string
         type:
-          app_name: Error Type
+          title: Error Type
           type: string
       required:
       - loc
@@ -104,46 +143,6 @@ components:
     HTTPBearer:
       scheme: bearer
       type: http
-definitions:
-  Acl:
-    additionalProperties: false
-    properties:
-      owners:
-        items:
-          type: string
-        title: Owners
-        type: array
-      viewers:
-        items:
-          type: string
-        title: Viewers
-        type: array
-    required:
-    - viewers
-    - owners
-    title: Acl
-    type: object
-  Legal:
-    additionalProperties: false
-    properties:
-      legaltags:
-        items:
-          type: string
-        title: Legaltags
-        type: array
-      otherRelevantDataCountries:
-        items:
-          type: string
-        title: Otherrelevantdatacountries
-        type: array
-      status:
-        title: Status
-        type: string
-    required:
-    - legaltags
-    - otherRelevantDataCountries
-    title: Legal
-    type: object
 info:
   description: OSDU Rock and Fluid Sample DDMS
   license:
@@ -311,8 +310,9 @@ paths:
         schema:
           default: 1000
           description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
+          exclusiveMinimum: true
           maximum: 1000.0
+          minimum: 0.0
           title: Page Limit
           type: integer
       - description: Start date in YYYY-MM-DD format
@@ -540,8 +540,9 @@ paths:
         schema:
           default: 100
           description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
+          exclusiveMinimum: true
           maximum: 100.0
+          minimum: 0.0
           title: Page Limit
           type: integer
       - description: Start date in YYYY-MM-DD format
@@ -1052,8 +1053,9 @@ paths:
         schema:
           default: 1000
           description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
+          exclusiveMinimum: true
           maximum: 1000.0
+          minimum: 0.0
           title: Page Limit
           type: integer
       - description: Start date in YYYY-MM-DD format
@@ -1227,8 +1229,9 @@ paths:
         schema:
           default: 100
           description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
+          exclusiveMinimum: true
           maximum: 100.0
+          minimum: 0.0
           title: Page Limit
           type: integer
       - description: Start date in YYYY-MM-DD format
@@ -2312,49 +2315,9 @@ paths:
             schema:
               description: Master Data records payload
               items:
-                definitions:
-                  Acl:
-                    additionalProperties: false
-                    properties:
-                      owners:
-                        items:
-                          type: string
-                        title: Owners
-                        type: array
-                      viewers:
-                        items:
-                          type: string
-                        title: Viewers
-                        type: array
-                    required:
-                    - viewers
-                    - owners
-                    title: Acl
-                    type: object
-                  Legal:
-                    additionalProperties: false
-                    properties:
-                      legaltags:
-                        items:
-                          type: string
-                        title: Legaltags
-                        type: array
-                      otherRelevantDataCountries:
-                        items:
-                          type: string
-                        title: Otherrelevantdatacountries
-                        type: array
-                      status:
-                        title: Status
-                        type: string
-                    required:
-                    - legaltags
-                    - otherRelevantDataCountries
-                    title: Legal
-                    type: object
                 properties:
                   acl:
-                    $ref: '#/definitions/Acl'
+                    $ref: '#/components/schemas/Acl'
                   ancestry:
                     title: Ancestry
                     type: object
@@ -2374,7 +2337,7 @@ paths:
                     title: Kind
                     type: string
                   legal:
-                    $ref: '#/definitions/Legal'
+                    $ref: '#/components/schemas/Legal'
                   meta:
                     items: {}
                     title: Meta
@@ -2885,8 +2848,9 @@ paths:
         schema:
           default: 1000
           description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
+          exclusiveMinimum: true
           maximum: 1000.0
+          minimum: 0.0
           title: Page Limit
           type: integer
       - description: Start date in YYYY-MM-DD format
@@ -3049,8 +3013,9 @@ paths:
         schema:
           default: 100
           description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
+          exclusiveMinimum: true
           maximum: 100.0
+          minimum: 0.0
           title: Page Limit
           type: integer
       - description: Start date in YYYY-MM-DD format
@@ -4263,8 +4228,9 @@ paths:
         schema:
           default: 1000
           description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
+          exclusiveMinimum: true
           maximum: 1000.0
+          minimum: 0.0
           title: Page Limit
           type: integer
       - description: Start date in YYYY-MM-DD format
@@ -4486,8 +4452,9 @@ paths:
         schema:
           default: 100
           description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
+          exclusiveMinimum: true
           maximum: 100.0
+          minimum: 0.0
           title: Page Limit
           type: integer
       - description: Start date in YYYY-MM-DD format
@@ -5374,8 +5341,9 @@ paths:
         schema:
           default: 1000
           description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
+          exclusiveMinimum: true
           maximum: 1000.0
+          minimum: 0.0
           title: Page Limit
           type: integer
       - description: Start date in YYYY-MM-DD format
@@ -5538,8 +5506,9 @@ paths:
         schema:
           default: 100
           description: Maximum number of results to return per page
-          exclusiveMinimum: 0.0
+          exclusiveMinimum: true
           maximum: 100.0
+          minimum: 0.0
           title: Page Limit
           type: integer
       - description: Start date in YYYY-MM-DD format
