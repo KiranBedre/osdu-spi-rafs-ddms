@@ -18,10 +18,13 @@ import datetime
 from app.resources.common_headers import ACCEPT
 
 from tests.integration.config import (
+    CONFIG,
     DataFiles,
     SamplesAnalysisTypes,
     SchemaVersions,
 )
+
+DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
 
 def test_nmr_create_record(api, samples_analysis_create_record, helper):
@@ -537,3 +540,83 @@ def test_nmr_search_data_records_format_aggregated(api, record_id, dataset_id_v1
     # Assert
     assert response["result"]["columns"] == ["describe"]
     assert set(response["result"]["index"]) == {"count", "unique", "top", "freq"}
+
+
+def test_nmr_search_record_filtered_in_by_field(api, record_id, dataset_id_v1, search_available_v1):
+    """Verify record is filtered in by the FieldID filter in the search results"""
+    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeUniqueFieldID:"}
+    response = api.sample_analysis.search_records(
+        SamplesAnalysisTypes.NMR,
+        SchemaVersions.V1_0_0,
+        params=params,
+    )
+
+    # Assert
+    assert record_id in response["result"]
+
+
+def test_nmr_search_record_filtered_out_by_basin(api, record_id, dataset_id_v1, search_available_v1):
+    """Verify record is filtered out by the specified BasinID filter in the search results"""
+    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeOtherFieldID:"}
+    response = api.sample_analysis.search_records(
+        SamplesAnalysisTypes.NMR,
+        SchemaVersions.V1_0_0,
+        params=params,
+    )
+
+    # Assert
+    assert record_id not in response["result"]
+
+
+def test_nmr_search_record_filtered_out_by_wellbore(api, record_id, dataset_id_v1, search_available_v1):
+    """Verify record is filtered out by the WellboreID filter in the search results"""
+    params = {"wellbore_id": f"{DATA_PARTITION_ID}:master-data--Wellbore:TectonicDrift:"}
+    response = api.sample_analysis.search_records(
+        SamplesAnalysisTypes.NMR,
+        SchemaVersions.V1_0_0,
+        params=params,
+    )
+
+    # Assert
+    assert record_id not in response["result"]
+
+
+def test_nmr_search_data_filtered_in_by_basin(api, helper, tests_data, record_id, dataset_id_v1, search_available_v1):
+    """Verify bulk data filtered by BasinID appears in search results."""
+    params = {"basin_id": f"{DATA_PARTITION_ID}:master-data--Basin:SomeUniqueBasinID:"}
+    response = api.sample_analysis.search_data(
+        SamplesAnalysisTypes.NMR,
+        SchemaVersions.V1_0_0,
+        params=params,
+    )
+
+    # Assert
+    assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
+
+
+def test_nmr_search_data_filtered_out_by_field(api, record_id, dataset_id_v1, search_available_v1):
+    """Verify bulk data is filtered out by FieldID filter in the search results"""
+    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeOtherFieldID:"}
+    response = api.sample_analysis.search_data(
+        SamplesAnalysisTypes.NMR,
+        SchemaVersions.V1_0_0,
+        params=params,
+    )
+
+    # Assert
+    assert response["result"]["columns"] == []
+    assert response["result"]["index"] == []
+    assert response["result"]["data"] == []
+
+
+def test_nmr_search_data_filtered_in_by_wellbore(api, record_id, dataset_id_v1, search_available_v1):
+    """Verify bulk data is filtered in by WellboreID filter in the search results"""
+    params = {"wellbore_id": f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"}
+    response = api.sample_analysis.search_data(
+        SamplesAnalysisTypes.NMR,
+        SchemaVersions.V1_0_0,
+        params=params,
+    )
+
+    # Assert
+    assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])

@@ -26,6 +26,12 @@ from tests.integration.config import (
 )
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
+GEO_PARAMS = [
+    ("field_id", "Field"),
+    ("basin_id", "Basin"),
+    ("wellbore_id", "Wellbore"),
+]
+
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RECORD_ID_ENDPOINTS_ARGS)
 def test_nmr_negative_invalid_regex_record_id_in_url(
@@ -805,4 +811,29 @@ def test_nmr_negative_schema_version_overwritten_by_param(
     body = response.json()
     assert (
         f"Model not found for type '{analysis_type}',  version '0.0.7'. Available versions: {{'1.0.0'}}"
+    ) in body["reason"]
+
+
+@pytest.mark.parametrize("geo_param,master_data_type", GEO_PARAMS)
+@pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.SEARCH_ENDPOINTS_ARGS)
+def test_nmr_negative_invalid_geo_param_value(api, endpoint, args, analysis_type, geo_param, master_data_type):
+    """Reject incorrect regex for geo param with 400 Bad Request."""
+    method = getattr(api.sample_analysis, endpoint)
+    local_vars = locals().copy()
+    call_args = [local_vars[name] for name in args]
+    params = {f"{geo_param}": "dummy"}
+
+    kwargs = {
+        "allowed_codes": [status.HTTP_400_BAD_REQUEST],
+        "raw": True,
+    }
+
+    response = method(params=params, *call_args, **kwargs)
+
+    # Assert
+    assert response.status_code == 400
+    body = response.json()
+    assert (
+        f"Invalid '{geo_param}' format. Expected OSDU record ID matching ^[\\w\\-\\.]+:master-data--{master_data_type}:"
+        "[\\w\\-\\.\\:\\%]+$. Got: dummy"
     ) in body["reason"]

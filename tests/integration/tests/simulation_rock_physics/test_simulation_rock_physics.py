@@ -18,8 +18,11 @@ import datetime
 from app.resources.common_headers import ACCEPT
 
 from tests.integration.config import (
+    CONFIG,
     DataFiles,
 )
+
+DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
 
 def test_rsrp_create_record(api, simulation_rock_physics_create_record, helper):
@@ -443,3 +446,41 @@ def test_rsrp_search_data_records_format_aggregated(api, record_id, dataset_id, 
     # Assert
     assert response["result"]["columns"] == ["describe"]
     assert set(response["result"]["index"]) == {"count", "unique", "top", "freq"}
+
+
+def test_rsrp_search_record_filtered_in_by_field(api, record_id, dataset_id, search_available):
+    """Verify record is filtered in by the FieldID filter in the search results"""
+    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeUniqueFieldID:"}
+    response = api.simulation_rock_physics.search_records(params=params)
+
+    # Assert
+    assert record_id in response["result"]
+
+
+def test_rsrp_search_record_filtered_out_by_basin(api, record_id, dataset_id, search_available):
+    """Verify record is filtered out by the specified BasinID filter in the search results"""
+    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeOtherFieldID:"}
+    response = api.simulation_rock_physics.search_records(params=params)
+
+    # Assert
+    assert record_id not in response["result"]
+
+
+def test_rsrp_search_data_filtered_in_by_basin(api, helper, tests_data, record_id, dataset_id, search_available):
+    """Verify bulk data filtered by BasinID appears in search results."""
+    params = {"basin_id": f"{DATA_PARTITION_ID}:master-data--Basin:SomeUniqueBasinID:"}
+    response = api.simulation_rock_physics.search_data(params=params)
+
+    # Assert
+    assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
+
+
+def test_rsrp_search_data_filtered_out_by_field(api, record_id, dataset_id, search_available):
+    """Verify bulk data is filtered out by FieldID filter in the search results"""
+    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeOtherFieldID:"}
+    response = api.simulation_rock_physics.search_data(params=params)
+
+    # Assert
+    assert response["result"]["columns"] == []
+    assert response["result"]["index"] == []
+    assert response["result"]["data"] == []
