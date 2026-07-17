@@ -1,0 +1,323 @@
+[
+  {
+    "SamplesAnalysisID": "opendes:work-product-component--SamplesAnalysis:RelPermWPC_110:",
+    "SampleID": "opendes:master-data--Sample:Sample_200:",
+    "Meta": [
+      {
+        "kind": "Unit",
+        "name": "millidarcy",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:mD:",
+        "propertyNames": [
+          "InitialConditions.EffectivePermeability.Value",
+          "TerminalConditions.EffectivePermeability.Value",
+          "RelativePermeabilityCrossover",
+          "ReferencePermeability[*].Value",
+          "PermeabilityTestSteps[*].EffectivePermeability[*].Value"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "dimensionless",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:Euc:",
+        "propertyNames": [
+          "InitialConditions.RelativePermeability.Value",
+          "TerminalConditions.RelativePermeability.Value",
+          "PermeabilityTestSteps[*].RelativePermeability[*].Value",
+          "PermeabilityTestSteps[*].FractionalFlowRate"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "cubic metre per cubic metre",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:m3%2Fm3:",
+        "propertyNames": [
+          "InitialConditions.Saturation.Value",
+          "TerminalConditions.Saturation.Value",
+          "EndFaceSaturationCrossover",
+          "PermeabilityTestSteps[*].Saturation.Value",
+          "PermeabilityTestSteps[*].InSituSaturationProfiles[*].InitialSaturation",
+          "PermeabilityTestSteps[*].InSituSaturationProfiles[*].EquilibriumSaturation"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "degree Fahrenheit",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:degF:",
+        "propertyNames": [
+          "InitialConditions.TestTemperature"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "pound-force per square inch",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:psi:",
+        "propertyNames": [
+          "InitialConditions.NetConfiningStress",
+          "InitialConditions.OverburdenPressure",
+          "InitialConditions.PorePressure",
+          "PermeabilityTestSteps[*].DifferentialPressure",
+          "PermeabilityTestSteps[*].DifferentialPressureProfiles[*].DifferentialPressure"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "minute",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:min:",
+        "propertyNames": [
+          "EndTime",
+          "PermeabilityTestSteps[*].StartTime",
+          "PermeabilityTestSteps[*].InSituSaturationProfiles[*].Time",
+          "PermeabilityTestSteps[*].DifferentialPressureProfiles[*].Time",
+          "PermeabilityTestSteps[*].ProductionProfiles[*].Time"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "centimetre",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:cm:",
+        "propertyNames": [
+          "PermeabilityTestSteps[*].InSituSaturationProfiles[*].Position"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "cubic centimetre",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:cm3:",
+        "propertyNames": [
+          "PermeabilityTestSteps[*].CumulativeProduction.Value"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "cubic centimetre per minute",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:cm3%2Fmin:",
+        "propertyNames": [
+          "InitialConditions.LastFlowRate",
+          "PermeabilityTestSteps[*].InjectionRate[*].Value",
+          "PermeabilityTestSteps[*].ProductionProfiles[*].ProductionRate"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "dyne per centimetre",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:dyn%2Fcm:",
+        "propertyNames": [
+          "InterfacialTension"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "gram per cubic centimetre",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:",
+        "propertyNames": [
+          "BrineSalinity",
+          "OilDensity",
+          "GasDensity",
+          "WaterDensity"
+        ]
+      },
+      {
+        "kind": "Unit",
+        "name": "centipoise",
+        "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:cP:",
+        "propertyNames": [
+          "OilViscosity",
+          "GasViscosity",
+          "WaterViscosity"
+        ]
+      }
+    ],
+    "DesaturationMethodID": "opendes:reference-data--DesaturationMethod:PorousPlateUnspecified:",
+    "InitialConditions": {
+      "TestTemperature": 130,
+      "NetConfiningStress": 207,
+      "OverburdenPressure": 509,
+      "PorePressure": 302,
+      "FlowDirection": "Vertical from Top",
+      "LastFlowRate": 0,
+      "EffectivePermeability": {
+        "PermeabilityMeasurementMethodID": "opendes:reference-data--PermeabilityMeasurementMethod:Klinkenberg:",
+        "Value": 43.7,
+        "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:"
+      },
+      "RelativePermeability": {
+        "Value": 1.0,
+        "FluidSystemAnalysisTypeID": "opendes:reference-data--FluidSystemAnalysisType:GasOil:",
+        "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:"
+      },
+      "Saturation": {
+        "Value": 1.0,
+        "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Brine:",
+        "SaturationMeasurementLocationID": "opendes:reference-data--SaturationMeasurementLocation:Average:"
+      }
+    },
+    "TerminalConditions": {
+      "EffectivePermeability": {
+        "PermeabilityMeasurementMethodID": "opendes:reference-data--PermeabilityMeasurementMethod:Gas:",
+        "Value": 29.78,
+        "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:"
+      },
+      "RelativePermeability": {
+        "Value": 0.682,
+        "FluidSystemAnalysisTypeID": "opendes:reference-data--FluidSystemAnalysisType:GasOil:",
+        "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:"
+      },
+      "Saturation": {
+        "Value": 0.132,
+        "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:",
+        "SaturationMeasurementLocationID": "opendes:reference-data--SaturationMeasurementLocation:EndFace:"
+      }
+    },
+    "RelativePermeabilityCrossover": 29.78,
+    "EndFaceSaturationCrossover": 0.5,
+    "ReferencePermeability": [
+      {
+        "Value": 43.7,
+        "PermeabilityMeasurementMethodID": "opendes:reference-data--PermeabilityMeasurementMethod:Klinkenberg:"
+      }
+    ],
+    "SaturationProcessMethodID": "opendes:reference-data--SaturationProcessMethod:WaterFlood:",
+    "InterfacialTension": 35.5,
+    "BrineSalinity": 1.05,
+    "OilViscosity": 0.246,
+    "GasViscosity": 0.033,
+    "WaterViscosity": 1.002,
+    "OilDensity": 0.6,
+    "GasDensity": 0.287,
+    "WaterDensity": 1.025,
+    "FluidSystemAnalysisTypeID": "opendes:reference-data--FluidSystemAnalysisType:GasOil:",
+    "OilTypeID": "opendes:reference-data--CoreAnalysisFluidType:LiveCrudeOil:",
+    "GasTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:",
+    "WaterTypeID": "opendes:reference-data--CoreAnalysisFluidType:Brine:",
+    "EndTime": 8968,
+    "PermeabilityTestSteps": [
+      {
+        "StartTime": 0,
+        "InjectionRate": [
+          {
+            "Value": 0,
+            "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Oil:"
+          },
+          {
+            "Value": 0,
+            "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:"
+          }
+        ],
+        "FractionalFlowRate": 0,
+        "DifferentialPressure": 0,
+        "CumulativeProduction": {
+          "Value": 0,
+          "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Oil:"
+        },
+        "EffectivePermeability": [
+          {
+            "PermeabilityMeasurementMethodID": "opendes:reference-data--PermeabilityMeasurementMethod:Gas:",
+            "Value": 43.7,
+            "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:"
+          }
+        ],
+        "RelativePermeability": [
+          {
+            "Value": 1.0,
+            "FluidSystemAnalysisTypeID": "opendes:reference-data--FluidSystemAnalysisType:GasOil:",
+            "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:"
+          }
+        ],
+        "Saturation": {
+          "Value": 1.0,
+          "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Brine:",
+          "SaturationMeasurementLocationID": "opendes:reference-data--SaturationMeasurementLocation:Average:"
+        },
+        "InSituSaturationProfiles": [
+          {
+            "Time": 0,
+            "Position": 5.0,
+            "InitialSaturation": 1.0,
+            "EquilibriumSaturation": 1.0
+          }
+        ],
+        "DifferentialPressureProfiles": [
+          {
+            "Time": 0,
+            "DifferentialPressure": 0
+          }
+        ],
+        "ProductionProfiles": [
+          {
+            "Time": 0,
+            "ProductionRate": 0,
+            "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Oil:"
+          }
+        ]
+      },
+      {
+        "StartTime": 8346,
+        "InjectionRate": [
+          {
+            "Value": 0,
+            "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Oil:"
+          },
+          {
+            "Value": 6,
+            "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:"
+          }
+        ],
+        "FractionalFlowRate": 1,
+        "DifferentialPressure": 126,
+        "CumulativeProduction": {
+          "Value": 15.8,
+          "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Oil:"
+        },
+        "EffectivePermeability": [
+          {
+            "PermeabilityMeasurementMethodID": "opendes:reference-data--PermeabilityMeasurementMethod:Gas:",
+            "Value": 29.78,
+            "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:"
+          }
+        ],
+        "RelativePermeability": [
+          {
+            "Value": 0.682,
+            "FluidSystemAnalysisTypeID": "opendes:reference-data--FluidSystemAnalysisType:GasOil:",
+            "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Gas:"
+          }
+        ],
+        "Saturation": {
+          "Value": 0.717,
+          "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Brine:",
+          "SaturationMeasurementLocationID": "opendes:reference-data--SaturationMeasurementLocation:Average:"
+        },
+        "InSituSaturationProfiles": [
+          {
+            "Time": 8346,
+            "Position": 5.0,
+            "InitialSaturation": 1.0,
+            "EquilibriumSaturation": 0.717
+          }
+        ],
+        "DifferentialPressureProfiles": [
+          {
+            "Time": 8350,
+            "DifferentialPressure": 141.035
+          },
+          {
+            "Time": 8965,
+            "DifferentialPressure": 130.254
+          }
+        ],
+        "ProductionProfiles": [
+          {
+            "Time": 8355,
+            "ProductionRate": 15.472,
+            "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Oil:"
+          },
+          {
+            "Time": 8965,
+            "ProductionRate": 15.653,
+            "FluidTypeID": "opendes:reference-data--CoreAnalysisFluidType:Oil:"
+          }
+        ]
+      }
+    ]
+  }
+]

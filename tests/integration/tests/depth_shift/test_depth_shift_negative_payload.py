@@ -305,7 +305,9 @@ def test_depth_shift_negative_create_record_invalid_type_specific_field(
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_MISSING_REFERENCE_FIELDS)
-def test_depth_shift_negative_create_record_missing_reference_specific_field(api, tests_data, helper, field_path, value):
+def test_depth_shift_negative_create_record_missing_reference_specific_field(
+    api, tests_data, helper, field_path, value
+):
     """Reject record creation when referenced record doesn't exist with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.DEPTH_SHIFT))
     helper.set_by_path(data_payload, field_path, value)
@@ -383,24 +385,46 @@ def test_depth_shift_negative_create_unsupported_kind(api, tests_data, helper):
     body = response.json()
     assert (
         f"Kind `{unsupported_kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: "
-        f"['{DATA_PARTITION_ID}:wks:work-product-component--DepthShift:1.0.0']"
+        f"['{DATA_PARTITION_ID}:wks:work-product-component--DepthShift']"
+    ) in body["reason"]
+
+
+def test_depth_shift_negative_create_unsupported_kind_version(api, tests_data, helper):
+    """Reject record creation with unsupported kind version with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.DEPTH_SHIFT))
+    unsupported_version = "1.7"
+    unsupported_kind = f"{DATA_PARTITION_ID}:wks:work-product-component--DepthShift:{unsupported_version}"
+    helper.set_by_path(data_payload, "/kind", unsupported_kind)
+
+    response = api.depth_shift.post_record(
+        body=[data_payload],
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 422
+    body = response.json()
+    assert (
+        f"Kind `{unsupported_kind}` has an invalid version `{unsupported_version}`. Version must be in "
+        f"major.minor.patch format with non-negative integers."
     ) in body["reason"]
 
 
 def test_depth_shift_negative_create_invalid_record_id(api, tests_data, helper):
-    """Reject record creation with invalid record ID format with 400 Bad Request."""
+    """Reject record creation with invalid record ID format with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.DEPTH_SHIFT))
     invalid_record_id = "WrongID:work-product-component--DepthShift:WrongID"
     helper.set_by_path(data_payload, "/id", invalid_record_id)
 
     response = api.depth_shift.post_record(
         body=[data_payload],
-        allowed_codes=[status.HTTP_400_BAD_REQUEST],
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
         raw=True,
     )
 
     # Assert
-    assert response.status_code == 400
+    assert response.status_code == 422
     body = response.json()
     assert "Invalid record id" in body["reason"]
     assert (
@@ -428,7 +452,7 @@ def test_depth_shift_negative_create_record_invalid_payload_format(api, tests_da
 
 
 @pytest.mark.parametrize("field_path", GENERIC_MANDATORY_DATA_FIELDS)
-def Test_depth_shift_negative_add_data_missing_mandatory_generic_field(api, tests_data, helper, field_path, record_id):
+def test_depth_shift_negative_add_data_missing_mandatory_generic_field(api, tests_data, helper, field_path, record_id):
     """Reject data upload with missing mandatory structure field with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
     helper.delete_by_path(data_payload, field_path)
@@ -471,7 +495,7 @@ def test_depth_shift_negative_add_data_missing_main_mandatory_column(
 
 
 @pytest.mark.parametrize("field_path", SPECIFIC_MANDATORY_DATA_FIELDS)
-def Test_depth_shift_negative_add_data_missing_specific_mandatory_field(api, tests_data, helper, field_path, record_id):
+def test_depth_shift_negative_add_data_missing_specific_mandatory_field(api, tests_data, helper, field_path, record_id):
     """Reject data upload with missing main column with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
     helper.delete_by_path(data_payload, field_path)
@@ -491,7 +515,9 @@ def Test_depth_shift_negative_add_data_missing_specific_mandatory_field(api, tes
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_INVALID_TYPE_DATA_FIELDS)
-def Test_depth_shift_negative_add_data_invalid_type_specific_field(api, tests_data, helper, field_path, value, record_id):
+def test_depth_shift_negative_add_data_invalid_type_specific_field(
+    api, tests_data, helper, field_path, value, record_id
+):
     """Reject data upload with wrong type for specific field with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
     helper.set_by_path(data_payload, field_path, value)
@@ -511,9 +537,12 @@ def Test_depth_shift_negative_add_data_invalid_type_specific_field(api, tests_da
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_MISSING_REFERENCE_DATA_FIELDS)
-def Test_depth_shift_negative_add_data_missing_reference_specific_field(api, tests_data, helper, field_path, value, record_id):
+def test_depth_shift_negative_add_data_missing_reference_specific_field(
+    api, tests_data, helper, field_path, value, record_id
+):
     """Reject data upload when referenced record doesn't exist with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    data_payload["data"][0][0] = f"{record_id}:"
     helper.set_by_path(data_payload, field_path, value)
     record_value = value.rsplit(":", 1)[0]
 
@@ -532,7 +561,9 @@ def Test_depth_shift_negative_add_data_missing_reference_specific_field(api, tes
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_INVALID_REGEX_DATA_FIELDS)
-def Test_depth_shift_negative_add_data_invalid_regex_specific_field(api, tests_data, helper, field_path, value, record_id):
+def test_depth_shift_negative_add_data_invalid_regex_specific_field(
+    api, tests_data, helper, field_path, value, record_id
+):
     """Reject data upload when field doesn't match OSDU naming convention with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
     helper.set_by_path(data_payload, field_path, value)
@@ -592,7 +623,7 @@ def test_depth_shift_negative_add_data_extra_main_nullable_field(api, tests_data
 
 
 @pytest.mark.parametrize("field_path,value", EXTRA_DATA_FIELDS)
-def Test_depth_shift_negative_add_data_extra_field(api, tests_data, helper, field_path, value, record_id):
+def test_depth_shift_negative_add_data_extra_field(api, tests_data, helper, field_path, value, record_id):
     """Reject data upload with unexpected/extra fields with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
     helper.set_by_path(data_payload, field_path, value)
@@ -611,24 +642,7 @@ def Test_depth_shift_negative_add_data_extra_field(api, tests_data, helper, fiel
     assert "field" in body["errors"]["Invalid type"][0]
 
 
-def Test_depth_shift_negative_create_record_invalid_payload_format(api, tests_data):
-    """Reject record creation when payload is not a list with 422 Unprocessable Content."""
-    data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET))
-
-    response = api.depth_shift.post_record(
-        body=data_payload,
-        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
-        raw=True,
-    )
-
-    # Assert
-    assert response.status_code == 422
-    body = response.json()
-    assert "Unprocessable entity." in body["reason"]
-    assert "body value is not a valid list" in body["errors"]
-
-
-def Test_depth_shift_negative_add_data_invalid_payload_format(api, tests_data, record_id):
+def test_depth_shift_negative_add_data_invalid_payload_format(api, tests_data, record_id):
     """Reject data upload when payload is wrapped in array with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
 
@@ -648,7 +662,7 @@ def Test_depth_shift_negative_add_data_invalid_payload_format(api, tests_data, r
     )
 
 
-def Test_depth_shift_negative_add_data_records_format_invalid_payload_format(api, tests_data, record_id):
+def test_depth_shift_negative_add_data_records_format_invalid_payload_format(api, tests_data, record_id):
     """Reject data upload when payload is not wrapped in array if records format with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA_RECORDS_FORMAT))
 
@@ -669,7 +683,9 @@ def Test_depth_shift_negative_add_data_records_format_invalid_payload_format(api
 
 
 @pytest.mark.parametrize("field_path", SPECIFIC_MANDATORY_DATA_FIELDS_RECORDS_FORMAT)
-def Test_depth_shift_negative_add_data_records_format_missing_specific_field(api, tests_data, helper, field_path, record_id):
+def test_depth_shift_negative_add_data_records_format_missing_specific_field(
+    api, tests_data, helper, field_path, record_id
+):
     """Reject data upload in records format with missing main column with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA_RECORDS_FORMAT))
     helper.delete_by_path(data_payload, field_path)
@@ -689,7 +705,7 @@ def Test_depth_shift_negative_add_data_records_format_missing_specific_field(api
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_INVALID_TYPE_DATA_FIELDS_RECORDS_FORMAT)
-def Test_depth_shift_negative_add_data_records_format_invalid_type_specific_field(
+def test_depth_shift_negative_add_data_records_format_invalid_type_specific_field(
     api, tests_data, helper, field_path, value, record_id
 ):
     """Reject data upload in records format with wrong type for specific field with 422 Unprocessable Content."""
@@ -711,11 +727,12 @@ def Test_depth_shift_negative_add_data_records_format_invalid_type_specific_fiel
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_MISSING_REFERENCE_DATA_FIELDS_RECORDS_FORMAT)
-def Test_depth_shift_negative_add_data_records_format_missing_reference_specific_field(
+def test_depth_shift_negative_add_data_records_format_missing_reference_specific_field(
     api, tests_data, helper, field_path, value, record_id
 ):
     """Reject data upload in records format when referenced record doesn't exist with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA_RECORDS_FORMAT))
+    data_payload["DepthShiftWPCID"] = f"{record_id}:"
     helper.set_by_path(data_payload, field_path, value)
     record_value = value.rsplit(":", 1)[0]
 
@@ -734,7 +751,7 @@ def Test_depth_shift_negative_add_data_records_format_missing_reference_specific
 
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_INVALID_REGEX_DATA_FIELDS_RECORDS_FORMAT)
-def Test_depth_shift_negative_add_data_records_format_invalid_regex_specific_field(
+def test_depth_shift_negative_add_data_records_format_invalid_regex_specific_field(
     api, tests_data, helper, field_path, value, record_id
 ):
     """Reject data upload in records format when field doesn't match OSDU naming convention
@@ -757,7 +774,9 @@ def Test_depth_shift_negative_add_data_records_format_invalid_regex_specific_fie
 
 
 @pytest.mark.parametrize("field_path,value", EXTRA_DATA_FIELDS_RECORDS_FORMAT)
-def Test_depth_shift_negative_add_data_records_format_extra_field(api, tests_data, helper, field_path, value, record_id):
+def test_depth_shift_negative_add_data_records_format_extra_field(
+    api, tests_data, helper, field_path, value, record_id
+):
     """Reject data upload in records format with unexpected/extra fields with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA_RECORDS_FORMAT))
     helper.set_by_path(data_payload, field_path, value)
@@ -776,7 +795,9 @@ def Test_depth_shift_negative_add_data_records_format_extra_field(api, tests_dat
     assert "field" in body["errors"]["Invalid type"][0]
 
 
-def Test_depth_shift_negative_add_data_record_id_mismatch_between_payload_and_url(api, tests_data, record_id, fresh_record_id):
+def test_depth_shift_negative_add_data_record_id_mismatch_between_payload_and_url(
+    api, tests_data, record_id, fresh_record_id
+):
     """Reject data upload with record_id different in bulk data and URL with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
     data_payload["data"][0][0] = f"{fresh_record_id}:"
@@ -792,4 +813,71 @@ def Test_depth_shift_negative_add_data_record_id_mismatch_between_payload_and_ur
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
-    assert body["errors"]["Invalid value"][0]["SaturationFunctionSetID"] == f"{fresh_record_id}:"
+    assert body["errors"]["Invalid value"][0]["DepthShiftWPCID"] == f"{fresh_record_id}:"
+
+
+def test_depth_shift_negative_add_data_invalid_interpolation_method(api, tests_data, record_id):
+    """Reject data upload with bilinear interpolation method with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    data_payload["data"][0][0] = f"{record_id}:"
+    bilinear_interpolation = f"{DATA_PARTITION_ID}:reference-data--DepthShiftInterpolationMethod:Bilinear:"
+    data_payload["data"][0][2][0]["DepthShiftInterpolationMethodID"] = bilinear_interpolation
+
+    response = api.depth_shift.post_data(
+        record_id=record_id,
+        body=data_payload,
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 422
+    body = response.json()
+    assert (
+        "DepthShiftSet row at index 0: DepthShiftInterpolationMethodID resolves to 'bilinear', which is not supported "
+        "for 1-D depth-shift calculations. Use 'linear' or leave the field absent for auto-detect."
+    ) in body["reason"]
+
+
+def test_depth_shift_negative_add_data_zero_interval(api, tests_data, record_id):
+    """Reject data upload with zero interval with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    data_payload["data"][0][0] = f"{record_id}:"
+    data_payload["data"][0][2][0]["OriginalTopDepth"] = 1010.0
+
+    response = api.depth_shift.post_data(
+        record_id=record_id,
+        body=data_payload,
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 422
+    body = response.json()
+    assert (
+        "DepthShiftSet row at index 0: OriginalBaseDepth (1010.0) must be greater than OriginalTopDepth (1010.0). "
+        "Inverted or zero-width intervals are not allowed."
+    ) in body["reason"]
+
+
+def test_depth_shift_negative_add_data_overlap_interval(api, tests_data, record_id):
+    """Reject data upload with overlap interval with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
+    data_payload["data"][0][0] = f"{record_id}:"
+    data_payload["data"][0][2][0]["OriginalBaseDepth"] = 1015.0
+
+    response = api.depth_shift.post_data(
+        record_id=record_id,
+        body=data_payload,
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 422
+    body = response.json()
+    assert (
+        "DepthShiftSet has overlapping intervals: interval at index 0 (OriginalBaseDepth=1015.0) overlaps interval at "
+        "index 1 (OriginalTopDepth=1010.0). Intervals must not overlap."
+    ) in body["reason"]

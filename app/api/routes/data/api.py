@@ -207,6 +207,7 @@ class BaseDataView(object):
         api_version = get_api_version_from_url(request.url.path)
         logger.info(f"Post data for api version: {api_version}")
 
+        record = await storage_service.get_record(record_id)
         parquet_file = await self._get_validated_payload(request, model, storage_service, record_id)
 
         return await self._upsert_dataset(
@@ -218,6 +219,7 @@ class BaseDataView(object):
             api_version,
             dataset_service,
             storage_service,
+            record=record,
         )
 
     async def _get_data(
@@ -448,6 +450,7 @@ class BaseDataView(object):
         api_version: str,
         dataset_service: dataset.DatasetService,
         storage_service: storage.StorageService,
+        record: dict = None,
     ) -> dict:
         """Upsert dataset via dataset service and updates wpc via storage
         service.
@@ -469,10 +472,14 @@ class BaseDataView(object):
         :type dataset_service: dataset.DatasetService
         :param storage_service: storage service instance
         :type storage_service: storage.StorageService
+        :param record: pre-fetched record dict; if provided the storage
+            fetch is skipped
+        :type record: dict, optional
         :return: the ddms urn of the stored parquet file
         :rtype: dict
         """
-        record = await storage_service.get_record(record_id)
+        if record is None:
+            record = await storage_service.get_record(record_id)
         data_partition_id = request.headers["data-partition-id"]
         settings = get_app_settings()
 

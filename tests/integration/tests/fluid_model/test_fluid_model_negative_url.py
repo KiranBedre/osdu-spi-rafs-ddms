@@ -70,7 +70,8 @@ def test_fluid_negative_invalid_data_partition_id_record_id_in_url(api, tests_da
     # Assert
     assert response.status_code == 400
     body = response.json()
-    assert f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'" in body["reason"]
+    assert f"Invalid record ID" in body["reason"]
+    assert f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'" in body["message"]
 
 
 @pytest.mark.parametrize("endpoint,args", RECORD_ID_ENDPOINTS_ARGS)

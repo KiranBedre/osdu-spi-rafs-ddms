@@ -22,9 +22,16 @@ from tests.integration.config import (
     CONFIG,
     DataFiles,
     SamplesAnalysisEndpoints,
+    SEARCH_PAGE_LIMITS,
 )
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
+GEO_PARAMS = [
+    ("field_id", "Field"),
+    ("basin_id", "Basin"),
+    ("wellbore_id", "Wellbore"),
+]
+
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RECORD_ID_ENDPOINTS_ARGS)
 def test_nmr_negative_invalid_regex_record_id_in_url(
@@ -76,7 +83,6 @@ def test_nmr_negative_invalid_data_partition_id_record_id_in_url(
     })
 
     if endpoint == "post_data":
-        pytest.skip(reason="#733")
         data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         call_kwargs["body"] = data_payload
@@ -86,7 +92,8 @@ def test_nmr_negative_invalid_data_partition_id_record_id_in_url(
     # Assert
     assert response.status_code == 400
     body = response.json()
-    assert f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'" in body["reason"]
+    assert f"Invalid record ID" in body["reason"]
+    assert f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'" in body["message"]
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RECORD_ID_ENDPOINTS_ARGS)
@@ -107,7 +114,6 @@ def test_nmr_negative_non_existing_record_id_in_url(
     })
 
     if endpoint == "post_data":
-        pytest.skip(reason="#733")
         data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         call_kwargs["body"] = data_payload
@@ -618,26 +624,24 @@ def test_nmr_negative_invalid_format_page_limit_param(api, tests_data, endpoint,
     assert "page_limit value is not a valid integer" in body["errors"]
 
 
-@pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.SEARCH_ENDPOINTS_ARGS)
-def test_nmr_negative_boundary_value_page_limit_param(api, tests_data, endpoint, args, analysis_type):
-    """Reject page_limit exceeding maximum (100) with 422 Unprocessable Content."""
+@pytest.mark.parametrize(("endpoint", "max_limit"), SEARCH_PAGE_LIMITS.items())
+def test_nmr_negative_boundary_value_page_limit_param(api, tests_data, endpoint, max_limit, analysis_type):
+    """Reject page_limit exceeding maximum with 422 Unprocessable Content."""
     method = getattr(api.sample_analysis, endpoint)
-    local_vars = locals().copy()
-    call_args = [local_vars[name] for name in args]
-    params = {"page_limit": 101}
+    params = {"page_limit": max_limit + 1}
 
     kwargs = {
         "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
         "raw": True,
     }
 
-    response = method(params=params, *call_args, **kwargs)
+    response = method(analysis_type=analysis_type, params=params, **kwargs)
 
     # Assert
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "page_limit ensure this value is less than or equal to 100" in body["errors"]
+    assert f"page_limit ensure this value is less than or equal to {max_limit}" in body["errors"]
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.SEARCH_ENDPOINTS_ARGS)
@@ -807,4 +811,29 @@ def test_nmr_negative_schema_version_overwritten_by_param(
     body = response.json()
     assert (
         f"Model not found for type '{analysis_type}',  version '0.0.7'. Available versions: {{'1.0.0'}}"
+    ) in body["reason"]
+
+
+@pytest.mark.parametrize("geo_param,master_data_type", GEO_PARAMS)
+@pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.SEARCH_ENDPOINTS_ARGS)
+def test_nmr_negative_invalid_geo_param_value(api, endpoint, args, analysis_type, geo_param, master_data_type):
+    """Reject incorrect regex for geo param with 400 Bad Request."""
+    method = getattr(api.sample_analysis, endpoint)
+    local_vars = locals().copy()
+    call_args = [local_vars[name] for name in args]
+    params = {f"{geo_param}": "dummy"}
+
+    kwargs = {
+        "allowed_codes": [status.HTTP_400_BAD_REQUEST],
+        "raw": True,
+    }
+
+    response = method(params=params, *call_args, **kwargs)
+
+    # Assert
+    assert response.status_code == 400
+    body = response.json()
+    assert (
+        f"Invalid '{geo_param}' format. Expected OSDU record ID matching ^[\\w\\-\\.]+:master-data--{master_data_type}:"
+        "[\\w\\-\\.\\:\\%]+$. Got: dummy"
     ) in body["reason"]

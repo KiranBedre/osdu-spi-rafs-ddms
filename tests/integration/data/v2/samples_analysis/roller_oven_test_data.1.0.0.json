@@ -24,7 +24,7 @@
     "data": [
         [
             "{data_partition_id}:work-product-component--SamplesAnalysis:RollerOvenTestV100:",
-            "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+            "{data_partition_id}:master-data--Sample:Master_Sample:",
             [
                 {
                     "kind": "Unit",
@@ -68,7 +68,7 @@
                 {
                     "kind": "Unit",
                     "name": "unitless",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:unitless:",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:mm:",
                     "propertyNames": ["SieveMeshSize"]
                 }
             ],

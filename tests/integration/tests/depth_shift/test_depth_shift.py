@@ -18,8 +18,11 @@ import datetime
 from app.resources.common_headers import ACCEPT
 
 from tests.integration.config import (
+    CONFIG,
     DataFiles,
 )
+
+DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
 
 def test_depth_shift_create_record(api, depth_shift_create_record, helper):
@@ -33,9 +36,9 @@ def test_depth_shift_create_record(api, depth_shift_create_record, helper):
     helper.compare_responses(gotten_record, posted_record, response_type="json")
 
 
-def test_depth_shift_versions(api, record_id, helper):
+def test_depth_shift_versions(api, fresh_record_id, helper):
     """Verify record versioning: create v2, list versions, compare v1 and v2, confirm latest version."""
-    version_1 = api.depth_shift.get_record(record_id)
+    version_1 = api.depth_shift.get_record(fresh_record_id)
 
     # Create a second version by modifying the Name field
     version_2 = copy.deepcopy(version_1)
@@ -43,22 +46,22 @@ def test_depth_shift_versions(api, record_id, helper):
     api.depth_shift.post_record([version_2])
 
     # List versions and ensure two versions exist
-    versions_payload = api.depth_shift.get_record_versions(record_id)
+    versions_payload = api.depth_shift.get_record_versions(fresh_record_id)
     assert "versions" in versions_payload
     assert len(versions_payload["versions"]) == 2
 
     v1_version, v2_version = sorted(versions_payload["versions"])
 
     # Fetch concrete versions and compare with expected payloads
-    rec_v1 = api.depth_shift.get_record_version(record_id, v1_version)
-    rec_v2 = api.depth_shift.get_record_version(record_id, v2_version)
+    rec_v1 = api.depth_shift.get_record_version(fresh_record_id, v1_version)
+    rec_v2 = api.depth_shift.get_record_version(fresh_record_id, v2_version)
 
     helper.compare_responses(rec_v1, version_1, response_type="json")
     helper.compare_responses(rec_v2, version_2, response_type="json")
     assert rec_v2["data"]["Name"] == "New version"
 
     # Plain GET should return the latest version
-    latest = api.depth_shift.get_record(record_id)
+    latest = api.depth_shift.get_record(fresh_record_id)
     helper.compare_responses(latest, version_2, response_type="json")
 
 
@@ -402,3 +405,59 @@ def test_depth_shift_search_data_records_format_aggregated(api, record_id, datas
     # Assert
     assert response["result"]["columns"] == ["describe"]
     assert set(response["result"]["index"]) == {"count", "unique", "top", "freq"}
+
+
+def test_depth_shift_search_record_filtered_in_by_basin(api, record_id, dataset_id, search_available):
+    """Verify record is filtered in by the BasinID filter in the search results"""
+    params = {"basin_id": f"{DATA_PARTITION_ID}:master-data--Basin:SomeUniqueBasinID:"}
+    response = api.depth_shift.search_records(params=params)
+
+    # Assert
+    assert record_id in response["result"]
+
+
+def test_depth_shift_search_record_filtered_out_by_field(api, record_id, dataset_id, search_available):
+    """Verify record is filtered out by the specified FieldID filter in the search results"""
+    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeOtherFieldID:"}
+    response = api.depth_shift.search_records(params=params)
+
+    # Assert
+    assert record_id not in response["result"]
+
+
+def test_depth_shift_search_record_filtered_in_by_wellbore(api, record_id, dataset_id, search_available):
+    """Verify record is filtered in by the WellboreID filter in the search results"""
+    params = {"wellbore_id": f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"}
+    response = api.depth_shift.search_records(params=params)
+
+    # Assert
+    assert record_id in response["result"]
+
+
+def test_depth_shift_search_data_filtered_in_by_field(api, helper, tests_data, record_id, dataset_id, search_available):
+    """Verify bulk data filtered by FieldID appears in search results."""
+    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeUniqueFieldID:"}
+    response = api.depth_shift.search_data(params=params)
+
+    # Assert
+    assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
+
+
+def test_depth_shift_search_data_filtered_out_by_basin(api, record_id, dataset_id, search_available):
+    """Verify bulk data is filtered out by BasinID filter in the search results"""
+    params = {"basin_id": f"{DATA_PARTITION_ID}:master-data--Basin:SomeOtherBasinID:"}
+    response = api.depth_shift.search_data(params=params)
+
+    # Assert
+    assert response["result"]["columns"] == []
+    assert response["result"]["index"] == []
+    assert response["result"]["data"] == []
+
+
+def test_depth_shift_search_data_filtered_out_by_wellbore(api, record_id, dataset_id, search_available):
+    """Verify bulk data is filtered out by WellboreID filter in the search results"""
+    params = {"wellbore_id": f"{DATA_PARTITION_ID}:master-data--Wellbore:TectonicDrift:"}
+    response = api.depth_shift.search_data(params=params)
+
+    # Assert
+    assert not any(row[0] == f"{record_id}:" for row in response["result"]["data"])

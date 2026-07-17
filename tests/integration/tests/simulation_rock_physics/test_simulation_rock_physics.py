@@ -18,8 +18,11 @@ import datetime
 from app.resources.common_headers import ACCEPT
 
 from tests.integration.config import (
+    CONFIG,
     DataFiles,
 )
+
+DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
 
 def test_rsrp_create_record(api, simulation_rock_physics_create_record, helper):
@@ -33,9 +36,9 @@ def test_rsrp_create_record(api, simulation_rock_physics_create_record, helper):
     helper.compare_responses(gotten_record, posted_record, response_type="json")
 
 
-def test_rsrp_versions(api, record_id, helper):
+def test_rsrp_versions(api, fresh_record_id, helper):
     """Verify record versioning: create v2, list versions, compare v1 and v2, confirm latest version."""
-    version_1 = api.simulation_rock_physics.get_record(record_id)
+    version_1 = api.simulation_rock_physics.get_record(fresh_record_id)
 
     # Create a second version by modifying the Name field
     version_2 = copy.deepcopy(version_1)
@@ -43,22 +46,22 @@ def test_rsrp_versions(api, record_id, helper):
     api.simulation_rock_physics.post_record([version_2])
 
     # List versions and ensure two versions exist
-    versions_payload = api.simulation_rock_physics.get_record_versions(record_id)
+    versions_payload = api.simulation_rock_physics.get_record_versions(fresh_record_id)
     assert "versions" in versions_payload
     assert len(versions_payload["versions"]) == 2
 
     v1_version, v2_version = sorted(versions_payload["versions"])
 
     # Fetch concrete versions and compare with expected payloads
-    rec_v1 = api.simulation_rock_physics.get_record_version(record_id, v1_version)
-    rec_v2 = api.simulation_rock_physics.get_record_version(record_id, v2_version)
+    rec_v1 = api.simulation_rock_physics.get_record_version(fresh_record_id, v1_version)
+    rec_v2 = api.simulation_rock_physics.get_record_version(fresh_record_id, v2_version)
 
     helper.compare_responses(rec_v1, version_1, response_type="json")
     helper.compare_responses(rec_v2, version_2, response_type="json")
     assert rec_v2["data"]["Name"].endswith(" - new version")
 
     # Plain GET should return the latest version
-    latest = api.simulation_rock_physics.get_record(record_id)
+    latest = api.simulation_rock_physics.get_record(fresh_record_id)
     helper.compare_responses(latest, version_2, response_type="json")
 
 
@@ -443,3 +446,41 @@ def test_rsrp_search_data_records_format_aggregated(api, record_id, dataset_id, 
     # Assert
     assert response["result"]["columns"] == ["describe"]
     assert set(response["result"]["index"]) == {"count", "unique", "top", "freq"}
+
+
+def test_rsrp_search_record_filtered_in_by_field(api, record_id, dataset_id, search_available):
+    """Verify record is filtered in by the FieldID filter in the search results"""
+    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeUniqueFieldID:"}
+    response = api.simulation_rock_physics.search_records(params=params)
+
+    # Assert
+    assert record_id in response["result"]
+
+
+def test_rsrp_search_record_filtered_out_by_basin(api, record_id, dataset_id, search_available):
+    """Verify record is filtered out by the specified BasinID filter in the search results"""
+    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeOtherFieldID:"}
+    response = api.simulation_rock_physics.search_records(params=params)
+
+    # Assert
+    assert record_id not in response["result"]
+
+
+def test_rsrp_search_data_filtered_in_by_basin(api, helper, tests_data, record_id, dataset_id, search_available):
+    """Verify bulk data filtered by BasinID appears in search results."""
+    params = {"basin_id": f"{DATA_PARTITION_ID}:master-data--Basin:SomeUniqueBasinID:"}
+    response = api.simulation_rock_physics.search_data(params=params)
+
+    # Assert
+    assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
+
+
+def test_rsrp_search_data_filtered_out_by_field(api, record_id, dataset_id, search_available):
+    """Verify bulk data is filtered out by FieldID filter in the search results"""
+    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeOtherFieldID:"}
+    response = api.simulation_rock_physics.search_data(params=params)
+
+    # Assert
+    assert response["result"]["columns"] == []
+    assert response["result"]["index"] == []
+    assert response["result"]["data"] == []

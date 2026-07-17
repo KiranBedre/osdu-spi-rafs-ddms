@@ -22,6 +22,7 @@ from app.api.routes.utils.records import (
     generate_blob_urn,
     get_family_type_from_url,
     get_id_version,
+    is_valid_semver,
 )
 from app.exceptions.exceptions import UnprocessableContentException
 
@@ -55,6 +56,24 @@ def test_get_id_version_ending_without_colon():
 
     assert record_id == EXPECTED_RECORD_ID
     assert version == None
+
+
+def test_get_id_version_colon_in_local_id_no_version():
+    """IDs with colons in the local-id body must not have their last segment mis-parsed as version."""
+    full_id = "dp1:work-product-component--SamplesAnalysis:EX1:SAMP:0000001346"
+    record_id, version = get_id_version(full_id)
+
+    assert record_id == full_id
+    assert version is None
+
+
+def test_get_id_version_colon_in_local_id_with_trailing_colon():
+    """Trailing colon on a multi-colon ID is still treated as latest (version=None)."""
+    full_id = "dp1:work-product-component--SamplesAnalysis:EX1:SAMP:0000001346:"
+    record_id, version = get_id_version(full_id)
+
+    assert record_id == "dp1:work-product-component--SamplesAnalysis:EX1:SAMP:0000001346"
+    assert version is None
 
 
 @pytest.mark.parametrize(
@@ -164,3 +183,13 @@ def test_find_schema_versions_for_object_name(ddms_datasets, blob_id, expected_v
 )
 def test_find_object_name_from_type(ddms_datasets, full_analysis_type, expected):
     assert find_object_name_from_type(ddms_datasets, full_analysis_type) == expected
+
+
+@pytest.mark.parametrize("version", ["1.0.0", "2.1.0", "0.0.0", "100.200.300", "3.0.0"])
+def test_is_valid_semver_valid(version):
+    assert is_valid_semver(version) is True
+
+
+@pytest.mark.parametrize("version", ["1.0", "1.0.0.0", "1.a.0", "v1.0.0", "1.0.0-alpha", "", "abc", "type_version"])
+def test_is_valid_semver_invalid(version):
+    assert is_valid_semver(version) is False

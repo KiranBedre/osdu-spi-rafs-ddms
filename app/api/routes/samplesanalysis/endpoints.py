@@ -12,21 +12,47 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Annotated, List
+import io
+import json
+from typing import Annotated, List, Optional
 
-from fastapi import APIRouter, Body, Depends, Request
+import pandas as pd
+from fastapi import APIRouter, Body, Depends, HTTPException, Request, Response
+from fastapi_cache.decorator import cache
+from loguru import logger
 from starlette import status
 
-from app.api.dependencies.request import validate_json_content_type
-from app.api.dependencies.services import get_async_storage_service
+from app.api.dependencies.request import (
+    get_content_schema_version,
+    get_depth_shift_params,
+    validate_json_content_type,
+)
+from app.api.dependencies.services import (
+    get_async_dataset_service,
+    get_async_storage_service,
+    get_blob_storage_service,
+)
+from app.api.dependencies.validation import get_orient, validate_filters
 from app.api.routes.osdu.storage_records import BaseStorageRecordView
 from app.api.routes.utils.api_description_helper import APIDescriptionHelper
+from app.api.routes.utils.records import get_id
+from app.api.routes.v2.data.endpoints import BaseDataViewV2
+from app.core.helpers.cache.coder import ResponseCoder
+from app.core.helpers.cache.key_builder import key_builder_using_token
+from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
+from app.depth_shift.augmenter import augment_dataframe
+from app.depth_shift.extractor import extract_sample_wellbore_id
+from app.depth_shift.metadata import resolve_metadata_warning_state
+from app.depth_shift.resolver import DepthShiftResolver
+from app.models.schemas.depth_shift_query import DepthShiftMetadata, DepthShiftQueryParams, DepthShiftRowData
 from app.models.schemas.osdu_storage import (
     OsduStorageRecord,
     StorageUpsertResponse,
 )
+from app.providers.dependencies.blob_storage import IBlobStorage
+from app.resources.filters import DataFrameFilterValidator
 from app.resources.load_model_example import load_data_example
-from app.services import storage
+from app.services import dataset, storage
 
 SAMPLESANALYSIS_ID_REGEX_STR = r"^[\w\-\.]+:work-product-component--SamplesAnalysis:[\w\-\.\:\%]+$"
 
@@ -96,3 +122,333 @@ class SamplesAnalysisRecordView(BaseStorageRecordView):
                 Depends(validate_json_content_type),
             ],
         )
+
+
+class SamplesAnalysisDataView(BaseDataViewV2):
+    """BaseDataViewV2 subclass that adds optional depth-shift augmentation.
+
+    When the caller supplies ?depth_shift_id=<WPC_ID> the GET data response
+    is augmented with four extra columns: SampleTop, SampleBase,
+    ShiftedSampleTop, ShiftedSampleBase, and a DepthShiftWarnings field.
+    When neither depth-shift parameter is supplied the response is identical
+    to the parent implementation.
+    """
+
+    @cache(expire=CACHE_DEFAULT_TTL, coder=ResponseCoder, key_builder=key_builder_using_token)
+    async def get_data_v2(  # noqa: CFQ002, WPS211
+        self,
+        request: Request,
+        record_id: str,
+        analysis_type: str,
+        content_id: str,
+        dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
+        storage_service: storage.StorageService = Depends(get_async_storage_service),
+        blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
+        df_filter: DataFrameFilterValidator = Depends(validate_filters),
+        content_schema_version: str = Depends(get_content_schema_version),
+        orient: str = Depends(get_orient),
+        depth_shift_params: Optional[DepthShiftQueryParams] = Depends(get_depth_shift_params),
+    ) -> Response:
+        """Get record data, optionally augmented with depth-shift columns.
+
+        :param request: request
+        :type request: Request
+        :param record_id: record id
+        :type record_id: str
+        :param analysis_type: the samples analysis type
+        :type analysis_type: str
+        :param content_id: content identifier (dataset id or blob uuid)
+        :type content_id: str
+        :param dataset_service: dataset service
+        :type dataset_service: dataset.DatasetService
+        :param storage_service: storage service
+        :type storage_service: storage.StorageService
+        :param blob_storage_service: blob storage service
+        :type blob_storage_service: IBlobStorage
+        :param df_filter: df filter validator
+        :type df_filter: DataFrameFilterValidator
+        :param content_schema_version: the version used for content schema
+            validation
+        :type content_schema_version: str
+        :param orient: JSON output format ('split' or 'records')
+        :type orient: str
+        :param depth_shift_params: optional depth-shift query parameters
+        :type depth_shift_params: Optional[DepthShiftQueryParams]
+        :return: dataset data (augmented when depth_shift_params is not None)
+        :rtype: Response
+        """
+        if depth_shift_params is None:
+            return await self._get_data(
+                request,
+                record_id,
+                content_id,
+                dataset_service,
+                storage_service,
+                df_filter,
+                content_schema_version,
+                orient,
+            )
+
+        return await self._get_data_with_depth_shift(
+            request=request,
+            record_id=record_id,
+            analysis_type=analysis_type,
+            content_id=content_id,
+            dataset_service=dataset_service,
+            storage_service=storage_service,
+            blob_storage_service=blob_storage_service,
+            df_filter=df_filter,
+            content_schema_version=content_schema_version,
+            orient=orient,
+            depth_shift_params=depth_shift_params,
+        )
+
+    async def _get_data_with_depth_shift(
+        self,
+        request: Request,
+        record_id: str,
+        analysis_type: str,
+        content_id: str,
+        dataset_service: dataset.DatasetService,
+        storage_service: storage.StorageService,
+        blob_storage_service: IBlobStorage,
+        df_filter: DataFrameFilterValidator,
+        content_schema_version: str,
+        orient: str,
+        depth_shift_params: DepthShiftQueryParams,
+    ) -> Response:
+        """Execute the depth-shift pipeline and return an augmented response.
+
+        :param request: incoming request
+        :type request: Request
+        :param record_id: SA WPC record ID
+        :type record_id: str
+        :param analysis_type: analysis type path segment
+        :type analysis_type: str
+        :param content_id: dataset or blob content ID
+        :type content_id: str
+        :param dataset_service: dataset service
+        :type dataset_service: dataset.DatasetService
+        :param storage_service: storage service
+        :type storage_service: storage.StorageService
+        :param blob_storage_service: blob storage service
+        :type blob_storage_service: IBlobStorage
+        :param df_filter: dataframe filter validator
+        :type df_filter: DataFrameFilterValidator
+        :param content_schema_version: content schema version string
+        :type content_schema_version: str
+        :param orient: JSON orient ('split' or 'records')
+        :type orient: str
+        :param depth_shift_params: non-None depth-shift parameters
+        :type depth_shift_params: DepthShiftQueryParams
+        :return: augmented JSON response
+        :rtype: Response
+        :raises HTTPException: 404 when the abstract path record has no DefinitiveDepthShiftID
+        :raises HTTPException: 400 on domain errors (missing SampleID, etc.)
+        """
+        try:
+            return await self._run_depth_shift_pipeline(
+                request=request,
+                record_id=record_id,
+                analysis_type=analysis_type,
+                content_id=content_id,
+                dataset_service=dataset_service,
+                storage_service=storage_service,
+                blob_storage_service=blob_storage_service,
+                df_filter=df_filter,
+                content_schema_version=content_schema_version,
+                orient=orient,
+                depth_shift_params=depth_shift_params,
+            )
+        except NotImplementedError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_501_NOT_IMPLEMENTED,
+                detail=str(exc),
+            )
+        except (ValueError, KeyError) as exc:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Depth-shift error: {exc}",
+            )
+
+    async def _run_depth_shift_pipeline(
+        self,
+        request: Request,
+        record_id: str,
+        analysis_type: str,
+        content_id: str,
+        dataset_service: dataset.DatasetService,
+        storage_service: storage.StorageService,
+        blob_storage_service: IBlobStorage,
+        df_filter: DataFrameFilterValidator,
+        content_schema_version: str,
+        orient: str,
+        depth_shift_params: DepthShiftQueryParams,
+    ) -> Response:
+        """Core depth-shift pipeline: resolve → fetch → augment → respond.
+
+        :return: augmented JSON response
+        :rtype: Response
+        """
+        resolver = DepthShiftResolver(
+            storage_service=storage_service,
+            dataset_service=dataset_service,
+        )
+        base_response = await self._get_data(
+            request,
+            record_id,
+            content_id,
+            dataset_service,
+            storage_service,
+            df_filter,
+            content_schema_version,
+            "split",
+        )
+
+        if base_response.status_code != status.HTTP_200_OK:
+            return base_response
+
+        base_df = self._response_to_dataframe(base_response, "split")
+        if base_df.empty:
+            return base_response
+
+        if "SampleID" not in base_df.columns:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "Depth-shift augmentation requires a 'SampleID' column in the "
+                    "bulk data, but it was not found. Only analysis types that carry "
+                    "per-row SampleID are supported for depth-shift retrieval."
+                ),
+            )
+        sample_ids = base_df["SampleID"].dropna().astype(str).unique().tolist()
+        sample_records = await resolver.fetch_sample_records(sample_ids)
+        self._validate_single_wellbore_scope(sample_records)
+
+        if depth_shift_params.is_definitive:
+            # May raise 422 if no DefinitiveDepthShift or samples disagree.
+            wpc_id = resolver.resolve_definitive_wpc_id(sample_records)
+        else:
+            wpc_id = await resolver.resolve_depth_shift_wpc_id(depth_shift_params)
+
+        # --- Build DepthShiftMetadata ---
+        used_definitive = depth_shift_params.is_definitive
+        source = "definitive" if used_definitive else "user-provided"
+        definitive_available, extra_warnings = resolve_metadata_warning_state(
+            sample_records=sample_records,
+            applied_wpc_id=wpc_id,
+            used_definitive=used_definitive,
+        )
+
+        shift_set, shift_meta, shift_wellbore = await resolver.fetch_coretolog_depth_shift_data(wpc_id)
+
+        augmented_df, warnings = augment_dataframe(
+            base_df=base_df,
+            resolver=resolver,
+            shift_set=shift_set,
+            shift_wellbore=shift_wellbore,
+            sample_records=sample_records,
+            shift_meta=shift_meta,
+        )
+
+        logger.info(
+            f"Depth-shift augmentation applied for WPC {wpc_id}; " f"{len(sample_ids)} unique samples.",
+        )
+
+        _ds_cols = [
+            "SampleTop",
+            "SampleBase",
+            "SampleMean",
+            "ShiftedSampleTop",
+            "ShiftedSampleBase",
+            "ShiftedSampleMean",
+            "DepthShiftWarnings",
+        ]
+        depth_shift_data = [
+            DepthShiftRowData(
+                SampleTop=row["SampleTop"],
+                SampleBase=row["SampleBase"],
+                SampleMean=row["SampleMean"],
+                ShiftedSampleTop=row["ShiftedSampleTop"],
+                ShiftedSampleBase=row["ShiftedSampleBase"],
+                ShiftedSampleMean=row["ShiftedSampleMean"],
+                DepthShiftWarnings=row["DepthShiftWarnings"] if isinstance(row["DepthShiftWarnings"], list) else [],
+            ).dict()
+            for _, row in augmented_df[_ds_cols].iterrows()
+        ]
+        clean_df = augmented_df.drop(columns=_ds_cols)
+
+        if orient == "records":
+            result = {"data": json.loads(clean_df.to_json(orient="records"))}
+        else:
+            result = json.loads(clean_df.to_json(orient=orient))
+
+        result["DepthShiftData"] = depth_shift_data
+        result["DepthShiftMetadata"] = DepthShiftMetadata(
+            appliedDepthShiftId=wpc_id,
+            source=source,
+            definitiveDepthShiftAvailable=definitive_available,
+            usedDefinitive=used_definitive,
+            warnings=extra_warnings,
+        ).dict()
+        return Response(
+            content=json.dumps(result),
+            media_type="application/json",
+        )
+
+    @staticmethod
+    def _extract_sample_wellbore_id(sample_record: dict) -> Optional[str]:
+        """Resolve the sample wellbore from nested acquisition data when present."""
+        return extract_sample_wellbore_id(sample_record)
+
+    def _validate_single_wellbore_scope(self, sample_records: dict) -> None:
+        """Reject depth-shift requests that span multiple wellbores or have samples missing WellboreID."""
+        wellbore_ids: set = set()
+        missing: list = []
+        for sample_id, record in sample_records.items():
+            wid = self._extract_sample_wellbore_id(record)
+            if wid:
+                wellbore_ids.add(get_id(wid))
+            else:
+                missing.append(sample_id)
+
+        if missing:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "Depth shift requires every sample record to resolve to a WellboreID. "
+                    f"Missing WellboreID for sample ids: {sorted(str(s) for s in missing)}."
+                ),
+            )
+        if not wellbore_ids:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "Depth shift requires sample records to resolve to a WellboreID. "
+                    "Provide a wellbore-scoped search result set."
+                ),
+            )
+        if len(wellbore_ids) > 1:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=(
+                    "Depth shift requires wellbore-scoped results. "
+                    f"Resolved multiple WellboreIDs: {sorted(wellbore_ids)}."
+                ),
+            )
+
+    def _response_to_dataframe(self, response: Response, response_orient: str = "split") -> pd.DataFrame:
+        """Deserialise a JSON Response body into a DataFrame.
+
+        :param response: JSON response from the base get_data_v2
+        :type response: Response
+        :param response_orient: the pandas orient used to produce the response
+            body ('split' or 'records'); defaults to 'split'
+        :type response_orient: str
+        :return: DataFrame
+        :rtype: pd.DataFrame
+        """
+        body = response.body
+        if isinstance(body, (bytes, bytearray)):
+            body = body.decode("utf-8")
+        return pd.read_json(io.StringIO(body), orient=response_orient)

@@ -217,6 +217,7 @@ class BaseDataViewV2(BaseDataView):
         settings: AppSettings = get_app_settings()
         analysis_family = get_family_type_from_url(request.url.path)
 
+        record = await storage_service.get_record(record_id)
         parquet_file = await self._get_validated_payload(request, model, storage_service, record_id)
         blob_metadata = BlobMetadata(
             analysis_family=analysis_family,
@@ -235,6 +236,7 @@ class BaseDataViewV2(BaseDataView):
                 record_id,
                 blob_storage_service,
                 storage_service,
+                record=record,
             )
         else:
             response = await self._upsert_dataset(
@@ -246,6 +248,7 @@ class BaseDataViewV2(BaseDataView):
                 api_version,
                 dataset_service,
                 storage_service,
+                record=record,
             )
         return response
 

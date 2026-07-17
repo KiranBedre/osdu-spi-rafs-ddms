@@ -1361,6 +1361,58 @@ async def test_post_record_wrong_kind(endpoint, manifest):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
+    "endpoint,osdu_record,schema,new_version",
+    [
+        (
+            storage_mock_objects.MASTER_DATA_ENDPOINT_PATH_V2,
+            storage_mock_objects.SAMPLE_RECORD,
+            storage_mock_objects.SAMPLE_SCHEMA,
+            "3.0.0",
+        ),
+        (
+            storage_mock_objects.MASTER_DATA_ENDPOINT_PATH_V2,
+            storage_mock_objects.SAMPLE_RECORD,
+            storage_mock_objects.SAMPLE_SCHEMA,
+            "1.2.3",
+        ),
+        (
+            storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2,
+            storage_mock_objects.SAMPLESANALYSIS_RECORD_V2,
+            storage_mock_objects.SAMPLES_ANALYSIS_SCHEMA,
+            "2.0.0",
+        ),
+    ],
+)
+async def test_post_record_new_semver_passes_kind_validation(endpoint, osdu_record, schema, new_version):
+    record_dict = osdu_record.dict(exclude_none=True)
+    kind_base = ":".join(record_dict["kind"].split(":")[:3])
+    record_dict["kind"] = f"{kind_base}:{new_version}"
+
+    with storage_schema_override():
+        with patch.object(
+            storage_record_service_mock,
+            "upsert_records",
+            return_value=STORAGE_SERVICE_200_RESPONSE,
+        ):
+            with patch.object(
+                storage_record_service_mock,
+                "query_records",
+                return_value={"records": [], "invalidRecords": [], "retryRecords": []},
+            ):
+                with patch.object(SchemaService, "get_schema", return_value=schema):
+                    with patch.object(schema_service_mock, "validate", return_value={}):
+                        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                            response = await client.post(
+                                endpoint,
+                                headers=TEST_HEADERS,
+                                json=[record_dict],
+                            )
+
+    assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
     "endpoint,record_id",
     [
         (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, TEST_WRONG_ID),

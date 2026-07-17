@@ -84,6 +84,9 @@ def create_referenced_records(api, helper, tests_data, tmp_path_factory, create_
     record_to_create = [
         (DataTypes.SAR, DataFiles.SAR, DataTemplates.ID_SAR.format(partition=partition)),
     ]
+    fixed_id_records = [
+        DataFiles.SAMPLE,
+    ]
 
     shared_dir = tmp_path_factory.getbasetemp().parent
 
@@ -91,7 +94,7 @@ def create_referenced_records(api, helper, tests_data, tmp_path_factory, create_
         shared_dir,
         name="create_referenced_records",
         setup=lambda: helper.create_reference_records(
-            api, helper, tests_data, partition, storage_dependencies, record_to_create,
+            api, helper, tests_data, partition, storage_dependencies, record_to_create, fixed_id_records
         ),
     )
     TEST_DATA_STORE.update(state)
@@ -158,14 +161,21 @@ def create_record(api, helper, tests_data):
 
 
 @pytest.fixture
-def delete_record(api, helper):
+def delete_record(api):
     """Fixture to delete any record with id after test."""
-    container = {"record_id": [], "api_path": ""}
+    tracked_ids = []
 
-    yield container
+    def _register(record_id: str):
+        """Register a record ID for cleanup after the test."""
+        tracked_ids.append(record_id)
 
-    for record_id in container["record_id"]:
-        api.storage.purge_record(record_id)
+    yield _register
+
+    for record_id in tracked_ids:
+        try:
+            api.storage.purge_record(record_id)
+        except Exception as exception:
+            print(f"⚠️ Failed to purge {record_id}: {exception}")
 
 
 @pytest.fixture(scope="session")

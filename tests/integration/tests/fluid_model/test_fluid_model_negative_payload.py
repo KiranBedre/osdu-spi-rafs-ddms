@@ -286,24 +286,46 @@ def test_fluid_negative_create_unsupported_kind(api, tests_data, helper):
     body = response.json()
     assert (
         f"Kind `{unsupported_kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: "
-        f"['{DATA_PARTITION_ID}:wks:work-product-component--FluidModel:1.0.0']"
+        f"['{DATA_PARTITION_ID}:wks:work-product-component--FluidModel']"
+    ) in body["reason"]
+
+
+def test_fluid_negative_create_unsupported_kind_version(api, tests_data, helper):
+    """Reject record creation with unsupported kind version with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.FLUID_MODEL))
+    unsupported_version = "1.7"
+    unsupported_kind = f"{DATA_PARTITION_ID}:wks:work-product-component--FluidModel:{unsupported_version}"
+    helper.set_by_path(data_payload, "/kind", unsupported_kind)
+
+    response = api.fluid_model.post_record(
+        body=[data_payload],
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 422
+    body = response.json()
+    assert (
+        f"Kind `{unsupported_kind}` has an invalid version `{unsupported_version}`. Version must be in "
+        f"major.minor.patch format with non-negative integers."
     ) in body["reason"]
 
 
 def test_fluid_negative_create_invalid_record_id(api, tests_data, helper):
-    """Reject record creation with invalid record ID format with 400 Bad Request."""
+    """Reject record creation with invalid record ID format with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.FLUID_MODEL))
     invalid_record_id = "WrongID:work-product-component--FluidModel:WrongID"
     helper.set_by_path(data_payload, "/id", invalid_record_id)
 
     response = api.fluid_model.post_record(
         body=[data_payload],
-        allowed_codes=[status.HTTP_400_BAD_REQUEST],
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
         raw=True,
     )
 
     # Assert
-    assert response.status_code == 400
+    assert response.status_code == 422
     body = response.json()
     assert "Invalid record id" in body["reason"]
     assert (

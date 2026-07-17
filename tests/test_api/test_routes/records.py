@@ -1,10 +1,11 @@
 import pytest
 
 from app.api.routes.utils.records import (
+    find_dataset_id,
     generate_dataset_urn,
     update_dataset_id,
 )
-from tests.test_api.api_version import API_VERSION
+from tests.test_api.api_version import API_VERSION, API_VERSION_V2
 
 TEST_DATA_PARTITION_ID = "partition"
 TEST_DDMS_ID = "rafs"
@@ -31,6 +32,12 @@ def generate_test_dataset_record_id(
 
 TEST_RECORD_ID = generate_test_id()
 TEST_DATASET_RECORD_ID = generate_test_dataset_record_id()
+
+# Depth-shift specific fixtures
+DS_WPC_TYPE = "DepthShift"
+DS_ENTITY_TYPE = "depthshift"
+DS_WPC_ID = f"{TEST_DATA_PARTITION_ID}:work-product-component--{DS_WPC_TYPE}:depthshiftAutoTest88266363"
+DS_DATASET_RECORD_ID = generate_test_dataset_record_id(entity_type=DS_ENTITY_TYPE)
 
 
 def generate_test_ddms_urn(
@@ -80,3 +87,37 @@ async def test_update_different_entity_ddms_dataset():
     ddms_datasets = update_dataset_id(original_ddms_datasets, TEST_DDMS_DATASET_URN, TEST_ENTITY_TYPE)
     assert TEST_DDMS_DATASET_URN in ddms_datasets
     assert ddms_dataset_urn in ddms_datasets
+
+
+def test_find_dataset_id_returns_dataset_id():
+    valid_urn = generate_test_ddms_urn(
+        entity_type=f"{DS_ENTITY_TYPE}data",
+        wpc_id=DS_WPC_ID,
+        dataset_id=DS_DATASET_RECORD_ID,
+    )
+    result = find_dataset_id([valid_urn], DS_ENTITY_TYPE)
+    expected = ":".join(DS_DATASET_RECORD_ID.split(":")[:3])
+    assert result == expected
+
+
+def test_find_dataset_id_ignores_wpc_id_in_malformed_urn():
+    # A 6-segment DDMS URN (missing the dataset_id component) causes split("/")[-2]
+    # to land on the WPC ID.  If that WPC ID name starts with the prefix
+    # ("depthshiftAutoTest…" starts with "depthshift"), the old code would
+    # incorrectly return the WPC ID as the dataset ID.
+    malformed_urn = f"urn://{TEST_DDMS_ID}-{API_VERSION_V2}/{DS_ENTITY_TYPE}data/{DS_WPC_ID}/{TEST_SCHEMA_VERSION}"
+    result = find_dataset_id([malformed_urn], DS_ENTITY_TYPE)
+    assert result is None
+
+
+def test_find_dataset_id_returns_none_for_empty_list():
+    assert find_dataset_id([], DS_ENTITY_TYPE) is None
+
+
+def test_find_dataset_id_returns_none_for_non_matching_prefix():
+    valid_urn = generate_test_ddms_urn(
+        entity_type=f"{DS_ENTITY_TYPE}data",
+        wpc_id=DS_WPC_ID,
+        dataset_id=DS_DATASET_RECORD_ID,
+    )
+    assert find_dataset_id([valid_urn], "otherentitytype") is None

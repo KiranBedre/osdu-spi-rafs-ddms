@@ -30,30 +30,46 @@ def _normalize_ref_path(normalized_mapping: dict) -> None:
     """Rewrite legacy OpenAPI 2 definitions references to OpenAPI 3 components."""
     ref_path = normalized_mapping.get("$ref")
     if isinstance(ref_path, str) and ref_path.startswith("#/definitions/"):
-        normalized_mapping["$ref"] = ref_path.replace("#/definitions/", "#/components/schemas/", 1)
+        normalized_mapping["$ref"] = ref_path.replace(
+            "#/definitions/",
+            "#/components/schemas/",
+            1,
+        )
 
 
-def _normalize_openapi_node(raw_node: object, component_schemas: dict) -> object:
+def _normalize_openapi_node(
+    raw_node: object,
+    component_schemas: dict,
+) -> object:
     """Normalize OpenAPI nodes recursively."""
     normalized_node = raw_node
+
     if isinstance(raw_node, dict):
-        normalized_node = _normalize_openapi_mapping(raw_node, component_schemas)
+        normalized_node = _normalize_openapi_mapping(
+            raw_node,
+            component_schemas,
+        )
     elif isinstance(raw_node, list):
-        normalized_node = [
-            _normalize_openapi_node(sequence_item, component_schemas)
-            for sequence_item in raw_node
-        ]
+        normalized_node = [_normalize_openapi_node(sequence_item, component_schemas) for sequence_item in raw_node]
+
     return normalized_node
 
 
-def _normalize_openapi_mapping(raw_mapping: dict, component_schemas: dict) -> dict:
+def _normalize_openapi_mapping(
+    raw_mapping: dict,
+    component_schemas: dict,
+) -> dict:
     """Normalize mapping nodes and promote OpenAPI 2 fields to OpenAPI 3 fields."""
     normalized_mapping = {}
+
     for field_name, field_value in raw_mapping.items():
         if field_name == "definitions" and isinstance(field_value, dict):
             for schema_name, schema_value in field_value.items():
                 if schema_name not in component_schemas:
-                    component_schemas[schema_name] = _normalize_openapi_node(schema_value, component_schemas)
+                    component_schemas[schema_name] = _normalize_openapi_node(
+                        schema_value,
+                        component_schemas,
+                    )
             continue
 
         if field_name == "exclusiveMinimum" and _is_non_boolean_number(field_value):
@@ -67,17 +83,24 @@ def _normalize_openapi_mapping(raw_mapping: dict, component_schemas: dict) -> di
             continue
 
         normalized_key = "title" if field_name == "app_name" else field_name
-        normalized_mapping[normalized_key] = _normalize_openapi_node(field_value, component_schemas)
+        normalized_mapping[normalized_key] = _normalize_openapi_node(
+            field_value,
+            component_schemas,
+        )
 
     _normalize_ref_path(normalized_mapping)
     return normalized_mapping
 
 
 def _normalize_openapi_schema(schema: dict) -> dict:
-    """Normalize schema to OpenAPI 3-compatible structure used by committed spec."""
+    """Normalize schema to the OpenAPI 3 structure used by the committed spec."""
     components = schema.setdefault("components", {}) if isinstance(schema, dict) else {}
     component_schemas = components.setdefault("schemas", {}) if isinstance(components, dict) else {}
+
     return _normalize_openapi_node(schema, component_schemas)
+
+
+OPENAPI_METHODS = ("get", "put", "post", "delete", "options", "head", "patch", "trace")
 
 
 def _copy_definitions_to_root(schema: dict, openapi_schema: dict) -> None:
@@ -109,7 +132,32 @@ def _get_parameter_sort_key(openapi_param: dict) -> tuple:
     location_order = {"path": 0, "header": 1, "query": 2, "cookie": 3}
     is_optional = 0 if openapi_param.get("required") else 1
     location_rank = location_order.get(openapi_param.get("in", ""), 9)
-    return (is_optional, location_rank, openapi_param.get("name", ""))
+    parameter_rank = _get_parameter_rank(openapi_param.get("name", ""))
+    return (is_optional, location_rank, parameter_rank, openapi_param.get("name", ""))
+
+
+def _get_parameter_rank(parameter_name: str) -> int:
+    """Return a rank to keep query parameters grouped by purpose in Swagger."""
+    parameter_rank = {
+        "content_schema_version": 0,
+        "basin_id": 10,
+        "field_id": 11,
+        "well_id": 12,
+        "wellbore_id": 13,
+        "depth_shift_policy": 20,
+        "depth_shift_id": 21,
+        "columns_filter": 30,
+        "rows_filter": 31,
+        "rows_multiple_filter": 32,
+        "metadata": 33,
+        "columns_aggregation": 34,
+        "orient": 40,
+        "offset": 50,
+        "page_limit": 51,
+        "indexed_start_date": 60,
+        "indexed_end_date": 61,
+    }
+    return parameter_rank.get(parameter_name, 100)
 
 
 def _route_record_id_info() -> dict:
@@ -203,6 +251,78 @@ def _mark_content_schema_version_required(openapi_schema: dict) -> None:
                     openapi_param["required"] = True
 
 
+def _is_protected_path(path_key: str) -> bool:
+    """Return whether a path requires auth and partition header in Swagger UI."""
+    return "/v2/" in path_key or "/dev/" in path_key
+
+
+def _ensure_http_bearer_scheme(openapi_schema: dict) -> None:
+    """Ensure HTTP Bearer scheme exists in OpenAPI components."""
+    components = openapi_schema.setdefault("components", {})
+    security_schemes = components.setdefault("securitySchemes", {})
+    security_schemes.setdefault(
+        "HTTPBearer",
+        {
+            "type": "http",
+            "scheme": "bearer",
+        },
+    )
+
+
+def _ensure_operation_security(operation: dict) -> None:
+    """Ensure operation declares HTTPBearer security requirement."""
+    existing = operation.setdefault("security", [])
+    has_http_bearer = any(
+        isinstance(security_entry, dict) and "HTTPBearer" in security_entry for security_entry in existing
+    )
+    if not has_http_bearer:
+        existing.append({"HTTPBearer": []})
+
+
+def _ensure_operation_data_partition_header(operation: dict) -> None:
+    """Ensure operation declares required data-partition-id header parameter."""
+    operation_params = operation.setdefault("parameters", [])
+    has_partition_header = any(
+        openapi_parameter.get("in") == "header" and openapi_parameter.get("name") == "data-partition-id"
+        for openapi_parameter in operation_params
+        if isinstance(openapi_parameter, dict)
+    )
+    if has_partition_header:
+        return
+
+    operation_params.append(
+        {
+            "in": "header",
+            "name": "data-partition-id",
+            "required": True,
+            "description": "Specifies the proper data partition id",
+            "schema": {
+                "title": "data-partition-id",
+                "type": "string",
+                "description": "Specifies the proper data partition id",
+            },
+            "examples": {
+                "example": {
+                    "value": "opendes",
+                },
+            },
+        },
+    )
+
+
+def _apply_swagger_auth_partition_reqs(openapi_schema: dict) -> None:
+    """Ensure protected endpoints expose auth and partition header in Swagger UI."""
+    _ensure_http_bearer_scheme(openapi_schema)
+    for path_key, path_item in openapi_schema.get("paths", {}).items():
+        if not _is_protected_path(path_key):
+            continue
+        for method, operation in path_item.items():
+            if method not in OPENAPI_METHODS or not isinstance(operation, dict):
+                continue
+            _ensure_operation_security(operation)
+            _ensure_operation_data_partition_header(operation)
+
+
 def _sort_and_annotate_parameters(openapi_schema: dict) -> None:  # noqa: WPS231
     """Sort parameters and inject tailored record_id descriptions per resource endpoint.
 
@@ -223,12 +343,327 @@ def _sort_and_annotate_parameters(openapi_schema: dict) -> None:  # noqa: WPS231
             operation["parameters"].sort(key=_get_parameter_sort_key)
 
 
+_SCOPE_PARAMS_FULL = [  # noqa: WPS407
+    {
+        "in": "query",
+        "name": "basin_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier'). "
+            "Scope parameters filter results hierarchically: basin -> field -> well -> wellbore."
+        ),
+        "schema": {
+            "title": "Basin ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Basin:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "field_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+        "schema": {
+            "title": "Field ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Field:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "well_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific well. "
+            "Must be a valid OSDU record ID of kind 'master-data--Well'. "
+            "Used with or without basin_id/field_id scope."
+        ),
+        "schema": {
+            "title": "Well ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Well:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "wellbore_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific wellbore. "
+            "Must be a valid OSDU record ID of kind 'master-data--Wellbore'. "
+            "Most restrictive scope parameter. "
+            "Required when depth_shift_policy is provided on SamplesAnalysis search/data."
+        ),
+        "schema": {
+            "title": "Wellbore ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Wellbore:[\w\-\.\:\%]+$",
+        },
+    },
+]
+
+_SCOPE_PARAMS_GEO_CONTEXT = [  # noqa: WPS407
+    {
+        "in": "query",
+        "name": "basin_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier')."
+        ),
+        "schema": {
+            "title": "Basin ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Basin:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "field_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+        "schema": {
+            "title": "Field ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Field:[\w\-\.\:\%]+$",
+        },
+    },
+]
+
+_SCOPE_PARAMS_DEPTH_SHIFT = [  # noqa: WPS407
+    {
+        "in": "query",
+        "name": "basin_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier')."
+        ),
+        "schema": {
+            "title": "Basin ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Basin:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "field_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+        "schema": {
+            "title": "Field ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Field:[\w\-\.\:\%]+$",
+        },
+    },
+    {
+        "in": "query",
+        "name": "wellbore_id",
+        "required": False,
+        "description": (
+            "Optional scope parameter to filter search results to a specific wellbore. "
+            "Must be a valid OSDU record ID of kind 'master-data--Wellbore'. "
+            "DepthShift does not support well_id; only basin_id, field_id, and wellbore_id."
+        ),
+        "schema": {
+            "title": "Wellbore ID",
+            "type": "string",
+            "pattern": r"^[\w\-\.]+:master-data--Wellbore:[\w\-\.\:\%]+$",
+        },
+    },
+]
+
+_DEPTH_SHIFT_PARAMS = [  # noqa: WPS407
+    {
+        "in": "query",
+        "name": "depth_shift_policy",
+        "required": False,
+        "description": (
+            "Depth shift resolution strategy: 'definitive' uses the sample's definitive "
+            "depth shift, 'id_provided' uses the explicit depth_shift_id."
+        ),
+        "schema": {
+            "title": "Depth Shift Policy",
+            "type": "string",
+            "description": (
+                "Depth shift resolution strategy: 'definitive' uses the sample's definitive "
+                "depth shift, 'id_provided' uses the explicit depth_shift_id."
+            ),
+            "enum": ["definitive", "id_provided"],
+        },
+    },
+    {
+        "in": "query",
+        "name": "depth_shift_id",
+        "required": False,
+        "description": "DepthShift WPC record ID to apply to the response data.",
+        "schema": {
+            "title": "Depth Shift Id",
+            "type": "string",
+            "description": "DepthShift WPC record ID to apply to the response data.",
+            "pattern": r"^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$",
+        },
+    },
+]
+
+_SEARCH_DATA_DEPTH_SHIFT_PATHS = frozenset(("samplesanalysis",))
+
+
+def _inject_depth_shift_params_into_search_data(openapi_schema: dict) -> None:  # noqa: WPS231, CCR001
+    """Add depth_shift_policy and depth_shift_id query parameters to search-data endpoints.
+
+    The search-data endpoints for SamplesAnalysis support the same depth-shift
+    augmentation as the get-data endpoint.  FastAPI does not automatically include
+    these parameters in the generated schema for the search endpoint (they are
+    injected at route-build time only for the get-data route).  This function adds
+    them manually so that Swagger UI and API consumers see the correct contract.
+    """
+    for path_key, path_item in openapi_schema.get("paths", {}).items():
+        route_segment = _get_route_segment(path_key)
+        if route_segment not in _SEARCH_DATA_DEPTH_SHIFT_PATHS:
+            continue
+        if not path_key.endswith("/search/data"):
+            continue
+        operation = path_item.get("get")
+        if not isinstance(operation, dict):
+            continue
+        existing_names = {op_param.get("name") for op_param in operation.get("parameters", [])}
+        for ds_param in _DEPTH_SHIFT_PARAMS:
+            if ds_param["name"] not in existing_names:
+                operation.setdefault("parameters", []).append(ds_param)
+
+
+def _annotate_depth_shift_parameter_constraints(openapi_schema: dict) -> None:
+    """Ensure all depth-shift query parameters expose consistent OpenAPI constraints."""
+    for path_item in openapi_schema.get("paths", {}).values():
+        for operation in path_item.values():
+            if not isinstance(operation, dict):
+                continue
+            for openapi_param in operation.get("parameters", []):
+                if openapi_param.get("name") != "depth_shift_id" or openapi_param.get("in") != "query":
+                    continue
+                openapi_param.setdefault("description", "DepthShift WPC record ID to apply to the response data.")
+                schema = openapi_param.setdefault("schema", {})
+                schema.setdefault("type", "string")
+                schema["pattern"] = r"^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$"
+
+
+def _inject_scope_params_into_endpoints(openapi_schema: dict) -> None:
+    """Add scope parameters (basin_id, field_id, well_id, wellbore_id) to search endpoints.
+
+    Scope parameters are injected dynamically via Depends() in the endpoint builders,
+    which FastAPI's automatic OpenAPI schema generator cannot pick up at route-build time.
+    This function manually adds the appropriate scope parameters to the schema based on
+    the endpoint type:
+    - SamplesAnalysis: all 4 scope params (basin_id, field_id, well_id, wellbore_id)
+    - DepthShift: 3 scope params (basin_id, field_id, wellbore_id - NO well_id)
+    - SaturationFunctionSet: 2 scope params (basin_id, field_id)
+    - ReservoirSimulationRockPhysicsModel: 2 scope params (basin_id, field_id)
+    """
+    for path_key, path_item in openapi_schema.get("paths", {}).items():
+        route_segment = _get_route_segment(path_key)
+
+        # Determine which scope parameters to add based on route
+        if route_segment == "samplesanalysis":
+            scope_params = _SCOPE_PARAMS_FULL
+        elif route_segment == "depthshift":
+            scope_params = _SCOPE_PARAMS_DEPTH_SHIFT
+        elif route_segment in ("saturationfunctionset", "reservoirsimulationrockphysicsmodel"):
+            scope_params = _SCOPE_PARAMS_GEO_CONTEXT
+        else:
+            continue
+
+        # Only add scope params to search endpoints
+        if not path_key.endswith(("/search", "/search/", "/search/data")):
+            continue
+
+        operation = path_item.get("get")
+        if not isinstance(operation, dict):
+            continue
+
+        existing_names = {op_param.get("name") for op_param in operation.get("parameters", [])}
+        for scope_param in scope_params:
+            if scope_param["name"] not in existing_names:
+                operation.setdefault("parameters", []).append(scope_param)
+
+
+def _contains_query_parameter(operation: dict, parameter_name: str) -> bool:
+    return any(
+        openapi_param.get("in") == "query" and openapi_param.get("name") == parameter_name
+        for openapi_param in operation.get("parameters", [])
+    )
+
+
+def _append_unique_description_sentence(operation: dict, sentence: str) -> None:
+    """Append a sentence once, preserving existing route descriptions."""
+    description = operation.get("description") or ""
+    if sentence in description:
+        return
+    normalized_description = description.rstrip()
+    while normalized_description.endswith("<br><br>"):
+        normalized_description = normalized_description[: -len("<br><br>")].rstrip()
+    operation["description"] = (
+        "{0}<br><br>{1}".format(normalized_description, sentence) if normalized_description else sentence
+    )
+
+
+def _enrich_depth_shift_descriptions(openapi_schema: dict) -> None:  # noqa: WPS231
+    """Add explicit depth-shift and scope notes to SamplesAnalysis data endpoints."""
+    for path_key, path_item in openapi_schema.get("paths", {}).items():
+        route_segment = _get_route_segment(path_key)
+        if route_segment != "samplesanalysis":
+            continue
+
+        get_operation = path_item.get("get")
+        if not isinstance(get_operation, dict):
+            continue
+
+        has_depth_shift = _contains_query_parameter(get_operation, "depth_shift_policy") or _contains_query_parameter(
+            get_operation,
+            "depth_shift_id",
+        )
+        if not has_depth_shift:
+            continue
+
+        _append_unique_description_sentence(
+            get_operation,
+            "Depth-shift augmentation parameters: use <code>depth_shift_policy</code> "
+            "(<code>definitive</code> or <code>id_provided</code>) and optional "
+            "<code>depth_shift_id</code>.",
+        )
+
+        if path_key.endswith("/search/data"):
+            _append_unique_description_sentence(
+                get_operation,
+                "Scope parameters filter results hierarchically by organizational level: "
+                "<code>basin_id</code> (broadest), <code>field_id</code>, <code>well_id</code>, "
+                "<code>wellbore_id</code> (most restrictive). Scope parameters are optional for regular search, "
+                "but <code>wellbore_id</code> is required when <code>depth_shift_policy</code> is provided.",
+            )
+
+
 def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
-    """Override openapi with custom values.
+    """Override OpenAPI with custom values.
 
     :param FastAPI app: FastAPI app
-    :param AppSettings settings: App Settings
-    :return dict: The openapi schema modified
+    :param AppSettings settings: App settings
+    :return dict: Modified and normalized OpenAPI schema
     """
     custom_openapi_schema = get_openapi(
         title=settings.app_name,
@@ -241,9 +676,16 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
             "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
         },
     )
+
     _apply_request_body_overrides(custom_openapi_schema, settings)
+    _apply_swagger_auth_partition_reqs(custom_openapi_schema)
     _mark_content_schema_version_required(custom_openapi_schema)
+    _inject_depth_shift_params_into_search_data(custom_openapi_schema)
+    _inject_scope_params_into_endpoints(custom_openapi_schema)
+    _annotate_depth_shift_parameter_constraints(custom_openapi_schema)
+    _enrich_depth_shift_descriptions(custom_openapi_schema)
     _sort_and_annotate_parameters(custom_openapi_schema)
+
     return _normalize_openapi_schema(custom_openapi_schema)
 
 

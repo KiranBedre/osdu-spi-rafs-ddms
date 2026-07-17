@@ -34,7 +34,7 @@ def analysis_type(request):
 
 
 @pytest.fixture(scope="package")
-def samples_analysis_create_record(create_record, analysis_type):
+def samples_analysis_create_record(api, create_record, analysis_type):
     """Create a Samples Analysis record per type."""
     record_data, _ = create_record(
         DataTypes.SAMPLE_ANALYSIS,
@@ -43,11 +43,11 @@ def samples_analysis_create_record(create_record, analysis_type):
         analysis_type
     )
     yield record_data
-    # Cleanup is handled by create_record fixture
+    api.storage.purge_record(record_data["id"])
 
 
 @pytest.fixture(scope="function")
-def samples_analysis_create_fresh_record(create_record, analysis_type):
+def samples_analysis_create_fresh_record(api, create_record, analysis_type):
     """Create a fresh Samples Analysis record per type."""
     record_data, _ = create_record(
         DataTypes.SAMPLE_ANALYSIS,
@@ -56,7 +56,7 @@ def samples_analysis_create_fresh_record(create_record, analysis_type):
         analysis_type
     )
     yield record_data
-    # Cleanup is handled by create_record fixture
+    api.storage.purge_record(record_data["id"])
 
 
 @pytest.fixture(scope="module")

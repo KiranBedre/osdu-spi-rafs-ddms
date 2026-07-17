@@ -12,6 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import re
+from types import MappingProxyType
 from typing import Final, List, Optional
 
 from fastapi import Header, HTTPException, Query, Request, Response
@@ -23,12 +25,23 @@ from app.api.dependencies.schema_version import (
     set_deprecation_headers,
     validate_version_format,
 )
+from app.api.routes.utils.records import get_id
 from app.exceptions import exceptions
 from app.middleware.correlation_id_middleware import set_correlation_id
+from app.models.schemas.depth_shift_query import DepthShiftPolicy, DepthShiftQueryParams
 from app.resources.common_headers import ACCEPT, CONTENT_TYPE, CORRELATION_ID
 from app.resources.mime_types import SupportedMimeTypes
 
 ACCEPT_HEADER: Final = "accept"
+DEPTH_SHIFT_ID_PATTERN: Final = r"^[\w\-\.]+:work-product-component--DepthShift:[\w\-\.\:\%]+$"
+SCOPE_PARAM_PATTERNS: Final = MappingProxyType(
+    {
+        "basin_id": r"^[\w\-\.]+:master-data--Basin:[\w\-\.\:\%]+$",
+        "field_id": r"^[\w\-\.]+:master-data--Field:[\w\-\.\:\%]+$",
+        "well_id": r"^[\w\-\.]+:master-data--Well:[\w\-\.\:\%]+$",
+        "wellbore_id": r"^[\w\-\.]+:master-data--Wellbore:[\w\-\.\:\%]+$",
+    },
+)
 
 
 def require_data_partition_id(
@@ -194,6 +207,101 @@ def get_response_mime_type(request: Request) -> SupportedMimeTypes:
     raise exceptions.NotAcceptableException(detail=reason)
 
 
+def get_depth_shift_params(  # noqa: WPS238
+    depth_shift_id: Optional[str] = Query(
+        default=None,
+        description="DepthShift WPC record ID to apply to the response data.",
+    ),
+    depth_shift_policy: Optional[str] = Query(
+        default=None,
+        description=(
+            "Depth shift resolution strategy: 'definitive' uses the sample's definitive depth shift, "
+            + "'id_provided' uses the explicit depth_shift_id."
+        ),
+    ),
+) -> Optional[DepthShiftQueryParams]:
+    """Parse and validate depth-shift query parameters.
+
+    Depth-shift application is always intentional. No default policy.
+    Absence of ``depth_shift_policy`` means original depths only.
+
+    Validation matrix:
+
+    - No params → return None (no shift, original depths only)
+    - ``depth_shift_policy=definitive`` → resolve WPC from Sample definitive reference
+    - ``depth_shift_policy=id_provided`` + ``depth_shift_id`` → apply explicit WPC ID
+    - ``depth_shift_id`` without ``depth_shift_policy`` → 400 (must be explicit)
+    - ``depth_shift_policy=id_provided`` without ``depth_shift_id`` → 400
+    - ``depth_shift_policy=definitive`` + ``depth_shift_id`` → 400
+    - invalid ``depth_shift_policy`` value → 400
+
+    :param depth_shift_id: DepthShift WPC record ID
+    :type depth_shift_id: Optional[str]
+    :param depth_shift_policy: depth shift resolution strategy
+    :type depth_shift_policy: Optional[str]
+    :return: validated params, or None
+    :rtype: Optional[DepthShiftQueryParams]
+    :raises HTTPException: 400 on any invalid combination
+    """
+    _validate_depth_shift_params(depth_shift_id, depth_shift_policy)
+
+    if not depth_shift_policy:
+        return None
+
+    normalized_depth_shift_id = get_id(depth_shift_id) if depth_shift_id else None
+
+    return DepthShiftQueryParams(
+        depth_shift_id=normalized_depth_shift_id,
+        depth_shift_policy=depth_shift_policy,
+    )
+
+
+def _raise_bad_depth_shift_request(detail: str) -> None:
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=detail,
+    )
+
+
+def _validate_depth_shift_params(depth_shift_id: Optional[str], depth_shift_policy: Optional[str]) -> None:
+    _validate_depth_shift_policy_value(depth_shift_policy)
+
+    if not depth_shift_policy:
+        if depth_shift_id:
+            _raise_bad_depth_shift_request("'depth_shift_id' requires 'depth_shift_policy=id_provided' to be explicit.")
+        return
+
+    _validate_depth_shift_param_combination(depth_shift_id, depth_shift_policy)
+    _validate_depth_shift_id_format(depth_shift_id)
+
+
+def _validate_depth_shift_policy_value(depth_shift_policy: Optional[str]) -> None:
+    if not depth_shift_policy:
+        return
+
+    valid_policies = tuple(policy.value for policy in DepthShiftPolicy)
+    if depth_shift_policy not in valid_policies:
+        _raise_bad_depth_shift_request(
+            "Invalid 'depth_shift_policy' value '{0}'. Must be one of: {1}.".format(
+                depth_shift_policy,
+                list(valid_policies),
+            ),
+        )
+
+
+def _validate_depth_shift_param_combination(depth_shift_id: Optional[str], depth_shift_policy: str) -> None:
+    if depth_shift_policy == "definitive" and depth_shift_id:
+        _raise_bad_depth_shift_request("'depth_shift_id' must not be supplied when 'depth_shift_policy=definitive'.")
+
+    if depth_shift_policy == "id_provided" and not depth_shift_id:
+        _raise_bad_depth_shift_request("'depth_shift_policy=id_provided' requires 'depth_shift_id'.")
+
+
+def _validate_depth_shift_id_format(depth_shift_id: Optional[str]) -> None:
+    if depth_shift_id and not re.match(DEPTH_SHIFT_ID_PATTERN, depth_shift_id):
+        _raise_bad_depth_shift_request(f"Invalid 'depth_shift_id' format. Expected pattern: {DEPTH_SHIFT_ID_PATTERN}.")
+
+
 def get_correlation_id(request: Request):
     correlation_id = request.headers.get(CORRELATION_ID)
     if not correlation_id:
@@ -205,3 +313,36 @@ def get_correlation_id(request: Request):
         )
     set_correlation_id(correlation_id)
     return correlation_id
+
+
+def validate_scope_parameter(param_name: str, param_value: Optional[str]) -> None:
+    """Validate a scope parameter (basin_id, field_id, well_id, wellbore_id).
+
+    Scope parameters must be valid OSDU record IDs of the expected kind.
+
+    :param param_name: parameter name (e.g., 'basin_id')
+    :type param_name: str
+    :param param_value: parameter value
+    :type param_value: Optional[str]
+    :raises HTTPException: 400 if value is invalid
+    """
+    if not param_value:
+        return
+
+    expected_pattern = SCOPE_PARAM_PATTERNS.get(param_name)
+    if expected_pattern is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported scope parameter '{param_name}'.",
+        )
+
+    if not re.match(expected_pattern, param_value):
+        detail = "Invalid '{0}' format. Expected OSDU record ID matching {1}. Got: {2}".format(
+            param_name,
+            expected_pattern,
+            param_value,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=detail,
+        )

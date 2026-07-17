@@ -352,6 +352,10 @@
                     "URL": "https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/app/models/data_schemas/jsonschema/api_v2/relative_permeability.1.0.0.json"
                 },
                 {
+                    "ContentType": "relativepermeability",
+                    "URL": "https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/app/models/data_schemas/jsonschema/api_v2/relative_permeability.1.1.0.json"
+                },
+                {
                     "ContentType": "rockcompressibility",
                     "URL": "https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/blob/main/app/models/data_schemas/jsonschema/api_v2/rock_compressibility.1.0.0.json"
                 },

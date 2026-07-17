@@ -37,6 +37,16 @@
                 "BasisOfModelling": {}
             }
         ],
+        "GeoContexts": [
+                {
+                    "BasinID": "{data_partition_id}:master-data--Basin:SomeUniqueBasinID:",
+                    "GeoTypeID": "osdu:reference-data--BasinType:PassiveMargin:"
+                },
+                {
+                    "FieldID": "{data_partition_id}:master-data--Field:SomeUniqueFieldID:",
+                    "GeoTypeID": "Field"
+                }
+            ],
         "Remarks": [
             {
                 "RemarkSequenceNumber": 1,

@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import re
 from typing import List, NamedTuple, Optional, Tuple
 
 from loguru import logger
@@ -28,6 +29,7 @@ class RecordKeys(NamedTuple):
 
 
 ID_PART_INDEX = 2
+RECORD_TYPE_INDEX = 1
 ENTITY_TYPE_INDEX = 2
 VERSION_SPLIT_INDEX = 3
 VERSION_SPLIT_INDEX_COLON_IN_ID = -1
@@ -35,6 +37,7 @@ SCHEMA_VERSION_INDEX = -1
 DATASET_ID_INDEX = -2
 FULLID_ID_INDEX = 0
 FULLID_VERSION_INDEX = 1
+DATASET_KIND_PREFIX = "dataset--"
 
 # Blob id
 URN_OBJECT_NAME_INDEX = -4
@@ -52,16 +55,21 @@ def get_id_version(full_record_id: str) -> Tuple[str, Optional[int]]:
     """
     logger.debug(f"full record id: {full_record_id}")
     splitted_id = full_record_id.split(":")
-    if len(splitted_id) > VERSION_SPLIT_INDEX:  # this means that there is a ":" in id
+    # Only split a version when the ID has exactly VERSION_SPLIT_INDEX+1 parts
+    # (authority:entity-type:local-id:version).  IDs with colons in the local-id
+    # body produce more parts; treating their last segment as a version would
+    # truncate the ID and mis-parse the local-id fragment as a version number.
+    if len(splitted_id) == VERSION_SPLIT_INDEX + 1:
         record_id, version = (
             ":".join(splitted_id[:VERSION_SPLIT_INDEX_COLON_IN_ID]),
             ":".join(splitted_id[VERSION_SPLIT_INDEX_COLON_IN_ID:]),
         )  # noqa: WPS221
     else:
-        record_id, version = (
-            ":".join(splitted_id[:VERSION_SPLIT_INDEX]),
-            ":".join(splitted_id[VERSION_SPLIT_INDEX:]),
-        )  # noqa: WPS221
+        # Fewer than 4 parts (no version suffix) or more than 4 parts (colons in
+        # local-id body — version cannot be reliably extracted).
+        # Strip a trailing colon if present (OSDU "latest" ref convention).
+        record_id = full_record_id.rstrip(":")
+        version = ""
     try:
         if version:
             version = int(version)
@@ -110,8 +118,13 @@ def find_dataset_id(ddms_datasets: List[str], prefix: str) -> Optional[str]:
     for ddms_dataset in ddms_datasets:
         dataset_id = ddms_dataset.split("/")[DATASET_ID_INDEX]
         try:
-            if dataset_id and dataset_id.split(":")[ENTITY_TYPE_INDEX].startswith(prefix):  # noqa: WPS221
-                return ":".join(dataset_id.split(":")[:VERSION_SPLIT_INDEX])  # noqa: WPS221
+            parts = dataset_id.split(":")
+            if (  # noqa: WPS221
+                dataset_id
+                and parts[RECORD_TYPE_INDEX].startswith(DATASET_KIND_PREFIX)
+                and parts[ENTITY_TYPE_INDEX].startswith(prefix)
+            ):
+                return ":".join(parts[:VERSION_SPLIT_INDEX])  # noqa: WPS221
         except IndexError:
             logger.error(f"The dataset id {dataset_id} is invalid")
 
@@ -130,9 +143,17 @@ def update_dataset_id(ddms_datasets: List[str], ddms_urn: str, prefix: str) -> L
     """
     for index, ddms_dataset in enumerate(ddms_datasets):
         dataset_id = ddms_dataset.split("/")[DATASET_ID_INDEX]
-        if dataset_id and dataset_id.split(":")[ENTITY_TYPE_INDEX].startswith(prefix):  # noqa: WPS221
-            ddms_datasets[index] = ddms_urn
-            return ddms_datasets
+        try:
+            parts = dataset_id.split(":")
+            if (  # noqa: WPS221
+                dataset_id
+                and parts[RECORD_TYPE_INDEX].startswith(DATASET_KIND_PREFIX)
+                and parts[ENTITY_TYPE_INDEX].startswith(prefix)
+            ):
+                ddms_datasets[index] = ddms_urn
+                return ddms_datasets
+        except IndexError:
+            logger.error(f"The dataset id {dataset_id} is invalid")
 
 
 def generate_dataset_urn(
@@ -222,6 +243,13 @@ def parse_kind(kind: str) -> dict:
         "entity_type": kind_parts[entity_type_index],
         "version": kind_parts[version_index],
     }
+
+
+_SEMVER_PATTERN = re.compile(r"^\d+\.\d+\.\d+$")
+
+
+def is_valid_semver(version: str) -> bool:
+    return bool(_SEMVER_PATTERN.match(version))
 
 
 def get_info_from_urn(urn: str) -> dict:

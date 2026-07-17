@@ -21,9 +21,8 @@ from typing import Iterable, List, Literal, Optional, Set, Tuple, TypeVar
 from fastapi import Depends, HTTPException, Query, Request
 from loguru import logger
 from pydantic import BaseModel
-from starlette import status
 
-from app.api.dependencies.request import get_content_schema_version
+from app.api.dependencies.request import get_content_schema_version, validate_scope_parameter
 from app.api.dependencies.services import (
     get_async_schema_service,
     get_async_storage_service,
@@ -33,7 +32,9 @@ from app.api.routes.utils.api_version import (
     get_domain_from_url,
 )
 from app.api.routes.utils.query import divide_chunks, find_osdu_ids_from_string
+from app.api.routes.utils.records import is_valid_semver, parse_kind
 from app.core.config import get_app_settings
+from app.core.http_status import HTTP_422_UNPROCESSABLE
 from app.exceptions.exceptions import (
     NotFoundException,
     RecordValidationException,
@@ -43,6 +44,7 @@ from app.models.data_schemas.base import CONTENT_PATTERNS, MAPS_TO_DATA_MODEL
 from app.models.domain.osdu import base as osdu_models_base
 from app.models.schemas.osdu_storage import OsduStorageRecord
 from app.models.schemas.pandas_dataframe import OrientSplit
+from app.models.schemas.search_scope import SearchScope
 from app.resources.errors import FilterValidationError
 from app.resources.filters import DataFrameFilterValidator
 from app.services.schema import SchemaService
@@ -147,7 +149,7 @@ def validate_ids_from_records(
                 errors.append(f"Missing {field} in index {index}")
     if errors:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            status_code=HTTP_422_UNPROCESSABLE,
             detail=errors,
         )
 
@@ -186,24 +188,43 @@ async def validate_referential_integrity(  # noqa: ASYNC910
         reason = f"{error_title} {error_details}"
         logger.debug(reason)
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+            status_code=HTTP_422_UNPROCESSABLE,
             detail=reason,
         )
 
 
-def validate_kind(kind: str, valid_kinds: List[str]):
-    """Validates kind against supported kinds in given endpoint.
+def validate_kind(kind: str, valid_kind_bases: List[str]):
+    """Validates kind against supported entity types in the given endpoint.
 
-    :param kind: the kind to be validated
+    Accepts any valid semantic version for a recognized entity type.
+
+    :param kind: the kind string from an incoming record
     :type kind: str
-    :param valid_kinds: supported kinds
-    :type valid_kinds: List[str]
-    :raises RuntimeError: If there is no kind that matches supported
-        kinds
+    :param valid_kind_bases: supported base kinds (no version suffix)
+    :type valid_kind_bases: List[str]
+    :raises RecordValidationException: if entity type is unsupported or
+        version is not a valid semver
     """
-    if kind not in valid_kinds:
+    try:
+        parsed = parse_kind(kind)
+    except ValueError:
         raise RecordValidationException(
-            detail=f"Kind `{kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: {valid_kinds}",
+            detail=f"Kind `{kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: {valid_kind_bases}",
+        )
+
+    kind_base = f"{parsed['authority']}:{parsed['source']}:{parsed['entity_type']}"
+    if kind_base not in valid_kind_bases:
+        raise RecordValidationException(
+            detail=f"Kind `{kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: {valid_kind_bases}",
+        )
+
+    if not is_valid_semver(parsed["version"]):
+        invalid_kind_version_msg = (
+            "Kind `{0}` has an invalid version `{1}`. "
+            + "Version must be in major.minor.patch format with non-negative integers."
+        )
+        raise RecordValidationException(
+            detail=invalid_kind_version_msg.format(kind, parsed["version"]),
         )
 
 
@@ -218,7 +239,7 @@ def build_skipped_record_error(record: dict, index: int, error: Exception):
 async def validate_osdu_wks_records(
     records_list: List[OsduStorageRecord],
     schema_service: SchemaService,
-    valid_kinds: List[str],
+    valid_kind_bases: List[str],
 ) -> List[dict]:
     tasks = []
     records = []
@@ -227,7 +248,7 @@ async def validate_osdu_wks_records(
         async with asyncio.TaskGroup() as group:  # pylint: disable=no-member
             for index, record in enumerate(records_list):
                 record_dict = record.dict(exclude_none=True)
-                validate_kind(record_dict.get("kind", ""), valid_kinds=valid_kinds)
+                validate_kind(record_dict.get("kind", ""), valid_kind_bases=valid_kind_bases)
                 records.append(record_dict)
                 tasks.append(
                     group.create_task(
@@ -260,7 +281,7 @@ async def validate_samples_analyses_report_v2_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.SAMPLES_ANALYSES_REPORT_KIND],
+        [osdu_models_base.SAMPLES_ANALYSES_REPORT_KIND_BASE],
     )
     await validate_referential_integrity(
         records,
@@ -278,7 +299,7 @@ async def validate_samplesanalysis_records_v2_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.SAMPLESANALYSIS_KIND],
+        [osdu_models_base.SAMPLESANALYSIS_KIND_BASE],
     )
     await validate_referential_integrity(
         records,
@@ -296,7 +317,7 @@ async def validate_saturation_function_set_v2_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.SATURATION_FUNCTION_SET_KIND],
+        [osdu_models_base.SATURATION_FUNCTION_SET_KIND_BASE],
     )
     await validate_referential_integrity(
         records,
@@ -311,7 +332,11 @@ async def validate_master_data_records_payload(
     schema_service: SchemaService,
     storage_service: StorageService,
 ) -> List[dict]:
-    records = await validate_osdu_wks_records(records_list, schema_service, osdu_models_base.MASTER_DATA_KINDS_V2)
+    records = await validate_osdu_wks_records(
+        records_list,
+        schema_service,
+        list(osdu_models_base.MASTER_DATA_KIND_BASES),
+    )
     await validate_referential_integrity(records, [], storage_service)
     return records
 
@@ -324,7 +349,7 @@ async def validate_reservoir_sim_rock_physics_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND],
+        [osdu_models_base.RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_KIND_BASE],
     )
     await validate_referential_integrity(
         records,
@@ -342,7 +367,7 @@ async def validate_fluid_model_v2_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.FLUID_MODEL_KIND],
+        [osdu_models_base.FLUID_MODEL_KIND_BASE],
     )
     await validate_referential_integrity(
         records,
@@ -360,7 +385,7 @@ async def validate_depth_shift_v2_payload(
     records = await validate_osdu_wks_records(
         records_list,
         schema_service,
-        [osdu_models_base.DEPTH_SHIFT_KIND],
+        [osdu_models_base.DEPTH_SHIFT_KIND_BASE],
     )
     await validate_referential_integrity(
         records,
@@ -623,6 +648,18 @@ async def get_validated_bulk_data_json(request: Request) -> Tuple[str, str]:
     return bulk_data.json(), "split"
 
 
+def validate_and_parse_date(date_str: Optional[str], field_name: str) -> Optional[date]:
+    if not date_str:
+        return None
+    try:
+        return datetime.strptime(date_str, "%Y-%m-%d").date()
+    except ValueError:
+        raise HTTPException(
+            status_code=HTTP_422_UNPROCESSABLE,
+            detail=f"Invalid format for {field_name}: '{date_str}'. Expected format: YYYY-MM-DD.",
+        )
+
+
 def get_search_data_pagination_parameters(
     page_limit: int = Query(
         default=100,
@@ -646,24 +683,13 @@ def get_search_data_pagination_parameters(
         description="End date in YYYY-MM-DD format",
     ),
 ) -> Tuple[int, int, Optional[date], Optional[date]]:
-    def validate_and_parse_date(date_str: Optional[str], field_name: str) -> Optional[date]:  # noqa: WPS430
-        if not date_str:
-            return None
-        try:
-            return datetime.strptime(date_str, "%Y-%m-%d").date()
-        except ValueError:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-                detail=f"Invalid format for {field_name}: '{date_str}'. Expected format: YYYY-MM-DD.",
-            )
-
     start_date_obj = validate_and_parse_date(indexed_start_date, "indexed_start_date")
     end_date_obj = validate_and_parse_date(indexed_end_date, "indexed_end_date")
 
     if start_date_obj and end_date_obj:
         if start_date_obj > end_date_obj:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
     return offset, page_limit, start_date_obj, end_date_obj  # noqa: ASYNC910
@@ -681,27 +707,178 @@ def get_search_pagination_parameters(
         description="Number of results to skip before returning data",
         ge=0,
     ),
-    indexed_start_date: Optional[date] = Query(
+    indexed_start_date: Optional[str] = Query(
         default=None,
-        openapi_examples={
-            "example": {
-                "value": "2023-01-01",
-            },
-        },
+        openapi_examples={"example": {"value": "2023-01-01"}},
+        description="Start date in YYYY-MM-DD format",
     ),
-    indexed_end_date: Optional[date] = Query(
+    indexed_end_date: Optional[str] = Query(
         default=None,
-        openapi_examples={
-            "example": {
-                "value": "2023-12-31",
-            },
-        },
+        openapi_examples={"example": {"value": "2023-12-31"}},
+        description="End date in YYYY-MM-DD format",
     ),
 ) -> Tuple[int, int, Optional[date], Optional[date]]:
-    if indexed_start_date and indexed_end_date:
-        if indexed_start_date > indexed_end_date:
+    start_date_obj = validate_and_parse_date(indexed_start_date, "indexed_start_date")
+    end_date_obj = validate_and_parse_date(indexed_end_date, "indexed_end_date")
+
+    if start_date_obj and end_date_obj:
+        if start_date_obj > end_date_obj:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail="indexed_start_date must be before or equal to indexed_end_date",
             )
-    return offset, page_limit, indexed_start_date, indexed_end_date  # noqa: ASYNC910
+    return offset, page_limit, start_date_obj, end_date_obj  # noqa: ASYNC910
+
+
+def get_search_scope(
+    basin_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier'). "
+            "Scope parameters filter results hierarchically: basin -> field -> well -> wellbore."
+        ),
+    ),
+    field_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+    ),
+    well_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific well. "
+            "Must be a valid OSDU record ID of kind 'master-data--Well'. "
+            "Used with or without basin_id/field_id scope."
+        ),
+    ),
+    wellbore_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific wellbore. "
+            "Must be a valid OSDU record ID of kind 'master-data--Wellbore'. "
+            "Most restrictive scope parameter. "
+            "Required when depth_shift_policy is provided on SamplesAnalysis search/data."
+        ),
+    ),
+) -> SearchScope:
+    """Parse and validate the progressive search scope parameters.
+
+    Scope parameters allow filtering search results hierarchically from broader
+    (basin) to more specific (wellbore) organizational levels. All are optional
+    and can be combined.
+
+    Each parameter must be a valid OSDU record ID with the expected kind.
+
+    :param basin_id: Basin identifier (OSDU record ID)
+    :type basin_id: Optional[str]
+    :param field_id: Field identifier (OSDU record ID)
+    :type field_id: Optional[str]
+    :param well_id: Well identifier (OSDU record ID)
+    :type well_id: Optional[str]
+    :param wellbore_id: Wellbore identifier (OSDU record ID)
+    :type wellbore_id: Optional[str]
+    :return: validated scope parameters
+    :rtype: SearchScope
+    :raises HTTPException: 400 if any parameter has invalid format
+    """
+    # Validate each scope parameter
+    validate_scope_parameter("basin_id", basin_id)
+    validate_scope_parameter("field_id", field_id)
+    validate_scope_parameter("well_id", well_id)
+    validate_scope_parameter("wellbore_id", wellbore_id)
+
+    return SearchScope(
+        basin_id=basin_id,
+        field_id=field_id,
+        well_id=well_id,
+        wellbore_id=wellbore_id,
+    )
+
+
+def get_geo_context_scope(
+    basin_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier')."
+        ),
+    ),
+    field_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+    ),
+) -> SearchScope:
+    """Parse and validate basin/field scope parameters for types that expose GeoContexts only.
+
+    Used by SaturationFunctionSet and ReservoirSimulationRockPhysicsModel, which do not carry
+    WellID or WellboreID — only data.GeoContexts with BasinID and FieldID entries.
+    Supplying well_id or wellbore_id on those endpoints is not supported.
+
+    :param basin_id: Basin identifier (OSDU record ID)
+    :type basin_id: Optional[str]
+    :param field_id: Field identifier (OSDU record ID)
+    :type field_id: Optional[str]
+    :return: validated scope parameters
+    :rtype: SearchScope
+    :raises HTTPException: 400 if any parameter has invalid format
+    """
+    validate_scope_parameter("basin_id", basin_id)
+    validate_scope_parameter("field_id", field_id)
+    return SearchScope(basin_id=basin_id, field_id=field_id)
+
+
+def get_depth_shift_scope(
+    basin_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific basin. "
+            "Must be a valid OSDU record ID of kind 'master-data--Basin' "
+            "(e.g., 'authority:master-data--Basin:identifier')."
+        ),
+    ),
+    field_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific field. "
+            "Must be a valid OSDU record ID of kind 'master-data--Field'. "
+            "Used with or without basin_id scope."
+        ),
+    ),
+    wellbore_id: Optional[str] = Query(
+        default=None,
+        description=(
+            "Optional scope parameter to filter search results to a specific wellbore. "
+            "Must be a valid OSDU record ID of kind 'master-data--Wellbore'. "
+            "DepthShift does not support well_id; only basin_id, field_id, and wellbore_id."
+        ),
+    ),
+) -> SearchScope:
+    """Parse and validate basin/field/wellbore scope parameters for DepthShift.
+
+    DepthShift records expose WellboreID directly on data, plus basin/field via GeoContexts.
+    Well_id is not supported — only wellbore_id, basin_id, and field_id.
+
+    :param basin_id: Basin identifier (OSDU record ID)
+    :type basin_id: Optional[str]
+    :param field_id: Field identifier (OSDU record ID)
+    :type field_id: Optional[str]
+    :param wellbore_id: Wellbore identifier (OSDU record ID)
+    :type wellbore_id: Optional[str]
+    :return: validated scope parameters
+    :rtype: SearchScope
+    :raises HTTPException: 400 if any parameter has invalid format
+    """
+    validate_scope_parameter("basin_id", basin_id)
+    validate_scope_parameter("field_id", field_id)
+    validate_scope_parameter("wellbore_id", wellbore_id)
+    return SearchScope(basin_id=basin_id, field_id=field_id, wellbore_id=wellbore_id)

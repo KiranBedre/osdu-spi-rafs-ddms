@@ -15,7 +15,7 @@
 import copy as _copy
 import json
 from contextlib import contextmanager
-from unittest.mock import create_autospec, patch
+from unittest.mock import AsyncMock, create_autospec, patch
 
 import pandas as pd
 import pyarrow as pa
@@ -30,7 +30,7 @@ from app.api.dependencies.services import (
     get_async_storage_service,
 )
 from app.api.routes.utils.query import find_osdu_ids_from_string
-from app.api.routes.utils.records import get_id_version
+from app.api.routes.utils.records import get_id, get_id_version
 from app.main import app
 from app.services import dataset, entitlements, storage
 from tests.test_api.test_routes import dependencies
@@ -170,6 +170,8 @@ from tests.test_api.test_routes.data.data_mock_objects import (
 )
 from tests.test_api.test_routes.osdu.storage_mock_objects import (
     PARTITION,
+    TEST_DEPTH_SHIFT_ID,
+    TEST_DEPTH_SHIFT_KIND,
     BulkDatasetIdV2,
     TestContentPathsApiV2,
 )
@@ -223,7 +225,12 @@ def with_patched_storage_failed_integrity_validation(missed_records):
     query_response = {
         "invalidRecords": missed_records,
     }
-    with patch.object(async_storage_record_service_mock, "query_records", return_value=query_response):
+    with patch.object(
+        async_storage_record_service_mock,
+        "query_records",
+        new_callable=AsyncMock,
+        return_value=query_response,
+    ):
         yield
 
 
@@ -756,6 +763,16 @@ async def test_get_data_accept_parquet_does_not_return_content_type_error(data_e
             ],
             "download_file",
             [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V2)],
         ),
         (
             TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
@@ -1401,6 +1418,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             relative_permeability_mock_objects.TEST_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V2)],
+            relative_permeability_mock_objects.TEST_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.ROCK_COMPRESSIBILITY}/{rock_compressibility_mock_objects.TEST_DATASET_RECORD_ID}",
             None,
             "get_record",
@@ -1815,6 +1841,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             relative_permeability_mock_objects.TEST_AGGREGATED_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            relative_permeability_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V2)],
+            relative_permeability_mock_objects.TEST_AGGREGATED_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.ROCK_COMPRESSIBILITY}/{rock_compressibility_mock_objects.TEST_DATASET_RECORD_ID}",
             rock_compressibility_mock_objects.TEST_PARAMS_AGGREGATION,
             "get_record",
@@ -2209,6 +2244,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             "download_file",
             [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA)],
             relative_permeability_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            relative_permeability_mock_objects.TEST_PARAMS_FILTERS_V2,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V2)],
+            relative_permeability_mock_objects.TEST_FILTERED_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.ROCK_COMPRESSIBILITY}/{rock_compressibility_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -4236,6 +4280,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            relative_permeability_mock_objects.TEST_DATA_V2,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
+        ),
+        (
             TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
             rock_compressibility_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             rock_compressibility_mock_objects.TEST_DATA,
@@ -4664,6 +4715,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
         (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            relative_permeability_mock_objects.TEST_DATA_V2,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
+        ),
+        (
             TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
             rock_compressibility_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             rock_compressibility_mock_objects.TEST_DATA,
@@ -5056,6 +5114,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
             TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
             rock_compressibility_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             rock_compressibility_mock_objects.TEST_DATASET_RECORD_ID,
@@ -5396,6 +5459,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             relative_permeability_mock_objects.TEST_DATA,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
             relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            relative_permeability_mock_objects.TEST_DATA_V2,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
@@ -5826,6 +5896,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             relative_permeability_mock_objects.TEST_DATA,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
             relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            relative_permeability_mock_objects.TEST_DATA_V2,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
@@ -7083,3 +7160,584 @@ async def test_post_ds_data_rejects_mismatched_id():
     assert body["reason"] == "Data validation failed."
     assert "Invalid value" in body["errors"]
     assert any("DepthShiftWPCID" in entry for entry in body["errors"]["Invalid value"])
+
+
+@pytest.mark.asyncio
+async def test_post_ds_data_rejects_multi_row_payload():
+    """POST CoreToLog with more than one row must be rejected at write time with 422."""
+    single_row = coretologdepthshift_mock_objects.TEST_DATA
+    multi_row = {
+        "columns": single_row["columns"],
+        "index": [0, 1],
+        "data": [single_row["data"][0], single_row["data"][0]],
+    }
+    with post_overrides(
+        coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
+        multi_row,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(multi_row),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert "exactly 1 row" in response.json()["reason"]
+
+
+@pytest.mark.asyncio
+async def test_post_ds_data_rejects_null_depth_shift_values():
+    """POST CoreToLog with a null depth boundary in DepthShiftSet must be rejected with 422.
+
+    For JSON payloads, schema validation catches null values before the parquet
+    validator runs, returning an "Invalid type" error for DepthShiftSet.
+    The parquet-path validator (validate_shift_values) provides the same guard
+    for x-parquet ingestion that bypasses schema validation.
+    """
+    null_payload = {
+        "columns": coretologdepthshift_mock_objects.TEST_DATA["columns"],
+        "index": [0],
+        "data": [
+            [
+                "partition:work-product-component--DepthShift:depth_shift_test_id:",
+                [],
+                [
+                    {
+                        "OriginalTopDepth": None,
+                        "OriginalBaseDepth": 1010.0,
+                        "ShiftedTopDepth": 1001.5,
+                        "ShiftedBaseDepth": 1011.5,
+                    }
+                ],
+            ]
+        ],
+    }
+    with post_overrides(
+        coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
+        null_payload,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(null_payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    body = response.json()
+    # Schema validation catches null before the parquet validator; either path produces 422.
+    assert "DepthShiftSet" in str(body)
+
+
+@pytest.mark.asyncio
+async def test_get_data_with_null_depth_shift_values_returns_422():
+    """GET with depth_shift_id returns 422 when the CoreToLog parquet has null depth boundaries."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    null_shift_set = [
+        {
+            "OriginalTopDepth": 1000.0,
+            "OriginalBaseDepth": None,
+            "ShiftedTopDepth": 1001.5,
+            "ShiftedBaseDepth": 1011.5,
+        }
+    ]
+    null_coretolog_df = pd.DataFrame(
+        [
+            [
+                "partition:work-product-component--DepthShift:depth_shift_test_id:",
+                [],
+                null_shift_set,
+            ]
+        ],
+        columns=["DepthShiftWPCID", "Meta", "DepthShiftSet"],
+    )
+    null_coretolog_parquet = null_coretolog_df.to_parquet()
+
+    storage_side_effects = [
+        rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        _DEPTH_SHIFT_WPC_WITH_DATASETS,
+    ]
+    dataset_side_effects = [
+        _build_rca_parquet(),
+        null_coretolog_parquet,
+    ]
+    query_records_response = {
+        "records": [_DEPTH_SHIFT_SAMPLE_RECORD],
+    }
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=storage_side_effects):
+        with patch.object(async_dataset_service_mock, "download_file", side_effect=dataset_side_effects):
+            with patch.object(
+                async_storage_record_service_mock,
+                "query_records",
+                new_callable=AsyncMock,
+                return_value=query_records_response,
+            ):
+                with services_overrides():
+                    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                        response = await client.get(
+                            f"{TestContentPathsApiV2.RCA}/{rca_mock_objects.TEST_DATASET_RECORD_ID}",
+                            headers=_headers_json("1.0.0"),
+                            params={
+                                "depth_shift_id": TEST_DEPTH_SHIFT_ID,
+                                "depth_shift_policy": "id_provided",
+                            },
+                        )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert "null" in response.json()["reason"].lower()
+    assert "OriginalBaseDepth" in response.json()["reason"]
+
+
+# ---------------------------------------------------------------------------
+# Issue #751 — Depth-shift augmentation on SA GET data
+# ---------------------------------------------------------------------------
+
+_RCA_SAMPLE_ID = "opendes:master-data--Sample:Example_Sample:"
+
+_DEPTH_SHIFT_SAMPLE_RECORD = {
+    "id": _RCA_SAMPLE_ID,
+    "kind": "osdu:wks:master-data--Sample:2.0.0",
+    "data": {
+        "WellboreID": "namespace:master-data--Wellbore:wellbore-001:",
+        "DepthMeasurements": [
+            {
+                "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleTop:",
+                "VerticalMeasurement": 1005.0,
+                "VerticalMeasurementSourceID": "osdu:reference-data--VerticalMeasurementSource:DRL:",
+            },
+            {
+                "VerticalMeasurementTypeID": "osdu:reference-data--VerticalMeasurementType:SampleBase:",
+                "VerticalMeasurement": 1008.0,
+                "VerticalMeasurementSourceID": "osdu:reference-data--VerticalMeasurementSource:DRL:",
+            },
+        ],
+    },
+}
+
+_DEPTH_SHIFT_SAMPLE_RECORD_OTHER_WELLBORE = {
+    **_DEPTH_SHIFT_SAMPLE_RECORD,
+    "id": "opendes:master-data--Sample:Example_Sample_2:",
+    "data": {
+        **_DEPTH_SHIFT_SAMPLE_RECORD["data"],
+        "SampleAcquisition": {
+            "SampleAcquisitionDetail": {
+                "WellboreID": "namespace:master-data--Wellbore:wellbore-002:",
+            },
+        },
+    },
+}
+
+_DEPTH_SHIFT_WPC_WITH_DATASETS = {
+    **coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+    "kind": TEST_DEPTH_SHIFT_KIND,
+    "data": {
+        **coretologdepthshift_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION.get("data", {}),
+        "WellboreID": "namespace:master-data--Wellbore:wellbore-001:",
+    },
+}
+
+
+def _build_coretolog_parquet():
+    """Build CoreToLog parquet bytes from the existing mock fixture."""
+    coretolog_df = pd.DataFrame(
+        coretologdepthshift_mock_objects.TEST_DATA["data"],
+        columns=coretologdepthshift_mock_objects.TEST_DATA["columns"],
+    )
+    return coretolog_df.to_parquet()
+
+
+def _build_rca_parquet():
+    """Build RCA parquet bytes from the existing mock fixture."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    rca_df = pd.DataFrame(
+        rca_mock_objects.TEST_DATA["data"],
+        columns=rca_mock_objects.TEST_DATA["columns"],
+    )
+    return rca_df.to_parquet()
+
+
+@pytest.mark.asyncio
+async def test_get_data_with_depth_shift_id_returns_augmented_columns():
+    """Issue #751: GET data with ?depth_shift_id returns augmented columns."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    depth_shift_wpc_id = TEST_DEPTH_SHIFT_ID
+    coretolog_dataset_id = coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID
+    rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+    rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
+
+    # Base data is loaded first, then depth-shift WPC/parquet is fetched.
+    storage_side_effects = [
+        rca_record_data,
+        _DEPTH_SHIFT_WPC_WITH_DATASETS,
+    ]
+    dataset_side_effects = [
+        _build_rca_parquet(),
+        _build_coretolog_parquet(),
+    ]
+    query_records_response = {
+        "records": [_DEPTH_SHIFT_SAMPLE_RECORD],
+    }
+
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=storage_side_effects):
+        with patch.object(async_dataset_service_mock, "download_file", side_effect=dataset_side_effects):
+            with patch.object(
+                async_storage_record_service_mock,
+                "query_records",
+                new_callable=AsyncMock,
+                return_value=query_records_response,
+            ):
+                with services_overrides():
+                    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                        response = await client.get(
+                            f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                            headers=_headers_json("1.0.0"),
+                            params={
+                                "depth_shift_id": depth_shift_wpc_id,
+                                "depth_shift_policy": "id_provided",
+                            },
+                        )
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+
+    # Depth-shift columns must NOT pollute the original schema columns.
+    columns = body["columns"]
+    for ds_col in ("SampleTop", "SampleBase", "ShiftedSampleTop", "ShiftedSampleBase", "DepthShiftWarnings"):
+        assert ds_col not in columns, f"{ds_col} must not appear in main columns"
+
+    # DepthShiftData must be a parallel list with per-row shift values.
+    assert "DepthShiftData" in body
+    depth_shift_data = body["DepthShiftData"]
+    assert isinstance(depth_shift_data, list)
+    assert len(depth_shift_data) == len(body["data"])
+    first_ds_row = depth_shift_data[0]
+    assert abs(first_ds_row["SampleTop"] - 1005.0) < 1e-6
+    assert abs(first_ds_row["ShiftedSampleTop"] - 1006.5) < 1e-6
+    assert isinstance(first_ds_row["DepthShiftWarnings"], list)
+    assert "DepthShiftMetadata" in body
+    metadata = body["DepthShiftMetadata"]
+    assert isinstance(metadata["warnings"], list)
+
+
+@pytest.mark.asyncio
+async def test_get_data_with_depth_shift_id_rejects_multiple_wellbores():
+    """Issue #751: mixed wellbore sample records must fail fast with 422."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    depth_shift_wpc_id = TEST_DEPTH_SHIFT_ID
+    rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+    rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
+
+    storage_side_effects = [
+        rca_record_data,
+        _DEPTH_SHIFT_WPC_WITH_DATASETS,
+    ]
+    dataset_side_effects = [
+        _build_rca_parquet(),
+        _build_coretolog_parquet(),
+    ]
+    mixed_sample_records = {
+        _DEPTH_SHIFT_SAMPLE_RECORD["id"]: _DEPTH_SHIFT_SAMPLE_RECORD,
+        _DEPTH_SHIFT_SAMPLE_RECORD_OTHER_WELLBORE["id"]: _DEPTH_SHIFT_SAMPLE_RECORD_OTHER_WELLBORE,
+    }
+
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=storage_side_effects):
+        with patch.object(async_dataset_service_mock, "download_file", side_effect=dataset_side_effects):
+            with patch(
+                "app.api.routes.samplesanalysis.endpoints.DepthShiftResolver.fetch_sample_records",
+                return_value=mixed_sample_records,
+            ):
+                with services_overrides():
+                    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                        response = await client.get(
+                            f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                            headers=_headers_json("1.0.0"),
+                            params={
+                                "depth_shift_id": depth_shift_wpc_id,
+                                "depth_shift_policy": "id_provided",
+                            },
+                        )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    body = response.json()
+    assert "wellbore-scoped" in body["reason"].lower()
+
+
+@pytest.mark.asyncio
+async def test_get_data_with_depth_shift_id_without_policy_returns_400():
+    """Issue #751: depth_shift_id without depth_shift_policy returns 400."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+
+    with services_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(
+                f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                headers=_headers_json("1.0.0"),
+                params={
+                    "depth_shift_id": "ds-001",
+                },
+            )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.asyncio
+async def test_get_data_without_depth_shift_params_unchanged():
+    """Issue #751: regression guard — no depth shift params → original response."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+    rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
+
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=[rca_record_data]):
+        with patch.object(
+            async_dataset_service_mock,
+            "download_file",
+            side_effect=[build_get_test_data("x-parquet", rca_mock_objects.TEST_DATA)],
+        ):
+            with services_overrides():
+                async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                    response = await client.get(
+                        f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                        headers=_headers_json("1.0.0"),
+                    )
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+    assert "ShiftedSampleTop" not in body["columns"]
+    assert "DepthShiftWarnings" not in body["columns"]
+    assert set(body["columns"]) == set(rca_mock_objects.TEST_DATA["columns"])
+
+
+@pytest.mark.asyncio
+async def test_get_data_definitive_policy_no_definitive_id_returns_422():
+    """definitive policy with no sample DefinitiveDepthShiftID must fail with 422."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+    rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
+    sample_record_no_definitive = {
+        **_DEPTH_SHIFT_SAMPLE_RECORD,
+        "data": {
+            **_DEPTH_SHIFT_SAMPLE_RECORD["data"],
+            "DefinitiveDepthShift": {},
+        },
+    }
+    query_records_response = {"records": [sample_record_no_definitive]}
+
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=[rca_record_data]):
+        with patch.object(
+            async_dataset_service_mock,
+            "download_file",
+            side_effect=[_build_rca_parquet()],
+        ):
+            with patch.object(
+                async_storage_record_service_mock,
+                "query_records",
+                new_callable=AsyncMock,
+                return_value=query_records_response,
+            ):
+                with services_overrides():
+                    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                        response = await client.get(
+                            f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                            headers=_headers_json("1.0.0"),
+                            params={"depth_shift_policy": "definitive"},
+                        )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+@pytest.mark.asyncio
+async def test_get_data_id_provided_with_different_definitive_id_emits_warning():
+    """Issue #751: id_provided + different definitive ID in sample → warning in DepthShiftWarnings."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    provided_wpc_id = TEST_DEPTH_SHIFT_ID
+    definitive_wpc_id = "opendes:work-product-component--DepthShift:definitive-001:"
+    rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+    rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
+
+    # Sample record that carries a DefinitiveDepthShiftID different from the provided one.
+    sample_with_definitive = {
+        **_DEPTH_SHIFT_SAMPLE_RECORD,
+        "data": {
+            **_DEPTH_SHIFT_SAMPLE_RECORD["data"],
+            "DefinitiveDepthShift": {
+                "DefinitiveDepthShiftID": definitive_wpc_id,
+            },
+        },
+    }
+
+    storage_side_effects = [
+        rca_record_data,
+        _DEPTH_SHIFT_WPC_WITH_DATASETS,
+    ]
+    dataset_side_effects = [
+        _build_rca_parquet(),
+        _build_coretolog_parquet(),
+    ]
+    query_records_response = {"records": [sample_with_definitive]}
+
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=storage_side_effects):
+        with patch.object(async_dataset_service_mock, "download_file", side_effect=dataset_side_effects):
+            with patch.object(
+                async_storage_record_service_mock,
+                "query_records",
+                new_callable=AsyncMock,
+                return_value=query_records_response,
+            ):
+                with services_overrides():
+                    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                        response = await client.get(
+                            f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                            headers=_headers_json("1.0.0"),
+                            params={
+                                "depth_shift_id": provided_wpc_id,
+                                "depth_shift_policy": "id_provided",
+                            },
+                        )
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+
+    # Top-level DepthShiftMetadata must reflect id_provided with definitive available.
+    assert "DepthShiftMetadata" in body
+    metadata = body["DepthShiftMetadata"]
+    assert metadata["appliedDepthShiftId"] == provided_wpc_id
+    assert metadata["source"] == "user-provided"
+    assert metadata["usedDefinitive"] is False
+    assert metadata["definitiveDepthShiftAvailable"] is True
+
+    # Conflict warning must appear in metadata.warnings (not as a top-level key).
+    assert "DepthShiftWarnings" not in body
+    metadata_warnings = metadata["warnings"]
+    assert isinstance(metadata_warnings, list)
+    normalized_definitive_id = get_id(definitive_wpc_id)
+    conflict_warning = next(
+        (w for w in metadata_warnings if normalized_definitive_id in w and provided_wpc_id in w),
+        None,
+    )
+    assert conflict_warning is not None, (
+        f"Expected a warning mentioning both definitive ID ({normalized_definitive_id}) "
+        f"and provided ID ({provided_wpc_id}), got: {metadata_warnings}"
+    )
+
+
+@pytest.mark.asyncio
+async def test_get_data_with_depth_shift_orient_records_returns_200():
+    """orient=records + depth-shift must return 200 with a 'data' key (not crash with 500)."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+    rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
+
+    storage_side_effects = [rca_record_data, _DEPTH_SHIFT_WPC_WITH_DATASETS]
+    dataset_side_effects = [_build_rca_parquet(), _build_coretolog_parquet()]
+    query_records_response = {"records": [_DEPTH_SHIFT_SAMPLE_RECORD]}
+
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=storage_side_effects):
+        with patch.object(async_dataset_service_mock, "download_file", side_effect=dataset_side_effects):
+            with patch.object(
+                async_storage_record_service_mock,
+                "query_records",
+                new_callable=AsyncMock,
+                return_value=query_records_response,
+            ):
+                with services_overrides():
+                    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                        response = await client.get(
+                            f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                            headers=_headers_json("1.0.0"),
+                            params={
+                                "depth_shift_id": TEST_DEPTH_SHIFT_ID,
+                                "depth_shift_policy": "id_provided",
+                                "orient": "records",
+                            },
+                        )
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+    assert "data" in body, "orient=records response must have a 'data' key"
+    assert isinstance(body["data"], list)
+    assert "DepthShiftData" in body
+    assert "DepthShiftMetadata" in body
+    assert "DepthShiftWarnings" not in body
+
+
+@pytest.mark.asyncio
+async def test_search_data_with_depth_shift_params_returns_200_for_empty_results():
+    """search/data with depth-shift params should pass through empty search results."""
+    from tests.test_api.test_routes.osdu.storage_mock_objects import SAMPLESANALYSIS_ENDPOINT_PATH
+
+    with patch(
+        "app.services.search.SearchService.find_records",
+        new_callable=AsyncMock,
+        return_value={"results": [], "cursor": None},
+    ):
+        with services_overrides():
+            async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                response = await client.get(
+                    f"{SAMPLESANALYSIS_ENDPOINT_PATH}/routinecoreanalysis/search/data",
+                    headers=_headers_json("1.0.0"),
+                    params={
+                        "depth_shift_id": TEST_DEPTH_SHIFT_ID,
+                        "depth_shift_policy": "id_provided",
+                    },
+                )
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+    assert "result" in body
+    assert "DepthShiftData" not in body
+
+
+@pytest.mark.asyncio
+async def test_get_data_definitive_flat_path_recognized():
+    """DefinitiveDepthShiftID stored flat at data.DefinitiveDepthShiftID (not nested) must be found."""
+    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+
+    rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
+    rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
+
+    # Sample with flat path — no nested DefinitiveDepthShift object.
+    sample_flat_path = {
+        **_DEPTH_SHIFT_SAMPLE_RECORD,
+        "data": {
+            **_DEPTH_SHIFT_SAMPLE_RECORD["data"],
+            "DefinitiveDepthShiftID": TEST_DEPTH_SHIFT_ID,
+        },
+    }
+
+    storage_side_effects = [rca_record_data, _DEPTH_SHIFT_WPC_WITH_DATASETS]
+    dataset_side_effects = [_build_rca_parquet(), _build_coretolog_parquet()]
+    query_records_response = {"records": [sample_flat_path]}
+
+    with patch.object(async_storage_record_service_mock, "get_record", side_effect=storage_side_effects):
+        with patch.object(async_dataset_service_mock, "download_file", side_effect=dataset_side_effects):
+            with patch.object(
+                async_storage_record_service_mock,
+                "query_records",
+                new_callable=AsyncMock,
+                return_value=query_records_response,
+            ):
+                with services_overrides():
+                    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                        response = await client.get(
+                            f"{TestContentPathsApiV2.RCA}/{rca_content_id}",
+                            headers=_headers_json("1.0.0"),
+                            params={"depth_shift_policy": "definitive"},
+                        )
+
+    assert response.status_code == status.HTTP_200_OK
+    body = response.json()
+    assert body["DepthShiftMetadata"]["usedDefinitive"] is True
+    assert body["DepthShiftMetadata"]["definitiveDepthShiftAvailable"] is True

@@ -27,6 +27,8 @@ from app.api.dependencies.services import (
 from app.api.dependencies.validation import (
     get_orient,
     get_search_data_pagination_parameters,
+    get_search_pagination_parameters,
+    get_search_scope,
 )
 from app.api.routes.common.base_search import (
     GenericSearchDataView,
@@ -36,6 +38,7 @@ from app.api.routes.utils.api_version import get_domain_from_url
 from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
+from app.models.schemas.search_scope import SearchScope
 from app.providers.dependencies.blob_storage import IBlobStorage
 from app.resources.filters import DataFrameFilterValidator
 from app.services import dataset, search
@@ -95,8 +98,10 @@ class DynamicGenericSearchView(GenericSearchDataView):
     def _inject_param(self, request: Request, extractor: Callable) -> str:
         return extractor(request)
 
-    def _build_dynamic_endpoint(self, method_name: str, extractor: Callable, filter_dep):
+    def _build_dynamic_endpoint(self, method_name: str, extractor: Callable, filter_dep, scope_dep=None):
 
+        if scope_dep is None:
+            scope_dep = get_search_scope
         parent_method = getattr(self, method_name)
         uses_orient = method_name == "get_search_data"
 
@@ -107,6 +112,7 @@ class DynamicGenericSearchView(GenericSearchDataView):
                 df_filter: DataFrameFilterValidator = Depends(filter_dep),
                 content_schema_version: str = Depends(get_content_schema_version),
                 pagination_parameters: PaginationParametersType = Depends(get_search_data_pagination_parameters),
+                search_scope: SearchScope = Depends(scope_dep),
                 dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
                 blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
                 search_service: search.SearchService = Depends(get_async_search_service),
@@ -122,6 +128,7 @@ class DynamicGenericSearchView(GenericSearchDataView):
                     df_filter=df_filter,
                     content_schema_version=content_schema_version,
                     pagination_parameters=pagination_parameters,
+                    search_scope=search_scope,
                     orient=orient,
                 )
 
@@ -131,7 +138,8 @@ class DynamicGenericSearchView(GenericSearchDataView):
                 request: Request,
                 df_filter: DataFrameFilterValidator = Depends(filter_dep),
                 content_schema_version: str = Depends(get_content_schema_version),
-                pagination_parameters: PaginationParametersType = Depends(get_search_data_pagination_parameters),
+                pagination_parameters: PaginationParametersType = Depends(get_search_pagination_parameters),
+                search_scope: SearchScope = Depends(scope_dep),
                 dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
                 blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
                 search_service: search.SearchService = Depends(get_async_search_service),
@@ -146,6 +154,7 @@ class DynamicGenericSearchView(GenericSearchDataView):
                     df_filter=df_filter,
                     content_schema_version=content_schema_version,
                     pagination_parameters=pagination_parameters,
+                    search_scope=search_scope,
                 )
 
         return cache(
@@ -161,6 +170,7 @@ class DynamicGenericSearchView(GenericSearchDataView):
                 method_name=config["handler"],
                 extractor=extractor,
                 filter_dep=config["filter_dep"],
+                scope_dep=config.get("scope_dep"),
             )
 
             self._router.add_api_route(

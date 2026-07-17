@@ -20,9 +20,12 @@ from starlette import status
 
 from app.resources.common_headers import CACHE_CONTROL
 from tests.integration.config import (
+    CONFIG,
     DataFiles,
     Endpoints,
 )
+
+DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.ENDPOINTS_WITH_FILTERS_ARGS)
@@ -194,3 +197,22 @@ def test_depth_shift_delete_record_special_characters_in_record_id(api, spec_cha
     }
 
     api.depth_shift.soft_delete_record(encoded_record_id, **kwargs)
+
+
+def test_depth_shift_create_record_with_kind_matching_semantic_version(api, helper, tests_data, delete_record):
+    """Verify record creation with kind matching only semantic version can be retrieved unchanged via GET."""
+    # Record creation
+    data_payload = copy.deepcopy(tests_data(DataFiles.DEPTH_SHIFT))
+    data_payload["kind"] = f"{DATA_PARTITION_ID}:wks:work-product-component--DepthShift:5.23.72"
+    response = api.depth_shift.post_record(body=[data_payload])
+    record_id = response["recordIdVersions"][0].rsplit(":", 1)[0]
+
+    # Register record for cleanup
+    delete_record(record_id)
+
+    # Retrieve the record by id and prepare baseline
+    data_payload["id"] = record_id
+    gotten_record = api.depth_shift.get_record(record_id)
+
+    # Response should contain the same business fields as the original POST body
+    helper.compare_responses(gotten_record, data_payload, response_type="json")

@@ -22,9 +22,14 @@ from tests.integration.config import (
     CONFIG,
     DataFiles,
     Endpoints,
+    SEARCH_PAGE_LIMITS,
 )
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
+GEO_PARAMS = [
+    ("field_id", "Field"),
+    ("basin_id", "Basin"),
+]
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.RECORD_ID_ENDPOINTS_ARGS)
@@ -71,7 +76,6 @@ def test_rsrp_negative_invalid_data_partition_id_record_id_in_url(api, tests_dat
     }
 
     if endpoint == "post_data":
-        pytest.skip(reason="#733")
         data_payload = copy.deepcopy(tests_data(DataFiles.SIMULATION_ROCK_PHYSICS_DATA1_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
@@ -81,7 +85,8 @@ def test_rsrp_negative_invalid_data_partition_id_record_id_in_url(api, tests_dat
     # Assert
     assert response.status_code == 400
     body = response.json()
-    assert f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'" in body["reason"]
+    assert f"Invalid record ID" in body["reason"]
+    assert f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'" in body["message"]
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.RECORD_ID_ENDPOINTS_ARGS)
@@ -98,7 +103,6 @@ def test_rsrp_negative_non_existing_record_id_in_url(api, tests_data, endpoint, 
     }
 
     if endpoint == "post_data":
-        pytest.skip(reason="#733")
         data_payload = copy.deepcopy(tests_data(DataFiles.SIMULATION_ROCK_PHYSICS_DATA1_V1))
         data_payload["data"][0][0] = f"{record_id}:"
         kwargs["body"] = data_payload
@@ -542,11 +546,11 @@ def test_rsrp_negative_invalid_format_page_limit_param(api, tests_data, endpoint
     assert "page_limit value is not a valid integer" in body["errors"]
 
 
-@pytest.mark.parametrize("endpoint", Endpoints.SEARCH_ENDPOINTS)
-def test_rsrp_negative_boundary_value_page_limit_param(api, tests_data, endpoint):
-    """Reject page_limit exceeding maximum (100) with 422 Unprocessable Content."""
+@pytest.mark.parametrize(("endpoint", "max_limit"), SEARCH_PAGE_LIMITS.items())
+def test_rsrp_negative_boundary_value_page_limit_param(api, tests_data, endpoint, max_limit):
+    """Reject page_limit exceeding maximum with 422 Unprocessable Content."""
     method = getattr(api.simulation_rock_physics, endpoint)
-    params = {"page_limit": 101}
+    params = {"page_limit": max_limit + 1}
 
     kwargs = {
         "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
@@ -559,7 +563,7 @@ def test_rsrp_negative_boundary_value_page_limit_param(api, tests_data, endpoint
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "page_limit ensure this value is less than or equal to 100" in body["errors"]
+    assert f"page_limit ensure this value is less than or equal to {max_limit}" in body["errors"]
 
 
 @pytest.mark.parametrize("endpoint", Endpoints.SEARCH_ENDPOINTS)
@@ -712,4 +716,27 @@ def test_rsrp_negative_schema_version_overwritten_by_param(api, tests_data, endp
     assert (
         "Model not found for type 'reservoirsimulationrockphysicsmodel',  version '0.0.7'. "
         "Available versions: {'1.0.0'}"
+    ) in body["reason"]
+
+
+@pytest.mark.parametrize("geo_param,master_data_type", GEO_PARAMS)
+@pytest.mark.parametrize("endpoint", Endpoints.SEARCH_ENDPOINTS)
+def test_rsrp_negative_invalid_geo_param_value(api, endpoint, geo_param, master_data_type):
+    """Reject incorrect regex for geo param with 400 Bad Request."""
+    method = getattr(api.simulation_rock_physics, endpoint)
+    params = {f"{geo_param}": "dummy"}
+
+    kwargs = {
+        "allowed_codes": [status.HTTP_400_BAD_REQUEST],
+        "raw": True,
+    }
+
+    response = method(params=params, **kwargs)
+
+    # Assert
+    assert response.status_code == 400
+    body = response.json()
+    assert (
+        f"Invalid '{geo_param}' format. Expected OSDU record ID matching ^[\\w\\-\\.]+:master-data--{master_data_type}:"
+        "[\\w\\-\\.\\:\\%]+$. Got: dummy"
     ) in body["reason"]

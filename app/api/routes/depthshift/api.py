@@ -15,6 +15,7 @@
 from fastapi import APIRouter
 
 from app.api.dependencies.validation import (
+    get_depth_shift_scope,
     validate_depth_shift_v2_payload,
     validate_filters_for_domain_inferred_model,
 )
@@ -27,8 +28,7 @@ from app.api.routes.common.endpoints import (
     GenericSchemasView,
     infer_content_type_from_url,
 )
-from app.api.routes.depthshift.endpoints import DepthShiftRecordView
-from app.api.routes.v2.data.endpoints import DynamicContentTypeDataViewV2
+from app.api.routes.depthshift.endpoints import DepthShiftDataViewV2, DepthShiftRecordView
 from app.models.data_schemas.base import MAPS_TO_DATA_MODEL
 from app.resources.paths import DEPTH_SHIFT_STR
 from app.search.depth_shift_ids_fetcher import SearchServiceDepthShiftIdsFetcher
@@ -47,6 +47,7 @@ DynamicGenericSearchView(
             "handler": "get_search",
             "param_name": None,
             "filter_dep": validate_filters_for_domain_inferred_model,
+            "scope_dep": get_depth_shift_scope,
             "description": get_search_description_template("DepthShift"),
         },
         {
@@ -54,6 +55,7 @@ DynamicGenericSearchView(
             "handler": "get_search",
             "param_name": None,
             "filter_dep": validate_filters_for_domain_inferred_model,
+            "scope_dep": get_depth_shift_scope,
             "description": get_search_description_template("DepthShift"),
             "include_in_schema": False,
         },
@@ -62,6 +64,7 @@ DynamicGenericSearchView(
             "handler": "get_search_data",
             "param_name": None,
             "filter_dep": validate_filters_for_domain_inferred_model,
+            "scope_dep": get_depth_shift_scope,
             "description": get_search_data_description_template("DepthShift"),
         },
     ],
@@ -81,12 +84,12 @@ GenericSchemasView(
         "mapping": MAPS_TO_DATA_MODEL["v2"][DEPTH_SHIFT_STR],
         "param_extractor": infer_content_type_from_url,
         "description": "Get the (`content schema`) for `{DepthShift}`. <br><br>"
-        "Use the `Accept` request header to specify content schema version "  # noqa: WPS326
-        "(example header `Accept: application/json;version=1.0.0` is supported).",  # noqa: WPS326
+        "Use the `content_schema_version` query parameter to specify content schema version "  # noqa: WPS326
+        "(e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.",  # noqa: WPS326
     },
 )
 
-DynamicContentTypeDataViewV2(
+DepthShiftDataViewV2(
     router=ds_record_router_v2,
     id_regex_str=DS_ID_REGEX_STR,
     single_content_type=DEPTH_SHIFT_STR,

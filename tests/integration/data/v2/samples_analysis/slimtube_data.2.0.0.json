@@ -19,7 +19,7 @@
   "data":[
     [
       "{data_partition_id}:work-product-component--SamplesAnalysis:SlimTubeTestV200:",
-      "{data_partition_id}:master-data--Sample:Rafsddms_Integration_Test:",
+      "{data_partition_id}:master-data--Sample:Master_Sample:",
       [
         {
           "kind":"Unit",
@@ -187,7 +187,7 @@
           "ColumnPorosity":0.35,
           "ColumnTotalPoreVolume":350,
           "ColumnPermeability":2.5,
-          "ColumnPermeabilityMeasurementMethodID":"{data_partition_id}:reference-data--PermeabilityMeasurementMethod:Gas:",
+          "ColumnPermeabilityMeasurementMethodID":"{data_partition_id}:reference-data--PermeabilityMeasurementMethod:Mercury:",
           "ColumnPermeabilityFluidTypeID":"{data_partition_id}:reference-data--SampleInjectionFluidType:CO2:",
           "ColumnOuterDiameter":2.54,
           "ColumnInnerDiameter":2,
