@@ -23,7 +23,7 @@ from tenacity import (
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)  # pylint: disable=no-member
 
 # Constants
-REQUEST_TIMEOUT = 30
+REQUEST_TIMEOUT = 360  # 6 minutes - indexer processes all SamplesAnalysis records synchronously
 OAUTH_TIMEOUT = 10
 HTTP_OK = 200
 
