@@ -44,6 +44,8 @@ class RedisIndexView(object):
         self._router = router
         self._prepare_api_routes()
 
+    INDEXER_CONCURRENCY = 10
+
     async def index_records(  # noqa: ASYNC910
         self,
         index_initialized: bool = Depends(init_index),
@@ -68,13 +70,16 @@ class RedisIndexView(object):
         :return: _description_
         :rtype: str
         """
-        records_processed = 0
-        tasks = []
 
         if not index_initialized:
             return "Feature not available"  # noqa: ASYNC910
 
+        records_processed = 0
+        semaphore = asyncio.Semaphore(self.INDEXER_CONCURRENCY)
+        redis_client = await get_redis_client()
+
         async for samplesanalyses_batch in self._get_samplesanalysis_records(search_service):
+            batch_tasks = []
             for samplesanalysis_record in samplesanalyses_batch:
                 sa_record_id = samplesanalysis_record.get("id")
                 records_processed += 1
@@ -88,32 +93,43 @@ class RedisIndexView(object):
                         [
                             get_id(sar.get("ParentSamplesAnalysesReportID", ""))
                             for sar in samplesanalysis_record.get("data", {}).get("ParentSamplesAnalysesReports", [])
+                            if sar.get("ParentSamplesAnalysesReportID", "")
                         ]
                     ),
                     "SampleAnalysisTypeIDs": ",".join(
                         [
                             get_id(sat_id)
                             for sat_id in samplesanalysis_record.get("data", {}).get("SampleAnalysisTypeIDs", [])
+                            if sat_id
                         ]
                     ),
                     "SampleIDs": ",".join(
-                        [get_id(sample_id) for sample_id in samplesanalysis_record.get("data", {}).get("SampleIDs", [])]
+                        [
+                            get_id(sample_id)
+                            for sample_id in samplesanalysis_record.get("data", {}).get("SampleIDs", [])
+                            if sample_id
+                        ]
                     ),
                 }
 
-                sample_ids = record_to_index["SampleIDs"].split(",")
-                tasks.append(
-                    self._process_sample_ids(
-                        sample_ids,
-                        storage_service,
-                        sa_record_id,
-                        record_to_index,
-                        partition,
+                sample_ids = [sid for sid in record_to_index["SampleIDs"].split(",") if sid]
+                batch_tasks.append(
+                    self._run_bounded(
+                        semaphore,
+                        self._process_sample_ids(
+                            sample_ids, storage_service, sa_record_id, record_to_index, partition, redis_client,
+                        ),
                     ),
                 )
 
-        await asyncio.gather(*tasks)
+            await asyncio.gather(*batch_tasks)
+
         return f"{records_processed} samples analysis records processed."
+
+    @staticmethod
+    async def _run_bounded(semaphore: asyncio.Semaphore, coro) -> None:
+        async with semaphore:
+            return await coro
 
     async def _process_sample_ids(  # noqa: CCR001
         self,
@@ -122,10 +138,14 @@ class RedisIndexView(object):
         record_id: str,
         record_to_index: dict,
         partition: str,
+        redis_client=None,
     ) -> None:
-        samples_response = await storage_service.query_records(sample_ids)
-
         sample_type_ids, basin_ids, field_ids, wellbore_ids = [], [], [], []
+
+        if sample_ids:
+            samples_response = await storage_service.query_records(sample_ids)
+        else:
+            samples_response = {"records": []}
 
         for sample_record in samples_response["records"]:
             sample_record_data = sample_record.get("data", {})
@@ -165,7 +185,8 @@ class RedisIndexView(object):
         logger.debug(record_to_index)
         prefix = SAMPLESANALYSIS_IX_PREFIX.format(partition=partition)
         key = f"{prefix}{record_id}"
-        redis_client = await get_redis_client()
+        if redis_client is None:
+            redis_client = await get_redis_client()
         await redis_client.json().set(key, Path.root_path(), record_to_index)
 
     async def _get_alias_names(  # noqa: ASYNC910
