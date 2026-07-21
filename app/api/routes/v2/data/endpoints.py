@@ -584,8 +584,8 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             post_api_function = self.post_data_single_content_type
         else:
             path_prefix = "/{record_id}/data/{content_type}"
-            get_api_function = self.get_data_v2
-            post_api_function = self.post_data_v2
+            get_api_function = self.get_data_multiple_content_type
+            post_api_function = self.post_data_multiple_content_type
 
         get_path = f"{path_prefix}/{{content_id}}"
         self._prepare_get_data_route(api_function=get_api_function, path=get_path)
