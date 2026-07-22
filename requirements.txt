@@ -72,7 +72,7 @@ charset-normalizer==3.4.4
     # via requests
 click==8.3.1
     # via uvicorn
-cryptography==46.0.6
+cryptography==48.0.1
     # via
     #   -r requirements.in
     #   azure-identity
@@ -236,7 +236,7 @@ pydantic[dotenv]==1.10.18
     #   -r requirements.in
     #   fastapi
     #   pandera
-pyjwt[crypto]==2.12.1
+pyjwt[crypto]==2.13.0
     # via
     #   -r requirements.in
     #   msal
