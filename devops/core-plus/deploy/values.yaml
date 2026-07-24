@@ -98,7 +98,7 @@ data:
   # CronJob
   # --------------------
   cronjobEnabled: true
-  cronJobSchedule: "0 * * * *"  # Daily each hour
+  cronJobSchedule: "0 0 * * *"  # Every day at midnight
   cronJobstartingDeadlineSeconds: 600 # 10 min - it should be less than cronjob period
   oauthTokenUrl: ""
   oauthScope: "openid profile offline_access email"

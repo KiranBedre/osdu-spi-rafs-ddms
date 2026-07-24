@@ -19,6 +19,8 @@ ARG amazonlinux_image=public.ecr.aws/amazonlinux/amazonlinux:2023
 FROM ${amazonlinux_image} AS build-env
 ARG pip_version=25.2
 
+# CVE remediation: pull patched OS packages (curl/expat) from the current AL2023 snapshot
+RUN dnf -y upgrade curl-minimal libcurl-minimal expat
 RUN dnf update libxml2
 
 RUN dnf update python-setuptools --releasever 2023.7.20250609
@@ -45,6 +47,8 @@ RUN cp -v /app/venv/bin/uvicorn .
 FROM ${amazonlinux_image}
 ARG python_version
 
+# CVE remediation: pull patched OS packages (curl/expat) from the current AL2023 snapshot
+RUN dnf -y upgrade curl-minimal libcurl-minimal expat
 RUN dnf update libxml2
 RUN dnf -y install shadow-utils
 RUN dnf -y install python3.11

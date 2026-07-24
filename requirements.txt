@@ -8,7 +8,7 @@ aiofiles==24.1.0
     # via -r requirements.in
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.14.0
+aiohttp==3.14.1
     # via
     #   -r requirements.in
     #   fastapi-cache2
@@ -72,7 +72,7 @@ charset-normalizer==3.4.4
     # via requests
 click==8.3.1
     # via uvicorn
-cryptography==46.0.6
+cryptography==48.0.1
     # via
     #   -r requirements.in
     #   azure-identity
@@ -109,7 +109,7 @@ httpcore==1.0.9
     #   httpx
 httpx==0.26.0
     # via -r requirements.in
-idna==3.10
+idna==3.15
     # via
     #   -r requirements.in
     #   anyio
@@ -236,7 +236,7 @@ pydantic[dotenv]==1.10.18
     #   -r requirements.in
     #   fastapi
     #   pandera
-pyjwt[crypto]==2.12.1
+pyjwt[crypto]==2.13.0
     # via
     #   -r requirements.in
     #   msal
@@ -245,8 +245,10 @@ python-dateutil==2.9.0.post0
     #   botocore
     #   pandas
     #   pendulum
-python-dotenv==1.2.1
-    # via pydantic
+python-dotenv==1.2.2
+    # via
+    #   -r requirements.in
+    #   pydantic
 pytz==2025.2
     # via pandas
 pyyaml==6.0.3

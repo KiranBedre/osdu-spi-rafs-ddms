@@ -143,7 +143,7 @@ cimpl-deploy:
       --set global.onPremEnabled=true
       --set global.domain=$CIMPL_DOMAIN
       --set global.dataPartitionId=osdu
-      --set global.RAFS_URI=$CIMPL_TENANT.$CIMPL_DOMAIN
+      --set global.RAFS_URI=https://$CIMPL_TENANT.$CIMPL_DOMAIN
       --set data.serviceAccountName=$CIMPL_SERVICE
       --set data.logLevel=INFO
       --set data.bucketPrefix="refi"
