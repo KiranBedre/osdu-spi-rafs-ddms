@@ -130,7 +130,7 @@
                 {
                     "kind": "Unit",
                     "name": "dyne per centimetre",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:dyn%2Fcm:",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:dyne%2Fcm:",
                     "propertyNames": [
                         "InterfacialTension"
                     ]
