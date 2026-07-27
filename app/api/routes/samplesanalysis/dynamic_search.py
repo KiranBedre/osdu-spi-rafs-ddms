@@ -162,6 +162,13 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
             else:
                 base_df = pd.DataFrame()
 
+            # Validate wellbore scope is provided
+            if not search_scope.wellbore_id:
+                raise HTTPException(
+                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    detail="Depth shift requires a wellbore-scoped search. Please provide wellbore_id parameter.",
+                )
+
             # Empty results are returned as-is; there is nothing to shift.
             if base_df.empty:
                 return search_response
@@ -174,13 +181,6 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
                         "Depth-shift augmentation requires a SampleID column in non-empty search results. "
                         + "Only analysis types with per-row SampleID support depth-shift retrieval."
                     ),
-                )
-
-            # Validate wellbore scope is provided
-            if not search_scope.wellbore_id:
-                raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    detail="Depth shift requires a wellbore-scoped search. Please provide wellbore_id parameter.",
                 )
 
             # Extract sample IDs and fetch records

@@ -15,8 +15,9 @@
 import copy
 import datetime
 
-from app.resources.common_headers import ACCEPT
+import pytest
 
+from app.resources.common_headers import ACCEPT
 from tests.integration.config import (
     CONFIG,
     DataFiles,
@@ -109,6 +110,7 @@ def test_rsrp_add_data_volume_multiplier(api, record_id, helper, tests_data):
         raw=True,
     ).content
     helper.compare_responses(gotten_data, parquet_response)
+
 
 def test_rsrp_add_data_correlation_compressibility(api, record_id, helper, tests_data):
     """Upload bulk data and verify retrieval in JSON and Parquet formats are equivalent."""
@@ -274,6 +276,7 @@ def test_rsrp_search_record_filtered_out_by_end_date(api, record_id, dataset_id,
     assert record_id not in response["result"]
 
 
+@pytest.mark.skip(reason="Pagination test depends on assumed searchable data; tracked in issue #805")
 def test_rsrp_search_record_filtered_out_by_page_limit(api, record_id, dataset_id, search_available):
     """Verify records are filtered out by the specified page limit filter in the search results"""
     params = {"page_limit": 2}
@@ -285,8 +288,10 @@ def test_rsrp_search_record_filtered_out_by_page_limit(api, record_id, dataset_i
 
 def test_rsrp_search_data_filtered_by_columns(api, helper, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified columns filter in the search results"""
-    params = {"columns_filter": "Compressibility,ThermalModelDefinition",
-              "rows_filter": f"ReservoirSimulationRockPhysicsID,eq,{record_id}:"}
+    params = {
+        "columns_filter": "Compressibility,ThermalModelDefinition",
+        "rows_filter": f"ReservoirSimulationRockPhysicsID,eq,{record_id}:",
+    }
     response = api.simulation_rock_physics.search_data(params=params)
     result_data = response.get("result", {})
 

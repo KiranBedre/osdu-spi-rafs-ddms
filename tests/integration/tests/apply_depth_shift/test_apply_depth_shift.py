@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import copy
+import time
 
 import pytest
 
@@ -23,6 +24,38 @@ from tests.integration.config import (
 )
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
+
+
+def _call_return_data_endpoint(
+    method,
+    call_args,
+    params,
+    endpoint,
+    timeout_seconds=120,
+    retry_interval_seconds=5,
+):
+    """Call get_data once or wait for the scoped search_data result."""
+    if endpoint != "search_data":
+        return method(*call_args, params=params)
+
+    deadline = time.monotonic() + timeout_seconds
+    response = None
+
+    while time.monotonic() < deadline:
+        response = method(*call_args, params=params)
+
+        if response.get("result"):
+            return response
+
+        time.sleep(retry_interval_seconds)
+
+    pytest.fail(
+        "Timed out waiting for the SamplesAnalysis row to become available "
+        "through the scoped search_data request. "
+        f"wellbore_id={params.get('wellbore_id')}, "
+        f"rows_filter={params.get('rows_filter')}, "
+        f"response={response}"
+    )
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS)
@@ -55,7 +88,7 @@ def test_apply_id_provided_depth_shift_with_constant_offset(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -95,6 +128,7 @@ def test_apply_definitive_depth_shift_with_constant_offset(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify constant-offset depth shift when requested via definitive depth shift policy."""
 
@@ -117,7 +151,7 @@ def test_apply_definitive_depth_shift_with_constant_offset(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -157,6 +191,7 @@ def test_apply_id_provided_depth_shift_with_interpolation(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify interpolated depth shift when requested via user-provided depth_shift_id."""
 
@@ -181,7 +216,7 @@ def test_apply_id_provided_depth_shift_with_interpolation(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -221,6 +256,7 @@ def test_apply_definitive_depth_shift_with_interpolation(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify interpolated depth shift when requested via definitive depth shift policy."""
     record_id = sample_analysis_record_id
@@ -237,7 +273,7 @@ def test_apply_definitive_depth_shift_with_interpolation(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -277,6 +313,7 @@ def test_apply_depth_shift_with_none_interpolation_method(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify interpolated depth shift when interpolation method is None."""
 
@@ -303,7 +340,7 @@ def test_apply_depth_shift_with_none_interpolation_method(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -343,6 +380,7 @@ def test_apply_depth_shift_with_sample_top_below_all_intervals(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify depth shift when Sample Top below all Depth Shift intervals."""
 
@@ -366,7 +404,7 @@ def test_apply_depth_shift_with_sample_top_below_all_intervals(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -406,6 +444,7 @@ def test_apply_depth_shift_with_sample_top_interval_boundary(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify depth shift when Sample Top falls exactly on the boundary between two Depth Shift intervals."""
 
@@ -430,7 +469,7 @@ def test_apply_depth_shift_with_sample_top_interval_boundary(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -470,6 +509,7 @@ def test_apply_depth_shift_with_sample_top_and_sample_in_different_intervals(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify depth shift when Sample Top and Sample Base falls into different Depth Shift intervals."""
 
@@ -494,7 +534,7 @@ def test_apply_depth_shift_with_sample_top_and_sample_in_different_intervals(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -534,6 +574,7 @@ def test_apply_depth_shift_with_sample_top_in_gap_between_intervals(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify depth shift when Sample Top falls into gap between Depth Shift intervals."""
 
@@ -565,7 +606,7 @@ def test_apply_depth_shift_with_sample_top_in_gap_between_intervals(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -605,6 +646,7 @@ def test_apply_depth_shift_with_measurement_source_not_driller(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify depth shift when VerticalMeasurementSource is not Driller."""
 
@@ -629,7 +671,7 @@ def test_apply_depth_shift_with_measurement_source_not_driller(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -660,7 +702,10 @@ def test_apply_depth_shift_with_measurement_source_not_driller(
     helper.compare_response_fields(response["DepthShiftMetadata"], expected_metadata)
 
 
-@pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS)
+@pytest.mark.parametrize(
+    "endpoint,args",
+    SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS,
+)
 def test_apply_depth_shift_with_different_wellbore_ids(
     api,
     helper,
@@ -672,13 +717,17 @@ def test_apply_depth_shift_with_different_wellbore_ids(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
-    """Verify depth shift when assigned WellboreID differs between Sample and Depth Shift WPC."""
+    """Verify depth shift when the Sample and Depth Shift WPC use different wellbores."""
 
-    # Update sample definition
+    # Update the Sample master-data record so it belongs to a different
+    # wellbore than the provided Depth Shift WPC.
     sample_definition = copy.deepcopy(tests_data(DataFiles.SAMPLE))
-    wellbore_id = f"{DATA_PARTITION_ID}:master-data--Wellbore:TectonicDrift:"
-    sample_definition["data"]["SampleAcquisition"]["SampleAcquisitionDetail"]["WellboreID"] = wellbore_id
+    sample_wellbore_id = f"{DATA_PARTITION_ID}:master-data--Wellbore:TectonicDrift:"
+
+    sample_definition["data"]["SampleAcquisition"]["SampleAcquisitionDetail"]["WellboreID"] = sample_wellbore_id
+
     api.storage.create_or_update_records([sample_definition])
 
     record_id = sample_analysis_record_id
@@ -693,10 +742,14 @@ def test_apply_depth_shift_with_different_wellbore_ids(
         "depth_shift_id": depth_shift_record_id,
     }
     if endpoint == "search_data":
-        params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:TectonicDrift:"
-        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
+        params.update(
+            {
+                "wellbore_id": sample_wellbore_id,
+                "rows_filter": (f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"),
+            }
+        )
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -707,8 +760,11 @@ def test_apply_depth_shift_with_different_wellbore_ids(
         "ShiftedSampleTop": 1003.5,
         "ShiftedSampleBase": 1006.5,
         "DepthShiftWarnings": [
-            f"Wellbore mismatch: sample wellbore '{DATA_PARTITION_ID}:master-data--Wellbore:TectonicDrift:' differs "
-            f"from depth-shift wellbore '{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:'."
+            (
+                f"Wellbore mismatch: sample wellbore "
+                f"'{sample_wellbore_id}' differs from depth-shift wellbore "
+                f"'{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:'."
+            )
         ],
     }
 
@@ -720,14 +776,26 @@ def test_apply_depth_shift_with_different_wellbore_ids(
         "warnings": [],
     }
 
-    # Assert
-    actual_data = response["data"][0] if endpoint == "get_data" else response["result"][0]
+    if endpoint == "get_data":
+        actual_data = response["data"][0]
+    else:
+        actual_data = response["result"][0]
+
     helper.compare_response_fields(actual_data, expected_data)
-    helper.compare_response_fields(response["DepthShiftData"][0], expected_depth_shift_data)
-    helper.compare_response_fields(response["DepthShiftMetadata"], expected_metadata)
+    helper.compare_response_fields(
+        response["DepthShiftData"][0],
+        expected_depth_shift_data,
+    )
+    helper.compare_response_fields(
+        response["DepthShiftMetadata"],
+        expected_metadata,
+    )
 
 
-@pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS)
+@pytest.mark.parametrize(
+    "endpoint,args",
+    SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS,
+)
 def test_apply_depth_shift_with_different_depth_shift_ids(
     api,
     helper,
@@ -741,17 +809,20 @@ def test_apply_depth_shift_with_different_depth_shift_ids(
     fresh_depth_shift_record_id,
     fresh_depth_shift_dataset_id,
     analysis_type,
+    search_available,
 ):
-    """Verify depth shift when assigned depth shift id is different than deifnitive depth shift id."""
+    """Verify an explicitly provided depth shift is used when it differs from the definitive one."""
 
-    # Update sample definition with definitive depth shift id
+    # Update the Sample with a different definitive depth-shift ID.
     sample_definition = copy.deepcopy(tests_data(DataFiles.SAMPLE))
     sample_definition["data"]["DefinitiveDepthShift"]["DefinitiveDepthShiftID"] = fresh_depth_shift_record_id
-    api.storage.create_or_update_records([sample_definition])
+
     api.storage.create_or_update_records([sample_definition])
 
+    # These local names are required by RETURN_DATA_ENDPOINTS_ARGS.
     record_id = sample_analysis_record_id
     dataset_id = sample_analysis_dataset_id
+
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
@@ -761,11 +832,16 @@ def test_apply_depth_shift_with_different_depth_shift_ids(
         "depth_shift_policy": "id_provided",
         "depth_shift_id": depth_shift_record_id,
     }
-    if endpoint == "search_data":
-        params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
-        params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    if endpoint == "search_data":
+        params.update(
+            {
+                "wellbore_id": (f"{DATA_PARTITION_ID}:" "master-data--Wellbore:MagmaPulse:"),
+                "rows_filter": (f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"),
+            }
+        )
+
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -784,17 +860,51 @@ def test_apply_depth_shift_with_different_depth_shift_ids(
         "definitiveDepthShiftAvailable": True,
         "usedDefinitive": False,
         "warnings": [
-            f"Sample references a definitive depth shift ({fresh_depth_shift_record_id}) that differs from the "
-            f"requested depth_shift_id ({depth_shift_record_id}). RAFS applied the requested depth_shift_id because "
-            f"depth_shift_policy=id_provided."
+            f"Sample references a definitive depth shift "
+            f"({fresh_depth_shift_record_id}) that differs from the requested "
+            f"depth_shift_id ({depth_shift_record_id}). RAFS applied the requested "
+            f"depth_shift_id because depth_shift_policy=id_provided."
         ],
     }
 
-    # Assert
-    actual_data = response["data"][0] if endpoint == "get_data" else response["result"][0]
+    if endpoint == "get_data":
+        assert response.get("data"), (
+            "Expected get_data to return at least one data row.\n"
+            f"Sample analysis record ID: {sample_analysis_record_id}\n"
+            f"Requested depth-shift ID: {depth_shift_record_id}\n"
+            f"Definitive depth-shift ID: {fresh_depth_shift_record_id}\n"
+            f"Response: {response}"
+        )
+        actual_data = response["data"][0]
+    else:
+        assert response.get("result"), (
+            "Expected search_data to return the SamplesAnalysis row.\n"
+            f"Rows filter: {params['rows_filter']}\n"
+            f"Wellbore ID: {params['wellbore_id']}\n"
+            f"Sample analysis record ID: {sample_analysis_record_id}\n"
+            f"Requested depth-shift ID: {depth_shift_record_id}\n"
+            f"Definitive depth-shift ID: {fresh_depth_shift_record_id}\n"
+            f"Response: {response}"
+        )
+        actual_data = response["result"][0]
+
+    assert response.get("DepthShiftData"), (
+        "Expected the response to contain depth-shift data.\n" f"Endpoint: {endpoint}\n" f"Response: {response}"
+    )
+
+    assert response.get("DepthShiftMetadata") is not None, (
+        "Expected the response to contain depth-shift metadata.\n" f"Endpoint: {endpoint}\n" f"Response: {response}"
+    )
+
     helper.compare_response_fields(actual_data, expected_data)
-    helper.compare_response_fields(response["DepthShiftData"][0], expected_depth_shift_data)
-    helper.compare_response_fields(response["DepthShiftMetadata"], expected_metadata)
+    helper.compare_response_fields(
+        response["DepthShiftData"][0],
+        expected_depth_shift_data,
+    )
+    helper.compare_response_fields(
+        response["DepthShiftMetadata"],
+        expected_metadata,
+    )
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS)
@@ -809,6 +919,7 @@ def test_apply_depth_shift_with_sample_top_only(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify depth shift when there is only Sample Top defined and no Sample Base."""
 
@@ -832,7 +943,7 @@ def test_apply_depth_shift_with_sample_top_only(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -874,6 +985,7 @@ def test_apply_depth_shift_with_sample_base_only(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify depth shift when there is only Sample Base defined and no Sample Top."""
 
@@ -897,7 +1009,7 @@ def test_apply_depth_shift_with_sample_base_only(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -942,6 +1054,7 @@ def test_apply_depth_shift_with_sample_mean_only(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify depth shift when there is only Sample Mean defined and no Sample Top and no Sample Base."""
 
@@ -967,7 +1080,7 @@ def test_apply_depth_shift_with_sample_mean_only(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -1012,6 +1125,7 @@ def test_apply_depth_shift_with_sample_top_sample_mean_only(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify depth shift when there is Sample Top and Sample Mean defined and no Sample Base."""
 
@@ -1042,7 +1156,7 @@ def test_apply_depth_shift_with_sample_top_sample_mean_only(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -1084,6 +1198,7 @@ def test_apply_depth_shift_with_sample_base_sample_mean_only(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify depth shift when there is Sample Base and Sample Mean defined and no Sample Top."""
 
@@ -1110,7 +1225,7 @@ def test_apply_depth_shift_with_sample_base_sample_mean_only(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"
@@ -1155,6 +1270,7 @@ def test_apply_depth_shift_without_depth_measurements(
     sample_analysis_record_id,
     sample_analysis_dataset_id,
     analysis_type,
+    search_available,
 ):
     """Verify depth shift sourced from SampleAcquisitionDetail when there is no DepthMeasurements."""
 
@@ -1178,7 +1294,7 @@ def test_apply_depth_shift_without_depth_measurements(
         params["wellbore_id"] = f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"
         params["rows_filter"] = f"SamplesAnalysisID,eq,{sample_analysis_record_id}:"
 
-    response = method(*call_args, params=params)
+    response = _call_return_data_endpoint(method, call_args, params, endpoint)
 
     expected_data = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1_RECORDS_FORMAT))
     expected_data["SamplesAnalysisID"] = f"{sample_analysis_record_id}:"

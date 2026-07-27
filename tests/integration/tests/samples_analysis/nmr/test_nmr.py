@@ -15,8 +15,9 @@
 import copy
 import datetime
 
-from app.resources.common_headers import ACCEPT
+import pytest
 
+from app.resources.common_headers import ACCEPT
 from tests.integration.config import (
     CONFIG,
     DataFiles,
@@ -78,9 +79,7 @@ def test_nmr_add_data_v1(api, helper, tests_data, record_id):
     dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
 
     # GET data as JSON and compare with original payload
-    gotten_data = api.sample_analysis.get_data(
-        record_id, dataset_id, SamplesAnalysisTypes.NMR, SchemaVersions.V1_0_0
-    )
+    gotten_data = api.sample_analysis.get_data(record_id, dataset_id, SamplesAnalysisTypes.NMR, SchemaVersions.V1_0_0)
     helper.compare_responses(gotten_data, data_payload, response_type="json")
 
     # Verify JSON and Parquet responses are equivalent
@@ -220,107 +219,95 @@ def test_nmr_search_record_filtered_out_by_row(api, record_id, dataset_id_v1, se
     """Verify record is filtered out by the specified row filter in the search results"""
     params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
     response = api.sample_analysis.search_records(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert record_id not in response["result"]
 
 
-def test_nmr_search_record_filtered_in_by_start_date(
-    api, record_id, dataset_id_v1, search_available_v1
-):
+def test_nmr_search_record_filtered_in_by_start_date(api, record_id, dataset_id_v1, search_available_v1):
     """Verify record is filtered in by the specified start date filter in the search results"""
     current_date = datetime.date.today()
     params = {"indexed_start_date": current_date}
     response = api.sample_analysis.search_records(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert record_id in response["result"]
 
 
-def test_nmr_search_record_filtered_out_by_start_date(
-    api, record_id, dataset_id_v1, search_available_v1
-):
+def test_nmr_search_record_filtered_out_by_start_date(api, record_id, dataset_id_v1, search_available_v1):
     """Verify record is filtered out by the specified start date filter in the search results"""
     current_date = datetime.date.today()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.sample_analysis.search_records(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert response["result"] == []
 
 
-def test_nmr_search_record_filtered_in_by_end_date(
-    api, record_id, dataset_id_v1, search_available_v1
-):
+def test_nmr_search_record_filtered_in_by_end_date(api, record_id, dataset_id_v1, search_available_v1):
     """Verify record is filtered in by the specified end date filter in the search results"""
     current_date = datetime.date.today()
     params = {"indexed_end_date": current_date}
     response = api.sample_analysis.search_records(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert record_id in response["result"]
 
 
-def test_nmr_search_record_filtered_out_by_end_date(
-    api, record_id, dataset_id_v1, search_available_v1
-):
+def test_nmr_search_record_filtered_out_by_end_date(api, record_id, dataset_id_v1, search_available_v1):
     """Verify record is filtered out by the specified end date filter in the search results"""
     current_date = datetime.date.today()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.sample_analysis.search_records(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert record_id not in response["result"]
 
 
-def test_nmr_search_record_filtered_out_by_page_limit(
-    api, record_id, dataset_id_v1, search_available_v1
-):
+@pytest.mark.skip(reason="Pagination test depends on assumed searchable data; tracked in issue #805")
+def test_nmr_search_record_filtered_out_by_page_limit(api, record_id, dataset_id_v1, search_available_v1):
     """Verify records are filtered out by the specified page limit filter in the search results"""
     params = {"page_limit": 2}
     response = api.sample_analysis.search_records(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert len(response["result"]) == 2
 
 
-def test_nmr_search_data_filtered_by_columns(
-    api, helper, tests_data, record_id, dataset_id_v1, search_available_v1
-):
+def test_nmr_search_data_filtered_by_columns(api, helper, tests_data, record_id, dataset_id_v1, search_available_v1):
     """Verify bulk data is filtered out by the specified columns filter in the search results"""
-    params = {"columns_filter": "SampleID,Meta,NMRTest",
-              "rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
+    params = {"columns_filter": "SampleID,Meta,NMRTest", "rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
     result_data = response.get("result", {})
 
     # Prepare baseline
@@ -336,10 +323,10 @@ def test_nmr_search_data_filtered_out_by_row(api, record_id, dataset_id_v1, sear
     """Verify bulk data is filtered out by row filter in the search results"""
     params = {"rows_filter": "SamplesAnalysisID,eq,DummyValue"}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert response["result"]["columns"] == []
@@ -351,27 +338,25 @@ def test_nmr_search_data_aggregated(api, record_id, dataset_id_v1, search_availa
     """Verify bulk data aggregated in the search results"""
     params = {"columns_aggregation": "NMRTest,describe"}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert response["result"]["columns"] == ["describe"]
     assert set(response["result"]["index"]) == {"count", "unique", "top", "freq"}
 
 
-def test_nmr_search_data_filtered_in_by_start_date(
-    api, tests_data, record_id, dataset_id_v1, search_available_v1
-):
+def test_nmr_search_data_filtered_in_by_start_date(api, tests_data, record_id, dataset_id_v1, search_available_v1):
     """Verify bulk data is filtered in by the specified start date filter in the search results"""
     current_date = datetime.date.today()
     params = {"indexed_start_date": current_date}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     baseline = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
@@ -380,18 +365,16 @@ def test_nmr_search_data_filtered_in_by_start_date(
     assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-def test_nmr_search_data_filtered_out_by_start_date(
-    api, record_id, dataset_id_v1, search_available_v1
-):
+def test_nmr_search_data_filtered_out_by_start_date(api, record_id, dataset_id_v1, search_available_v1):
     """Verify bulk data is filtered out by the specified start date filter in the search results"""
     current_date = datetime.date.today()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     assert response["result"]["columns"] == []
@@ -399,17 +382,15 @@ def test_nmr_search_data_filtered_out_by_start_date(
     assert response["result"]["data"] == []
 
 
-def test_nmr_search_data_filtered_in_by_end_date(
-    api, tests_data, record_id, dataset_id_v1, search_available_v1
-):
+def test_nmr_search_data_filtered_in_by_end_date(api, tests_data, record_id, dataset_id_v1, search_available_v1):
     """Verify bulk data is filtered in by the specified end date filter in the search results"""
     current_date = datetime.date.today()
     params = {"indexed_end_date": current_date}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     baseline = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
@@ -418,18 +399,16 @@ def test_nmr_search_data_filtered_in_by_end_date(
     assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-def test_nmr_search_data_filtered_out_by_end_date(
-    api, tests_data, record_id, dataset_id_v1, search_available_v1
-):
+def test_nmr_search_data_filtered_out_by_end_date(api, tests_data, record_id, dataset_id_v1, search_available_v1):
     """Verify bulk data is filtered out by the specified end date filter in the search results"""
     current_date = datetime.date.today()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     baseline = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
@@ -438,16 +417,14 @@ def test_nmr_search_data_filtered_out_by_end_date(
     assert not any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-def test_nmr_search_data_filtered_out_by_page_limit(
-    api, tests_data, record_id, dataset_id_v1, search_available_v1
-):
+def test_nmr_search_data_filtered_out_by_page_limit(api, tests_data, record_id, dataset_id_v1, search_available_v1):
     """Verify bulk data is filtered out by the specified page limit filter in the search results"""
     params = {"page_limit": 2}
     response = api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.NMR,
-            schema_version=SchemaVersions.V1_0_0,
-            params=params,
-        )
+        analysis_type=SamplesAnalysisTypes.NMR,
+        schema_version=SchemaVersions.V1_0_0,
+        params=params,
+    )
 
     # Assert
     baseline = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))

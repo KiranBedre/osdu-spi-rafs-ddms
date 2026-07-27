@@ -15,8 +15,9 @@
 import copy
 import datetime
 
-from app.resources.common_headers import ACCEPT
+import pytest
 
+from app.resources.common_headers import ACCEPT
 from tests.integration.config import (
     DataFiles,
     SamplesAnalysisTypes,
@@ -292,6 +293,7 @@ def test_capillary_suction_time_search_record_filtered_out_by_end_date(
     assert record_id not in response["result"]
 
 
+@pytest.mark.skip(reason="Pagination test depends on assumed searchable data; tracked in issue #805")
 def test_capillary_suction_time_search_record_filtered_out_by_page_limit(
     api, record_id, dataset_id_v1, search_available_v1
 ):

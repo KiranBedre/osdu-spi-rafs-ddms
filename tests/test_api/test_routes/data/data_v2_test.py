@@ -7675,8 +7675,47 @@ async def test_get_data_with_depth_shift_orient_records_returns_200():
 
 @pytest.mark.asyncio
 async def test_search_data_with_depth_shift_params_returns_200_for_empty_results():
-    """search/data with depth-shift params should pass through empty search results."""
-    from tests.test_api.test_routes.osdu.storage_mock_objects import SAMPLESANALYSIS_ENDPOINT_PATH
+    """Valid depth-shift requests should pass through empty search results."""
+
+    from tests.test_api.test_routes.osdu.storage_mock_objects import (
+        SAMPLESANALYSIS_ENDPOINT_PATH,
+    )
+
+    with patch(
+        "app.services.search.SearchService.find_records",
+        new_callable=AsyncMock,
+        return_value={"results": [], "cursor": None},
+    ):
+        with services_overrides():
+            async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                response = await client.get(
+                    f"{SAMPLESANALYSIS_ENDPOINT_PATH}/routinecoreanalysis/search/data",
+                    headers=_headers_json("1.0.0"),
+                    params={
+                        "wellbore_id": "pastition:master-data--Wellbore:wellbore-001:",
+                        "depth_shift_id": TEST_DEPTH_SHIFT_ID,
+                        "depth_shift_policy": "id_provided",
+                    },
+                )
+
+    assert response.status_code == status.HTTP_200_OK
+
+    body = response.json()
+    assert body["result"] == {
+        "index": [],
+        "columns": [],
+        "data": [],
+    }
+    assert body["total_size"] == 0
+
+
+@pytest.mark.asyncio
+async def test_search_data_with_empty_results_and_depth_shift_without_wellbore_id_returns_422():
+    """Empty search results must not bypass depth-shift scope validation."""
+
+    from tests.test_api.test_routes.osdu.storage_mock_objects import (
+        SAMPLESANALYSIS_ENDPOINT_PATH,
+    )
 
     with patch(
         "app.services.search.SearchService.find_records",
@@ -7694,10 +7733,10 @@ async def test_search_data_with_depth_shift_params_returns_200_for_empty_results
                     },
                 )
 
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
     body = response.json()
-    assert "result" in body
-    assert "DepthShiftData" not in body
+    assert body["reason"] == ("Depth shift requires a wellbore-scoped search. " "Please provide wellbore_id parameter.")
 
 
 @pytest.mark.asyncio
