@@ -1,0 +1,975 @@
+{
+  "x-osdu-license": "Copyright 2026, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "x-osdu-review-status": "Accepted",
+  "$id": "black_oil_fluid_model.1.0.0.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Black Oil Fluid Model",
+  "description": "The data content for a black oil fluid model, which is a simplified method for simulating oil and gas reservoirs by treating oil, gas, and water as separate phases with basic properties and empirical relationships.",
+  "type": "object",
+  "properties": {
+    "FluidModelID": {
+      "type": "string",
+      "title": "Fluid Model ID",
+      "description": "OSDU Identifier of the associated Fluid Model WPC.",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-FluidModel:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "work-product-component",
+          "EntityType": "FluidModel"
+        }
+      ]
+    },
+    "Meta": {
+      "type": "array",
+      "title": "Meta",
+      "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+      "example": "",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "x-osdu-license": "Copyright 2022, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+        "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractMetaItem.1.0.0.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "x-osdu-schema-source": "osdu:wks:AbstractMetaItem:1.0.0",
+        "title": "Frame of Reference Meta Data Item",
+        "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+        "oneOf": [
+          {
+            "title": "FrameOfReferenceUOM",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "UOM Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                "const": "Unit"
+              },
+              "name": {
+                "title": "UOM Unit Symbol",
+                "description": "The unit symbol or name of the unit.",
+                "type": "string",
+                "example": "ft[US]"
+              },
+              "persistableReference": {
+                "title": "UOM Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                "type": "string",
+                "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}"
+              },
+              "unitOfMeasureID": {
+                "description": "SRN to unit of measure reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "UnitOfMeasure"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "UOM Property Names",
+                "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "HorizontalDeflection.EastWest",
+                  "HorizontalDeflection.NorthSouth"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceCRS",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "CRS Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                "const": "CRS"
+              },
+              "name": {
+                "title": "CRS Name",
+                "description": "The name of the CRS.",
+                "type": "string",
+                "example": "WGS 84 / UTM zone 15N"
+              },
+              "persistableReference": {
+                "title": "CRS Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                "type": "string",
+                "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}"
+              },
+              "coordinateReferenceSystemID": {
+                "description": "SRN to CRS reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "CoordinateReferenceSystem"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "CRS Property Names",
+                "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "KickOffPosition.X",
+                  "KickOffPosition.Y"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceDateTime",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "DateTime Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                "const": "DateTime"
+              },
+              "name": {
+                "title": "DateTime Name",
+                "description": "The name of the DateTime format and reference.",
+                "type": "string",
+                "example": "UTC"
+              },
+              "persistableReference": {
+                "title": "DateTime Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                "type": "string",
+                "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}"
+              },
+              "propertyNames": {
+                "title": "DateTime Property Names",
+                "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Acquisition.StartTime",
+                  "Acquisition.EndTime"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceAzimuthReference",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "AzimuthReference Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                "const": "AzimuthReference"
+              },
+              "name": {
+                "title": "AzimuthReference Name",
+                "description": "The name of the CRS or the symbol/name of the unit.",
+                "type": "string",
+                "example": "TrueNorth"
+              },
+              "persistableReference": {
+                "title": "AzimuthReference Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                "type": "string",
+                "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}"
+              },
+              "propertyNames": {
+                "title": "AzimuthReference Property Names",
+                "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Bearing"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          }
+        ],
+        "x-osdu-inheriting-from-kind": []
+      }
+    },
+    "OilTable": {
+      "type": "array",
+      "title": "Oil Table",
+      "description": "This is an array of saturated and undersaturated oil properties, such as viscosity and formation volume factor, as a function of pressure and GOR (gas oil ratio) at a constant temperature and for a specified separation process.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Oil Table",
+        "description": "This object captures the saturated and undersaturated oil properties, such as viscosity and formation volume factor, as a function of pressure and GOR (gas oil ratio) at a constant temperature and for a specified separation process.",
+        "properties": {
+          "BubblePointPressure": {
+            "type": "array",
+            "title": "Bubble Point Pressure",
+            "description": "This is the bubble point pressure for a specific solution GOR.",
+            "x-osdu-frame-of-reference": "UOM:pressure",
+            "items": {
+              "type": "number"
+            }
+          },
+          "SolutionGOR": {
+            "type": "array",
+            "title": "Solution GOR",
+            "description": "This is represented as a ratio depicting the amount of dissolved gas at the corresponding bubble point pressure.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Pressure": {
+            "type": "array",
+            "title": "Pressure",
+            "description": "This is an array of pressure steps defined for this model.",
+            "x-osdu-frame-of-reference": "UOM:pressure",
+            "items": {
+              "type": "number"
+            }
+          },
+          "FormationVolumeFactor": {
+            "type": "array",
+            "title": "Formation Volume Factor",
+            "description": "This is an array of oil formation volume factor values corresponding to the pressure array.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Viscosity": {
+            "type": "array",
+            "title": "Viscosity",
+            "description": "This is an array of oil viscosity values corresponding to the pressure array.",
+            "x-osdu-frame-of-reference": "UOM:dynamic viscosity",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "description": "This is the reference temperature used in generating this model.",
+            "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+          },
+          "SurfaceDensity": {
+            "type": "number",
+            "title": "Surface Density",
+            "description": "This is the density of the oil component at stock tank conditions. If provided, this supersedes the value at the root model level.",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          },
+          "InterpolationExtrapolationMethod": {
+            "type": "object",
+            "title": "Interpolation Extrapolation Method",
+            "description": "Data interpolation and extrapolation method used by the simulator.",
+            "properties": {
+              "InterpolationExtrapolationMethodID": {
+                "type": "string",
+                "title": "Interpolation Extrapolation Method ID",
+                "description": "Data interpolation and extrapolation method used by the simulator.",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-InterpolationExtrapolationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "InterpolationExtrapolationMethod"
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "Parachor": {
+            "type": "number",
+            "title": "Parachor",
+            "description": "An emprical constant for a liquid (in this case, the oil phase) that relates the surface tension to the molecular volume (reference MacLeod-Sugden equation for surface tension calculation)",
+            "x-osdu-frame-of-reference": "UOM:dimensionless"
+          },
+          "CarbonContent": {
+            "type": "number",
+            "title": "Carbon Content",
+            "description": "Specifies the number of moles of carbon per mole of the oil phase at surface.",
+            "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+          },
+          "MolecularWeight": {
+            "type": "number",
+            "title": "Molecular Weight",
+            "description": "Molecular weight of the oil phase",
+            "x-osdu-frame-of-reference": "UOM:molecular weight"
+          }
+        },
+        "required": [
+          "BubblePointPressure",
+          "SolutionGOR",
+          "Pressure",
+          "FormationVolumeFactor",
+          "Viscosity"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "OilUndersaturatedCompressibilitiesTable": {
+      "type": "array",
+      "title": "Oil Undersaturated Compressibilities Table",
+      "description": "This is an array of saturated oil properties, such as viscosity and formation volume factor, as a function of GOR or composition, which are used alongside compressibilities in  calculating undersaturated properties.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Oil Undersaturated Compressibilities Table",
+        "description": "Contains saturated oil properties, such as viscosity and formation volume factor, as a function of GOR or composition, which are used alongside compressibilities in  calculating undersaturated properties.",
+        "properties": {
+          "BubblePointPressure": {
+            "type": "array",
+            "title": "Bubble Point Pressure",
+            "description": "This is the bubble point pressure for a specific solution GOR.",
+            "x-osdu-frame-of-reference": "UOM:pressure",
+            "items": {
+              "type": "number"
+            }
+          },
+          "SolutionGOR": {
+            "type": "array",
+            "title": "Solution GOR",
+            "description": "This is represented as a ratio depicting the amount of dissolved gas at the corresponding bubble point pressure.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume",
+            "items": {
+              "type": "number"
+            }
+          },
+          "FormationVolumeFactor": {
+            "type": "array",
+            "title": "Formation Volume Factor",
+            "description": "This is an array of oil formation volume factor values corresponding to the bubble point pressure array.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Viscosity": {
+            "type": "array",
+            "title": "Viscosity",
+            "description": "This is an array of oil viscosity values corresponding to the bubble point pressure array.",
+            "x-osdu-frame-of-reference": "UOM:dynamic viscosity",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Compressibility": {
+            "type": "array",
+            "title": "Compressibility",
+            "description": "This is an array of oil compressibility values used to calculate  undersaturated oil formation volume factor (FVF) corresponding to a bubble point pressure array.",
+            "x-osdu-frame-of-reference": "UOM:reciprocal pressure",
+            "items": {
+              "type": "number"
+            }
+          },
+          "ViscosityCompressibility": {
+            "type": "array",
+            "title": "Viscosity Compressibility",
+            "description": "This is an array of oil viscosity compressibility values used to calculate  undersaturated oil viscosity corresponding to a bubble point pressure array.",
+            "x-osdu-frame-of-reference": "UOM:reciprocal pressure",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "description": "This is the reference temperature used in generating this model.",
+            "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+          },
+          "SurfaceDensity": {
+            "type": "number",
+            "title": "Surface Density",
+            "description": "This is the density of the oil component at stock tank conditions.",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          },
+          "MaximumPressure": {
+            "type": "number",
+            "title": "Maximum Pressure",
+            "description": "This specifies the maximum pressure likely to be reached during the simulation. This is a  simulator specific attribute used when extrapolating the properties of the table. Note: The value should not be smaller than the largest BubblePointPressure in this table.",
+            "x-osdu-frame-of-reference": "UOM:pressure"
+          },
+          "InterpolationExtrapolationMethod": {
+            "type": "object",
+            "title": "Interpolation Extrapolation Method",
+            "description": "Data interpolation and extrapolation method used by the simulator.",
+            "properties": {
+              "InterpolationExtrapolationMethodID": {
+                "type": "string",
+                "title": "Interpolation Extrapolation Method ID",
+                "description": "Data interpolation and extrapolation method used by the simulator.",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-InterpolationExtrapolationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "InterpolationExtrapolationMethod"
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "Parachor": {
+            "type": "number",
+            "title": "Parachor",
+            "description": "An emprical constant for a liquid (in this case, the oil phase) that relates the surface tension to the molecular volume (reference MacLeod-Sugden equation for surface tension calculation)",
+            "x-osdu-frame-of-reference": "UOM:dimensionless"
+          },
+          "CarbonContent": {
+            "type": "number",
+            "title": "Carbon Content",
+            "description": "Specifies the number of moles of carbon per mole of the oil phase at surface.",
+            "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+          },
+          "MolecularWeight": {
+            "type": "number",
+            "title": "Molecular Weight",
+            "description": "Molecular weight of the oil phase",
+            "x-osdu-frame-of-reference": "UOM:molecular weight"
+          }
+        },
+        "required": [
+          "BubblePointPressure",
+          "SolutionGOR",
+          "FormationVolumeFactor",
+          "Viscosity",
+          "Compressibility",
+          "ViscosityCompressibility"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "DeadOilTable": {
+      "type": "array",
+      "title": "Dead Oil Table",
+      "description": "This is an array of single phase oil properties, such as viscosity and formation volume factor, as a function of pressure at a constant temperature and for a specified separation process.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Dead Oil Table",
+        "description": "This object captures the single phase oil properties, such as viscosity and formation volume factor, as a function of pressure at a constant temperature and for a specified separation process.",
+        "properties": {
+          "ConstantSolutionGOR": {
+            "type": "number",
+            "title": "ConstantSolution GOR",
+            "description": "This is represented as a ratio depicting the amount of dissolved gas at a contant temperature.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume"
+          },
+          "BubblePointPressure": {
+            "type": "number",
+            "title": "Bubble Point Pressure",
+            "description": "This is the bubble point pressure at a constant temperature",
+            "x-osdu-frame-of-reference": "UOM:pressure"
+          },
+          "Pressure": {
+            "type": "array",
+            "title": "Pressure",
+            "description": "This is an array of pressure steps defined for this model.",
+            "x-osdu-frame-of-reference": "UOM:pressure",
+            "items": {
+              "type": "number"
+            }
+          },
+          "FormationVolumeFactor": {
+            "type": "array",
+            "title": "Formation Volume Factor",
+            "description": "This is an array of oil formation volume factor values corresponding to the pressure array.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Viscosity": {
+            "type": "array",
+            "title": "Viscosity",
+            "description": "This is an array of oil viscosity values corresponding to the pressure array.",
+            "x-osdu-frame-of-reference": "UOM:dynamic viscosity",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "description": "This is the reference temperature used in generating this model.",
+            "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+          },
+          "SurfaceDensity": {
+            "type": "number",
+            "title": "Surface Density",
+            "description": "This is the density of the oil component at stock tank conditions. If provided, this supersedes the value at the root model level.",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          },
+          "InterpolationExtrapolationMethod": {
+            "type": "object",
+            "title": "Interpolation Extrapolation Method",
+            "description": "Data interpolation and extrapolation method used by the simulator.",
+            "properties": {
+              "InterpolationExtrapolationMethodID": {
+                "type": "string",
+                "title": "Interpolation Extrapolation Method ID",
+                "description": "Data interpolation and extrapolation method used by the simulator.",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-InterpolationExtrapolationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "InterpolationExtrapolationMethod"
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "Parachor": {
+            "type": "number",
+            "title": "Parachor",
+            "description": "An emprical constant for a liquid (in this case, the oil phase) that relates the surface tension to the molecular volume (reference MacLeod-Sugden equation for surface tension calculation)",
+            "x-osdu-frame-of-reference": "UOM:dimensionless"
+          },
+          "CarbonContent": {
+            "type": "number",
+            "title": "Carbon Content",
+            "description": "Specifies the number of moles of carbon per mole of the oil phase at surface.",
+            "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+          },
+          "MolecularWeight": {
+            "type": "number",
+            "title": "Molecular Weight",
+            "description": "Molecular weight of the oil phase",
+            "x-osdu-frame-of-reference": "UOM:molecular weight"
+          }
+        },
+        "required": [
+          "ConstantSolutionGOR",
+          "BubblePointPressure",
+          "Pressure",
+          "FormationVolumeFactor",
+          "Viscosity"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "DeadOilCompressibility": {
+      "type": "object",
+      "title": "Dead Oil Compressibility",
+      "description": "This is an object used in calculating dead oil properties using compressibilities and a  reference pressure.",
+      "properties": {
+        "BubblePointPressure": {
+          "type": "number",
+          "title": "Bubble Point Pressure",
+          "description": "This is the bubble point pressure for a constant solution GOR.",
+          "x-osdu-frame-of-reference": "UOM:pressure"
+        },
+        "ConstantSolutionGOR": {
+          "type": "number",
+          "title": "Constant Solution GOR",
+          "description": "This is represented as a ratio depicting the amount of dissolved gas at the corresponding bubble point pressure.",
+          "x-osdu-frame-of-reference": "UOM:volume per volume"
+        },
+        "ReferencePressure": {
+          "type": "number",
+          "title": "Reference Pressure",
+          "description": "This a pressure reference (e.g., Initial reservoir pressure) used in defining the dead oil properties of the black oil fluid model.",
+          "x-osdu-frame-of-reference": "UOM:pressure"
+        },
+        "FormationVolumeFactor": {
+          "type": "number",
+          "title": "Formation Volume Factor",
+          "description": "This is the oil formation volume factor at the reference pressure.",
+          "x-osdu-frame-of-reference": "UOM:volume per volume"
+        },
+        "Viscosity": {
+          "type": "number",
+          "title": "Viscosity",
+          "description": "This is the oil viscosity value at the reference pressure.",
+          "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+        },
+        "Compressibility": {
+          "type": "number",
+          "title": "Compressibility",
+          "description": "This is the average oil compressibility corresponding to the reference pressure and used in calculating the formation volume factor at other pressures.",
+          "x-osdu-frame-of-reference": "UOM:reciprocal pressure"
+        },
+        "ViscosityCompressibility": {
+          "type": "number",
+          "title": "Viscosity Compressibility",
+          "description": "This is the average oil viscosity compressibility corresponding to the reference pressure andf used in calculating the viscosity at other pressures.",
+          "x-osdu-frame-of-reference": "UOM:reciprocal pressure"
+        },
+        "Temperature": {
+          "type": "number",
+          "title": "Temperature",
+          "description": "This is the reference temperature used in generating this model.",
+          "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+        },
+        "SurfaceDensity": {
+          "type": "number",
+          "title": "Surface Density",
+          "description": "This is the density of the oil component at stock tank conditions.",
+          "x-osdu-frame-of-reference": "UOM:mass per volume"
+        }
+      },
+      "required": [
+        "BubblePointPressure",
+        "ConstantSolutionGOR",
+        "FormationVolumeFactor",
+        "Viscosity",
+        "Compressibility",
+        "ViscosityCompressibility"
+      ],
+      "additionalProperties": false
+    },
+    "GasTable": {
+      "type": "array",
+      "title": "Gas table",
+      "description": "This is an array of saturated and undersaturated gas properties, such as viscosity and formation volume factor, as a function of pressure and Vapor OGR (oil gas ratio) at a constant temperature and for a specified separation process.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Gas Table",
+        "description": "This object captures the saturated and undersaturated gas properties, such as viscosity and formation volume factor, as a function of pressure and Vapor OGR (oil gas ratio) at a constant temperature and for a specified separation process.",
+        "properties": {
+          "VaporOGR": {
+            "type": "array",
+            "title": "Vapor OGR",
+            "description": "This is an array of vaporized oil to gas ratio values corresponding to the pressure array.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Pressure": {
+            "type": "array",
+            "title": "Pressure",
+            "description": "This is an array of gas phase pressure values defined for this model.",
+            "x-osdu-frame-of-reference": "UOM:pressure",
+            "items": {
+              "type": "number"
+            }
+          },
+          "FormationVolumeFactor": {
+            "type": "array",
+            "title": "Formation Volume Factor",
+            "description": "This is an array of gas formation volume factor values corresponding to the pressure array.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Viscosity": {
+            "type": "array",
+            "title": "Viscosity",
+            "description": "This is an array of gas viscosity values corresponding to the pressure array.",
+            "x-osdu-frame-of-reference": "UOM:dynamic viscosity",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "description": "This is the reference temperature used in generating this model.",
+            "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+          },
+          "SurfaceDensity": {
+            "type": "number",
+            "title": "Surface Density",
+            "description": "This is the density of the gas component at stock tank conditions. If provided, this supersedes the value at the root model level.",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          },
+          "InterpolationExtrapolationMethod": {
+            "type": "object",
+            "title": "Interpolation Extrapolation Method",
+            "description": "Data interpolation and extrapolation method used by the simulator.",
+            "properties": {
+              "InterpolationExtrapolationMethodID": {
+                "type": "string",
+                "title": "Interpolation Extrapolation Method ID",
+                "description": "Data interpolation and extrapolation method used by the simulator.",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-InterpolationExtrapolationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "InterpolationExtrapolationMethod"
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "Parachor": {
+            "type": "number",
+            "title": "Parachor",
+            "description": "An emprical constant for a liquid (in this case, the gas phase) that relates the surface tension to the molecular volume (reference MacLeod-Sugden equation for surface tension calculation)",
+            "x-osdu-frame-of-reference": "UOM:dimensionless"
+          },
+          "CarbonContent": {
+            "type": "number",
+            "title": "Carbon Content",
+            "description": "Specifies the number of moles of carbon per mole of the gas phase at surface.",
+            "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+          },
+          "MolecularWeight": {
+            "type": "number",
+            "title": "Molecular Weight",
+            "description": "Molecular weight of the gas phase",
+            "x-osdu-frame-of-reference": "UOM:molecular weight"
+          }
+        },
+        "required": [
+          "VaporOGR",
+          "Pressure",
+          "FormationVolumeFactor",
+          "Viscosity"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "GasUndersaturatedTable": {
+      "type": "array",
+      "title": "Gas Undersaturated Table",
+      "description": "This is an array of properties of a dry gas (no liquid content).",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Gas Undersaturated table",
+        "description": "This represents the properties of a dry gas (no liquid content).",
+        "properties": {
+          "Pressure": {
+            "type": "array",
+            "title": "Pressure",
+            "description": "This is an array of gas phase pressure values defined for this model.",
+            "x-osdu-frame-of-reference": "UOM:pressure",
+            "items": {
+              "type": "number"
+            }
+          },
+          "FormationVolumeFactor": {
+            "type": "array",
+            "title": "Formation Volume Factor",
+            "description": "This is an array of gas formation volume factor values corresponding to the pressure array.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Viscosity": {
+            "type": "array",
+            "title": "Viscosity",
+            "description": "This is an array of gas viscosity values corresponding to the pressure array.",
+            "x-osdu-frame-of-reference": "UOM:dynamic viscosity",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "description": "This is the reference temperature used in generating this model.",
+            "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+          },
+          "ConstantVaporOGR": {
+            "type": "number",
+            "title": "Constant Vapor OGR",
+            "description": "This is the constant vaporized oil-gas ratio for the dry gas",
+            "x-osdu-frame-of-reference": "UOM:volume per volume"
+          },
+          "DewPointPressure": {
+            "type": "number",
+            "title": "Dew Point Pressure",
+            "description": "Dew point of the dry gas at constant vaporized oil-gas ratio",
+            "x-osdu-frame-of-reference": "UOM:pressure"
+          },
+          "InterpolationExtrapolationMethod": {
+            "type": "object",
+            "title": "Interpolation Extrapolation Method",
+            "description": "Data interpolation and extrapolation method used by the simulator.",
+            "properties": {
+              "InterpolationExtrapolationMethodID": {
+                "type": "string",
+                "title": "Interpolation Extrapolation Method ID",
+                "description": "Data interpolation and extrapolation method used by the simulator.",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-InterpolationExtrapolationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "InterpolationExtrapolationMethod"
+                  }
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "SurfaceDensity": {
+            "type": "number",
+            "title": "Surface Density",
+            "description": "This is the density of the gas component at stock tank conditions. If provided, this supersedes the value at the root model level.",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          },
+          "Parachor": {
+            "type": "number",
+            "title": "Parachor",
+            "description": "An emprical constant for a liquid (in this case, the gas phase) that relates the surface tension to the molecular volume (reference MacLeod-Sugden equation for surface tension calculation)",
+            "x-osdu-frame-of-reference": "UOM:dimensionless"
+          },
+          "CarbonContent": {
+            "type": "number",
+            "title": "Carbon Content",
+            "description": "Specifies the number of moles of carbon per mole of the gas phase at surface.",
+            "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+          },
+          "MolecularWeight": {
+            "type": "number",
+            "title": "Molecular Weight",
+            "description": "Molecular weight of the gas phase",
+            "x-osdu-frame-of-reference": "UOM:molecular weight"
+          }
+        },
+        "required": [
+          "Pressure",
+          "FormationVolumeFactor",
+          "Viscosity"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "WaterCompressibility": {
+      "type": "object",
+      "title": "Water Compressibility",
+      "description": "This is an object used in calculating water  properties using compressibilities and a  reference pressure.",
+      "properties": {
+        "SurfaceDensity": {
+          "type": "number",
+          "title": "Surface Density",
+          "description": "Surface mass density of water",
+          "x-osdu-frame-of-reference": "UOM:mass per volume"
+        },
+        "ReferencePressure": {
+          "type": "number",
+          "title": "Reference Pressure",
+          "description": "This a pressure reference (e.g., Initial reservoir pressure) used in defining the water properties of the black oil fluid model.",
+          "x-osdu-frame-of-reference": "UOM:pressure"
+        },
+        "FormationVolumeFactor": {
+          "type": "number",
+          "title": "Formation Volume Factor",
+          "description": "This is the water formation volume factor values corresponding to the reference pressure.",
+          "x-osdu-frame-of-reference": "UOM:volume per volume"
+        },
+        "Viscosity": {
+          "type": "number",
+          "title": "Viscosity",
+          "description": "This is the water viscosity corresponding to the reference pressure.",
+          "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+        },
+        "Compressibility": {
+          "type": "number",
+          "title": "Compressibility",
+          "description": "This is the average water compressibility corresponding to the reference pressure and used in calculating the formation volume factor at other pressures.",
+          "x-osdu-frame-of-reference": "UOM:reciprocal pressure"
+        },
+        "ViscosityCompressibility": {
+          "type": "number",
+          "title": "Viscosity Compressibility",
+          "description": "This is the average water viscosity compressibility corresponding to the reference pressure andf used in calculating the viscosity at other pressures.",
+          "x-osdu-frame-of-reference": "UOM:reciprocal pressure"
+        }
+      },
+      "additionalProperties": false
+    },
+    "WaterTable": {
+      "type": "array",
+      "title": "Water Table",
+      "description": "This is an array of water properties, such as viscosity and formation volume factor, as a function of pressure and constant temperature.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Water Table",
+        "description": "This object captures the  water properties, such as viscosity and formation volume factor, as a function of pressure and constant temperature.",
+        "properties": {
+          "SurfaceDensity": {
+            "type": "number",
+            "title": "Surface Density",
+            "description": "Surface mass density of water",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          },
+          "Pressure": {
+            "type": "array",
+            "title": "Pressure",
+            "description": "This a pressure reference (e.g Initial reservoir pressure) used in defining the water properties of the black oil fluid model.",
+            "x-osdu-frame-of-reference": "UOM:pressure",
+            "items": {
+              "type": "number"
+            }
+          },
+          "FormationVolumeFactor": {
+            "type": "array",
+            "title": "Formation Volume Factor",
+            "description": "This is the water formation volume factor values corresponding to the reference pressure.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Viscosity": {
+            "type": "array",
+            "title": "Viscosity",
+            "description": "This is the water viscosity corresponding to the reference pressure.",
+            "x-osdu-frame-of-reference": "UOM:dynamic viscosity",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "FluidModelID",
+    "Meta"
+  ],
+  "additionalProperties": false
+}

@@ -1900,6 +1900,207 @@ paths:
       summary: Get Record
       tags:
       - fluidmodel
+  /api/rafs-ddms/v2/fluidmodel/{record_id}/data/{fluid_model_type}:
+    post:
+      description: 'Upload the bulk data for a given `{fluid_model_type}` object by
+        record id.<br>            It creates a new version of the record. <br>            The
+        previous meta-data with bulk data is available by their `versions`. <br> <br>            The
+        `Content-Type` request header is **required** to specify payload format                 (`application/json`
+        and `application/parquet` are supported).<br>            Use the `content_schema_version`
+        query parameter to specify content schema version                 (e.g. `?content_schema_version=1.0.0`).
+        The `Accept` header versioning is deprecated.<br><br>        Required roles:
+        `users.datalake.editors` or `users.datalake.admins`.<br>         In addition,
+        users must be members of a data group(ACL) to access the data.'
+      operationId: post_data_multiple_content_type_api_rafs_ddms_v2_fluidmodel__record_id__data__fluid_model_type__post
+      parameters:
+      - description: OSDU record identifier for a <code>work-product-component--FluidModel</code>
+          entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code>
+          characters (e.g., <code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>),
+          the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This
+          is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC
+          3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--FluidModel:simple_id</code>&nbsp;&nbsp;→&nbsp;
+          <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:simple_id</code><br><br><code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp;
+          <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding
+          reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code>
+          →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>
+        in: path
+        name: record_id
+        required: true
+        schema:
+          pattern: ^[\w\-\.]+:work-product-component--FluidModel:[\w\-\.\:\%]+$
+          title: Record Id
+          type: string
+      - description: Specifies the proper data partition id
+        examples:
+          example:
+            value: opendes
+        in: header
+        name: data-partition-id
+        required: true
+        schema:
+          description: Specifies the proper data partition id
+          title: data-partition-id
+          type: string
+      - description: Content schema version, e.g. `1.0.0`. Takes precedence over the
+          Accept header.
+        example: 1.0.0
+        in: query
+        name: content_schema_version
+        required: true
+        schema:
+          description: Content schema version, e.g. `1.0.0`. Takes precedence over
+            the Accept header.
+          title: Content Schema Version
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: Response Post Data Multiple Content Type Api Rafs Ddms V2 Fluidmodel  Record
+                  Id  Data  Fluid Model Type  Post
+                type: object
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+          description: Bad Request
+        '415':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnsupportedMediaTypeResponse'
+          description: Unsupported Media Type
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Post Data Multiple Content Type
+      tags:
+      - fluidmodel
+  /api/rafs-ddms/v2/fluidmodel/{record_id}/data/{fluid_model_type}/{content_id}:
+    get:
+      description: 'Get the (`latest version`) bulk data for a given `{fluid_model_type}`
+        object by record id. <br><br>            Use the `content_schema_version`
+        query parameter to specify content schema version                 (e.g. `?content_schema_version=1.0.0`).
+        The `Accept` header versioning is deprecated.<br><br>            The  `columns_filter`,
+        `rows_filter`, and  `columns_aggregation`                 query parameters
+        can be used to manage data in response.<br><br>            Use the `orient`
+        query parameter to select the JSON output format (`split` or `records`).<br><br>        Required
+        roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In
+        addition, users must be members of a data group(ACL) to access the data.'
+      operationId: get_data_multiple_content_type_api_rafs_ddms_v2_fluidmodel__record_id__data__fluid_model_type___content_id__get
+      parameters:
+      - in: path
+        name: content_id
+        required: true
+        schema:
+          pattern: ([\w\-\.]+:dataset--File.Generic:[\w\-\d\.]+:?[\w\-\.\:\%]*)|([\d\w]+-[\d\w]+-[\d\w]+-[\d\w]+-[\d\w]+)
+          title: Content Id
+          type: string
+      - description: OSDU record identifier for a <code>work-product-component--FluidModel</code>
+          entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code>
+          characters (e.g., <code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>),
+          the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This
+          is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC
+          3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--FluidModel:simple_id</code>&nbsp;&nbsp;→&nbsp;
+          <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:simple_id</code><br><br><code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp;
+          <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding
+          reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code>
+          →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>
+        in: path
+        name: record_id
+        required: true
+        schema:
+          pattern: ^[\w\-\.]+:work-product-component--FluidModel:[\w\-\.\:\%]+$
+          title: Record Id
+          type: string
+      - description: Specifies the proper data partition id
+        examples:
+          example:
+            value: opendes
+        in: header
+        name: data-partition-id
+        required: true
+        schema:
+          description: Specifies the proper data partition id
+          title: data-partition-id
+          type: string
+      - description: Content schema version, e.g. `1.0.0`. Takes precedence over the
+          Accept header.
+        example: 1.0.0
+        in: query
+        name: content_schema_version
+        required: true
+        schema:
+          description: Content schema version, e.g. `1.0.0`. Takes precedence over
+            the Accept header.
+          title: Content Schema Version
+          type: string
+      - examples:
+          example:
+            value: PropertyX,PropertyY,PropertyZ
+        in: query
+        name: columns_filter
+        required: false
+        schema:
+          title: Columns Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],gt,4000
+        in: query
+        name: rows_filter
+        required: false
+        schema:
+          title: Rows Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
+        in: query
+        name: columns_aggregation
+        required: false
+        schema:
+          title: Columns Aggregation
+          type: string
+      - description: 'JSON output format: ''split'' returns {columns, index, data},
+          ''records'' returns [{field: value}, ...]'
+        in: query
+        name: orient
+        required: false
+        schema:
+          default: split
+          description: 'JSON output format: ''split'' returns {columns, index, data},
+            ''records'' returns [{field: value}, ...]'
+          enum:
+          - split
+          - records
+          title: Orient
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get Data Multiple Content Type
+      tags:
+      - fluidmodel
   /api/rafs-ddms/v2/fluidmodel/{record_id}/versions:
     get:
       description: 'Get a list of `FluidModel` object versions by record id.<br><br>        Required
