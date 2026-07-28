@@ -23,11 +23,11 @@ from app.models.data_schemas.base import (
 from app.models.schemas.osdu_storage import Acl, Legal, OsduStorageRecord
 from app.resources.paths import (
     DEPTH_SHIFT_STR,
+    FLUID_MODEL_STR,
     RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR,
     SATURATION_FUNCTION_SET_STR,
-    FLUID_MODEL_STR,
     CommonRelativePathsV2,
-    FluidModelRelativePathsV2
+    FluidModelRelativePathsV2,
 )
 from tests.test_api.api_version import API_VERSION_V2
 
@@ -615,7 +615,7 @@ with open(f"{dir_path}/schemas/sample_container.json") as fp:
     SAMPLE_CONTAINER_SCHEMA = json.load(fp)
     SAMPLE_CONTAINER_SCHEMA["definitions"] = MD_DEFINITIONS
 
-PREFIX_TO_STRIP = f"v2/{SAMPLES_ANALYSIS}/"
+PREFIX_TO_STRIP = "/data/"
 
 VALID_ANALYSIS_TYPES_V1_0_0 = [
     path.replace(PREFIX_TO_STRIP, "")
