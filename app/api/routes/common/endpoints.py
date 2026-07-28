@@ -14,7 +14,7 @@
 
 from typing import Any, Callable, Dict, Optional
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, Request, Response, status
 from fastapi.responses import JSONResponse
 
 from app.api.dependencies.request import get_content_schema_version, get_response_mime_type
@@ -70,6 +70,7 @@ class GenericSchemasView(object):
     async def generic_handler(
         self,
         request: Request,
+        response: Response,
         mapping: Dict[str, Any],
         content_type_extractor: Callable[[Request], Dict[str, str]],
         content_schema_version: str = Depends(get_content_schema_version),
@@ -102,7 +103,10 @@ class GenericSchemasView(object):
             if model_versions:
                 break
         if model_versions and (model := model_versions.get(content_schema_version)):  # noqa: WPS332
-            return JSONResponse(content=model.schema())
+            return JSONResponse(
+                content=model.schema(),
+                headers=dict(response.headers),
+            )
 
         available_versions = set(model_versions.keys()) if model_versions else set()
         raise_model_not_found(content_type, content_schema_version, available_versions)
@@ -123,11 +127,13 @@ class GenericSchemasView(object):
         # Closure to bind mapping and param_extractor for each endpoint
         async def get_content_schema(  # noqa: WPS430
             request: Request,
+            response: Response,
             content_schema_version: Optional[str] = Depends(get_content_schema_version),
             entitlements_service: entitlements.EntitlementsService = Depends(get_async_entitlements_service),
         ):
             return await self.generic_handler(
                 request,
+                response,
                 config["mapping"],
                 config["param_extractor"],
                 content_schema_version,

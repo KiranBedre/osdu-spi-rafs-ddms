@@ -42,10 +42,14 @@ from tests.test_api.test_routes.osdu.storage_mock_objects import (
 async def test_samplesanalysis_content_schema_success(analysistype):
     """Tests successful retrieval of the schema for each valid analysis_type with version 1.0.0"""
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
-        response = await client.get(
-            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
-            headers={**TEST_HEADERS, "Accept": "application/json;version=1.0.0"},
-        )
+        with services_overrides():
+            response = await client.get(
+                f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
+                headers={
+                    **TEST_HEADERS,
+                    "Accept": "application/json;version=1.0.0",
+                },
+            )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.headers["content-type"] == "application/json"
@@ -62,13 +66,22 @@ async def test_samplesanalysis_content_schema_wrong_version(analysistype):
     """Tests 404 error when requesting a non-existent version for a valid analysis_type"""
     invalid_version = "0.0.0"
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
-        response = await client.get(
-            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
-            headers={**TEST_HEADERS, "Accept": f"application/json;version={invalid_version}"},
-        )
+        with services_overrides():
+            response = await client.get(
+                f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
+                headers={**TEST_HEADERS, "Accept": f"application/json;version={invalid_version}"},
+            )
 
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json()["message"] == f"Schema not found for {analysistype} and version {invalid_version}"
+
+    model_key = f"{PREFIX_TO_STRIP}{analysistype}"
+    available_versions = set(ALL_PATHS_TO_DATA_MODEL[model_key].keys())
+
+    assert response.json()["reason"] == (
+        f"Model not found for type '{analysistype}',  "
+        f"version '{invalid_version}'. "
+        f"Available versions: {available_versions}."
+    )
 
 
 @pytest.mark.asyncio
@@ -80,7 +93,6 @@ async def test_samplesanalysis_content_schema_wrong_type():
                 f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/wrong-type-name/data/schema",
                 headers={**TEST_HEADERS, "Accept": "application/json;version=1.0.0"},
             )
-    print(f"DEBUG RESPONSE: {response.json()}")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json()["reason"] == "Model not found for type 'wrong-type-name',  version '1.0.0'."
 
@@ -97,10 +109,11 @@ VALID_ANALYSIS_TYPES_V2_0_0 = [
 async def test_samplesanalysis_content_schema_v2_success(analysistype):
     """Tests successful retrieval of the schema for each valid analysis_type with version 2.0.0"""
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
-        response = await client.get(
-            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
-            headers={**TEST_HEADERS, "Accept": "application/json;version=2.0.0"},
-        )
+        with services_overrides():
+            response = await client.get(
+                f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema",
+                headers={**TEST_HEADERS, "Accept": "application/json;version=2.0.0"},
+            )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.headers["content-type"] == "application/json"
@@ -115,10 +128,11 @@ async def test_samplesanalysis_content_schema_v2_success(analysistype):
 async def test_samplesanalysis_content_schema_via_content_schema_version_param(analysistype):
     """Tests schema retrieval using ?content_schema_version= query parameter"""
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
-        response = await client.get(
-            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema?content_schema_version=1.0.0",
-            headers={**TEST_HEADERS},
-        )
+        with services_overrides():
+            response = await client.get(
+                f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema?content_schema_version=1.0.0",
+                headers={**TEST_HEADERS},
+            )
 
     assert response.status_code == status.HTTP_200_OK
     assert "Deprecation" not in response.headers
@@ -133,10 +147,11 @@ async def test_samplesanalysis_content_schema_via_content_schema_version_param(a
 async def test_samplesanalysis_content_schema_v2_via_content_schema_version_param(analysistype):
     """Tests v2.0.0 schema retrieval using ?content_schema_version= query parameter"""
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
-        response = await client.get(
-            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema?content_schema_version=2.0.0",
-            headers={**TEST_HEADERS},
-        )
+        with services_overrides():
+            response = await client.get(
+                f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema?content_schema_version=2.0.0",
+                headers={**TEST_HEADERS},
+            )
 
     assert response.status_code == status.HTTP_200_OK
     assert "Deprecation" not in response.headers
@@ -151,10 +166,11 @@ async def test_samplesanalysis_content_schema_v2_via_content_schema_version_para
 async def test_content_schema_version_param_takes_precedence_over_accept_header(analysistype):
     """Tests that ?content_schema_version= takes precedence over the deprecated Accept header"""
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
-        response = await client.get(
-            f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema?content_schema_version=1.0.0",
-            headers={**TEST_HEADERS, "Accept": "application/json;version=0.0.0"},
-        )
+        with services_overrides():
+            response = await client.get(
+                f"{SAMPLESANALYSIS_ENDPOINT_PATH_V2}/{analysistype}/data/schema?content_schema_version=1.0.0",
+                headers={**TEST_HEADERS, "Accept": "application/json;version=0.0.0"},
+            )
 
     assert response.status_code == status.HTTP_200_OK
     assert "Deprecation" not in response.headers
