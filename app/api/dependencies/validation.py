@@ -40,7 +40,7 @@ from app.exceptions.exceptions import (
     RecordValidationException,
     UnprocessableContentException,
 )
-from app.models.data_schemas.base import CONTENT_PATTERNS, MAPS_TO_DATA_MODEL
+from app.models.data_schemas.base import CONTENT_PATTERNS, MAPS_TO_DATA_MODEL, MULTIPLE_CONTENT_TYPE_PARAMS
 from app.models.domain.osdu import base as osdu_models_base
 from app.models.schemas.osdu_storage import OsduStorageRecord
 from app.models.schemas.pandas_dataframe import OrientSplit
@@ -470,19 +470,21 @@ def get_data_model(
 
 
 def get_data_model_for_content_type(
-    content_type: str,
     request: Request,
     content_schema_version: str = Depends(get_content_schema_version),
 ) -> Model:
     """Get the model based on the content_type.
 
-    :param content_type: type of analysis
-    :type content_type: str
     :param request: request object
     :type request: Request
     :param content_schema_version: version obtained from header,
         defaults to Depends(get_content_schema_version)
     """
+    content_type = None
+    for content_type_param in MULTIPLE_CONTENT_TYPE_PARAMS:
+        if content_type_param in request.path_params:
+            content_type = request.path_params.get(content_type_param)
+            break
     return get_data_model(content_type, request, content_schema_version)
 
 

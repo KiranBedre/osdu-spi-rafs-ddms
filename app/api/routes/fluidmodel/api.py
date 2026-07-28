@@ -16,14 +16,22 @@ from fastapi import APIRouter
 
 from app.api.dependencies.validation import validate_fluid_model_v2_payload
 from app.api.routes.fluidmodel.endpoints import FluidModelRecordView
+from app.api.routes.v2.data.endpoints import DynamicContentTypeDataViewV2
 
 FM_ID_REGEX_STR = r"^[\w\-\.]+:work-product-component--FluidModel:[\w\-\.\:\%]+$"
 
-fm_record_router_v2 = APIRouter()
+fm_record_router_v2 = APIRouter(redirect_slashes=False)
 
 FluidModelRecordView(
     router=fm_record_router_v2,
     id_regex_str=FM_ID_REGEX_STR,
     validate_records_payload=validate_fluid_model_v2_payload,
     record_type="FluidModel",
+)
+
+DynamicContentTypeDataViewV2(
+    router=fm_record_router_v2,
+    id_regex_str=FM_ID_REGEX_STR,
+    multiple_content_type_param="fluid_model_type",
+    record_id_column="FluidModelID",
 )

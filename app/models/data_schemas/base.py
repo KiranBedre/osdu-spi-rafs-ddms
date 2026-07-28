@@ -19,6 +19,8 @@ from app.models.data_schemas.saturation_function_set_api_v2.base import MAP_TO_S
 from app.resources.paths import SATURATION_FUNCTION_SET_STR
 from app.models.data_schemas.depth_shift_v2.base import MAP_TO_DEPTH_SHIFT_MODELS_API_V2
 from app.resources.paths import DEPTH_SHIFT_STR
+from app.models.data_schemas.fluid_model_v2.base import MAP_TO_FLUID_MODEL_MODELS_API_V2
+from app.resources.paths import FLUID_MODEL_STR
 
 SAMPLES_ANALYSIS = "samplesanalysis"
 
@@ -29,10 +31,15 @@ MAPS_TO_DATA_MODEL = {
         RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR: MAP_TO_RSRP_MODELS_API_V2,
         SATURATION_FUNCTION_SET_STR: MAP_TO_SFS_MODELS_API_V2,
         DEPTH_SHIFT_STR: MAP_TO_DEPTH_SHIFT_MODELS_API_V2,
+        FLUID_MODEL_STR: MAP_TO_FLUID_MODEL_MODELS_API_V2
     },
     "dev": {
         SAMPLES_ANALYSIS: PATH_TO_DATA_MODEL_VERSIONS_API_V2,
     },
+}
+
+MULTIPLE_CONTENT_TYPE_PARAMS = {
+    "fluid_model_type"
 }
 
 ALL_PATHS_TO_DATA_MODEL = PATH_TO_DATA_MODEL_VERSIONS_API_V2

@@ -328,10 +328,12 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         router: APIRouter,
         id_regex_str: str,
         single_content_type: Optional[str] = None,
+        multiple_content_type_param: Optional[str] = None,
         record_id_column: Optional[str] = None,
         **kwargs,
     ) -> None:
         self._single_content_type = single_content_type
+        self._multiple_content_type_param = multiple_content_type_param
         if record_id_column is not None:
             self._record_id_column = record_id_column
         super().__init__(router, id_regex_str, **kwargs)
@@ -341,7 +343,6 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         self,
         request: Request,
         record_id: str,
-        content_type: str,
         content_id: str,
         dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
         storage_service: storage.StorageService = Depends(get_async_storage_service),
@@ -356,8 +357,6 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :type request: Request
         :param record_id: record id,
         :type record_id: str
-        :param content_type: content schema type
-        :type content_type: str
         :param content_id: content identifier (dataset id or blob uuid),
         :type content_id: str
         :param dataset_service: dataset service
@@ -377,6 +376,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :rtype: Response
         """
         settings: AppSettings = get_app_settings()
+        content_type = request.path_params[self._multiple_content_type_param]
         if settings.use_blob_storage:
             blob_metadata = BlobMetadata(
                 analysis_family=get_family_type_from_url(request.url.path),
@@ -411,7 +411,6 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         self,
         request: Request,
         record_id: str,
-        content_type: str,
         storage_service: storage.StorageService = Depends(get_async_storage_service),
         dataset_service: dataset.DatasetService = Depends(get_async_dataset_service),
         blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
@@ -424,8 +423,6 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :type request: Request
         :param record_id: record id
         :type record_id: str
-        :param content_type: content schema type
-        :type content_type: str
         :param dataset_id: dataset id,
         :type dataset_id: str
         :param storage_service: storage service
@@ -448,6 +445,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :return: upserted records ids
         :rtype: dict
         """
+        content_type = request.path_params[self._multiple_content_type_param]
         return await self.post_data_v2(
             request=request,
             record_id=record_id,
@@ -583,9 +581,16 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
             get_api_function = self.get_data_single_content_type
             post_api_function = self.post_data_single_content_type
         else:
-            path_prefix = "/{record_id}/data/{content_type}"
+            path_prefix = f"/{{record_id}}/data/{{{self._multiple_content_type_param}}}"
             get_api_function = self.get_data_multiple_content_type
             post_api_function = self.post_data_multiple_content_type
+            formatted_multiple_content_type_param = f"{{{self._multiple_content_type_param}}}"
+            self.description_template_post_data = self.description_template_post_data.replace(
+                "{analysis_type}", formatted_multiple_content_type_param
+            )
+            self.description_template_get_data = self.description_template_get_data.replace(
+                "{analysis_type}", formatted_multiple_content_type_param
+            )
 
         get_path = f"{path_prefix}/{{content_id}}"
         self._prepare_get_data_route(api_function=get_api_function, path=get_path)

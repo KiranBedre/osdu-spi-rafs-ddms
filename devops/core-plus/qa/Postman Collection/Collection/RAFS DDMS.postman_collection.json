@@ -1,10 +1,9 @@
 {
   "info": {
-    "_postman_id": "610541e8-8b32-4a32-b967-7e15c1f7093f",
+    "_postman_id": "332ac57b-f727-4e13-a766-86323f6f64b4",
     "name": "RAFS DDMS",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "50003576",
-    "_collection_link": "https://go.postman.co/collection/50003576-610541e8-8b32-4a32-b967-7e15c1f7093f?source=collection_link"
+    "_exporter_id": "56682315"
   },
   "item": [
     {
@@ -295,6 +294,48 @@
                     "body": {
                       "mode": "raw",
                       "raw": "{\r\n    \"executionContext\": {\r\n        \"Payload\": {\r\n            \"AppKey\": \"unused_legacy_field\",\r\n            \"data-partition-id\": \"{{data-partition-id}}\"\r\n        },\r\n        \"manifest\": {\r\n            \"kind\": \"{{authority}}:wks:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{data-partition-id}}:reference-data--Minerals:Actinolite\",\r\n                    \"kind\": \"{{authority}}:wks:reference-data--Minerals:1.0.0\",\r\n                    \"acl\": {\r\n                        \"viewers\": [\r\n                            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n                        ],\r\n                        \"owners\": [\r\n                            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LtagName}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"US\"\r\n                        ],\r\n                        \"status\": \"compliant\"\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"actinolite\",\r\n                        \"Code\": \"actinolite\",\r\n                        \"AttributionAuthority\": \"International Mineralogical Association (IMA)\",\r\n                        \"AttributionPublication\": \"Whitney, D.L. (2010) Abbreviation for names of rock-forming minerals. American Mineralogist, 95, 185-187.\",\r\n                        \"Status\": \"Individual\",\r\n                        \"IMAStatus\": \"Approved\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "https://{{WORKFLOW_URL}}/workflow/{{workflow_name_manifest}}/workflowRun",
+                      "protocol": "https",
+                      "host": [
+                        "{{WORKFLOW_URL}}"
+                      ],
+                      "path": [
+                        "workflow",
+                        "{{workflow_name_manifest}}",
+                        "workflowRun"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "InterpolationExtrapolationMethod",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{access_token}}"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "data-partition-id",
+                        "value": "{{data-partition-id}}"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"executionContext\": {\r\n        \"data-partition-id\": \"{{data-partition-id}}\",\r\n        \"manifest\": {\r\n            \"kind\": \"{{authority}}:{{schemaSource}}:Manifest:1.0.0\",\r\n            \"ReferenceData\": [\r\n                {\r\n                    \"id\": \"{{data-partition-id}}:reference-data--InterpolationExtrapolationMethod:Linear\",\r\n                    \"kind\": \"{{authority}}:{{schemaSource}}:reference-data--InterpolationExtrapolationMethod:1.0.0\",\r\n                    \"acl\": {\r\n                        \"viewers\": [\r\n                            \"data.default.viewers@{{data-partition-id}}{{domain}}\"\r\n                        ],\r\n                        \"owners\": [\r\n                            \"data.default.owners@{{data-partition-id}}{{domain}}\"\r\n                        ]\r\n                    },\r\n                    \"legal\": {\r\n                        \"legaltags\": [\r\n                            \"{{LtagName}}\"\r\n                        ],\r\n                        \"otherRelevantDataCountries\": [\r\n                            \"US\"\r\n                        ]\r\n                    },\r\n                    \"data\": {\r\n                        \"Name\": \"Linear\",\r\n                        \"Code\": \"Linear\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -31446,7 +31487,579 @@
               "response": []
             },
             {
-              "name": "06 - Delete record",
+              "name": "06a - Add data",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.expect(pm.response.code).to.be.oneOf([200]);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "data-partition-id",
+                    "value": "{{data-partition-id}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Cache-Control",
+                    "value": "no-store",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "*/*;version={{rafsddms-content-schema-version}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"columns\": [\r\n        \"FluidModelID\",\r\n        \"Meta\",\r\n        \"OilTable\",\r\n        \"OilUndersaturatedCompressibilitiesTable\",\r\n        \"DeadOilTable\",\r\n        \"DeadOilCompressibility\",\r\n        \"GasTable\",\r\n        \"GasUndersaturatedTable\",\r\n        \"WaterCompressibility\",\r\n        \"WaterTable\"\r\n    ],\r\n    \"index\": [0],\r\n    \"data\": [\r\n        [\r\n            \"{{fluid_record_id}}:\",\r\n            [\r\n                {\r\n                    \"kind\": \"Unit\",\r\n                    \"name\": \"psi\",\r\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:psi:\",\r\n                    \"propertyNames\": [\r\n                        \"OilTable[*].Pressure\",\r\n                        \"OilTable[*].BubblePointPressure\",\r\n                        \"OilUndersaturatedCompressibilitiesTable[*].BubblePointPressure\",\r\n                        \"OilUndersaturatedCompressibilitiesTable[*].MaximumPressure\",\r\n                        \"GasTable[*].Pressure\",\r\n                        \"GasUndersaturatedTable[*].Pressure\",\r\n                        \"GasUndersaturatedTable[*].DewPointPressure\",\r\n                        \"WaterCompressibility.ReferencePressure\",\r\n                        \"WaterTable[*].Pressure\",\r\n                        \"DeadOilTable[*].BubblePointPressure\",\r\n                        \"DeadOilCompressibility.BubblePointPressure\",\r\n                        \"DeadOilTable[*].Pressure\",\r\n                        \"DeadOilCompressibility.ReferencePressure\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"kind\": \"Unit\",\r\n                    \"name\": \"degF\",\r\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:degF:\",\r\n                    \"propertyNames\": [\r\n                        \"OilTable[*].Temperature\",\r\n                        \"OilUndersaturatedCompressibilitiesTable[*].Temperature\",\r\n                        \"GasTable[*].Temperature\",\r\n                        \"GasUndersaturatedTable[*].Temperature\",\r\n                        \"DeadOilTable[*].Temperature\",\r\n                        \"DeadOilCompressibility.Temperature\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"kind\": \"Unit\",\r\n                    \"name\": \"cP\",\r\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cP:\",\r\n                    \"propertyNames\": [\r\n                        \"OilTable[*].Viscosity\",\r\n                        \"OilUndersaturatedCompressibilitiesTable[*].Viscosity\",\r\n                        \"GasTable[*].Viscosity\",\r\n                        \"GasUndersaturatedTable[*].Viscosity\",\r\n                        \"WaterCompressibility.Viscosity\",\r\n                        \"WaterTable[*].Viscosity\",\r\n                        \"DeadOilTable[*].Viscosity\",\r\n                        \"DeadOilCompressibility.Viscosity\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"kind\": \"Unit\",\r\n                    \"name\": \"lbm/ft3\",\r\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:lbm%2Fft3:\",\r\n                    \"propertyNames\": [\r\n                        \"OilTable[*].SurfaceDensity\",\r\n                        \"OilUndersaturatedCompressibilitiesTable[*].SurfaceDensity\",\r\n                        \"GasTable[*].SurfaceDensity\",\r\n                        \"GasUndersaturatedTable[*].SurfaceDensity\",\r\n                        \"WaterCompressibility.SurfaceDensity\",\r\n                        \"WaterTable[*].SurfaceDensity\",\r\n                        \"DeadOilTable[*].SurfaceDensity\",\r\n                        \"DeadOilCompressibility.SurfaceDensity\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"kind\": \"Unit\",\r\n                    \"name\": \"1/psi\",\r\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:1%2Fpsi:\",\r\n                    \"propertyNames\": [\r\n                        \"OilUndersaturatedCompressibilitiesTable[*].Compressibility\",\r\n                        \"OilUndersaturatedCompressibilitiesTable[*].ViscosityCompressibility\",\r\n                        \"WaterCompressibility.Compressibility\",\r\n                        \"WaterCompressibility.ViscosityCompressibility\",\r\n                        \"DeadOilCompressibility.Compressibility\",\r\n                        \"DeadOilCompressibility.ViscosityCompressibility\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"kind\": \"Unit\",\r\n                    \"name\": \"ft3/bbl\",\r\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:ft3%2Fbbl:\",\r\n                    \"propertyNames\": [\r\n                        \"OilTable[*].SolutionGOR\",\r\n                        \"OilUndersaturatedCompressibilitiesTable[*].SolutionGOR\",\r\n                        \"DeadOilTable[*].ConstantSolutionGOR\",\r\n                        \"DeadOilCompressibility.ConstantSolutionGOR\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"kind\": \"Unit\",\r\n                    \"name\": \"bbl/ft3\",\r\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:bbl%2Fft3:\",\r\n                    \"propertyNames\": [\r\n                        \"GasTable[*].VaporOGR\",\r\n                        \"GasUndersaturatedTable[*].ConstantVaporOGR\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"kind\": \"Unit\",\r\n                    \"name\": \"bbl/bbl\",\r\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:bbl%2Fbbl:\",\r\n                    \"propertyNames\": [\r\n                        \"OilTable[*].FormationVolumeFactor\",\r\n                        \"OilUndersaturatedCompressibilitiesTable[*].FormationVolumeFactor\",\r\n                        \"WaterCompressibility.FormationVolumeFactor\",\r\n                        \"WaterTable[*].FormationVolumeFactor\",\r\n                        \"DeadOilTable[*].FormationVolumeFactor\",\r\n                        \"DeadOilCompressibility.FormationVolumeFactor\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"kind\": \"Unit\",\r\n                    \"name\": \"ft3/ft3\",\r\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:ft3%2Fft3:\",\r\n                    \"propertyNames\": [\r\n                        \"GasTable[*].FormationVolumeFactor\",\r\n                        \"GasUndersaturatedTable[*].FormationVolumeFactor\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"kind\": \"Unit\",\r\n                    \"name\": \"mol/mol\",\r\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:mol%2Fmol:\",\r\n                    \"propertyNames\": [\r\n                        \"OilTable[*].CarbonContent\",\r\n                        \"OilUndersaturatedCompressibilitiesTable[*].CarbonContent\",\r\n                        \"DeadOilTable[*].CarbonContent\",\r\n                        \"GasTable[*].CarbonContent\",\r\n                        \"GasUndersaturatedTable[*].CarbonContent\"\r\n                    ]\r\n                },\r\n                {\r\n                    \"kind\": \"Unit\",\r\n                    \"name\": \"g/mol\",\r\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:g%2Fmol:\",\r\n                    \"propertyNames\": [\r\n                        \"OilTable[*].MolecularWeight\",\r\n                        \"OilUndersaturatedCompressibilitiesTable[*].MolecularWeight\",\r\n                        \"DeadOilTable[*].MolecularWeight\",\r\n                        \"GasTable[*].MolecularWeight\",\r\n                        \"GasUndersaturatedTable[*].MolecularWeight\"\r\n                    ]\r\n                }\r\n            ],\r\n            [\r\n                {\r\n                    \"BubblePointPressure\": [2500, 3000, 3500],\r\n                    \"SolutionGOR\": [450, 520, 600],\r\n                    \"Pressure\": [2500, 3000, 3500],\r\n                    \"FormationVolumeFactor\": [1.31, 1.35, 1.39],\r\n                    \"Viscosity\": [1.42, 1.28, 1.17],\r\n                    \"Temperature\": 180,\r\n                    \"SurfaceDensity\": 52.4,\r\n                    \"InterpolationExtrapolationMethod\": {\r\n                        \"InterpolationExtrapolationMethodID\": \"{{data-partition-id}}:reference-data--InterpolationExtrapolationMethod:Linear:\"\r\n                    },\r\n                    \"Parachor\": 23.5,\r\n                    \"CarbonContent\": 4.5,\r\n                    \"MolecularWeight\": 150\r\n                }\r\n            ],\r\n            [\r\n                {\r\n                    \"BubblePointPressure\": [2500, 3000, 3500],\r\n                    \"SolutionGOR\": [450, 520, 600],\r\n                    \"FormationVolumeFactor\": [1.31, 1.35, 1.39],\r\n                    \"Viscosity\": [1.42, 1.28, 1.17],\r\n                    \"Compressibility\": [0.000012, 0.000011, 0.00001],\r\n                    \"ViscosityCompressibility\": [0.000018, 0.000017, 0.000016],\r\n                    \"Temperature\": 180,\r\n                    \"SurfaceDensity\": 52.4,\r\n                    \"MaximumPressure\": 6000,\r\n                    \"InterpolationExtrapolationMethod\": {\r\n                        \"InterpolationExtrapolationMethodID\": \"{{data-partition-id}}:reference-data--InterpolationExtrapolationMethod:Linear:\"\r\n                    },\r\n                    \"Parachor\": 23.5,\r\n                    \"CarbonContent\": 4.5,\r\n                    \"MolecularWeight\": 150\r\n                }\r\n            ],\r\n            [\r\n                {\r\n                    \"ConstantSolutionGOR\": 0.00015,\r\n                    \"BubblePointPressure\": 2500,\r\n                    \"Pressure\": [1000, 2000, 3000],\r\n                    \"FormationVolumeFactor\": [1.31, 1.35, 1.39],\r\n                    \"Viscosity\": [0.96, 0.88, 0.75],\r\n                    \"Temperature\": 90,\r\n                    \"SurfaceDensity\": 52.4,\r\n                    \"InterpolationExtrapolationMethod\": {\r\n                        \"InterpolationExtrapolationMethodID\": \"{{data-partition-id}}:reference-data--InterpolationExtrapolationMethod:Linear:\"\r\n                    },\r\n                    \"Parachor\": 24.8,\r\n                    \"CarbonContent\": 4.2,\r\n                    \"MolecularWeight\": 140\r\n                }\r\n            ],\r\n            {\r\n                \"BubblePointPressure\": 2500,\r\n                \"ConstantSolutionGOR\": 0.00015,\r\n                \"ReferencePressure\": 3000,\r\n                \"FormationVolumeFactor\": 1.35,\r\n                \"Viscosity\": 0.87,\r\n                \"Compressibility\": 0.000012,\r\n                \"ViscosityCompressibility\": 0.000013,\r\n                \"Temperature\": 90,\r\n                \"SurfaceDensity\": 52.4\r\n            },\r\n            [\r\n                {\r\n                    \"VaporOGR\": [0.00001, 0.000015, 0.00002],\r\n                    \"Pressure\": [1000, 3000, 5000],\r\n                    \"FormationVolumeFactor\": [0.0152, 0.0053, 0.0034],\r\n                    \"Viscosity\": [0.014, 0.019, 0.024],\r\n                    \"Temperature\": 180,\r\n                    \"SurfaceDensity\": 0.065,\r\n                    \"InterpolationExtrapolationMethod\": {\r\n                        \"InterpolationExtrapolationMethodID\": \"{{data-partition-id}}:reference-data--InterpolationExtrapolationMethod:Linear:\"\r\n                    },\r\n                    \"Parachor\": 18.2,\r\n                    \"CarbonContent\": 2.1,\r\n                    \"MolecularWeight\": 29\r\n                }\r\n            ],\r\n            [\r\n                {\r\n                    \"Pressure\": [1000, 3000, 5000],\r\n                    \"FormationVolumeFactor\": [0.0152, 0.0053, 0.0034],\r\n                    \"Viscosity\": [0.014, 0.019, 0.024],\r\n                    \"Temperature\": 180,\r\n                    \"ConstantVaporOGR\": 0.000015,\r\n                    \"DewPointPressure\": 3200,\r\n                    \"SurfaceDensity\": 0.065,\r\n                    \"InterpolationExtrapolationMethod\": {\r\n                        \"InterpolationExtrapolationMethodID\": \"{{data-partition-id}}:reference-data--InterpolationExtrapolationMethod:Linear:\"\r\n                    },\r\n                    \"Parachor\": 18.2,\r\n                    \"CarbonContent\": 2.1,\r\n                    \"MolecularWeight\": 29\r\n                }\r\n            ],\r\n            {\r\n                \"SurfaceDensity\": 62.4,\r\n                \"ReferencePressure\": 3500,\r\n                \"FormationVolumeFactor\": 1.025,\r\n                \"Viscosity\": 0.48,\r\n                \"Compressibility\": 0.0000032,\r\n                \"ViscosityCompressibility\": 0.000001\r\n            },\r\n            [\r\n                {\r\n                    \"SurfaceDensity\": 62.4,\r\n                    \"Pressure\": [1000, 3000, 5000],\r\n                    \"FormationVolumeFactor\": [1.03, 1.025, 1.019],\r\n                    \"Viscosity\": [0.45, 0.48, 0.51]\r\n                }\r\n            ]\r\n        ]\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://{{RAFS_DDMS_HOST}}/v2/fluidmodel/{{fluid_record_id}}/data/blackoilfluidmodel",
+                  "protocol": "https",
+                  "host": [
+                    "{{RAFS_DDMS_HOST}}"
+                  ],
+                  "path": [
+                    "v2",
+                    "fluidmodel",
+                    "{{fluid_record_id}}",
+                    "data",
+                    "blackoilfluidmodel"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "07a - Get record data",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.expect(pm.response.code).to.equal(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Validate main fields and structure of response\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "",
+                      "    // Top-level keys",
+                      "    pm.expect(jsonData).to.have.property(\"columns\").that.is.an(\"array\");",
+                      "    pm.expect(jsonData).to.have.property(\"index\").that.is.an(\"array\");",
+                      "    pm.expect(jsonData).to.have.property(\"data\").that.is.an(\"array\");",
+                      "",
+                      "    pm.expect(jsonData.data).to.be.an(\"array\").with.lengthOf(1);",
+                      "",
+                      "    // Columns",
+                      "    pm.expect(jsonData.columns).to.include.members([",
+                      "        \"FluidModelID\",",
+                      "        \"Meta\",",
+                      "        \"OilTable\",",
+                      "        \"OilUndersaturatedCompressibilitiesTable\",",
+                      "        \"DeadOilTable\",",
+                      "        \"DeadOilCompressibility\",",
+                      "        \"GasTable\",",
+                      "        \"GasUndersaturatedTable\",",
+                      "        \"WaterCompressibility\",",
+                      "        \"WaterTable\"",
+                      "    ]);",
+                      "",
+                      "    // Index",
+                      "    pm.expect(jsonData.index).to.be.an(\"array\").with.lengthOf(1);",
+                      "",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "data-partition-id",
+                    "value": "{{data-partition-id}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Cache-Control",
+                    "value": "no-store",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "*/*;version={{rafsddms-content-schema-version}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "https://{{RAFS_DDMS_HOST}}/v2/fluidmodel/{{fluid_record_id}}/data/blackoilfluidmodel/{{black_oil_fluid_dataset_id}}",
+                  "protocol": "https",
+                  "host": [
+                    "{{RAFS_DDMS_HOST}}"
+                  ],
+                  "path": [
+                    "v2",
+                    "fluidmodel",
+                    "{{fluid_record_id}}",
+                    "data",
+                    "blackoilfluidmodel",
+                    "{{black_oil_fluid_dataset_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "08a - Get record data filtered by column",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.expect(pm.response.code).to.equal(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Validate main fields and structure of response\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "",
+                      "    // Top-level keys",
+                      "    pm.expect(jsonData).to.have.property(\"columns\").that.is.an(\"array\");",
+                      "    pm.expect(jsonData).to.have.property(\"index\").that.is.an(\"array\");",
+                      "    pm.expect(jsonData).to.have.property(\"data\").that.is.an(\"array\");",
+                      "",
+                      "    pm.expect(jsonData.data).to.be.an(\"array\").with.lengthOf(1);",
+                      "",
+                      "    // Columns",
+                      "    pm.expect(jsonData.columns).to.include.members([",
+                      "        \"FluidModelID\",",
+                      "        \"OilTable\"",
+                      "    ]);",
+                      "",
+                      "    pm.expect(jsonData.columns).not.to.include.members([",
+                      "        \"Meta\",",
+                      "        \"OilUndersaturatedCompressibilitiesTable\",",
+                      "        \"DeadOilTable\",",
+                      "        \"DeadOilCompressibility\",",
+                      "        \"GasTable\",",
+                      "        \"GasUndersaturatedTable\",",
+                      "        \"WaterCompressibility\",",
+                      "        \"WaterTable\"",
+                      "    ]);",
+                      "",
+                      "    // Index",
+                      "    pm.expect(jsonData.index).to.be.an(\"array\").with.lengthOf(1);",
+                      "",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "data-partition-id",
+                    "value": "{{data-partition-id}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Cache-Control",
+                    "value": "no-store",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "*/*;version={{rafsddms-content-schema-version}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "https://{{RAFS_DDMS_HOST}}/v2/fluidmodel/{{fluid_record_id}}/data/blackoilfluidmodel/{{black_oil_fluid_dataset_id}}?columns_filter=FluidModelID,OilTable",
+                  "protocol": "https",
+                  "host": [
+                    "{{RAFS_DDMS_HOST}}"
+                  ],
+                  "path": [
+                    "v2",
+                    "fluidmodel",
+                    "{{fluid_record_id}}",
+                    "data",
+                    "blackoilfluidmodel",
+                    "{{black_oil_fluid_dataset_id}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "columns_filter",
+                      "value": "FluidModelID,OilTable"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "09a - Get record data filtered in by row",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.expect(pm.response.code).to.equal(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Validate main fields and structure of response\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "",
+                      "    // Top-level keys",
+                      "    pm.expect(jsonData).to.have.property(\"columns\").that.is.an(\"array\");",
+                      "    pm.expect(jsonData).to.have.property(\"index\").that.is.an(\"array\");",
+                      "    pm.expect(jsonData).to.have.property(\"data\").that.is.an(\"array\");",
+                      "",
+                      "    pm.expect(jsonData.data).to.be.an(\"array\").with.lengthOf(0);",
+                      "",
+                      "    // Columns",
+                      "    pm.expect(jsonData.columns).to.include.members([",
+                      "        \"FluidModelID\",",
+                      "        \"Meta\",",
+                      "        \"OilTable\",",
+                      "        \"OilUndersaturatedCompressibilitiesTable\",",
+                      "        \"DeadOilTable\",",
+                      "        \"DeadOilCompressibility\",",
+                      "        \"GasTable\",",
+                      "        \"GasUndersaturatedTable\",",
+                      "        \"WaterCompressibility\",",
+                      "        \"WaterTable\"",
+                      "    ]);",
+                      "",
+                      "    // Index",
+                      "    pm.expect(jsonData.index).to.be.an(\"array\").with.lengthOf(0);",
+                      "",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "data-partition-id",
+                    "value": "{{data-partition-id}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Cache-Control",
+                    "value": "no-store",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "*/*;version={{rafsddms-content-schema-version}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "https://{{RAFS_DDMS_HOST}}/v2/fluidmodel/{{fluid_record_id}}/data/blackoilfluidmodel/{{black_oil_fluid_dataset_id}}?rows_filter=FluidModelID,neq,{{fluid_record_id}}:",
+                  "protocol": "https",
+                  "host": [
+                    "{{RAFS_DDMS_HOST}}"
+                  ],
+                  "path": [
+                    "v2",
+                    "fluidmodel",
+                    "{{fluid_record_id}}",
+                    "data",
+                    "blackoilfluidmodel",
+                    "{{black_oil_fluid_dataset_id}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "rows_filter",
+                      "value": "FluidModelID,neq,{{fluid_record_id}}:"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "09b - Get record data filtered out  by row",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.expect(pm.response.code).to.equal(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Validate main fields and structure of response\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "",
+                      "    // Top-level keys",
+                      "    pm.expect(jsonData).to.have.property(\"columns\").that.is.an(\"array\");",
+                      "    pm.expect(jsonData).to.have.property(\"index\").that.is.an(\"array\");",
+                      "    pm.expect(jsonData).to.have.property(\"data\").that.is.an(\"array\");",
+                      "",
+                      "    pm.expect(jsonData.data).to.be.an(\"array\").with.lengthOf(1);",
+                      "",
+                      "    // Columns",
+                      "    pm.expect(jsonData.columns).to.include.members([",
+                      "        \"FluidModelID\",",
+                      "        \"Meta\",",
+                      "        \"OilTable\",",
+                      "        \"OilUndersaturatedCompressibilitiesTable\",",
+                      "        \"DeadOilTable\",",
+                      "        \"DeadOilCompressibility\",",
+                      "        \"GasTable\",",
+                      "        \"GasUndersaturatedTable\",",
+                      "        \"WaterCompressibility\",",
+                      "        \"WaterTable\"",
+                      "    ]);",
+                      "",
+                      "    // Index",
+                      "    pm.expect(jsonData.index).to.be.an(\"array\").with.lengthOf(1);",
+                      "",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "data-partition-id",
+                    "value": "{{data-partition-id}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Cache-Control",
+                    "value": "no-store",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "*/*;version={{rafsddms-content-schema-version}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "https://{{RAFS_DDMS_HOST}}/v2/fluidmodel/{{fluid_record_id}}/data/blackoilfluidmodel/{{black_oil_fluid_dataset_id}}?rows_filter=FluidModelID,eq,{{fluid_record_id}}:",
+                  "protocol": "https",
+                  "host": [
+                    "{{RAFS_DDMS_HOST}}"
+                  ],
+                  "path": [
+                    "v2",
+                    "fluidmodel",
+                    "{{fluid_record_id}}",
+                    "data",
+                    "blackoilfluidmodel",
+                    "{{black_oil_fluid_dataset_id}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "rows_filter",
+                      "value": "FluidModelID,eq,{{fluid_record_id}}:"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "10a - Get record data aggregated",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.expect(pm.response.code).to.equal(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Validate main fields and structure of response\", function () {",
+                      "    var jsonData = pm.response.json();",
+                      "",
+                      "    // Top-level keys",
+                      "    pm.expect(jsonData).to.have.property(\"columns\").that.is.an(\"array\");",
+                      "    pm.expect(jsonData).to.have.property(\"index\").that.is.an(\"array\");",
+                      "    pm.expect(jsonData).to.have.property(\"data\").that.is.an(\"array\");",
+                      "",
+                      "    // Columns",
+                      "    pm.expect(jsonData.columns).to.include.members([",
+                      "        \"FluidModelID\"",
+                      "    ]);",
+                      "",
+                      "    // Index",
+                      "    pm.expect(jsonData.index).to.include.members([",
+                      "        \"count\"",
+                      "    ]);",
+                      "",
+                      "    // Data",
+                      "",
+                      "    let countIndex = jsonData.index.indexOf(\"count\");",
+                      " ",
+                      "    pm.expect(jsonData.data[countIndex][0]).to.eq(1);",
+                      "",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{access_token}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "data-partition-id",
+                    "value": "{{data-partition-id}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Cache-Control",
+                    "value": "no-store",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "*/*;version={{rafsddms-content-schema-version}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "https://{{RAFS_DDMS_HOST}}/v2/fluidmodel/{{fluid_record_id}}/data/blackoilfluidmodel/{{black_oil_fluid_dataset_id}}?columns_aggregation=FluidModelID,count",
+                  "protocol": "https",
+                  "host": [
+                    "{{RAFS_DDMS_HOST}}"
+                  ],
+                  "path": [
+                    "v2",
+                    "fluidmodel",
+                    "{{fluid_record_id}}",
+                    "data",
+                    "blackoilfluidmodel",
+                    "{{black_oil_fluid_dataset_id}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "columns_aggregation",
+                      "value": "FluidModelID,count"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "11 - Delete record",
               "event": [
                 {
                   "listen": "test",
@@ -31502,7 +32115,7 @@
               "response": []
             },
             {
-              "name": "07 - Delete deleted record",
+              "name": "12 - Delete deleted record",
               "event": [
                 {
                   "listen": "test",
@@ -31563,7 +32176,7 @@
               "response": []
             },
             {
-              "name": "08 - Get deleted record",
+              "name": "13 - Get deleted record",
               "event": [
                 {
                   "listen": "test",
@@ -31625,7 +32238,7 @@
               "response": []
             },
             {
-              "name": "09 - Get concrete version of the deleted record",
+              "name": "14 - Get concrete version of the deleted record",
               "event": [
                 {
                   "listen": "test",
@@ -31690,7 +32303,7 @@
               "response": []
             },
             {
-              "name": "10 (Storage service bug) - Get versions of the deleted record",
+              "name": "15 (Storage service bug) - Get versions of the deleted record",
               "event": [
                 {
                   "listen": "test",
