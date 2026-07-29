@@ -1798,6 +1798,61 @@ paths:
       summary: Post Records
       tags:
       - fluidmodel
+  /api/rafs-ddms/v2/fluidmodel/{fluid_model_type}/data/schema:
+    get:
+      description: 'Get the (`content schema`) for a given `{fluid_model_type}`. <br><br>
+        Use the `content_schema_version` query parameter to specify content schema
+        version  (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning
+        is deprecated.<br><br>        Required roles: `users.datalake.viewers` or
+        `users.datalake.editors` or `users.datalake.admins`.<br>         In addition,
+        users must be members of a data group(ACL) to access the data.'
+      operationId: get_content_schema_api_rafs_ddms_v2_fluidmodel__fluid_model_type__data_schema_get
+      parameters:
+      - description: Specifies the proper data partition id
+        examples:
+          example:
+            value: opendes
+        in: header
+        name: data-partition-id
+        required: true
+        schema:
+          description: Specifies the proper data partition id
+          title: data-partition-id
+          type: string
+      - description: Content schema version, e.g. `1.0.0`. Takes precedence over the
+          Accept header.
+        example: 1.0.0
+        in: query
+        name: content_schema_version
+        required: true
+        schema:
+          description: Content schema version, e.g. `1.0.0`. Takes precedence over
+            the Accept header.
+          title: Content Schema Version
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items: {}
+                  type: array
+                title: Response Get Content Schema Api Rafs Ddms V2 Fluidmodel  Fluid
+                  Model Type  Data Schema Get
+                type: object
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get Content Schema
+      tags:
+      - fluidmodel
   /api/rafs-ddms/v2/fluidmodel/{record_id}:
     delete:
       description: 'Delete the `FluidModel` object by record id.<br><br>        Required

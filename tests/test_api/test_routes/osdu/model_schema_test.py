@@ -16,13 +16,17 @@
 import pytest
 from httpx import AsyncClient
 from starlette import status
+import re
 
 from app.main import app
 from app.models.data_schemas.base import (
     ALL_PATHS_TO_DATA_MODEL,
     MAPS_TO_DATA_MODEL,
 )
-from app.resources.paths import SATURATION_FUNCTION_SET_STR
+from app.resources.paths import(
+    SATURATION_FUNCTION_SET_STR,
+    FLUID_MODEL_STR,
+)
 from tests.test_api.test_routes.data.data_mock_objects import (
     TEST_SCHEMA_VERSION,
 )
@@ -31,6 +35,7 @@ from tests.test_api.test_routes.osdu.storage_mock_objects import (
     PREFIX_TO_STRIP,
     SAMPLESANALYSIS_ENDPOINT_PATH_V2,
     SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2,
+    FLUID_MODEL_ENDPOINT_PATH_V2,
     TEST_HEADERS,
     TEST_SERVER,
     VALID_ANALYSIS_TYPES_V1_0_0,
@@ -235,3 +240,238 @@ async def test_single_content_type_schema_wrong_version(endpoint_path, _, expect
         response.json()["reason"]
         == f"Model not found for type '{expected_content_type_in_error}',  version '{invalid_version}'. Available versions: {{'1.0.0'}}."
     )
+
+
+TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL = [
+    (
+        model_key,
+        endpoint_path_v2,
+        relative_path,
+    )
+    for model_key, endpoint_path_v2, relative_paths in [
+        (
+            FLUID_MODEL_STR,
+            FLUID_MODEL_ENDPOINT_PATH_V2, 
+            MAPS_TO_DATA_MODEL["v2"][FLUID_MODEL_STR].keys()
+        ),
+    ]
+    for relative_path in relative_paths
+]
+
+
+TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL_WITH_VERSIONS = [
+    (
+        model_key,
+        endpoint_path_v2,
+        relative_path,
+        content_schema_version
+    )
+    for model_key, endpoint_path_v2, relative_paths_and_content_schema_versions in [
+        (
+            FLUID_MODEL_STR,
+            FLUID_MODEL_ENDPOINT_PATH_V2, 
+            MAPS_TO_DATA_MODEL["v2"][FLUID_MODEL_STR].items()
+        ),
+    ]
+    for relative_path, content_schema_versions in relative_paths_and_content_schema_versions
+        for content_schema_version in content_schema_versions.keys()
+]
+
+    
+@pytest.mark.parametrize(
+    "model_key, endpoint_path_v2, relative_path, content_schema_version",
+    TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL_WITH_VERSIONS,
+)
+@pytest.mark.asyncio
+async def test_multiple_content_type_schema_success(model_key, endpoint_path_v2, relative_path, content_schema_version):
+    """
+    Test successful schema retrieval for multiple content type endpoints 
+    """
+    content_type = relative_path.replace(PREFIX_TO_STRIP, "")
+    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+        with services_overrides():
+            response = await client.get(
+                f"{endpoint_path_v2}/{content_type}/data/schema",
+                headers={**TEST_HEADERS, "Accept": f"application/json;version={content_schema_version}"},
+            )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.headers["content-type"] == "application/json"
+    assert response.headers.get("Deprecation") == "true"
+
+    expected_schema = MAPS_TO_DATA_MODEL["v2"][model_key][relative_path][content_schema_version].schema()
+    assert response.json() == expected_schema
+
+
+
+@pytest.mark.parametrize(
+    "model_key, endpoint_path_v2, relative_path",
+    TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL,
+)
+@pytest.mark.asyncio
+async def test_multiple_content_type_schema_invalid_version(model_key, endpoint_path_v2, relative_path):
+    """
+    Test 404 error for multiple content type endpoints 
+    when requesting a schema with wrong version
+    """
+    invalid_version = "0.0.0"
+    content_type = relative_path.replace(PREFIX_TO_STRIP, "")
+    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+        with services_overrides():
+            response = await client.get(
+                f"{endpoint_path_v2}/{content_type}/data/schema",
+                headers={**TEST_HEADERS, "Accept": f"application/json;version={invalid_version}"},
+            )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.headers["content-type"] == "application/json"
+
+    reason = response.json()["reason"]
+    reason_available_versions = set(re.findall(r"Available versions:.*?'(\d+\.\d+\.\d+)'", reason))
+    actual_available_versions = set(MAPS_TO_DATA_MODEL["v2"][model_key][relative_path].keys())
+    
+    assert reason.startswith(
+        f"Model not found for type '{content_type}',  "
+        f"version '{invalid_version}'. Available versions: "
+    )
+    assert reason_available_versions == actual_available_versions
+
+
+@pytest.mark.parametrize(
+    "endpoint_path_v2",
+    [FLUID_MODEL_ENDPOINT_PATH_V2],
+)
+@pytest.mark.asyncio
+async def test_multiple_content_type_schema_non_existent_type(endpoint_path_v2):
+    """
+    Test 404 error for multiple content type endpoints 
+    when requesting a non-existent content type
+    """
+    non_existent_type = "nonexistenttype"
+    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+        with services_overrides():
+            response = await client.get(
+                f"{endpoint_path_v2}/{non_existent_type}/data/schema",
+                headers={**TEST_HEADERS, "Accept": "application/json;version=1.0.0"},
+            )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.headers["content-type"] == "application/json"
+    assert response.json()["reason"] == f"Model not found for type '{non_existent_type}',  version '1.0.0'."
+
+
+@pytest.mark.parametrize(
+    "model_key, endpoint_path_v2, relative_path, content_schema_version",
+    TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL_WITH_VERSIONS,
+)
+@pytest.mark.asyncio
+async def test_multiple_content_type_schema_success_via_version_param(
+    model_key, endpoint_path_v2, relative_path, content_schema_version
+):
+    """
+    Test successful schema retrieval for multiple content type endpoints 
+    when using ?content_schema_version= query parameter
+    """
+    content_type = relative_path.replace(PREFIX_TO_STRIP, "")
+    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+        with services_overrides():
+            response = await client.get(
+                f"{endpoint_path_v2}/{content_type}/data/schema?content_schema_version={content_schema_version}",
+                headers={**TEST_HEADERS},
+            )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.headers["content-type"] == "application/json"
+    assert "Deprecation" not in response.headers
+
+    expected_schema = MAPS_TO_DATA_MODEL["v2"][model_key][relative_path][content_schema_version].schema()
+    assert response.json() == expected_schema
+
+
+@pytest.mark.parametrize(
+    "endpoint_path_v2, relative_path",
+    [
+        (params[1], params[2])
+        for params in TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL
+    ],
+)
+@pytest.mark.asyncio
+async def test_multiple_content_type_schema_no_version(endpoint_path_v2, relative_path):
+    """
+    Test 406 error for multiple content type endpoints 
+    when requesting schema without a version
+    """
+    content_type = relative_path.replace(PREFIX_TO_STRIP, "")
+    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+        with services_overrides():
+            response = await client.get(
+                f"{endpoint_path_v2}/{content_type}/data/schema",
+                headers={**TEST_HEADERS, "Accept": f"application/json"},
+            )
+
+    assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
+    assert response.headers["content-type"] == "application/json"
+    assert response.json()["reason"] == (
+        "No schema version specified or invalid schema format."
+        " Use the content_schema_version query parameter (e.g. ?content_schema_version=1.0.0)."
+        " The deprecated Accept header versioning is also still accepted"
+        " (e.g. Accept: */*;version=1.0.0)."
+    )
+
+
+@pytest.mark.parametrize(
+    "endpoint_path_v2, relative_path",
+    [
+        (params[1], params[2])
+        for params in TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL
+    ],
+)
+@pytest.mark.asyncio
+async def test_multiple_content_type_schema_malformed_version(endpoint_path_v2, relative_path):
+    """
+    Test 422 error for multiple content type endpoints 
+    when requesting schema with a malformed version
+    """
+    malformed_version = "1.x"
+    content_type = relative_path.replace(PREFIX_TO_STRIP, "")
+    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+        with services_overrides():
+            response = await client.get(
+                f"{endpoint_path_v2}/{content_type}/data/schema?content_schema_version={malformed_version}",
+                headers={**TEST_HEADERS, "Accept": f"application/json"},
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    assert response.headers["content-type"] == "application/json"
+    assert response.json()["reason"] == (
+        f"Invalid version format in content_schema_version: '{malformed_version}'."
+        " Expected format: major.minor.patch (e.g. 1.0.0)"
+    )
+
+
+@pytest.mark.parametrize(
+    "model_key, endpoint_path_v2, relative_path, content_schema_version",
+    TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL_WITH_VERSIONS,
+)
+@pytest.mark.asyncio
+async def test_multiple_content_type_schema_version_param_takes_precedence_over_accept_header(
+    model_key, endpoint_path_v2, relative_path, content_schema_version
+):
+    """
+    Test for multiple content type endpoints that ?content_schema_version= 
+    takes precedence over the deprecated Accept header
+    """
+    invalid_version = "0.0.0"
+    content_type = relative_path.replace(PREFIX_TO_STRIP, "")
+    async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+        with services_overrides():
+            response = await client.get(
+                f"{endpoint_path_v2}/{content_type}/data/schema?content_schema_version={content_schema_version}",
+                headers={**TEST_HEADERS, "Accept": f"application/json;version={invalid_version}"},
+            )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.headers["content-type"] == "application/json"
+    assert "Deprecation" not in response.headers
+
+    expected_schema = MAPS_TO_DATA_MODEL["v2"][model_key][relative_path][content_schema_version].schema()
+    assert response.json() == expected_schema
