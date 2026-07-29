@@ -94,7 +94,7 @@ RUN set -eux; \
     WHEEL_CODE=$(find $SP/setuptools -type d -name "wheel" | head -1); \
     [ -n "$WHEEL_CODE" ] && cp -rv $SP/wheel/. "$WHEEL_CODE/"
 
-USER $USERNAME
+USER $USER_UID
 
 # PYTHON_TOOL_OPTIONS acts as a boolean toggle: any non-empty value activates the OTEL agent.
 # The agent command is hardcoded — the variable value is never interpolated into the shell,
