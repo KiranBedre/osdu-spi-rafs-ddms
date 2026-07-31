@@ -13,29 +13,30 @@
 #  limitations under the License.
 
 
+import re
+
 import pytest
 from httpx import AsyncClient
 from starlette import status
-import re
 
 from app.main import app
 from app.models.data_schemas.base import (
-    ALL_PATHS_TO_DATA_MODEL,
+    ALL_PATHS_TO_SA_DATA_MODEL,
     MAPS_TO_DATA_MODEL,
 )
-from app.resources.paths import(
-    SATURATION_FUNCTION_SET_STR,
+from app.resources.paths import (
     FLUID_MODEL_STR,
+    SATURATION_FUNCTION_SET_STR,
 )
 from tests.test_api.test_routes.data.data_mock_objects import (
     TEST_SCHEMA_VERSION,
 )
 from tests.test_api.test_routes.data.data_v2_test import services_overrides
 from tests.test_api.test_routes.osdu.storage_mock_objects import (
+    FLUID_MODEL_ENDPOINT_PATH_V2,
     PREFIX_TO_STRIP,
     SAMPLESANALYSIS_ENDPOINT_PATH_V2,
     SATURATION_FUNCTION_SET_ENDPOINT_PATH_V2,
-    FLUID_MODEL_ENDPOINT_PATH_V2,
     TEST_HEADERS,
     TEST_SERVER,
     VALID_ANALYSIS_TYPES_V1_0_0,
@@ -61,7 +62,7 @@ async def test_samplesanalysis_content_schema_success(analysistype):
     assert response.headers.get("Deprecation") == "true"
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key]["1.0.0"].schema()
+    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["1.0.0"].schema()
     assert response.json() == expected_schema
 
 
@@ -80,7 +81,7 @@ async def test_samplesanalysis_content_schema_wrong_version(analysistype):
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    available_versions = set(ALL_PATHS_TO_DATA_MODEL[model_key].keys())
+    available_versions = set(ALL_PATHS_TO_SA_DATA_MODEL[model_key].keys())
 
     assert response.json()["reason"] == (
         f"Model not found for type '{analysistype}',  "
@@ -104,7 +105,7 @@ async def test_samplesanalysis_content_schema_wrong_type():
 
 VALID_ANALYSIS_TYPES_V2_0_0 = [
     path.replace(PREFIX_TO_STRIP, "")
-    for path, versions in ALL_PATHS_TO_DATA_MODEL.items()
+    for path, versions in ALL_PATHS_TO_SA_DATA_MODEL.items()
     if path.startswith(PREFIX_TO_STRIP) and "2.0.0" in versions
 ]
 
@@ -124,7 +125,7 @@ async def test_samplesanalysis_content_schema_v2_success(analysistype):
     assert response.headers["content-type"] == "application/json"
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key]["2.0.0"].schema()
+    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["2.0.0"].schema()
     assert response.json() == expected_schema
 
 
@@ -143,7 +144,7 @@ async def test_samplesanalysis_content_schema_via_content_schema_version_param(a
     assert "Deprecation" not in response.headers
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key]["1.0.0"].schema()
+    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["1.0.0"].schema()
     assert response.json() == expected_schema
 
 
@@ -162,7 +163,7 @@ async def test_samplesanalysis_content_schema_v2_via_content_schema_version_para
     assert "Deprecation" not in response.headers
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key]["2.0.0"].schema()
+    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["2.0.0"].schema()
     assert response.json() == expected_schema
 
 
@@ -181,7 +182,7 @@ async def test_content_schema_version_param_takes_precedence_over_accept_header(
     assert "Deprecation" not in response.headers
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    expected_schema = ALL_PATHS_TO_DATA_MODEL[model_key]["1.0.0"].schema()
+    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["1.0.0"].schema()
     assert response.json() == expected_schema
 
 
@@ -249,35 +250,22 @@ TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL = [
         relative_path,
     )
     for model_key, endpoint_path_v2, relative_paths in [
-        (
-            FLUID_MODEL_STR,
-            FLUID_MODEL_ENDPOINT_PATH_V2, 
-            MAPS_TO_DATA_MODEL["v2"][FLUID_MODEL_STR].keys()
-        ),
+        (FLUID_MODEL_STR, FLUID_MODEL_ENDPOINT_PATH_V2, MAPS_TO_DATA_MODEL["v2"][FLUID_MODEL_STR].keys()),
     ]
     for relative_path in relative_paths
 ]
 
 
 TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL_WITH_VERSIONS = [
-    (
-        model_key,
-        endpoint_path_v2,
-        relative_path,
-        content_schema_version
-    )
+    (model_key, endpoint_path_v2, relative_path, content_schema_version)
     for model_key, endpoint_path_v2, relative_paths_and_content_schema_versions in [
-        (
-            FLUID_MODEL_STR,
-            FLUID_MODEL_ENDPOINT_PATH_V2, 
-            MAPS_TO_DATA_MODEL["v2"][FLUID_MODEL_STR].items()
-        ),
+        (FLUID_MODEL_STR, FLUID_MODEL_ENDPOINT_PATH_V2, MAPS_TO_DATA_MODEL["v2"][FLUID_MODEL_STR].items()),
     ]
     for relative_path, content_schema_versions in relative_paths_and_content_schema_versions
-        for content_schema_version in content_schema_versions.keys()
+    for content_schema_version in content_schema_versions.keys()
 ]
 
-    
+
 @pytest.mark.parametrize(
     "model_key, endpoint_path_v2, relative_path, content_schema_version",
     TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL_WITH_VERSIONS,
@@ -285,7 +273,7 @@ TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL_WITH_VERSIONS = [
 @pytest.mark.asyncio
 async def test_multiple_content_type_schema_success(model_key, endpoint_path_v2, relative_path, content_schema_version):
     """
-    Test successful schema retrieval for multiple content type endpoints 
+    Test successful schema retrieval for multiple content type endpoints
     """
     content_type = relative_path.replace(PREFIX_TO_STRIP, "")
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
@@ -303,7 +291,6 @@ async def test_multiple_content_type_schema_success(model_key, endpoint_path_v2,
     assert response.json() == expected_schema
 
 
-
 @pytest.mark.parametrize(
     "model_key, endpoint_path_v2, relative_path",
     TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL,
@@ -311,7 +298,7 @@ async def test_multiple_content_type_schema_success(model_key, endpoint_path_v2,
 @pytest.mark.asyncio
 async def test_multiple_content_type_schema_invalid_version(model_key, endpoint_path_v2, relative_path):
     """
-    Test 404 error for multiple content type endpoints 
+    Test 404 error for multiple content type endpoints
     when requesting a schema with wrong version
     """
     invalid_version = "0.0.0"
@@ -329,10 +316,9 @@ async def test_multiple_content_type_schema_invalid_version(model_key, endpoint_
     reason = response.json()["reason"]
     reason_available_versions = set(re.findall(r"Available versions:.*?'(\d+\.\d+\.\d+)'", reason))
     actual_available_versions = set(MAPS_TO_DATA_MODEL["v2"][model_key][relative_path].keys())
-    
+
     assert reason.startswith(
-        f"Model not found for type '{content_type}',  "
-        f"version '{invalid_version}'. Available versions: "
+        f"Model not found for type '{content_type}',  " f"version '{invalid_version}'. Available versions: "
     )
     assert reason_available_versions == actual_available_versions
 
@@ -344,7 +330,7 @@ async def test_multiple_content_type_schema_invalid_version(model_key, endpoint_
 @pytest.mark.asyncio
 async def test_multiple_content_type_schema_non_existent_type(endpoint_path_v2):
     """
-    Test 404 error for multiple content type endpoints 
+    Test 404 error for multiple content type endpoints
     when requesting a non-existent content type
     """
     non_existent_type = "nonexistenttype"
@@ -368,7 +354,7 @@ async def test_multiple_content_type_schema_success_via_version_param(
     model_key, endpoint_path_v2, relative_path, content_schema_version
 ):
     """
-    Test successful schema retrieval for multiple content type endpoints 
+    Test successful schema retrieval for multiple content type endpoints
     when using ?content_schema_version= query parameter
     """
     content_type = relative_path.replace(PREFIX_TO_STRIP, "")
@@ -389,15 +375,12 @@ async def test_multiple_content_type_schema_success_via_version_param(
 
 @pytest.mark.parametrize(
     "endpoint_path_v2, relative_path",
-    [
-        (params[1], params[2])
-        for params in TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL
-    ],
+    [(params[1], params[2]) for params in TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL],
 )
 @pytest.mark.asyncio
 async def test_multiple_content_type_schema_no_version(endpoint_path_v2, relative_path):
     """
-    Test 406 error for multiple content type endpoints 
+    Test 406 error for multiple content type endpoints
     when requesting schema without a version
     """
     content_type = relative_path.replace(PREFIX_TO_STRIP, "")
@@ -420,15 +403,12 @@ async def test_multiple_content_type_schema_no_version(endpoint_path_v2, relativ
 
 @pytest.mark.parametrize(
     "endpoint_path_v2, relative_path",
-    [
-        (params[1], params[2])
-        for params in TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL
-    ],
+    [(params[1], params[2]) for params in TEST_MULTIPLE_CONTENT_TYPE_SCHEMA_FLUID_MODEL],
 )
 @pytest.mark.asyncio
 async def test_multiple_content_type_schema_malformed_version(endpoint_path_v2, relative_path):
     """
-    Test 422 error for multiple content type endpoints 
+    Test 422 error for multiple content type endpoints
     when requesting schema with a malformed version
     """
     malformed_version = "1.x"
@@ -457,7 +437,7 @@ async def test_multiple_content_type_schema_version_param_takes_precedence_over_
     model_key, endpoint_path_v2, relative_path, content_schema_version
 ):
     """
-    Test for multiple content type endpoints that ?content_schema_version= 
+    Test for multiple content type endpoints that ?content_schema_version=
     takes precedence over the deprecated Accept header
     """
     invalid_version = "0.0.0"
