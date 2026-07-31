@@ -17,7 +17,7 @@ import os
 from typing import NamedTuple
 
 from app.models.data_schemas.base import (
-    ALL_PATHS_TO_DATA_MODEL,
+    ALL_PATHS_TO_SA_DATA_MODEL,
     SAMPLES_ANALYSIS,
 )
 from app.models.schemas.osdu_storage import Acl, Legal, OsduStorageRecord
@@ -619,6 +619,6 @@ PREFIX_TO_STRIP = "/data/"
 
 VALID_ANALYSIS_TYPES_V1_0_0 = [
     path.replace(PREFIX_TO_STRIP, "")
-    for path, versions in ALL_PATHS_TO_DATA_MODEL.items()
+    for path, versions in ALL_PATHS_TO_SA_DATA_MODEL.items()
     if path.startswith(PREFIX_TO_STRIP) and "1.0.0" in versions
 ]

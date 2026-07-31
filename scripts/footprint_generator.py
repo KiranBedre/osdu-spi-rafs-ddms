@@ -23,7 +23,7 @@ from typing import Dict, List, Set
 app_dir = os.path.join(os.path.dirname(__file__), "..")  # noqa # isort: skip
 sys.path.append(app_dir)  # noqa # isort: skip
 
-from app.models.data_schemas.base import ALL_PATHS_TO_DATA_MODEL
+from app.models.data_schemas.base import ALL_PATHS_TO_SA_DATA_MODEL
 from app.models.domain.osdu.base import (
     MASTER_DATA_KINDS_V2,
     SAMPLES_ANALYSES_REPORT_KIND,
@@ -137,7 +137,7 @@ class DDMSFootprintGen:
     def _get_supported_types(cls) -> Dict:
         analysis_types_versions_map = {
             path.strip("/").split("/")[-1]: cls.get_type_versions_files_map(versions.items())
-            for path, versions in ALL_PATHS_TO_DATA_MODEL.items()
+            for path, versions in ALL_PATHS_TO_SA_DATA_MODEL.items()
         }
         return analysis_types_versions_map
 
