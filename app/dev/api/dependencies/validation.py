@@ -23,6 +23,7 @@ from starlette import status
 from app.api.dependencies.request import require_data_partition_id
 from app.api.dependencies.validation import get_data_model
 from app.core.config import AppSettings, get_app_settings
+from app.core.http_status import HTTP_422_UNPROCESSABLE
 from app.dev.api.dependencies.services import get_async_partition_service
 from app.dev.core.helpers.redis_index import build_samplesanalysis_schema
 from app.dev.resources.multiple_nested_filters import (
@@ -115,7 +116,7 @@ def validate_multiple_nested_filters(
         df_filter.validate_combination()
     except FilterValidationError as exc:
         logger.error(f"Query parameters are invalid: {exc}")
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
+        raise HTTPException(status_code=HTTP_422_UNPROCESSABLE, detail=str(exc))
 
     logger.debug("Query parameters are valid.")
     return df_filter

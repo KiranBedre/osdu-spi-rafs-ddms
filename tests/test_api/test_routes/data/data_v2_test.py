@@ -155,6 +155,9 @@ from tests.test_api.test_routes.api_v2.wettability_index import (
 from tests.test_api.test_routes.api_v2.black_oil_fluid_model import (
     black_oil_fluid_model_mock_objects,
 )
+from tests.test_api.test_routes.api_v2.compositional_fluid_model import (
+    compositional_fluid_model_mock_objects,
+)
 from tests.test_api.test_routes.api_v2.xrd import xrd_mock_objects
 from tests.test_api.test_routes.api_v2.xrf import xrf_mock_objects
 from tests.test_api.test_routes.data import data_mock_objects
@@ -338,6 +341,7 @@ def _headers_parquet_accept_only(version="1.0.0"):
         (TestContentPathsApiV2.ROLLER_OVEN_TEST, BulkDatasetIdV2.ROLLER_OVEN_TEST),
         (TestContentPathsApiV2.SATURATION_TEST, BulkDatasetIdV2.SATURATION_TEST),
         (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, BulkDatasetIdV2.BLACK_OIL_FLUID_MODEL),
+        (TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL, BulkDatasetIdV2.COMPOSITIONAL_FLUID_MODEL),
     ],
 )
 @pytest.mark.asyncio
@@ -409,6 +413,7 @@ async def test_get_content_data_no_data(data_endpoint_path, dataset_id):
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
         TestContentPathsApiV2.SATURATION_TEST,
         TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+        TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
     ],
 )
 @pytest.mark.asyncio
@@ -481,6 +486,7 @@ async def test_post_data_no_content_header(data_endpoint_path):
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
         TestContentPathsApiV2.SATURATION_TEST,
         TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+        TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL
     ],
 )
 @pytest.mark.asyncio
@@ -518,7 +524,10 @@ async def test_post_data_wrong_content_header(data_endpoint_path):
         (
             TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, 
             black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
-
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL, 
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
         ),
     ],
 )
@@ -557,7 +566,10 @@ async def test_get_data_no_content_type_does_not_return_400(data_endpoint_path, 
         (
             TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, 
             black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
-
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL, 
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
         ),
     ],
 )
@@ -1170,6 +1182,16 @@ async def test_get_data_accept_parquet_does_not_return_content_type_error(data_e
             "download_file",
             [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
         ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -1222,6 +1244,14 @@ async def test_get_content_parquet_data(
             "download_file",
             [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
         ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -1262,6 +1292,10 @@ async def test_get_data_accept_negotiation_returns_parquet(
         (   
             TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, 
             black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
+        ),
+        (   
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL, 
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
         )
     ],
 )
@@ -2860,6 +2894,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             black_oil_fluid_model_mock_objects.TRIMMED_TEST_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TRIMMED_TEST_DATA)],
+            compositional_fluid_model_mock_objects.TRIMMED_TEST_DATA,
+        ),
+        (
             f"{TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL}/{black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
             black_oil_fluid_model_mock_objects.TEST_PARAMS_FILTERS,
             "get_record",
@@ -2869,6 +2912,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             black_oil_fluid_model_mock_objects.TEST_FILTERED_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            compositional_fluid_model_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+            compositional_fluid_model_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
             f"{TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL}/{black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
             black_oil_fluid_model_mock_objects.TEST_PARAMS_AGGREGATION,
             "get_record",
@@ -2876,6 +2928,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             "download_file",
             [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
             black_oil_fluid_model_mock_objects.TEST_AGGREGATED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            compositional_fluid_model_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+            compositional_fluid_model_mock_objects.TEST_AGGREGATED_DATA,
         ),
     ],
 )
@@ -3315,6 +3376,14 @@ async def test_get_data_json_data(
             "download_file",
             [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
             black_oil_fluid_model_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+            compositional_fluid_model_mock_objects.TEST_DATA,
         ),
     ],
 )
@@ -3759,6 +3828,14 @@ async def test_get_data_json_data_no_content_schema_version(
             [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
             black_oil_fluid_model_mock_objects.TEST_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+            compositional_fluid_model_mock_objects.TEST_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -4201,6 +4278,14 @@ async def test_get_data_json_data_improper_schema_version(
             "download_file",
             [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
             black_oil_fluid_model_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+            compositional_fluid_model_mock_objects.TEST_DATA,
         ),
     ],
 )
@@ -4655,6 +4740,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
             black_oil_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            compositional_fluid_model_mock_objects.TEST_DATA,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -5097,6 +5189,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
             black_oil_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            compositional_fluid_model_mock_objects.TEST_DATA,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -5416,6 +5515,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
             black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
         ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -5429,7 +5533,7 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
                 content=b"",
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 @pytest.mark.parametrize(
@@ -5854,6 +5958,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             black_oil_fluid_model_mock_objects.TRIMMED_TEST_DATA,
             black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
             black_oil_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            compositional_fluid_model_mock_objects.TRIMMED_TEST_DATA,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
     ],
 )
@@ -6299,6 +6410,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
             black_oil_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            compositional_fluid_model_mock_objects.TEST_DATA,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -6382,6 +6500,10 @@ async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data,
         (
             TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
             black_oil_fluid_model_mock_objects.INCORRECT_SCHEMA_TEST_DATA,
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.INCORRECT_SCHEMA_TEST_DATA,
         ),
     ],
 )
@@ -6672,6 +6794,11 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             black_oil_fluid_model_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             black_oil_fluid_model_mock_objects.EXPECTED_ERROR_REASON,
         ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
+            compositional_fluid_model_mock_objects.EXPECTED_ERROR_REASON,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -6744,6 +6871,7 @@ async def test_post_invalid_df_error(data_endpoint_path, incorrect_dataframe_dat
         f"{TestContentPathsApiV2.ROLLER_OVEN_TEST}/{roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.SATURATION_TEST}/{saturation_test_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL}/{black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+        f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
     ],
 )
 @pytest.mark.asyncio
@@ -7127,7 +7255,7 @@ async def test_invalid_data_json_payload(path, payloads):
                     content=json.dumps(payload),
                 )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         body = response.json()
         print(body)
         assert ["code", "reason"] == list(body.keys())
@@ -7162,7 +7290,7 @@ async def test_post_data_rejects_mismatched_samplesanalysis_id():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert body["reason"] == "Data validation failed."
     assert "Invalid value" in body["errors"]
@@ -7184,7 +7312,7 @@ async def test_post_data_null_samplesanalysis_id_not_mismatch_error():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert body["reason"] == "Data validation failed."
     # Must be a schema error — not an ID mismatch
@@ -7231,7 +7359,7 @@ async def test_post_sfs_data_rejects_mismatched_id():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert body["reason"] == "Data validation failed."
     assert "Invalid value" in body["errors"]
@@ -7254,7 +7382,7 @@ async def test_post_rsrpm_data_rejects_mismatched_id():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert body["reason"] == "Data validation failed."
     assert "Invalid value" in body["errors"]
@@ -7290,7 +7418,7 @@ async def test_post_ds_data_rejects_mismatched_id():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert body["reason"] == "Data validation failed."
     assert "Invalid value" in body["errors"]
@@ -7318,7 +7446,7 @@ async def test_post_ds_data_rejects_multi_row_payload():
                 content=json.dumps(multi_row),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert "exactly 1 row" in response.json()["reason"]
 
 
@@ -7361,7 +7489,7 @@ async def test_post_ds_data_rejects_null_depth_shift_values():
                 content=json.dumps(null_payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     # Schema validation catches null before the parquet validator; either path produces 422.
     assert "DepthShiftSet" in str(body)
@@ -7422,7 +7550,7 @@ async def test_get_data_with_null_depth_shift_values_returns_422():
                             },
                         )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert "null" in response.json()["reason"].lower()
     assert "OriginalBaseDepth" in response.json()["reason"]
 
@@ -7599,7 +7727,7 @@ async def test_get_data_with_depth_shift_id_rejects_multiple_wellbores():
                             },
                         )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert "wellbore-scoped" in body["reason"].lower()
 
@@ -7688,7 +7816,7 @@ async def test_get_data_definitive_policy_no_definitive_id_returns_422():
                             params={"depth_shift_policy": "definitive"},
                         )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 @pytest.mark.asyncio
@@ -7868,7 +7996,7 @@ async def test_search_data_with_empty_results_and_depth_shift_without_wellbore_i
                     },
                 )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     body = response.json()
     assert body["reason"] == ("Depth shift requires a wellbore-scoped search. " "Please provide wellbore_id parameter.")
@@ -7918,11 +8046,18 @@ async def test_get_data_definitive_flat_path_recognized():
 
 
 # Issue #678 FluidModelID mismatch validation
-
 _MISMATCHED_FM_ID = "partition:work-product-component--FluidModel:wrong-record:"
 
 def _blfm_data_with_id(value):
     data = _copy.deepcopy(black_oil_fluid_model_mock_objects.TEST_DATA)
+    col_idx = data["columns"].index("FluidModelID")
+    for row in data["data"]:
+        row[col_idx] = value
+    return data
+
+
+def _cfm_data_with_id(value):
+    data = _copy.deepcopy(compositional_fluid_model_mock_objects.TEST_DATA)
     col_idx = data["columns"].index("FluidModelID")
     for row in data["data"]:
         row[col_idx] = value
@@ -7946,7 +8081,30 @@ async def test_post_blfm_data_rejects_mismatched_id():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    body = response.json()
+    assert body["reason"] == "Data validation failed."
+    assert "Invalid value" in body["errors"]
+    assert any("FluidModelID" in entry for entry in body["errors"]["Invalid value"])
+
+
+@pytest.mark.asyncio
+async def test_post_cfm_data_rejects_mismatched_id():
+    """Issue #678: FluidModelID in payload must match record_id in URL."""
+    payload = _cfm_data_with_id(_MISMATCHED_FM_ID)
+    with post_overrides(
+        compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        payload,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert body["reason"] == "Data validation failed."
     assert "Invalid value" in body["errors"]

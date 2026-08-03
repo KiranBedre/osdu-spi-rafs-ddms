@@ -1,0 +1,300 @@
+{
+  "FluidModelID": "opendes:work-product-component--FluidModel:Example:",
+  "Meta": [
+    {
+      "kind": "Unit",
+      "name": "Euc",
+      "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:Euc:",
+      "propertyNames": [
+        "StandardPressure",
+        "StandardTemperature"
+      ]
+    }
+  ],
+  "OilViscosityModel": {
+    "C1": 1.0,
+    "C2": 1.0,
+    "C3": 1.0,
+    "C4": 1.0,
+    "C5": 1.0,
+    "CriticalVolumeLBC": [
+      1.0,
+      1.0
+    ]
+  },
+  "OilViscosityModelTypeID": "opendes:reference-data--ViscosityModelType:Example:",
+  "GasViscosityModel": {
+    "C1": 1.0,
+    "C2": 1.0,
+    "C3": 1.0,
+    "C4": 1.0,
+    "C5": 1.0,
+    "CriticalVolumeLBC": [
+      1.0,
+      1.0
+    ]
+  },
+  "GasViscosityModelTypeID": "opendes:reference-data--ViscosityModelType:Example:",
+  "StandardCondition": {
+    "Pressure": 1.0,
+    "Temperature": 1.0,
+    "IsStandardConditions": false,
+    "NonStandardConditionsReference": "Example"
+  },
+  "StandardPressure": 1.0,
+  "StandardTemperature": 1.0,
+  "SequencedComponentList": [
+    "Example",
+    "Example"
+  ],
+  "BinaryInteractionCoefficient": {
+    "SequencedComponentList": [
+      "Example",
+      "Example"
+    ],
+    "Elements": [
+      1.0,
+      1.0
+    ]
+  },
+  "ComponentProperties": {
+    "MolecularWeight": [
+      1.0,
+      1.0
+    ],
+    "CarbonContent": [
+      1.0,
+      1.0
+    ],
+    "CriticalTemperature": [
+      1.0,
+      1.0
+    ],
+    "CriticalPressure": [
+      1.0,
+      1.0
+    ],
+    "CriticalVolume": [
+      1.0,
+      1.0
+    ],
+    "CriticalCompressibilityFactor": [
+      1.0,
+      1.0
+    ],
+    "AcentricFactor": [
+      1.0,
+      1.0
+    ],
+    "Parachor": [
+      1.0,
+      1.0
+    ],
+    "SpecificGravity": [
+      1.0,
+      1.0
+    ],
+    "NormalBoilingPoint": [
+      1.0,
+      1.0
+    ]
+  },
+  "EquationOfState": {
+    "NonDimensionalVolumeShift": [
+      1.0,
+      1.0
+    ],
+    "DimensionalVolumeShift": [
+      1.0,
+      1.0
+    ],
+    "FormulationMethodID": "opendes:reference-data--FluidModelPropertyFormulationMethod:Example:",
+    "LiFactor": 1.0,
+    "ComponentList": [
+      "Example",
+      "Example"
+    ]
+  },
+  "WaterCompressibility": {
+    "SurfaceDensity": 1.0,
+    "ReferencePressure": 1.0,
+    "FormationVolumeFactor": 1.0,
+    "Viscosity": 1.0,
+    "Compressibility": 1.0,
+    "ViscosityCompressibility": 1.0
+  },
+  "WaterTable": [
+    {
+      "SurfaceDensity": 1.0,
+      "Pressure": [
+        1.0,
+        1.0
+      ],
+      "FormationVolumeFactor": [
+        1.0,
+        1.0
+      ],
+      "Viscosity": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "SurfaceDensity": 1.0,
+      "Pressure": [
+        1.0,
+        1.0
+      ],
+      "FormationVolumeFactor": [
+        1.0,
+        1.0
+      ],
+      "Viscosity": [
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "TemperatureAtDepth": {
+    "TrueVerticalDepths": [
+      1.0,
+      1.0
+    ],
+    "Temperatures": [
+      1.0,
+      1.0
+    ]
+  },
+  "CompositionsAtDepth": [
+    {
+      "CompositionTypeID": "opendes:reference-data--ReservoirComponentCompositionType:Example:",
+      "TrueVerticalDepth": 1.0,
+      "ComponentMoleFractions": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "CompositionTypeID": "opendes:reference-data--ReservoirComponentCompositionType:Example:",
+      "TrueVerticalDepth": 1.0,
+      "ComponentMoleFractions": [
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "FlashValidationExamples": [
+    {
+      "Pressure": 1.0,
+      "Temperature": 1.0,
+      "PhaseProperties": [
+        {
+          "PhaseTypeID": "opendes:reference-data--ReservoirComponentCompositionType:Example:",
+          "MolePercent": 1.0,
+          "MassPercent": 1.0,
+          "VolumePercent": 1.0,
+          "Density": 1.0,
+          "MoleVolume": 1.0,
+          "Viscosity": 1.0,
+          "MoleWeight": 1.0,
+          "ZFactor": 1.0,
+          "ComponentMoleFractions": [
+            1.0,
+            1.0
+          ],
+          "ComponentFugacities": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "PhaseTypeID": "opendes:reference-data--ReservoirComponentCompositionType:Example:",
+          "MolePercent": 1.0,
+          "MassPercent": 1.0,
+          "VolumePercent": 1.0,
+          "Density": 1.0,
+          "MoleVolume": 1.0,
+          "Viscosity": 1.0,
+          "MoleWeight": 1.0,
+          "ZFactor": 1.0,
+          "ComponentMoleFractions": [
+            1.0,
+            1.0
+          ],
+          "ComponentFugacities": [
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "InterfacialTensions": [
+        {
+          "PhaseIndex1": 1,
+          "PhaseIndex2": 1,
+          "Value": 1.0
+        },
+        {
+          "PhaseIndex1": 1,
+          "PhaseIndex2": 1,
+          "Value": 1.0
+        }
+      ]
+    },
+    {
+      "Pressure": 1.0,
+      "Temperature": 1.0,
+      "PhaseProperties": [
+        {
+          "PhaseTypeID": "opendes:reference-data--ReservoirComponentCompositionType:Example:",
+          "MolePercent": 1.0,
+          "MassPercent": 1.0,
+          "VolumePercent": 1.0,
+          "Density": 1.0,
+          "MoleVolume": 1.0,
+          "Viscosity": 1.0,
+          "MoleWeight": 1.0,
+          "ZFactor": 1.0,
+          "ComponentMoleFractions": [
+            1.0,
+            1.0
+          ],
+          "ComponentFugacities": [
+            1.0,
+            1.0
+          ]
+        },
+        {
+          "PhaseTypeID": "opendes:reference-data--ReservoirComponentCompositionType:Example:",
+          "MolePercent": 1.0,
+          "MassPercent": 1.0,
+          "VolumePercent": 1.0,
+          "Density": 1.0,
+          "MoleVolume": 1.0,
+          "Viscosity": 1.0,
+          "MoleWeight": 1.0,
+          "ZFactor": 1.0,
+          "ComponentMoleFractions": [
+            1.0,
+            1.0
+          ],
+          "ComponentFugacities": [
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      "InterfacialTensions": [
+        {
+          "PhaseIndex1": 1,
+          "PhaseIndex2": 1,
+          "Value": 1.0
+        },
+        {
+          "PhaseIndex1": 1,
+          "PhaseIndex2": 1,
+          "Value": 1.0
+        }
+      ]
+    }
+  ]
+}
