@@ -159,7 +159,7 @@ class TestSamplesAnalysisDynamicSearchView:
         }
         with pytest.raises(HTTPException) as exc_info:
             search_view._validate_single_wellbore_scope(sample_records)
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     def test_validate_single_wellbore_scope_no_wellbores(self, search_view):
         """Test validation fails when no wellbores found."""
@@ -171,7 +171,7 @@ class TestSamplesAnalysisDynamicSearchView:
         }
         with pytest.raises(HTTPException) as exc_info:
             search_view._validate_single_wellbore_scope(sample_records)
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert "WellboreID" in str(exc_info.value.detail)
 
     def test_validate_single_wellbore_scope_one_missing_wellbore(self, search_view):
@@ -194,7 +194,7 @@ class TestSamplesAnalysisDynamicSearchView:
         with pytest.raises(HTTPException) as exc_info:
             search_view._validate_single_wellbore_scope(sample_records)
 
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert "Missing WellboreID" in str(exc_info.value.detail)
         assert "sample2" in str(exc_info.value.detail)
 
@@ -295,7 +295,7 @@ class TestSamplesAnalysisDynamicSearchView:
                 search_scope=search_scope,
             )
 
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert "SampleID" in str(exc_info.value.detail)
 
     def test_validate_single_wellbore_scope_requested_mismatch(self, search_view):
@@ -318,7 +318,7 @@ class TestSamplesAnalysisDynamicSearchView:
                 requested_wellbore_id="osdu:master-data--Wellbore:wb-1:",
             )
 
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert "requested wellbore_id" in str(exc_info.value.detail)
 
     def test_build_dynamic_endpoint_override(self, search_view):
@@ -422,7 +422,7 @@ class TestSamplesAnalysisDynamicSearchView:
                 search_scope=search_scope,
             )
 
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert "wellbore-scoped" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio
@@ -470,7 +470,7 @@ class TestSamplesAnalysisDynamicSearchView:
             },
         )
         mock_resolver.resolve_definitive_wpc_id.side_effect = HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="No DefinitiveDepthShift found in any sample record.",
         )
 
@@ -488,7 +488,7 @@ class TestSamplesAnalysisDynamicSearchView:
                     search_service=mock_search,
                 )
 
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert "No DefinitiveDepthShift found in any sample record" in exc_info.value.detail
 
     @pytest.mark.asyncio
@@ -624,7 +624,7 @@ class TestSamplesAnalysisDynamicSearchView:
         )
         mock_resolver.fetch_coretolog_depth_shift_data = AsyncMock(
             side_effect=HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="DepthShiftInterpolationMethodID resolves to 'bilinear'",
             ),
         )
@@ -641,7 +641,7 @@ class TestSamplesAnalysisDynamicSearchView:
                     search_service=MagicMock(),
                 )
 
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert "bilinear" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio
@@ -691,7 +691,7 @@ class TestSamplesAnalysisDynamicSearchView:
         )
         mock_resolver.fetch_coretolog_depth_shift_data = AsyncMock(
             side_effect=HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
                 detail="DepthShiftSet has overlapping intervals",
             ),
         )
@@ -708,7 +708,7 @@ class TestSamplesAnalysisDynamicSearchView:
                     search_service=MagicMock(),
                 )
 
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         assert "overlapping intervals" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio

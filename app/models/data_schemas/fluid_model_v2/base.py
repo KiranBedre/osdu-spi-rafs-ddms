@@ -14,13 +14,19 @@
 
 from app.models.data_schemas.version import ContentSchemaVersion
 from app.models.data_schemas.fluid_model_v2.black_oil_fluid_model_data_model_1_0_0 import BlackOilFluidModelModel100
+from app.models.data_schemas.fluid_model_v2.compositional_fluid_model_data_model_1_0_0 import CompositionalFluidModelModel100
 from app.resources.paths import FluidModelRelativePathsV2
 
 BLACK_OIL_FLUID_MODEL_MODELS = {
     ContentSchemaVersion.V_1_0_0: BlackOilFluidModelModel100,
 }
 
+COMPOSITIONAL_FLUID_MODEL_MODELS = {
+    ContentSchemaVersion.V_1_0_0: CompositionalFluidModelModel100,
+}
+
 fluid_model_paths_api_v2 = FluidModelRelativePathsV2()
 MAP_TO_FLUID_MODEL_MODELS_API_V2 = {
-    fluid_model_paths_api_v2.BLACK_OIL_FLUID_MODEL: BLACK_OIL_FLUID_MODEL_MODELS
+    fluid_model_paths_api_v2.BLACK_OIL_FLUID_MODEL: BLACK_OIL_FLUID_MODEL_MODELS,
+    fluid_model_paths_api_v2.COMPOSITIONAL_FLUID_MODEL: COMPOSITIONAL_FLUID_MODEL_MODELS
 }

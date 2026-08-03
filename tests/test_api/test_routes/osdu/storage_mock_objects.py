@@ -509,6 +509,7 @@ class TestContentPathsApiV2:
     ROLLER_OVEN_TEST = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.ROLLER_OVEN_TEST}"
     SATURATION_TEST = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.SATURATION_TEST}"
     BLACK_OIL_FLUID_MODEL = f"{FLUID_MODEL_DATA_V2_PATH}{fluid_model_relative_paths_v2.BLACK_OIL_FLUID_MODEL}"
+    COMPOSITIONAL_FLUID_MODEL = f"{FLUID_MODEL_DATA_V2_PATH}{fluid_model_relative_paths_v2.COMPOSITIONAL_FLUID_MODEL}"
 
 
 class BulkDatasetIdV2(NamedTuple):
@@ -567,6 +568,7 @@ class BulkDatasetIdV2(NamedTuple):
     ROLLER_OVEN_TEST = f"{PARTITION}:{FILE_GENERIC_TYPE}:rolleroventest-{TEST_DATASET_UID}"
     SATURATION_TEST = f"{PARTITION}:{FILE_GENERIC_TYPE}:saturationtest-{TEST_DATASET_UID}"
     BLACK_OIL_FLUID_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:blackoil{FLUID_MODEL_STR}-{TEST_DATASET_UID}"
+    COMPOSITIONAL_FLUID_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:compositional{FLUID_MODEL_STR}-{TEST_DATASET_UID}"
 
 
 with open(f"{dir_path}/schemas/wpc_definitions.json") as fp:

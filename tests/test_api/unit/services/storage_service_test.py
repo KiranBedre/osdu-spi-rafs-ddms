@@ -296,7 +296,7 @@ async def test_error_handler_soft_delete_record(
 @pytest.mark.parametrize(
     "storage_method,response_code,expected_status_code",
     [
-        ("create_update_records", status.HTTP_400_BAD_REQUEST, status.HTTP_422_UNPROCESSABLE_ENTITY),
+        ("create_update_records", status.HTTP_400_BAD_REQUEST, status.HTTP_422_UNPROCESSABLE_CONTENT),
         ("create_update_records", status.HTTP_429_TOO_MANY_REQUESTS, status.HTTP_502_BAD_GATEWAY),
         ("create_update_records", status.HTTP_500_INTERNAL_SERVER_ERROR, status.HTTP_502_BAD_GATEWAY),
     ],
