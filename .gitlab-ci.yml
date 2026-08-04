@@ -23,18 +23,22 @@ include:
 
   # standard pipeline setup
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: release/0.30
     file: "standard-setup.yml"
 
   # build stage
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: release/0.30
     file: "build/python.yml"
 
   # fossa scan
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: release/0.30
     file: "scanners/fossa-python.yml"
 
   # gitlab ultimate scan
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: release/0.30
     file: "scanners/gitlab-ultimate.yml"
 
   # Community/OSDU
@@ -42,26 +46,32 @@ include:
 
   # AZURE provider
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: release/0.30
     file: "cloud-providers/azure.yml"
 
   # AWS provider
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: release/0.30
     file: "cloud-providers/aws-global.yml"
 
   # GC provider
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: release/0.30
     file: "cloud-providers/gc-global.yml"
 
   # CI provider
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: release/0.30
     file: "cloud-providers/cimpl-global.yml"
 
   # CI provider - OpenAPI spec validation
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: release/0.30
     file: "cloud-providers/cimpl-openapi.yml"
 
   # reporting stage
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: release/0.30
     file: "reporting/reporting.yml"
 
   # OVERRIDE STAGES
