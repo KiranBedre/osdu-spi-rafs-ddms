@@ -87,6 +87,8 @@ def create_referenced_records(api, helper, tests_data, tmp_path_factory, create_
     fixed_id_records = [
         DataFiles.SAMPLE,
     ]
+    fixed_record_ids = {copy.deepcopy(tests_data(data))["id"] for data in fixed_id_records}
+    storage_dependencies.difference_update(fixed_record_ids)
 
     shared_dir = tmp_path_factory.getbasetemp().parent
 
@@ -106,7 +108,7 @@ def create_referenced_records(api, helper, tests_data, tmp_path_factory, create_
         name="create_referenced_records",
         state=state,
         teardown=lambda s: helper.purge_reference_records(
-            api, state, storage_dependencies, record_to_create,
+            api, state, storage_dependencies, record_to_create, fixed_id_records,
         ),
     )
 

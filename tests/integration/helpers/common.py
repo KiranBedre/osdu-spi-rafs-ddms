@@ -296,15 +296,33 @@ class CommonHelper():
 
         for data in fixed_id_records:
             record_data = copy.deepcopy(tests_data(data))
-            api.storage.create_or_update_records([record_data])
             created_ids[f"{data}_fixed_id"] = record_data["id"]
+            record_response = api.storage.get(
+                path=f"/records/{record_data['id']}",
+                allowed_codes=[200, 404],
+            )
+            fixed_record_was_created = record_response.status_code == 404
+            created_ids[f"{data}_fixed_id_created"] = fixed_record_was_created
+
+            if fixed_record_was_created:
+                api.storage.create_or_update_records([record_data])
 
         return created_ids
 
-    def purge_reference_records(self, api, state: dict, storage_dependencies: set, record_to_create: list) -> None:
+    def purge_reference_records(
+        self,
+        api,
+        state: dict,
+        storage_dependencies: set,
+        record_to_create: list,
+        fixed_id_records: list = None,
+    ) -> None:
         """Purge SAR record and reference records."""
         for data_type, _, _ in record_to_create:
             api.storage.purge_record(state[f"{data_type}_record_id"])
+        for data in fixed_id_records or []:
+            if state.get(f"{data}_fixed_id_created"):
+                api.storage.purge_record(state[f"{data}_fixed_id"])
         for reference_id in storage_dependencies:
             if "reference-data" in reference_id:
                 continue
