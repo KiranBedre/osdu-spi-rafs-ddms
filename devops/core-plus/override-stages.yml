@@ -167,6 +167,7 @@ cimpl-test-python:
     PARTITION: $CIMPL_TENANT
     SERVICE_HOST_STORAGE: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/storage/v2
     SERVICE_HOST_LEGAL: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/legal/v1
+    SERVICE_HOST_SEARCH: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/search/v2
     RAFS_USE_BLOB_STORAGE: "False"
   extends:
     - .cimpl-variables
@@ -244,6 +245,7 @@ cimpl-dev2-test-python:
     PARTITION: $CIMPL_TENANT
     SERVICE_HOST_STORAGE: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/storage/v2
     SERVICE_HOST_LEGAL: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/legal/v1
+    SERVICE_HOST_SEARCH: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/search/v2
     RAFS_USE_BLOB_STORAGE: "False"
   extends:
     - .cimpl-dev2-variables
