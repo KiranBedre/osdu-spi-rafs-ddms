@@ -1,0 +1,83 @@
+{
+    "columns": [
+        "FluidModelID",
+        "Meta",
+        "OilTable",
+        "GasTable",
+        "WaterTable"
+    ],
+    "index": [
+        0
+    ],
+    "data": [
+        [
+            "{data_partition_id}:work-product-component--FluidModel:{record_id}:",
+            [],
+            [
+                {
+                    "SolutionGOR": [
+                        100.0,
+                        120.0
+                    ],
+                    "BubblePointPressure": [
+                        2000.0,
+                        2500.0
+                    ],
+                    "Pressure": [
+                        2000.0,
+                        2500.0
+                    ],
+                    "FormationVolumeFactor": [
+                        1.2,
+                        1.15
+                    ],
+                    "Viscosity": [
+                        1.5,
+                        1.7
+                    ],
+                    "Temperature": 180.0,
+                    "SurfaceDensity": 53.0
+                }
+            ],
+            [
+                {
+                    "VaporOGR": [
+                        0.01,
+                        0.02
+                    ],
+                    "Pressure": [
+                        2000.0,
+                        2500.0
+                    ],
+                    "FormationVolumeFactor": [
+                        0.005,
+                        0.0045
+                    ],
+                    "Viscosity": [
+                        0.02,
+                        0.021
+                    ],
+                    "Temperature": 180.0,
+                    "SurfaceDensity": 0.06
+                }
+            ],
+            [
+                {
+                    "SurfaceDensity": 62.4,
+                    "Pressure": [
+                        2000.0,
+                        2500.0
+                    ],
+                    "FormationVolumeFactor": [
+                        1.01,
+                        1.0
+                    ],
+                    "Viscosity": [
+                        0.5,
+                        0.55
+                    ]
+                }
+            ]
+        ]
+    ]
+}

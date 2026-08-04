@@ -141,3 +141,21 @@ def search_available(api, helper, sample_analysis_record_id, analysis_type):
         sample_analysis_record_id,
         max_attempts=5,
     )
+
+
+@pytest.fixture(scope="function", autouse=True)
+def restore_sample_definition(api, tests_data):
+    """Restore the fixed Sample record after tests that mutate it."""
+    sample_id = copy.deepcopy(tests_data(DataFiles.SAMPLE))["id"]
+    sample_snapshot_response = api.storage.get(
+        path=f"/records/{sample_id}",
+        allowed_codes=[200, 404],
+    )
+    sample_snapshot = None
+    if sample_snapshot_response.status_code == 200:
+        sample_snapshot = sample_snapshot_response.json()
+
+    yield
+
+    if sample_snapshot is not None:
+        api.storage.create_or_update_records([sample_snapshot])
