@@ -12,34 +12,56 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import copy
-
 import pytest
 from starlette import status
 
 from tests.integration.config import (
-    CONFIG,
-    DataFiles,
     SamplesAnalysisEndpoints,
     SamplesAnalysisTypes,
 )
 
-DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
+
+def _prepare_negative_return_data_call(
+    api,
+    endpoint,
+    args,
+    create_apply_depth_shift_case,
+):
+    """Create isolated input data for a parametrized negative request."""
+    case = create_apply_depth_shift_case(
+        wait_for_search=endpoint == "search_data",
+    )
+    call_values = {
+        "record_id": case["sample_analysis_record_id"],
+        "dataset_id": case["sample_analysis_dataset_id"],
+        "analysis_type": case["analysis_type"],
+    }
+    method = getattr(api.sample_analysis, endpoint)
+    return case, method, [call_values[name] for name in args]
 
 
-@pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS)
+@pytest.mark.parametrize(
+    "endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS
+)
 def test_apply_depth_shift_negative_invalid_depth_shift_policy(
-    api, tests_data, endpoint, args, sample_analysis_record_id, sample_analysis_dataset_id, analysis_type
+    api,
+    endpoint,
+    args,
+    create_apply_depth_shift_case,
+    add_search_scope,
 ):
     """Reject invalid value for depth_shift_policy parameter with 400 Bad Request."""
-    record_id = sample_analysis_record_id
-    dataset_id = sample_analysis_dataset_id
-    method = getattr(api.sample_analysis, endpoint)
-    local_vars = locals().copy()
-    call_args = [local_vars[name] for name in args]
-    params = {
-        "depth_shift_policy": "dummy",
-    }
+    case, method, call_args = _prepare_negative_return_data_call(
+        api,
+        endpoint,
+        args,
+        create_apply_depth_shift_case,
+    )
+    params = add_search_scope(
+        {"depth_shift_policy": "dummy"},
+        endpoint,
+        case,
+    )
 
     kwargs = {
         "allowed_codes": [status.HTTP_400_BAD_REQUEST],
@@ -51,23 +73,37 @@ def test_apply_depth_shift_negative_invalid_depth_shift_policy(
     # Assert
     assert response.status_code == 400
     body = response.json()
-    assert "Invalid 'depth_shift_policy' value 'dummy'. Must be one of: ['definitive', 'id_provided']" in body["reason"]
+    assert (
+        "Invalid 'depth_shift_policy' value 'dummy'. Must be one of: ['definitive', 'id_provided']"
+        in body["reason"]
+    )
 
 
-@pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS)
+@pytest.mark.parametrize(
+    "endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS
+)
 def test_apply_depth_shift_negative_invalid_depth_shift_id(
-    api, tests_data, endpoint, args, sample_analysis_record_id, sample_analysis_dataset_id, analysis_type
+    api,
+    endpoint,
+    args,
+    create_apply_depth_shift_case,
+    add_search_scope
 ):
     """Reject invalid value for depth_shift_id parameter with 400 Bad Request."""
-    record_id = sample_analysis_record_id
-    dataset_id = sample_analysis_dataset_id
-    method = getattr(api.sample_analysis, endpoint)
-    local_vars = locals().copy()
-    call_args = [local_vars[name] for name in args]
-    params = {
-        "depth_shift_policy": "id_provided",
-        "depth_shift_id": "dummy",
-    }
+    case, method, call_args = _prepare_negative_return_data_call(
+        api,
+        endpoint,
+        args,
+        create_apply_depth_shift_case,
+    )
+    params = add_search_scope(
+        {
+            "depth_shift_policy": "id_provided",
+            "depth_shift_id": "dummy",
+        },
+        endpoint,
+        case,
+    )
 
     kwargs = {
         "allowed_codes": [status.HTTP_400_BAD_REQUEST],
@@ -85,19 +121,28 @@ def test_apply_depth_shift_negative_invalid_depth_shift_id(
     ) in body["reason"]
 
 
-@pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS)
+@pytest.mark.parametrize(
+    "endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS
+)
 def test_apply_depth_shift_negative_missing_depth_shift_id(
-    api, tests_data, endpoint, args, sample_analysis_record_id, sample_analysis_dataset_id, analysis_type
+    api,
+    endpoint,
+    args,
+    create_apply_depth_shift_case,
+    add_search_scope
 ):
     """Reject missing depth_shift_id if depth_shift_policy is id_provided with 400 Bad Request."""
-    record_id = sample_analysis_record_id
-    dataset_id = sample_analysis_dataset_id
-    method = getattr(api.sample_analysis, endpoint)
-    local_vars = locals().copy()
-    call_args = [local_vars[name] for name in args]
-    params = {
-        "depth_shift_policy": "id_provided",
-    }
+    case, method, call_args = _prepare_negative_return_data_call(
+        api,
+        endpoint,
+        args,
+        create_apply_depth_shift_case,
+    )
+    params = add_search_scope(
+        {"depth_shift_policy": "id_provided"},
+        endpoint,
+        case,
+    )
 
     kwargs = {
         "allowed_codes": [status.HTTP_400_BAD_REQUEST],
@@ -109,22 +154,33 @@ def test_apply_depth_shift_negative_missing_depth_shift_id(
     # Assert
     assert response.status_code == 400
     body = response.json()
-    assert "'depth_shift_policy=id_provided' requires 'depth_shift_id'." in body["reason"]
+    assert (
+        "'depth_shift_policy=id_provided' requires 'depth_shift_id'." in body["reason"]
+    )
 
 
-@pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS)
+@pytest.mark.parametrize(
+    "endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS
+)
 def test_apply_depth_shift_negative_missing_depth_shift_policy(
-    api, tests_data, endpoint, args, sample_analysis_record_id, sample_analysis_dataset_id, analysis_type
+    api,
+    endpoint,
+    args,
+    create_apply_depth_shift_case,
+    add_search_scope
 ):
     """Reject missing depth_shift_policy if depth_shift_id is provided with 400 Bad Request."""
-    record_id = sample_analysis_record_id
-    dataset_id = sample_analysis_dataset_id
-    method = getattr(api.sample_analysis, endpoint)
-    local_vars = locals().copy()
-    call_args = [local_vars[name] for name in args]
-    params = {
-        "depth_shift_id": "dummy",
-    }
+    case, method, call_args = _prepare_negative_return_data_call(
+        api,
+        endpoint,
+        args,
+        create_apply_depth_shift_case,
+    )
+    params = add_search_scope(
+        {"depth_shift_id": "dummy"},
+        endpoint,
+        case,
+    )
 
     kwargs = {
         "allowed_codes": [status.HTTP_400_BAD_REQUEST],
@@ -136,23 +192,37 @@ def test_apply_depth_shift_negative_missing_depth_shift_policy(
     # Assert
     assert response.status_code == 400
     body = response.json()
-    assert "'depth_shift_id' requires 'depth_shift_policy=id_provided' to be explicit." in body["reason"]
+    assert (
+        "'depth_shift_id' requires 'depth_shift_policy=id_provided' to be explicit."
+        in body["reason"]
+    )
 
 
-@pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS)
+@pytest.mark.parametrize(
+    "endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS
+)
 def test_apply_depth_shift_negative_definitive_depth_shift_policy_with_depth_shift_id(
-    api, tests_data, endpoint, args, sample_analysis_record_id, sample_analysis_dataset_id, analysis_type
+    api,
+    endpoint,
+    args,
+    create_apply_depth_shift_case,
+    add_search_scope
 ):
     """Reject definitive depth_shift_policy if depth_shift_id is also provided with 400 Bad Request."""
-    record_id = sample_analysis_record_id
-    dataset_id = sample_analysis_dataset_id
-    method = getattr(api.sample_analysis, endpoint)
-    local_vars = locals().copy()
-    call_args = [local_vars[name] for name in args]
-    params = {
-        "depth_shift_policy": "definitive",
-        "depth_shift_id": "dummy",
-    }
+    case, method, call_args = _prepare_negative_return_data_call(
+        api,
+        endpoint,
+        args,
+        create_apply_depth_shift_case,
+    )
+    params = add_search_scope(
+        {
+            "depth_shift_policy": "definitive",
+            "depth_shift_id": "dummy",
+        },
+        endpoint,
+        case,
+    )
 
     kwargs = {
         "allowed_codes": [status.HTTP_400_BAD_REQUEST],
@@ -164,17 +234,25 @@ def test_apply_depth_shift_negative_definitive_depth_shift_policy_with_depth_shi
     # Assert
     assert response.status_code == 400
     body = response.json()
-    assert "'depth_shift_id' must not be supplied when 'depth_shift_policy=definitive'." in body["reason"]
+    assert (
+        "'depth_shift_id' must not be supplied when 'depth_shift_policy=definitive'."
+        in body["reason"]
+    )
 
 
 def test_apply_depth_shift_negative_definitive_depth_shift_policy_without_definitive_shift_assigned(
-    api, tests_data, sample_analysis_record_id, sample_analysis_dataset_id
+    api,
+    create_apply_depth_shift_case,
+    add_search_scope
 ):
     """Reject definitive depth_shift_policy if no definitive shift assigned to Sample with 422 Unprocessable Content."""
+    case = create_apply_depth_shift_case()
 
-    params = {
-        "depth_shift_policy": "definitive",
-    }
+    params = add_search_scope(
+        {"depth_shift_policy": "definitive"},
+        "get_data",
+        case,
+    )
 
     kwargs = {
         "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
@@ -182,8 +260,8 @@ def test_apply_depth_shift_negative_definitive_depth_shift_policy_without_defini
     }
 
     response = api.sample_analysis.get_data(
-        record_id=sample_analysis_record_id,
-        dataset_id=sample_analysis_dataset_id,
+        record_id=case["sample_analysis_record_id"],
+        dataset_id=case["sample_analysis_dataset_id"],
         analysis_type=SamplesAnalysisTypes.NMR,
         params=params,
         **kwargs,
@@ -196,7 +274,7 @@ def test_apply_depth_shift_negative_definitive_depth_shift_policy_without_defini
 
 
 def test_apply_depth_shift_negative_search_without_wellbore_id(
-    api, tests_data, sample_analysis_record_id, sample_analysis_dataset_id
+    api,
 ):
     """Reject search request if depth shift requested but no wellbore_id provided with 422 Unprocessable Content."""
 
@@ -209,30 +287,34 @@ def test_apply_depth_shift_negative_search_without_wellbore_id(
         "raw": True,
     }
 
-    response = api.sample_analysis.search_data(analysis_type=SamplesAnalysisTypes.NMR, params=params, **kwargs)
+    response = api.sample_analysis.search_data(
+        analysis_type=SamplesAnalysisTypes.NMR, params=params, **kwargs
+    )
 
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert "Depth shift requires a wellbore-scoped search. Please provide wellbore_id parameter." in body["reason"]
+    assert (
+        "Depth shift requires a wellbore-scoped search. Please provide wellbore_id parameter."
+        in body["reason"]
+    )
 
 
 def test_apply_depth_shift_negative_search_with_invalid_wellbore_id(
-    api, tests_data, sample_analysis_record_id, sample_analysis_dataset_id
+    api,
 ):
     """Reject search request if depth shift requested but invalid wellbore_id provided with 422 Bad Request."""
 
-    params = {
-        "depth_shift_policy": "definitive",
-        "wellbore_id": "dummy"
-    }
+    params = {"depth_shift_policy": "definitive", "wellbore_id": "dummy"}
 
     kwargs = {
         "allowed_codes": [status.HTTP_400_BAD_REQUEST],
         "raw": True,
     }
 
-    response = api.sample_analysis.search_data(analysis_type=SamplesAnalysisTypes.NMR, params=params, **kwargs)
+    response = api.sample_analysis.search_data(
+        analysis_type=SamplesAnalysisTypes.NMR, params=params, **kwargs
+    )
 
     # Assert
     assert response.status_code == 400

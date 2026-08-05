@@ -83,12 +83,14 @@ def fresh_dataset_id(api, helper, fresh_record_id, tests_data):
     """Create a fresh dataset and return dataset_id."""
     data_payload = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
     data_payload["data"][0][0] = f"{fresh_record_id}:"
-    post_response = api.depth_shift.post_data(record_id=fresh_record_id, body=data_payload)
+    post_response = api.depth_shift.post_data(
+        record_id=fresh_record_id, body=data_payload
+    )
     return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
 
 
 @pytest.fixture(scope="function")
-def search_available(api, helper, record_id):
+def search_available(api, helper, record_id, dataset_id):
     """Verify if record is available in search results - workaround for issue #729."""
     params = {"rows_filter": f"DepthShiftWPCID,eq,{record_id}:"}
 
@@ -97,6 +99,23 @@ def search_available(api, helper, record_id):
         lambda: api.depth_shift.search_records(params=params),
         record_id,
         max_attempts=5,
+    )
+    helper.wait_for_search_data(
+        lambda: api.depth_shift.search_data(params=params),
+        record_id,
+    )
+
+
+@pytest.fixture
+def pagination_case(create_isolated_pagination_case):
+    """Create two Depth Shift records isolated by a unique wellbore."""
+    return create_isolated_pagination_case(
+        api_path=DataTypes.DEPTH_SHIFT,
+        record_file=DataFiles.DEPTH_SHIFT,
+        data_file=DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA,
+        id_template=DataTemplates.ID_DEPTH_SHIFT.format(
+            partition=CONFIG["DATA_PARTITION"],
+        ),
     )
 
 
