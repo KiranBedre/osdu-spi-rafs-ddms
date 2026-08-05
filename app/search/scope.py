@@ -29,6 +29,7 @@ SCOPE_PROFILE_DEFAULT = _SCOPE_PROFILE_DEFAULT
 SCOPE_PROFILE_SAMPLESANALYSIS = _SCOPE_PROFILE_SAMPLESANALYSIS
 SCOPE_PROFILE_SATURATION_FUNCTION_SET = _SCOPE_PROFILE_SATURATION_FUNCTION_SET
 SCOPE_PROFILE_RES_SIM_ROCK_PHYSICS = _SCOPE_PROFILE_RES_SIM_ROCK_PHYSICS
+SCOPE_PROFILE_FLUID_MODEL = "fluid_model"
 
 # Scope keys that cannot be queried directly on SamplesAnalysis records.
 # They are resolved via hop(s) against master-data (Wellbore and/or Sample).
@@ -84,6 +85,11 @@ SEARCH_SCOPE_QUERY_FIELDS_BY_PROFILE = MappingProxyType(
             "basin_id": ("data.GeoContexts.BasinID",),
             "field_id": ("data.GeoContexts.FieldID",),
         },
+        # Effective schema fields expose GeoContexts; no direct well/wellbore IDs.
+        SCOPE_PROFILE_FLUID_MODEL: {
+            "basin_id": ("data.GeoContexts.BasinID",),
+            "field_id": ("data.GeoContexts.FieldID",),
+        },
     },
 )
 
@@ -110,6 +116,10 @@ _NESTED_SCOPE_QUERY_FIELDS_BY_PROFILE = MappingProxyType(
             "field_id": ("nested(data.GeoContexts, (FieldID:{value}))",),
         },
         _SCOPE_PROFILE_RES_SIM_ROCK_PHYSICS: {
+            "basin_id": ("nested(data.GeoContexts, (BasinID:{value}))",),
+            "field_id": ("nested(data.GeoContexts, (FieldID:{value}))",),
+        },
+        SCOPE_PROFILE_FLUID_MODEL: {
             "basin_id": ("nested(data.GeoContexts, (BasinID:{value}))",),
             "field_id": ("nested(data.GeoContexts, (FieldID:{value}))",),
         },
