@@ -14,7 +14,16 @@
 
 from fastapi import APIRouter
 
-from app.api.dependencies.validation import validate_fluid_model_v2_payload
+from app.api.dependencies.validation import (
+    validate_fluid_model_v2_payload,
+    validate_filters_for_content_type,
+    get_geo_context_scope,
+)
+from app.api.routes.common.dynamic_search import (
+    DynamicGenericSearchView,
+    get_search_data_description_template,
+    get_search_description_template,
+)
 from app.api.routes.common.endpoints import (
     GenericSchemasView,
     build_extractor_for_param_name,
@@ -23,6 +32,7 @@ from app.api.routes.fluidmodel.endpoints import FluidModelRecordView
 from app.api.routes.v2.data.endpoints import DynamicContentTypeDataViewV2
 from app.models.data_schemas.base import MAPS_TO_DATA_MODEL
 from app.resources.paths import FLUID_MODEL_STR
+from app.search.fluid_model_ids_fetcher import SearchServiceFluidModelIdsFetcher
 
 FM_ID_REGEX_STR = r"^[\w\-\.]+:work-product-component--FluidModel:[\w\-\.\:\%]+$"
 
@@ -56,4 +66,27 @@ DynamicContentTypeDataViewV2(
     id_regex_str=FM_ID_REGEX_STR,
     multiple_content_type_param="fluid_model_type",
     record_id_column="FluidModelID",
+)
+
+DynamicGenericSearchView(
+    router=fm_record_router_v2,
+    ddms_dataset_ids_fetcher_class=SearchServiceFluidModelIdsFetcher,
+    endpoints_config=[
+        {
+            "path": "/{fluid_model_type}/search",
+            "handler": "get_search",
+            "param_name": "fluid_model_type",
+            "filter_dep": validate_filters_for_content_type,
+            "scope_dep": get_geo_context_scope,
+            "description": get_search_description_template("{fluid_model_type}"),
+        },
+        {
+            "path": "/{fluid_model_type}/search/data",
+            "handler": "get_search_data",
+            "param_name": "fluid_model_type",
+            "filter_dep": validate_filters_for_content_type,
+            "scope_dep": get_geo_context_scope,
+            "description": get_search_data_description_template("{fluid_model_type}"),
+        },
+    ],
 )

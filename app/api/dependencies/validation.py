@@ -884,3 +884,26 @@ def get_depth_shift_scope(
     validate_scope_parameter("field_id", field_id)
     validate_scope_parameter("wellbore_id", wellbore_id)
     return SearchScope(basin_id=basin_id, field_id=field_id, wellbore_id=wellbore_id)
+
+
+def validate_record_multi_content_type_reference(
+    records_list: List[OsduStorageRecord],
+    content_type_reference: str,
+) -> List[int]:
+    """
+    Parse and validate multiple content type reference data exists in the record
+    body. Records missing the reference data are collected to be displayed with
+    the warning that they will not be included in outputs produced by search endpoints.
+
+    :param request_records: request records
+    :type request_records: List[OsduStorageRecord]
+    :param content_type_reference: multi content type reference data
+    :type content_type_reference: str
+    """
+    warning_indices = []
+    for index, record in enumerate(records_list):
+        record_data = record.get("data", {})
+        content_type_reference_value = record_data.get(content_type_reference)
+        if not content_type_reference_value:
+            warning_indices.append(index)
+    return warning_indices

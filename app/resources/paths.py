@@ -192,3 +192,9 @@ FLUID_MODEL_STR = 'fluidmodel'
 class FluidModelRelativePathsV2(NamedTuple):
     BLACK_OIL_FLUID_MODEL: str = "/data/blackoilfluidmodel"
     COMPOSITIONAL_FLUID_MODEL: str = "/data/compositionalfluidmodel"
+
+
+FLUID_MODEL_TYPE_MAPPING = {
+    "blackoilfluidmodel": "BlackOil",
+    "compositionalfluidmodel": "Compositional",
+}

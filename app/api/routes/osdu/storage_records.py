@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 from typing import List
+from pydantic import Field
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Request, Response
 from fastapi_cache.decorator import cache
@@ -311,3 +312,10 @@ class BaseStorageRecordView(object):
             ),
             dependencies=[Depends(validate_record_id)],
         )
+
+
+class StorageUpsertResponseWithWarning(StorageUpsertResponse):
+    warning: str
+    warningRecordIds: List[str] = Field(
+        alias="warning_record_ids",
+    )
