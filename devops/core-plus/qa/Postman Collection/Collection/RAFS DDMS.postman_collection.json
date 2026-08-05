@@ -707,6 +707,74 @@
                   "response": []
                 },
                 {
+                  "name": "Ingest RefData DepthShiftType:CoreToWellLog",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 201\", function () {",
+                          "    pm.response.to.have.status(201);",
+                          "});",
+                          "",
+                          "pm.test(\"DepthShiftType reference record was ingested\", function () {",
+                          "    const json = pm.response.json();",
+                          "    pm.expect(json).to.have.property(\"recordCount\", 1);",
+                          "    pm.expect(json).to.have.property(\"skippedRecordIds\").that.is.an(\"array\").with.lengthOf(0);",
+                          "    pm.expect(json.recordIds).to.include(\"{{data-partition-id}}:reference-data--DepthShiftType:CoreToWellLog\");",
+                          "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "protocolProfileBehavior": {
+                    "disabledSystemHeaders": {
+                      "content-type": true
+                    }
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "data-partition-id",
+                        "value": "{{data-partition-id}}",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{access_token}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "[\n    {\n        \"id\": \"{{data-partition-id}}:reference-data--DepthShiftType:CoreToWellLog\",\n        \"kind\": \"{{authority}}:wks:reference-data--DepthShiftType:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ]\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"status\": \"compliant\"\n        },\n        \"data\": {\n            \"Name\": \"Core To Well Log\",\n            \"ID\": \"CoreToWellLog\",\n            \"Code\": \"CoreToWellLog\",\n            \"Description\": \"Depth shift intended to shift core samples to a reference well log.\",\n            \"Source\": \"Workbook ReferenceValues/Authoring/DepthShiftType.1.xlsx; commit SHA ce07eb71.\",\n            \"CommitDate\": \"2026-04-30T02:52:17+00:00\"\n        }\n    }\n]"
+                    },
+                    "url": {
+                      "raw": "https://{{STORAGE_HOST}}/records",
+                      "protocol": "https",
+                      "host": [
+                        "{{STORAGE_HOST}}"
+                      ],
+                      "path": [
+                        "records"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
                   "name": "Create WPC FluidModel:ParentModelID",
                   "event": [
                     {
