@@ -130,7 +130,8 @@ TEST_FILTERED_DATA = {
                     "Temperature": 180,
                     "SurfaceDensity": 52.4,
                     "InterpolationExtrapolationMethod": {
-                        "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:"
+                        "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:",
+                        "InterpolationExtrapolationMethodInstructionSet": "Instruction set for linear interpolation/extrapolation method."
                     },
                     "Parachor": 23.5,
                     "CarbonContent": 4.5,

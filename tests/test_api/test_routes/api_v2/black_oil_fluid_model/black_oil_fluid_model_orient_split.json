@@ -191,7 +191,8 @@
           "Temperature": 180,
           "SurfaceDensity": 52.4,
           "InterpolationExtrapolationMethod": {
-            "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:"
+            "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:",
+            "InterpolationExtrapolationMethodInstructionSet": "Instruction set for linear interpolation/extrapolation method."
           },
           "Parachor": 23.5,
           "CarbonContent": 4.5,
@@ -234,7 +235,8 @@
           "SurfaceDensity": 52.4,
           "MaximumPressure": 6000,
           "InterpolationExtrapolationMethod": {
-            "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:"
+            "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:",
+            "InterpolationExtrapolationMethodInstructionSet": "Instruction set for linear interpolation/extrapolation method."
           },
           "Parachor": 23.5,
           "CarbonContent": 4.5,
@@ -263,7 +265,8 @@
           "Temperature": 90,
           "SurfaceDensity": 52.4,
           "InterpolationExtrapolationMethod": {
-            "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:"
+            "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:",
+            "InterpolationExtrapolationMethodInstructionSet": "Instruction set for linear interpolation/extrapolation method."
           },
           "Parachor": 24.8,
           "CarbonContent": 4.2,
@@ -306,7 +309,8 @@
           "Temperature": 180,
           "SurfaceDensity": 0.065,
           "InterpolationExtrapolationMethod": {
-            "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:"
+            "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:",
+            "InterpolationExtrapolationMethodInstructionSet": "Instruction set for linear interpolation/extrapolation method."
           },
           "Parachor": 18.2,
           "CarbonContent": 2.1,
@@ -335,7 +339,8 @@
           "DewPointPressure": 3200,
           "SurfaceDensity": 0.065,
           "InterpolationExtrapolationMethod": {
-            "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:"
+            "InterpolationExtrapolationMethodID": "partition:reference-data--InterpolationExtrapolationMethod:Linear:",
+            "InterpolationExtrapolationMethodInstructionSet": "Instruction set for linear interpolation/extrapolation method."
           },
           "Parachor": 18.2,
           "CarbonContent": 2.1,
