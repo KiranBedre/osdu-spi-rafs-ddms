@@ -25,6 +25,7 @@ from app.api.routes.common.dynamic_search import (
     get_search_description_template,
 )
 from app.api.routes.common.endpoints import (
+    GenericTypesView,
     GenericSchemasView,
     build_extractor_for_param_name,
 )
@@ -32,11 +33,18 @@ from app.api.routes.fluidmodel.endpoints import FluidModelRecordView
 from app.api.routes.v2.data.endpoints import DynamicContentTypeDataViewV2
 from app.models.data_schemas.base import MAPS_TO_DATA_MODEL
 from app.resources.paths import FLUID_MODEL_STR
+from app.models.data_schemas.fluid_model_v2.base import MAP_TO_FLUID_MODEL_MODELS_API_V2
 from app.search.fluid_model_ids_fetcher import SearchServiceFluidModelIdsFetcher
 
 FM_ID_REGEX_STR = r"^[\w\-\.]+:work-product-component--FluidModel:[\w\-\.\:\%]+$"
 
 fm_record_router_v2 = APIRouter(redirect_slashes=False)
+
+GenericTypesView(
+    router=fm_record_router_v2,
+    endpoint_path="/fluidmodeltypes",
+    paths_to_data_model=MAP_TO_FLUID_MODEL_MODELS_API_V2,
+)
 
 FluidModelRecordView(
     router=fm_record_router_v2,
