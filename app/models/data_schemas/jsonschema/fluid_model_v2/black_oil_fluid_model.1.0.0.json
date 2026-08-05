@@ -306,6 +306,11 @@
                     "EntityType": "InterpolationExtrapolationMethod"
                   }
                 ]
+              },
+              "InterpolationExtrapolationMethodInstructionSet": {
+                "type": "string",
+                "title": "Interpolation Extrapolation Method Instruction Set",
+                "description": "Additional instructions providing additional context on the approach used when applying the interpolation or extapolation method."
               }
             },
             "additionalProperties": false
@@ -439,6 +444,11 @@
                     "EntityType": "InterpolationExtrapolationMethod"
                   }
                 ]
+              },
+              "InterpolationExtrapolationMethodInstructionSet": {
+                "type": "string",
+                "title": "Interpolation Extrapolation Method Instruction Set",
+                "description": "Additional instructions providing additional context on the approach used when applying the interpolation or extapolation method."
               }
             },
             "additionalProperties": false
@@ -552,6 +562,11 @@
                     "EntityType": "InterpolationExtrapolationMethod"
                   }
                 ]
+              },
+              "InterpolationExtrapolationMethodInstructionSet": {
+                "type": "string",
+                "title": "Interpolation Extrapolation Method Instruction Set",
+                "description": "Additional instructions providing additional context on the approach used when applying the interpolation or extapolation method."
               }
             },
             "additionalProperties": false
@@ -731,6 +746,11 @@
                     "EntityType": "InterpolationExtrapolationMethod"
                   }
                 ]
+              },
+              "InterpolationExtrapolationMethodInstructionSet": {
+                "type": "string",
+                "title": "Interpolation Extrapolation Method Instruction Set",
+                "description": "Additional instructions providing additional context on the approach used when applying the interpolation or extapolation method."
               }
             },
             "additionalProperties": false
@@ -836,6 +856,11 @@
                     "EntityType": "InterpolationExtrapolationMethod"
                   }
                 ]
+              },
+              "InterpolationExtrapolationMethodInstructionSet": {
+                "type": "string",
+                "title": "Interpolation Extrapolation Method Instruction Set",
+                "description": "Additional instructions providing additional context on the approach used when applying the interpolation or extapolation method."
               }
             },
             "additionalProperties": false
