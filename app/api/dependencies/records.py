@@ -44,7 +44,7 @@ async def get_data_file_source(
     """
     dataset_id, version = get_id_version(dataset_full_id)
     dataset_record = await storage_service.get_record(dataset_id, version)
-    mime_type = await get_mime_type(dataset_record)
+    mime_type = get_mime_type(dataset_record)
 
     return DatasetSourceFile(
         dataset_id=dataset_id,
