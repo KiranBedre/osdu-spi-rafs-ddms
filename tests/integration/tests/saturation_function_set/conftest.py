@@ -31,7 +31,9 @@ def saturation_function_set_create_record(api, create_record):
     record_data, _ = create_record(
         DataTypes.SATURATION_FUNCTION_SET,
         DataFiles.SATURATION_FUNCTION_SET,
-        DataTemplates.ID_SATURATION_FUNCTION_SET.format(partition=CONFIG["DATA_PARTITION"]),
+        DataTemplates.ID_SATURATION_FUNCTION_SET.format(
+            partition=CONFIG["DATA_PARTITION"]
+        ),
     )
     yield record_data
     api.storage.purge_record(record_data["id"])
@@ -43,7 +45,9 @@ def saturation_function_set_create_fresh_record(api, create_record):
     record_data, _ = create_record(
         DataTypes.SATURATION_FUNCTION_SET,
         DataFiles.SATURATION_FUNCTION_SET,
-        DataTemplates.ID_SATURATION_FUNCTION_SET.format(partition=CONFIG["DATA_PARTITION"]),
+        DataTemplates.ID_SATURATION_FUNCTION_SET.format(
+            partition=CONFIG["DATA_PARTITION"]
+        ),
     )
     yield record_data
     api.storage.purge_record(record_data["id"])
@@ -83,12 +87,14 @@ def fresh_dataset_id(api, helper, fresh_record_id, tests_data):
     """Create a fresh dataset and return dataset_id."""
     data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET_DATA_V1))
     data_payload["data"][0][0] = f"{fresh_record_id}:"
-    post_response = api.saturation_function_set.post_data(record_id=fresh_record_id, body=data_payload)
+    post_response = api.saturation_function_set.post_data(
+        record_id=fresh_record_id, body=data_payload
+    )
     return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
 
 
 @pytest.fixture(scope="function")
-def search_available(api, helper, record_id):
+def search_available(api, helper, record_id, dataset_id):
     """Verify if record is available in search results - workaround for issue #729."""
     params = {"rows_filter": f"SaturationFunctionSetID,eq,{record_id}:"}
 
@@ -97,6 +103,24 @@ def search_available(api, helper, record_id):
         lambda: api.saturation_function_set.search_records(params=params),
         record_id,
         max_attempts=5,
+    )
+    helper.wait_for_search_data(
+        lambda: api.saturation_function_set.search_data(params=params),
+        record_id,
+    )
+
+
+@pytest.fixture
+def pagination_case(create_isolated_pagination_case):
+    """Create two SFS records isolated by a unique field."""
+    return create_isolated_pagination_case(
+        api_path=DataTypes.SATURATION_FUNCTION_SET,
+        record_file=DataFiles.SATURATION_FUNCTION_SET,
+        data_file=DataFiles.SATURATION_FUNCTION_SET_DATA_V1,
+        id_template=DataTemplates.ID_SATURATION_FUNCTION_SET.format(
+            partition=CONFIG["DATA_PARTITION"],
+        ),
+        scope_kind="Field",
     )
 
 

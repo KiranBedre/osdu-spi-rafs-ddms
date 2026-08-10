@@ -29,7 +29,7 @@ def init_mimetypes():
     mimetypes.add_type(type=SupportedMimeTypes.XLSX.mime_type, ext=SupportedMimeTypes.XLSX.file_extension)
 
 
-async def get_mime_type(dataset_record: dict) -> Optional[str]:
+def get_mime_type(dataset_record: dict) -> Optional[str]:
     """Get mime type of dataset record.
 
     :param dataset_record: dataset record
@@ -37,7 +37,7 @@ async def get_mime_type(dataset_record: dict) -> Optional[str]:
     :return: mime type
     :rtype: str
     """
-    await init_mimetypes()
+    init_mimetypes()
 
     # get mime type from EncodingFormatTypeID
     mimetype_id = unquote(dataset_record["data"].get(RecordKeys.MIMETYPE_ID, ""))

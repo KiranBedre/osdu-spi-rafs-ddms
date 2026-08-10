@@ -292,18 +292,16 @@ def test_sto_search_record_filtered_out_by_end_date(api, record_id, dataset_id_v
     assert record_id not in response["result"]
 
 
-@pytest.mark.skip(reason="Pagination test depends on assumed searchable data; tracked in issue #805")
-def test_sto_search_record_filtered_out_by_page_limit(api, record_id, dataset_id_v1_1, search_available_v1_1):
+def test_sto_search_record_filtered_out_by_page_limit(api, helper, pagination_case_v1_1):
     """Verify records are filtered out by the specified page limit filter in the search results"""
-    params = {"page_limit": 2}
-    response = api.sample_analysis.search_records(
-        analysis_type=SamplesAnalysisTypes.STOCK_TANK_OIL,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
+    helper.verify_record_pagination(
+        lambda params: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.STOCK_TANK_OIL,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        pagination_case_v1_1,
     )
-
-    # Assert
-    assert len(response["result"]) == 2
 
 
 def test_sto_search_data_filtered_by_columns(
@@ -428,20 +426,16 @@ def test_sto_search_data_filtered_out_by_end_date(api, tests_data, record_id, da
     assert not any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-def test_sto_search_data_filtered_out_by_page_limit(api, tests_data, record_id, dataset_id_v1_1, search_available_v1_1):
+def test_sto_search_data_filtered_out_by_page_limit(api, helper, pagination_case_v1_1):
     """Verify bulk data is filtered out by the specified page limit filter in the search results"""
-    params = {"page_limit": 2}
-    response = api.sample_analysis.search_data(
-        analysis_type=SamplesAnalysisTypes.STOCK_TANK_OIL,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
+    helper.verify_data_pagination(
+        lambda params: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.STOCK_TANK_OIL,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        pagination_case_v1_1,
     )
-
-    # Assert
-    baseline = copy.deepcopy(tests_data(DataFiles.STOCK_TANK_OIL_DATA_V1_1))
-
-    assert set(response["result"]["columns"]).issubset(baseline["columns"])
-    assert len({row[0] for row in response["result"]["data"]}) <= 2
 
 
 def test_sto_search_record_filtered_out_by_schema_version(api, record_id, dataset_id_v1_1, search_available_v1_1):
