@@ -100,6 +100,7 @@ class DataFiles:
 
     FLUID_MODEL = "v2/fluid_model/fluid.json"
     BLACK_OIL_FLUID_MODEL_DATA_V1 = "v2/fluid_model/black_oil_fluid_model_data.1.0.0.json"
+    COMPOSITIONAL_FLUID_MODEL_DATA_V1 = "v2/fluid_model/compositional_fluid_model_data.1.0.0.json"
 
     DEPTH_SHIFT = "v2/depth_shift/depth_shift.json"
     CORE_TO_LOG_DEPTH_SHIFT_DATA = "v2/depth_shift/core_to_log_data.json"
@@ -135,6 +136,7 @@ class DataTypes:
 
 class FluidModelTypes:
     BLACK_OIL_FLUID_MODEL = "blackoilfluidmodel"
+    COMPOSITIONAL_FLUID_MODEL = "compositionalfluidmodel"
 
 
 class SamplesAnalysisTypes:  # Custom values
@@ -178,6 +180,10 @@ class VersionedDataFiles:
         (DataTypes.SATURATION_FUNCTION_SET, SchemaVersions.V1_0_0): DataFiles.SATURATION_FUNCTION_SET_DATA_V1,
         (DataTypes.SIMULATION_ROCK_PHYSICS, SchemaVersions.V1_0_0): DataFiles.SIMULATION_ROCK_PHYSICS_DATA1_V1,
         (FluidModelTypes.BLACK_OIL_FLUID_MODEL, SchemaVersions.V1_0_0): DataFiles.BLACK_OIL_FLUID_MODEL_DATA_V1,
+        (
+            FluidModelTypes.COMPOSITIONAL_FLUID_MODEL,
+            SchemaVersions.V1_0_0,
+        ): DataFiles.COMPOSITIONAL_FLUID_MODEL_DATA_V1,
     }
 
 
