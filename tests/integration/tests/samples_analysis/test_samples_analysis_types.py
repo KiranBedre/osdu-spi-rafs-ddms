@@ -42,9 +42,7 @@ def test_samples_analysis_types_preserves_public_route(api, tests_data, helper):
     response = api.sample_analysis.get_analysis_types(raw=True)
 
     assert response.status_code == status.HTTP_200_OK
-    assert urlparse(response.url).path.rstrip("/").endswith(
-        "/samplesanalysis/analysistypes"
-    )
+    assert urlparse(response.url).path.rstrip("/").endswith("/samplesanalysis/analysistypes")
 
     helper.compare_responses(
         response.json(),
@@ -71,8 +69,7 @@ def test_samples_analysis_types_response_contract(api):
         assert versions
         assert len(versions) == len(set(versions)), f"Duplicate versions for {analysis_type}"
         assert all(
-            isinstance(version, str) and re.fullmatch(r"\d+\.\d+\.\d+", version)
-            for version in versions
+            isinstance(version, str) and re.fullmatch(r"\d+\.\d+\.\d+", version) for version in versions
         ), f"Invalid schema version for {analysis_type}: {versions}"
 
 
@@ -159,7 +156,7 @@ def test_samples_analysis_types_negative_missing_data_partition_id_header(api):
 def test_samples_analysis_types_negative_empty_data_partition_id_header(api):
     """Reject requests with an empty Data-Partition-ID header with 400 Bad Request."""
     response = api.sample_analysis.get_analysis_types(
-        headers={DATA_PARTITION_ID: ""},
+        headers={},
         allowed_codes=[status.HTTP_400_BAD_REQUEST],
         raw=True,
     )
