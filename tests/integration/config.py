@@ -99,8 +99,11 @@ class DataFiles:
     SIMULATION_ROCK_PHYSICS_SCHEMA = "v2/simulation_rock_physics/rsrp_schema.json"
 
     FLUID_MODEL = "v2/fluid_model/fluid.json"
+    FLUID_MODEL_TYPES = "v2/fluid_model/fluid_model_types.json"
     BLACK_OIL_FLUID_MODEL_DATA_V1 = "v2/fluid_model/black_oil_fluid_model_data.1.0.0.json"
+    BLACK_OIL_FLUID_MODEL_SCHEMA_V1 = "v2/fluid_model/black_oil_fluid_model_schema.1.0.0.json"
     COMPOSITIONAL_FLUID_MODEL_DATA_V1 = "v2/fluid_model/compositional_fluid_model_data.1.0.0.json"
+    COMPOSITIONAL_FLUID_MODEL_SCHEMA_V1 = "v2/fluid_model/compositional_fluid_model_schema.1.0.0.json"
 
     DEPTH_SHIFT = "v2/depth_shift/depth_shift.json"
     CORE_TO_LOG_DEPTH_SHIFT_DATA = "v2/depth_shift/core_to_log_data.json"

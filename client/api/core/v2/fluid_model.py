@@ -27,6 +27,8 @@ class FluidModelPaths(object):
     DELETE = "/fluidmodel/{record_id}"
     POST_DATA = "/fluidmodel/{record_id}/data/{fluid_model_type}"
     GET_DATA = "/fluidmodel/{record_id}/data/{fluid_model_type}/{dataset_id}"
+    GET_SCHEMA = "/fluidmodel/{fluid_model_type}/data/schema"
+    GET_FLUID_MODEL_TYPES = "/fluidmodel/fluidmodeltypes"
 
 
 class FluidModel(SchemaVersionedAPIResource):
@@ -79,4 +81,23 @@ class FluidModel(SchemaVersionedAPIResource):
             ),
             **kwargs,
         )
+        return response if raw else response.json()
+
+    def get_schema(
+        self,
+        fluid_model_type: FluidModelTypes,
+        schema_version: Optional[str] = SchemaVersions.DEFAULT,
+        raw: bool = False,
+        **kwargs,
+    ) -> dict:
+        kwargs = self._merge_params(kwargs, schema_version)
+        response = self.get(
+            path=FluidModelPaths.GET_SCHEMA.format(fluid_model_type=fluid_model_type),
+            **kwargs,
+        )
+        return response if raw else response.json()
+
+    def get_fluid_model_types(self, raw: bool = False, **kwargs) -> dict:
+        """Get available types."""
+        response = self.get(path=FluidModelPaths.GET_FLUID_MODEL_TYPES, **kwargs)
         return response if raw else response.json()

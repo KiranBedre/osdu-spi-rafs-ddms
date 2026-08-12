@@ -1,0 +1,935 @@
+{
+    "title": "BlackOilFluidModelModel100",
+    "type": "object",
+    "properties": {
+        "FluidModelID": {
+            "title": "Fluid Model ID",
+            "description": "OSDU Identifier of the associated Fluid Model WPC.",
+            "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-FluidModel:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "Meta": {
+            "title": "Meta",
+            "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+            "example": "",
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/MetaItem"
+                    },
+                    {
+                        "$ref": "#/definitions/MetaItem1"
+                    },
+                    {
+                        "$ref": "#/definitions/MetaItem2"
+                    },
+                    {
+                        "$ref": "#/definitions/MetaItem3"
+                    }
+                ]
+            }
+        },
+        "OilTable": {
+            "title": "Oil Table",
+            "description": "This is an array of saturated and undersaturated oil properties, such as viscosity and formation volume factor, as a function of pressure and GOR (gas oil ratio) at a constant temperature and for a specified separation process.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/OilTableItem"
+            }
+        },
+        "OilUndersaturatedCompressibilitiesTable": {
+            "title": "Oil Undersaturated Compressibilities Table",
+            "description": "This is an array of saturated oil properties, such as viscosity and formation volume factor, as a function of GOR or composition, which are used alongside compressibilities in  calculating undersaturated properties.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/OilUndersaturatedCompressibilitiesTableItem"
+            }
+        },
+        "DeadOilTable": {
+            "title": "Dead Oil Table",
+            "description": "This is an array of single phase oil properties, such as viscosity and formation volume factor, as a function of pressure at a constant temperature and for a specified separation process.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/DeadOilTableItem"
+            }
+        },
+        "DeadOilCompressibility": {
+            "title": "Dead Oil Compressibility",
+            "description": "This is an object used in calculating dead oil properties using compressibilities and a  reference pressure.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/DeadOilCompressibility"
+                }
+            ]
+        },
+        "GasTable": {
+            "title": "Gas table",
+            "description": "This is an array of saturated and undersaturated gas properties, such as viscosity and formation volume factor, as a function of pressure and Vapor OGR (oil gas ratio) at a constant temperature and for a specified separation process.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/GasTableItem"
+            }
+        },
+        "GasUndersaturatedTable": {
+            "title": "Gas Undersaturated Table",
+            "description": "This is an array of properties of a dry gas (no liquid content).",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/GasUndersaturatedTableItem"
+            }
+        },
+        "WaterCompressibility": {
+            "title": "Water Compressibility",
+            "description": "This is an object used in calculating water  properties using compressibilities and a  reference pressure.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/WaterCompressibility"
+                }
+            ]
+        },
+        "WaterTable": {
+            "title": "Water Table",
+            "description": "This is an array of water properties, such as viscosity and formation volume factor, as a function of pressure and constant temperature.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/WaterTableItem"
+            }
+        }
+    },
+    "required": [
+        "FluidModelID",
+        "Meta"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "MetaItem": {
+            "title": "MetaItem",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "UOM Reference Kind",
+                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                    "default": "Unit",
+                    "const": "Unit",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "UOM Unit Symbol",
+                    "description": "The unit symbol or name of the unit.",
+                    "example": "ft[US]",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "UOM Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+                    "type": "string"
+                },
+                "unitOfMeasureID": {
+                    "title": "Unitofmeasureid",
+                    "description": "SRN to unit of measure reference.",
+                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "UOM Property Names",
+                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "HorizontalDeflection.EastWest",
+                        "HorizontalDeflection.NorthSouth"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "MetaItem1": {
+            "title": "MetaItem1",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "CRS Reference Kind",
+                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                    "default": "CRS",
+                    "const": "CRS",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "CRS Name",
+                    "description": "The name of the CRS.",
+                    "example": "WGS 84 / UTM zone 15N",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "CRS Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
+                    "type": "string"
+                },
+                "coordinateReferenceSystemID": {
+                    "title": "Coordinatereferencesystemid",
+                    "description": "SRN to CRS reference.",
+                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "CRS Property Names",
+                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "KickOffPosition.X",
+                        "KickOffPosition.Y"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "MetaItem2": {
+            "title": "MetaItem2",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "DateTime Reference Kind",
+                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                    "default": "DateTime",
+                    "const": "DateTime",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "DateTime Name",
+                    "description": "The name of the DateTime format and reference.",
+                    "example": "UTC",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "DateTime Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "DateTime Property Names",
+                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Acquisition.StartTime",
+                        "Acquisition.EndTime"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "MetaItem3": {
+            "title": "MetaItem3",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "AzimuthReference Reference Kind",
+                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                    "default": "AzimuthReference",
+                    "const": "AzimuthReference",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "AzimuthReference Name",
+                    "description": "The name of the CRS or the symbol/name of the unit.",
+                    "example": "TrueNorth",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "AzimuthReference Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "AzimuthReference Property Names",
+                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Bearing"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "InterpolationExtrapolationMethod": {
+            "title": "InterpolationExtrapolationMethod",
+            "type": "object",
+            "properties": {
+                "InterpolationExtrapolationMethodID": {
+                    "title": "Interpolation Extrapolation Method ID",
+                    "description": "Data interpolation and extrapolation method used by the simulator.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-InterpolationExtrapolationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "InterpolationExtrapolationMethodInstructionSet": {
+                    "title": "Interpolation Extrapolation Method Instruction Set",
+                    "description": "Additional instructions providing additional context on the approach used when applying the interpolation or extapolation method.",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "OilTableItem": {
+            "title": "OilTableItem",
+            "type": "object",
+            "properties": {
+                "BubblePointPressure": {
+                    "title": "Bubble Point Pressure",
+                    "description": "This is the bubble point pressure for a specific solution GOR.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "SolutionGOR": {
+                    "title": "Solution GOR",
+                    "description": "This is represented as a ratio depicting the amount of dissolved gas at the corresponding bubble point pressure.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Pressure": {
+                    "title": "Pressure",
+                    "description": "This is an array of pressure steps defined for this model.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "FormationVolumeFactor": {
+                    "title": "Formation Volume Factor",
+                    "description": "This is an array of oil formation volume factor values corresponding to the pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Viscosity": {
+                    "title": "Viscosity",
+                    "description": "This is an array of oil viscosity values corresponding to the pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "This is the reference temperature used in generating this model.",
+                    "type": "number"
+                },
+                "SurfaceDensity": {
+                    "title": "Surface Density",
+                    "description": "This is the density of the oil component at stock tank conditions. If provided, this supersedes the value at the root model level.",
+                    "type": "number"
+                },
+                "InterpolationExtrapolationMethod": {
+                    "title": "Interpolation Extrapolation Method",
+                    "description": "Data interpolation and extrapolation method used by the simulator.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/InterpolationExtrapolationMethod"
+                        }
+                    ]
+                },
+                "Parachor": {
+                    "title": "Parachor",
+                    "description": "An emprical constant for a liquid (in this case, the oil phase) that relates the surface tension to the molecular volume (reference MacLeod-Sugden equation for surface tension calculation)",
+                    "type": "number"
+                },
+                "CarbonContent": {
+                    "title": "Carbon Content",
+                    "description": "Specifies the number of moles of carbon per mole of the oil phase at surface.",
+                    "type": "number"
+                },
+                "MolecularWeight": {
+                    "title": "Molecular Weight",
+                    "description": "Molecular weight of the oil phase",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "BubblePointPressure",
+                "SolutionGOR",
+                "Pressure",
+                "FormationVolumeFactor",
+                "Viscosity"
+            ],
+            "additionalProperties": false
+        },
+        "InterpolationExtrapolationMethod1": {
+            "title": "InterpolationExtrapolationMethod1",
+            "type": "object",
+            "properties": {
+                "InterpolationExtrapolationMethodID": {
+                    "title": "Interpolation Extrapolation Method ID",
+                    "description": "Data interpolation and extrapolation method used by the simulator.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-InterpolationExtrapolationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "InterpolationExtrapolationMethodInstructionSet": {
+                    "title": "Interpolation Extrapolation Method Instruction Set",
+                    "description": "Additional instructions providing additional context on the approach used when applying the interpolation or extapolation method.",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "OilUndersaturatedCompressibilitiesTableItem": {
+            "title": "OilUndersaturatedCompressibilitiesTableItem",
+            "type": "object",
+            "properties": {
+                "BubblePointPressure": {
+                    "title": "Bubble Point Pressure",
+                    "description": "This is the bubble point pressure for a specific solution GOR.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "SolutionGOR": {
+                    "title": "Solution GOR",
+                    "description": "This is represented as a ratio depicting the amount of dissolved gas at the corresponding bubble point pressure.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "FormationVolumeFactor": {
+                    "title": "Formation Volume Factor",
+                    "description": "This is an array of oil formation volume factor values corresponding to the bubble point pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Viscosity": {
+                    "title": "Viscosity",
+                    "description": "This is an array of oil viscosity values corresponding to the bubble point pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Compressibility": {
+                    "title": "Compressibility",
+                    "description": "This is an array of oil compressibility values used to calculate  undersaturated oil formation volume factor (FVF) corresponding to a bubble point pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "ViscosityCompressibility": {
+                    "title": "Viscosity Compressibility",
+                    "description": "This is an array of oil viscosity compressibility values used to calculate  undersaturated oil viscosity corresponding to a bubble point pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "This is the reference temperature used in generating this model.",
+                    "type": "number"
+                },
+                "SurfaceDensity": {
+                    "title": "Surface Density",
+                    "description": "This is the density of the oil component at stock tank conditions.",
+                    "type": "number"
+                },
+                "MaximumPressure": {
+                    "title": "Maximum Pressure",
+                    "description": "This specifies the maximum pressure likely to be reached during the simulation. This is a  simulator specific attribute used when extrapolating the properties of the table. Note: The value should not be smaller than the largest BubblePointPressure in this table.",
+                    "type": "number"
+                },
+                "InterpolationExtrapolationMethod": {
+                    "title": "Interpolation Extrapolation Method",
+                    "description": "Data interpolation and extrapolation method used by the simulator.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/InterpolationExtrapolationMethod1"
+                        }
+                    ]
+                },
+                "Parachor": {
+                    "title": "Parachor",
+                    "description": "An emprical constant for a liquid (in this case, the oil phase) that relates the surface tension to the molecular volume (reference MacLeod-Sugden equation for surface tension calculation)",
+                    "type": "number"
+                },
+                "CarbonContent": {
+                    "title": "Carbon Content",
+                    "description": "Specifies the number of moles of carbon per mole of the oil phase at surface.",
+                    "type": "number"
+                },
+                "MolecularWeight": {
+                    "title": "Molecular Weight",
+                    "description": "Molecular weight of the oil phase",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "BubblePointPressure",
+                "SolutionGOR",
+                "FormationVolumeFactor",
+                "Viscosity",
+                "Compressibility",
+                "ViscosityCompressibility"
+            ],
+            "additionalProperties": false
+        },
+        "InterpolationExtrapolationMethod2": {
+            "title": "InterpolationExtrapolationMethod2",
+            "type": "object",
+            "properties": {
+                "InterpolationExtrapolationMethodID": {
+                    "title": "Interpolation Extrapolation Method ID",
+                    "description": "Data interpolation and extrapolation method used by the simulator.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-InterpolationExtrapolationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "InterpolationExtrapolationMethodInstructionSet": {
+                    "title": "Interpolation Extrapolation Method Instruction Set",
+                    "description": "Additional instructions providing additional context on the approach used when applying the interpolation or extapolation method.",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "DeadOilTableItem": {
+            "title": "DeadOilTableItem",
+            "type": "object",
+            "properties": {
+                "ConstantSolutionGOR": {
+                    "title": "ConstantSolution GOR",
+                    "description": "This is represented as a ratio depicting the amount of dissolved gas at a contant temperature.",
+                    "type": "number"
+                },
+                "BubblePointPressure": {
+                    "title": "Bubble Point Pressure",
+                    "description": "This is the bubble point pressure at a constant temperature",
+                    "type": "number"
+                },
+                "Pressure": {
+                    "title": "Pressure",
+                    "description": "This is an array of pressure steps defined for this model.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "FormationVolumeFactor": {
+                    "title": "Formation Volume Factor",
+                    "description": "This is an array of oil formation volume factor values corresponding to the pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Viscosity": {
+                    "title": "Viscosity",
+                    "description": "This is an array of oil viscosity values corresponding to the pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "This is the reference temperature used in generating this model.",
+                    "type": "number"
+                },
+                "SurfaceDensity": {
+                    "title": "Surface Density",
+                    "description": "This is the density of the oil component at stock tank conditions. If provided, this supersedes the value at the root model level.",
+                    "type": "number"
+                },
+                "InterpolationExtrapolationMethod": {
+                    "title": "Interpolation Extrapolation Method",
+                    "description": "Data interpolation and extrapolation method used by the simulator.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/InterpolationExtrapolationMethod2"
+                        }
+                    ]
+                },
+                "Parachor": {
+                    "title": "Parachor",
+                    "description": "An emprical constant for a liquid (in this case, the oil phase) that relates the surface tension to the molecular volume (reference MacLeod-Sugden equation for surface tension calculation)",
+                    "type": "number"
+                },
+                "CarbonContent": {
+                    "title": "Carbon Content",
+                    "description": "Specifies the number of moles of carbon per mole of the oil phase at surface.",
+                    "type": "number"
+                },
+                "MolecularWeight": {
+                    "title": "Molecular Weight",
+                    "description": "Molecular weight of the oil phase",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "ConstantSolutionGOR",
+                "BubblePointPressure",
+                "Pressure",
+                "FormationVolumeFactor",
+                "Viscosity"
+            ],
+            "additionalProperties": false
+        },
+        "DeadOilCompressibility": {
+            "title": "DeadOilCompressibility",
+            "type": "object",
+            "properties": {
+                "BubblePointPressure": {
+                    "title": "Bubble Point Pressure",
+                    "description": "This is the bubble point pressure for a constant solution GOR.",
+                    "type": "number"
+                },
+                "ConstantSolutionGOR": {
+                    "title": "Constant Solution GOR",
+                    "description": "This is represented as a ratio depicting the amount of dissolved gas at the corresponding bubble point pressure.",
+                    "type": "number"
+                },
+                "ReferencePressure": {
+                    "title": "Reference Pressure",
+                    "description": "This a pressure reference (e.g., Initial reservoir pressure) used in defining the dead oil properties of the black oil fluid model.",
+                    "type": "number"
+                },
+                "FormationVolumeFactor": {
+                    "title": "Formation Volume Factor",
+                    "description": "This is the oil formation volume factor at the reference pressure.",
+                    "type": "number"
+                },
+                "Viscosity": {
+                    "title": "Viscosity",
+                    "description": "This is the oil viscosity value at the reference pressure.",
+                    "type": "number"
+                },
+                "Compressibility": {
+                    "title": "Compressibility",
+                    "description": "This is the average oil compressibility corresponding to the reference pressure and used in calculating the formation volume factor at other pressures.",
+                    "type": "number"
+                },
+                "ViscosityCompressibility": {
+                    "title": "Viscosity Compressibility",
+                    "description": "This is the average oil viscosity compressibility corresponding to the reference pressure andf used in calculating the viscosity at other pressures.",
+                    "type": "number"
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "This is the reference temperature used in generating this model.",
+                    "type": "number"
+                },
+                "SurfaceDensity": {
+                    "title": "Surface Density",
+                    "description": "This is the density of the oil component at stock tank conditions.",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "BubblePointPressure",
+                "ConstantSolutionGOR",
+                "FormationVolumeFactor",
+                "Viscosity",
+                "Compressibility",
+                "ViscosityCompressibility"
+            ],
+            "additionalProperties": false
+        },
+        "InterpolationExtrapolationMethod3": {
+            "title": "InterpolationExtrapolationMethod3",
+            "type": "object",
+            "properties": {
+                "InterpolationExtrapolationMethodID": {
+                    "title": "Interpolation Extrapolation Method ID",
+                    "description": "Data interpolation and extrapolation method used by the simulator.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-InterpolationExtrapolationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "InterpolationExtrapolationMethodInstructionSet": {
+                    "title": "Interpolation Extrapolation Method Instruction Set",
+                    "description": "Additional instructions providing additional context on the approach used when applying the interpolation or extapolation method.",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "GasTableItem": {
+            "title": "GasTableItem",
+            "type": "object",
+            "properties": {
+                "VaporOGR": {
+                    "title": "Vapor OGR",
+                    "description": "This is an array of vaporized oil to gas ratio values corresponding to the pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Pressure": {
+                    "title": "Pressure",
+                    "description": "This is an array of gas phase pressure values defined for this model.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "FormationVolumeFactor": {
+                    "title": "Formation Volume Factor",
+                    "description": "This is an array of gas formation volume factor values corresponding to the pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Viscosity": {
+                    "title": "Viscosity",
+                    "description": "This is an array of gas viscosity values corresponding to the pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "This is the reference temperature used in generating this model.",
+                    "type": "number"
+                },
+                "SurfaceDensity": {
+                    "title": "Surface Density",
+                    "description": "This is the density of the gas component at stock tank conditions. If provided, this supersedes the value at the root model level.",
+                    "type": "number"
+                },
+                "InterpolationExtrapolationMethod": {
+                    "title": "Interpolation Extrapolation Method",
+                    "description": "Data interpolation and extrapolation method used by the simulator.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/InterpolationExtrapolationMethod3"
+                        }
+                    ]
+                },
+                "Parachor": {
+                    "title": "Parachor",
+                    "description": "An emprical constant for a liquid (in this case, the gas phase) that relates the surface tension to the molecular volume (reference MacLeod-Sugden equation for surface tension calculation)",
+                    "type": "number"
+                },
+                "CarbonContent": {
+                    "title": "Carbon Content",
+                    "description": "Specifies the number of moles of carbon per mole of the gas phase at surface.",
+                    "type": "number"
+                },
+                "MolecularWeight": {
+                    "title": "Molecular Weight",
+                    "description": "Molecular weight of the gas phase",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "VaporOGR",
+                "Pressure",
+                "FormationVolumeFactor",
+                "Viscosity"
+            ],
+            "additionalProperties": false
+        },
+        "InterpolationExtrapolationMethod4": {
+            "title": "InterpolationExtrapolationMethod4",
+            "type": "object",
+            "properties": {
+                "InterpolationExtrapolationMethodID": {
+                    "title": "Interpolation Extrapolation Method ID",
+                    "description": "Data interpolation and extrapolation method used by the simulator.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-InterpolationExtrapolationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "InterpolationExtrapolationMethodInstructionSet": {
+                    "title": "Interpolation Extrapolation Method Instruction Set",
+                    "description": "Additional instructions providing additional context on the approach used when applying the interpolation or extapolation method.",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "GasUndersaturatedTableItem": {
+            "title": "GasUndersaturatedTableItem",
+            "type": "object",
+            "properties": {
+                "Pressure": {
+                    "title": "Pressure",
+                    "description": "This is an array of gas phase pressure values defined for this model.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "FormationVolumeFactor": {
+                    "title": "Formation Volume Factor",
+                    "description": "This is an array of gas formation volume factor values corresponding to the pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Viscosity": {
+                    "title": "Viscosity",
+                    "description": "This is an array of gas viscosity values corresponding to the pressure array.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "This is the reference temperature used in generating this model.",
+                    "type": "number"
+                },
+                "ConstantVaporOGR": {
+                    "title": "Constant Vapor OGR",
+                    "description": "This is the constant vaporized oil-gas ratio for the dry gas",
+                    "type": "number"
+                },
+                "DewPointPressure": {
+                    "title": "Dew Point Pressure",
+                    "description": "Dew point of the dry gas at constant vaporized oil-gas ratio",
+                    "type": "number"
+                },
+                "InterpolationExtrapolationMethod": {
+                    "title": "Interpolation Extrapolation Method",
+                    "description": "Data interpolation and extrapolation method used by the simulator.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/InterpolationExtrapolationMethod4"
+                        }
+                    ]
+                },
+                "SurfaceDensity": {
+                    "title": "Surface Density",
+                    "description": "This is the density of the gas component at stock tank conditions. If provided, this supersedes the value at the root model level.",
+                    "type": "number"
+                },
+                "Parachor": {
+                    "title": "Parachor",
+                    "description": "An emprical constant for a liquid (in this case, the gas phase) that relates the surface tension to the molecular volume (reference MacLeod-Sugden equation for surface tension calculation)",
+                    "type": "number"
+                },
+                "CarbonContent": {
+                    "title": "Carbon Content",
+                    "description": "Specifies the number of moles of carbon per mole of the gas phase at surface.",
+                    "type": "number"
+                },
+                "MolecularWeight": {
+                    "title": "Molecular Weight",
+                    "description": "Molecular weight of the gas phase",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "Pressure",
+                "FormationVolumeFactor",
+                "Viscosity"
+            ],
+            "additionalProperties": false
+        },
+        "WaterCompressibility": {
+            "title": "WaterCompressibility",
+            "type": "object",
+            "properties": {
+                "SurfaceDensity": {
+                    "title": "Surface Density",
+                    "description": "Surface mass density of water",
+                    "type": "number"
+                },
+                "ReferencePressure": {
+                    "title": "Reference Pressure",
+                    "description": "This a pressure reference (e.g., Initial reservoir pressure) used in defining the water properties of the black oil fluid model.",
+                    "type": "number"
+                },
+                "FormationVolumeFactor": {
+                    "title": "Formation Volume Factor",
+                    "description": "This is the water formation volume factor values corresponding to the reference pressure.",
+                    "type": "number"
+                },
+                "Viscosity": {
+                    "title": "Viscosity",
+                    "description": "This is the water viscosity corresponding to the reference pressure.",
+                    "type": "number"
+                },
+                "Compressibility": {
+                    "title": "Compressibility",
+                    "description": "This is the average water compressibility corresponding to the reference pressure and used in calculating the formation volume factor at other pressures.",
+                    "type": "number"
+                },
+                "ViscosityCompressibility": {
+                    "title": "Viscosity Compressibility",
+                    "description": "This is the average water viscosity compressibility corresponding to the reference pressure andf used in calculating the viscosity at other pressures.",
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false
+        },
+        "WaterTableItem": {
+            "title": "WaterTableItem",
+            "type": "object",
+            "properties": {
+                "SurfaceDensity": {
+                    "title": "Surface Density",
+                    "description": "Surface mass density of water",
+                    "type": "number"
+                },
+                "Pressure": {
+                    "title": "Pressure",
+                    "description": "This a pressure reference (e.g Initial reservoir pressure) used in defining the water properties of the black oil fluid model.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "FormationVolumeFactor": {
+                    "title": "Formation Volume Factor",
+                    "description": "This is the water formation volume factor values corresponding to the reference pressure.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Viscosity": {
+                    "title": "Viscosity",
+                    "description": "This is the water viscosity corresponding to the reference pressure.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}
