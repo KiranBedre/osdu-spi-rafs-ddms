@@ -5,7 +5,7 @@ async-lru==2.0.4
 async-timeout==4.0.3
 boto3==1.35.0
 certifi==2025.1.31
-cryptography>=48.0.1  # CVE remediation (GHSA-537c-gmf6-5ccf): raise floor above 46.0.6
+cryptography>=49.0.0  # CVE remediation (GHSA-537c-gmf6-5ccf): raise floor above 46.0.6
 fastapi-cache2==0.2.1
 redis==5.2.1
 fastapi==0.121.1
