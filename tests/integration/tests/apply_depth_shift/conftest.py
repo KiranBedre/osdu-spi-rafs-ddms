@@ -41,10 +41,7 @@ def add_search_scope():
             scoped_params.update(
                 {
                     "wellbore_id": case["wellbore_id"],
-                    "rows_filter": (
-                        "SamplesAnalysisID,eq,"
-                        f"{case['sample_analysis_record_id']}:"
-                    ),
+                    "rows_filter": ("SamplesAnalysisID,eq," f"{case['sample_analysis_record_id']}:"),
                 }
             )
 
@@ -107,9 +104,7 @@ def create_depth_shift_dataset(api, helper, tests_data):
     dataset_ids = []
 
     def _create(record_id, data_payload=None):
-        payload = copy.deepcopy(
-            data_payload or tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA)
-        )
+        payload = copy.deepcopy(data_payload or tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
         if isinstance(payload, dict) and "data" in payload:
             payload["data"][0][0] = f"{record_id}:"
         elif isinstance(payload, list):
@@ -205,27 +200,19 @@ def create_apply_depth_shift_case(
             if matching_record:
                 visible_version = str(matching_record.get("version"))
                 record_data = matching_record.get("data", {})
-                visible_depth_shift_id = record_data.get(
-                    "DefinitiveDepthShift.DefinitiveDepthShiftID"
-                )
+                visible_depth_shift_id = record_data.get("DefinitiveDepthShift.DefinitiveDepthShiftID")
                 if visible_depth_shift_id is None:
-                    visible_depth_shift_id = record_data.get(
-                        "DefinitiveDepthShift", {}
-                    ).get("DefinitiveDepthShiftID")
+                    visible_depth_shift_id = record_data.get("DefinitiveDepthShift", {}).get("DefinitiveDepthShiftID")
                 version_matches = visible_version == str(sample_version)
                 depth_shift_matches = (
-                    definitive_depth_shift_id is None
-                    or visible_depth_shift_id == definitive_depth_shift_id
+                    definitive_depth_shift_id is None or visible_depth_shift_id == definitive_depth_shift_id
                 )
                 if version_matches and depth_shift_matches:
                     return matching_record
                 if version_matches and definitive_depth_shift_id is not None:
                     if field_visibility_started_at is None:
                         field_visibility_started_at = time.monotonic()
-                    elif (
-                        time.monotonic() - field_visibility_started_at
-                        >= field_visibility_timeout_seconds
-                    ):
+                    elif time.monotonic() - field_visibility_started_at >= field_visibility_timeout_seconds:
                         break
                 else:
                     field_visibility_started_at = None
@@ -255,21 +242,13 @@ def create_apply_depth_shift_case(
 
         sample_record = copy.deepcopy(sample_definition or tests_data(DataFiles.SAMPLE))
         sample_kind_base = sample_record["kind"].rsplit(":", 1)[0]
-        sample_record["kind"] = (
-            f"{sample_kind_base}:{SchemaVersions.V3_1_0}"
-        )
+        sample_record["kind"] = f"{sample_kind_base}:{SchemaVersions.V3_1_0}"
         definitive_depth_shift = sample_record["data"].get(
             "DefinitiveDepthShift",
         )
-        if (
-            definitive_depth_shift
-            and definitive_depth_shift.get("DefinitiveDepthShiftID") is None
-        ):
+        if definitive_depth_shift and definitive_depth_shift.get("DefinitiveDepthShiftID") is None:
             sample_record["data"].pop("DefinitiveDepthShift")
-        sample_id = (
-            f"{DataTemplates.ID_SAMPLE.format(partition=CONFIG['DATA_PARTITION'])}"
-            f"{invocation_id}"
-        )
+        sample_id = f"{DataTemplates.ID_SAMPLE.format(partition=CONFIG['DATA_PARTITION'])}" f"{invocation_id}"
         sample_value = f"{sample_id}:"
         sample_record["id"] = sample_id
 
@@ -278,12 +257,9 @@ def create_apply_depth_shift_case(
         sample_full_id = sample_response.json()["recordIdVersions"][0]
         sample_version = sample_full_id.rsplit(":", 1)[1]
 
-        sample_analysis_record = copy.deepcopy(
-            tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type)
-        )
+        sample_analysis_record = copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))
         sample_analysis_record_id = (
-            f"{DataTemplates.ID_SAMPLE_ANALYSIS.format(partition=CONFIG['DATA_PARTITION'])}"
-            f"{invocation_id}"
+            f"{DataTemplates.ID_SAMPLE_ANALYSIS.format(partition=CONFIG['DATA_PARTITION'])}" f"{invocation_id}"
         )
         sample_analysis_record["id"] = sample_analysis_record_id
         sample_analysis_record["data"]["SampleIDs"] = [sample_value]
@@ -304,14 +280,10 @@ def create_apply_depth_shift_case(
             analysis_type=analysis_type,
             schema_version=SchemaVersions.V1_0_0,
         )
-        sample_analysis_dataset_id = helper.get_content_id_from_ddms_urn(
-            post_response["ddms_urn"]
-        )
+        sample_analysis_dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
         delete_record(sample_analysis_dataset_id)
 
-        wellbore_id = sample_record["data"]["SampleAcquisition"][
-            "SampleAcquisitionDetail"
-        ]["WellboreID"]
+        wellbore_id = sample_record["data"]["SampleAcquisition"]["SampleAcquisitionDetail"]["WellboreID"]
         definitive_depth_shift_id = (
             sample_record["data"]
             .get(
@@ -332,11 +304,7 @@ def create_apply_depth_shift_case(
                 lambda: api.sample_analysis.search_records(
                     analysis_type=analysis_type,
                     schema_version=SchemaVersions.V1_0_0,
-                    params={
-                        "rows_filter": (
-                            "SamplesAnalysisID,eq," f"{sample_analysis_record_id}:"
-                        )
-                    },
+                    params={"rows_filter": ("SamplesAnalysisID,eq," f"{sample_analysis_record_id}:")},
                 ),
                 sample_analysis_record_id,
             )
@@ -346,9 +314,7 @@ def create_apply_depth_shift_case(
                     schema_version=SchemaVersions.V1_0_0,
                     params={
                         "wellbore_id": wellbore_id,
-                        "rows_filter": (
-                            "SamplesAnalysisID,eq," f"{sample_analysis_record_id}:"
-                        ),
+                        "rows_filter": ("SamplesAnalysisID,eq," f"{sample_analysis_record_id}:"),
                     },
                 ),
                 expected_record_ids={sample_analysis_record_id},
@@ -367,3 +333,21 @@ def create_apply_depth_shift_case(
         }
 
     return _create_case
+
+
+@pytest.fixture(scope="function", autouse=True)
+def restore_sample_definition(api, tests_data):
+    """Restore the fixed Sample record after tests that mutate it."""
+    sample_id = copy.deepcopy(tests_data(DataFiles.SAMPLE))["id"]
+    sample_snapshot_response = api.storage.get(
+        path=f"/records/{sample_id}",
+        allowed_codes=[200, 404],
+    )
+    sample_snapshot = None
+    if sample_snapshot_response.status_code == 200:
+        sample_snapshot = sample_snapshot_response.json()
+
+    yield
+
+    if sample_snapshot is not None:
+        api.storage.create_or_update_records([sample_snapshot])

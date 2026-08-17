@@ -105,6 +105,35 @@ components:
       - skipped_record_count
       title: StorageUpsertResponse
       type: object
+    StorageUpsertResponseWithWarning:
+      properties:
+        record_count:
+          title: Record Count
+          type: integer
+        record_id_versions:
+          items:
+            type: string
+          title: Record Id Versions
+          type: array
+        skipped_record_count:
+          title: Skipped Record Count
+          type: integer
+        warning:
+          title: Warning
+          type: string
+        warning_record_ids:
+          items:
+            type: string
+          title: Warning Record Ids
+          type: array
+      required:
+      - record_count
+      - record_id_versions
+      - skipped_record_count
+      - warning
+      - warning_record_ids
+      title: StorageUpsertResponseWithWarning
+      type: object
     UnsupportedMediaTypeResponse:
       properties:
         code:
@@ -1785,7 +1814,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StorageUpsertResponse'
+                anyOf:
+                - $ref: '#/components/schemas/StorageUpsertResponseWithWarning'
+                - $ref: '#/components/schemas/StorageUpsertResponse'
+                title: Response Post Records Api Rafs Ddms V2 Fluidmodel Post
           description: Successful Response
         '422':
           content:
@@ -1796,6 +1828,416 @@ paths:
       security:
       - HTTPBearer: []
       summary: Post Records
+      tags:
+      - fluidmodel
+  /api/rafs-ddms/v2/fluidmodel/fluidmodeltypes:
+    get:
+      description: 'Get available types.<br><br>        Required roles: `users.datalake.viewers`
+        or `users.datalake.editors` or `users.datalake.admins`.<br>         In addition,
+        users must be members of a data group(ACL) to access the data.'
+      operationId: get_types_api_rafs_ddms_v2_fluidmodel_fluidmodeltypes_get
+      parameters:
+      - description: Specifies the proper data partition id
+        examples:
+          example:
+            value: opendes
+        in: header
+        name: data-partition-id
+        required: true
+        schema:
+          description: Specifies the proper data partition id
+          title: data-partition-id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items: {}
+                  type: array
+                title: Response Get Types Api Rafs Ddms V2 Fluidmodel Fluidmodeltypes
+                  Get
+                type: object
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get Types
+      tags:
+      - fluidmodel
+  /api/rafs-ddms/v2/fluidmodel/{fluid_model_type}/data/schema:
+    get:
+      description: 'Get the (`content schema`) for a given `{fluid_model_type}`. <br><br>
+        Use the `content_schema_version` query parameter to specify content schema
+        version  (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning
+        is deprecated.<br><br>        Required roles: `users.datalake.viewers` or
+        `users.datalake.editors` or `users.datalake.admins`.<br>         In addition,
+        users must be members of a data group(ACL) to access the data.'
+      operationId: get_content_schema_api_rafs_ddms_v2_fluidmodel__fluid_model_type__data_schema_get
+      parameters:
+      - description: Specifies the proper data partition id
+        examples:
+          example:
+            value: opendes
+        in: header
+        name: data-partition-id
+        required: true
+        schema:
+          description: Specifies the proper data partition id
+          title: data-partition-id
+          type: string
+      - description: Content schema version, e.g. `1.0.0`. Takes precedence over the
+          Accept header.
+        example: 1.0.0
+        in: query
+        name: content_schema_version
+        required: true
+        schema:
+          description: Content schema version, e.g. `1.0.0`. Takes precedence over
+            the Accept header.
+          title: Content Schema Version
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items: {}
+                  type: array
+                title: Response Get Content Schema Api Rafs Ddms V2 Fluidmodel  Fluid
+                  Model Type  Data Schema Get
+                type: object
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get Content Schema
+      tags:
+      - fluidmodel
+  /api/rafs-ddms/v2/fluidmodel/{fluid_model_type}/search:
+    get:
+      description: 'Get `{fluid_model_type}` records containing associated bulk data
+        (`data.DDMSDatasets`).<br><br> Use the `content_schema_version` query parameter
+        to specify content schema version (e.g. `?content_schema_version=1.0.0`).
+        The `Accept` header versioning is deprecated. The  `columns_filter`, `rows_filter`,
+        and  `columns_aggregation`  query parameters can be used to manage data in
+        response. <br><br>  Use `offset`, `page_limit` query parameters to control
+        response data size.  The `page_limit` and `total_size` (found in response)
+        <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date`
+        and `indexed_end_date` query parameters to filter the data based on indexing  date.
+        <br><br>  - `indexed_start_date`: Filter for data indexed on or after this
+        date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before
+        this date. <br><br>'
+      operationId: search_endpoint_api_rafs_ddms_v2_fluidmodel__fluid_model_type__search_get
+      parameters:
+      - description: Specifies the proper data partition id
+        examples:
+          example:
+            value: opendes
+        in: header
+        name: data-partition-id
+        required: true
+        schema:
+          description: Specifies the proper data partition id
+          title: data-partition-id
+          type: string
+      - description: Content schema version, e.g. `1.0.0`. Takes precedence over the
+          Accept header.
+        example: 1.0.0
+        in: query
+        name: content_schema_version
+        required: true
+        schema:
+          description: Content schema version, e.g. `1.0.0`. Takes precedence over
+            the Accept header.
+          title: Content Schema Version
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+          'authority:master-data--Basin:identifier').
+        in: query
+        name: basin_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+            'authority:master-data--Basin:identifier').
+          title: Basin Id
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
+        in: query
+        name: field_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+            with or without basin_id scope.
+          title: Field Id
+          type: string
+      - examples:
+          example:
+            value: PropertyX,PropertyY,PropertyZ
+        in: query
+        name: columns_filter
+        required: false
+        schema:
+          title: Columns Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],gt,4000
+        in: query
+        name: rows_filter
+        required: false
+        schema:
+          title: Rows Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
+        in: query
+        name: columns_aggregation
+        required: false
+        schema:
+          title: Columns Aggregation
+          type: string
+      - description: Number of results to skip before returning data
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Number of results to skip before returning data
+          minimum: 0.0
+          title: Offset
+          type: integer
+      - description: Maximum number of results to return per page
+        in: query
+        name: page_limit
+        required: false
+        schema:
+          default: 1000
+          description: Maximum number of results to return per page
+          exclusiveMinimum: true
+          maximum: 1000.0
+          minimum: 0.0
+          title: Page Limit
+          type: integer
+      - description: Start date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-01-01'
+        in: query
+        name: indexed_start_date
+        required: false
+        schema:
+          description: Start date in YYYY-MM-DD format
+          title: Indexed Start Date
+          type: string
+      - description: End date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-12-31'
+        in: query
+        name: indexed_end_date
+        required: false
+        schema:
+          description: End date in YYYY-MM-DD format
+          title: Indexed End Date
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Search Endpoint
+      tags:
+      - fluidmodel
+  /api/rafs-ddms/v2/fluidmodel/{fluid_model_type}/search/data:
+    get:
+      description: 'Get `{fluid_model_type}` records bulk data content.<br><br> Use
+        the `content_schema_version` query parameter to specify content schema version
+        (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is
+        deprecated.<br><br> Use the `orient` query parameter to select the JSON output
+        format (`split` or `records`). The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query
+        parameters can be used to manage data in response. <br><br>  Use `offset`,
+        `page_limit` query parameters to control response data size.  The `page_limit`
+        and `total_size` (found in response) <br> refers to the number of parquet  files
+        read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters
+        to filter the data based on indexing  date. <br><br>  - `indexed_start_date`:
+        Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`:
+        Filter for data indexed on or before this date. <br><br>'
+      operationId: search_endpoint_api_rafs_ddms_v2_fluidmodel__fluid_model_type__search_data_get
+      parameters:
+      - description: Specifies the proper data partition id
+        examples:
+          example:
+            value: opendes
+        in: header
+        name: data-partition-id
+        required: true
+        schema:
+          description: Specifies the proper data partition id
+          title: data-partition-id
+          type: string
+      - description: Content schema version, e.g. `1.0.0`. Takes precedence over the
+          Accept header.
+        example: 1.0.0
+        in: query
+        name: content_schema_version
+        required: true
+        schema:
+          description: Content schema version, e.g. `1.0.0`. Takes precedence over
+            the Accept header.
+          title: Content Schema Version
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+          'authority:master-data--Basin:identifier').
+        in: query
+        name: basin_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            basin. Must be a valid OSDU record ID of kind 'master-data--Basin' (e.g.,
+            'authority:master-data--Basin:identifier').
+          title: Basin Id
+          type: string
+      - description: Optional scope parameter to filter search results to a specific
+          field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+          with or without basin_id scope.
+        in: query
+        name: field_id
+        required: false
+        schema:
+          description: Optional scope parameter to filter search results to a specific
+            field. Must be a valid OSDU record ID of kind 'master-data--Field'. Used
+            with or without basin_id scope.
+          title: Field Id
+          type: string
+      - examples:
+          example:
+            value: PropertyX,PropertyY,PropertyZ
+        in: query
+        name: columns_filter
+        required: false
+        schema:
+          title: Columns Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],gt,4000
+        in: query
+        name: rows_filter
+        required: false
+        schema:
+          title: Rows Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
+        in: query
+        name: columns_aggregation
+        required: false
+        schema:
+          title: Columns Aggregation
+          type: string
+      - description: 'JSON output format: ''split'' returns {columns, index, data},
+          ''records'' returns [{field: value}, ...]'
+        in: query
+        name: orient
+        required: false
+        schema:
+          default: split
+          description: 'JSON output format: ''split'' returns {columns, index, data},
+            ''records'' returns [{field: value}, ...]'
+          enum:
+          - split
+          - records
+          title: Orient
+          type: string
+      - description: Number of results to skip before returning data
+        in: query
+        name: offset
+        required: false
+        schema:
+          default: 0
+          description: Number of results to skip before returning data
+          minimum: 0.0
+          title: Offset
+          type: integer
+      - description: Maximum number of results to return per page
+        in: query
+        name: page_limit
+        required: false
+        schema:
+          default: 100
+          description: Maximum number of results to return per page
+          exclusiveMinimum: true
+          maximum: 100.0
+          minimum: 0.0
+          title: Page Limit
+          type: integer
+      - description: Start date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-01-01'
+        in: query
+        name: indexed_start_date
+        required: false
+        schema:
+          description: Start date in YYYY-MM-DD format
+          title: Indexed Start Date
+          type: string
+      - description: End date in YYYY-MM-DD format
+        examples:
+          example:
+            value: '2023-12-31'
+        in: query
+        name: indexed_end_date
+        required: false
+        schema:
+          description: End date in YYYY-MM-DD format
+          title: Indexed End Date
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Search Endpoint
       tags:
       - fluidmodel
   /api/rafs-ddms/v2/fluidmodel/{record_id}:
@@ -1898,6 +2340,207 @@ paths:
       security:
       - HTTPBearer: []
       summary: Get Record
+      tags:
+      - fluidmodel
+  /api/rafs-ddms/v2/fluidmodel/{record_id}/data/{fluid_model_type}:
+    post:
+      description: 'Upload the bulk data for a given `{fluid_model_type}` object by
+        record id.<br>            It creates a new version of the record. <br>            The
+        previous meta-data with bulk data is available by their `versions`. <br> <br>            The
+        `Content-Type` request header is **required** to specify payload format                 (`application/json`
+        and `application/parquet` are supported).<br>            Use the `content_schema_version`
+        query parameter to specify content schema version                 (e.g. `?content_schema_version=1.0.0`).
+        The `Accept` header versioning is deprecated.<br><br>        Required roles:
+        `users.datalake.editors` or `users.datalake.admins`.<br>         In addition,
+        users must be members of a data group(ACL) to access the data.'
+      operationId: post_data_multiple_content_type_api_rafs_ddms_v2_fluidmodel__record_id__data__fluid_model_type__post
+      parameters:
+      - description: OSDU record identifier for a <code>work-product-component--FluidModel</code>
+          entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code>
+          characters (e.g., <code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>),
+          the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This
+          is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC
+          3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--FluidModel:simple_id</code>&nbsp;&nbsp;→&nbsp;
+          <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:simple_id</code><br><br><code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp;
+          <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding
+          reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code>
+          →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>
+        in: path
+        name: record_id
+        required: true
+        schema:
+          pattern: ^[\w\-\.]+:work-product-component--FluidModel:[\w\-\.\:\%]+$
+          title: Record Id
+          type: string
+      - description: Specifies the proper data partition id
+        examples:
+          example:
+            value: opendes
+        in: header
+        name: data-partition-id
+        required: true
+        schema:
+          description: Specifies the proper data partition id
+          title: data-partition-id
+          type: string
+      - description: Content schema version, e.g. `1.0.0`. Takes precedence over the
+          Accept header.
+        example: 1.0.0
+        in: query
+        name: content_schema_version
+        required: true
+        schema:
+          description: Content schema version, e.g. `1.0.0`. Takes precedence over
+            the Accept header.
+          title: Content Schema Version
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                title: Response Post Data Multiple Content Type Api Rafs Ddms V2 Fluidmodel  Record
+                  Id  Data  Fluid Model Type  Post
+                type: object
+          description: Successful Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+          description: Bad Request
+        '415':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnsupportedMediaTypeResponse'
+          description: Unsupported Media Type
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Post Data Multiple Content Type
+      tags:
+      - fluidmodel
+  /api/rafs-ddms/v2/fluidmodel/{record_id}/data/{fluid_model_type}/{content_id}:
+    get:
+      description: 'Get the (`latest version`) bulk data for a given `{fluid_model_type}`
+        object by record id. <br><br>            Use the `content_schema_version`
+        query parameter to specify content schema version                 (e.g. `?content_schema_version=1.0.0`).
+        The `Accept` header versioning is deprecated.<br><br>            The  `columns_filter`,
+        `rows_filter`, and  `columns_aggregation`                 query parameters
+        can be used to manage data in response.<br><br>            Use the `orient`
+        query parameter to select the JSON output format (`split` or `records`).<br><br>        Required
+        roles: `users.datalake.viewers` or `users.datalake.editors` or `users.datalake.admins`.<br>         In
+        addition, users must be members of a data group(ACL) to access the data.'
+      operationId: get_data_multiple_content_type_api_rafs_ddms_v2_fluidmodel__record_id__data__fluid_model_type___content_id__get
+      parameters:
+      - in: path
+        name: content_id
+        required: true
+        schema:
+          pattern: ([\w\-\.]+:dataset--File.Generic:[\w\-\d\.]+:?[\w\-\.\:\%]*)|([\d\w]+-[\d\w]+-[\d\w]+-[\d\w]+-[\d\w]+)
+          title: Content Id
+          type: string
+      - description: OSDU record identifier for a <code>work-product-component--FluidModel</code>
+          entity.<br><br><b>URL Encoding:</b> If the record ID contains literal <code>&#37;</code>
+          characters (e.g., <code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D_Sample_249</code>),
+          the <code>&#37;</code> must be <b>double-encoded</b> in the URL path. This
+          is standard HTTP behavior per <a href='https://datatracker.ietf.org/doc/html/rfc3986'>RFC
+          3986</a>.<br><br><b>Examples:</b><br><code>osdu:work-product-component--FluidModel:simple_id</code>&nbsp;&nbsp;→&nbsp;
+          <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:simple_id</code><br><br><code>osdu:work-product-component--FluidModel:7&#37;2F12-A-7&#37;20D</code>&nbsp;&nbsp;→&nbsp;
+          <code>/v2/fluidmodel/osdu:work-product-component--FluidModel:7&#37;252F12-A-7&#37;2520D</code><br><br><b>Encoding
+          reference:</b><br><code>&#37;</code> &nbsp;→&nbsp; <code>&#37;25</code><br><code>&#37;2F</code>
+          →&nbsp; <code>&#37;252F</code><br><code>&#37;20</code> →&nbsp; <code>&#37;2520</code>
+        in: path
+        name: record_id
+        required: true
+        schema:
+          pattern: ^[\w\-\.]+:work-product-component--FluidModel:[\w\-\.\:\%]+$
+          title: Record Id
+          type: string
+      - description: Specifies the proper data partition id
+        examples:
+          example:
+            value: opendes
+        in: header
+        name: data-partition-id
+        required: true
+        schema:
+          description: Specifies the proper data partition id
+          title: data-partition-id
+          type: string
+      - description: Content schema version, e.g. `1.0.0`. Takes precedence over the
+          Accept header.
+        example: 1.0.0
+        in: query
+        name: content_schema_version
+        required: true
+        schema:
+          description: Content schema version, e.g. `1.0.0`. Takes precedence over
+            the Accept header.
+          title: Content Schema Version
+          type: string
+      - examples:
+          example:
+            value: PropertyX,PropertyY,PropertyZ
+        in: query
+        name: columns_filter
+        required: false
+        schema:
+          title: Columns Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],gt,4000
+        in: query
+        name: rows_filter
+        required: false
+        schema:
+          title: Rows Filter
+          type: string
+      - examples:
+          example:
+            value: PropertyX[.PropertyXFieldA],mean
+        in: query
+        name: columns_aggregation
+        required: false
+        schema:
+          title: Columns Aggregation
+          type: string
+      - description: 'JSON output format: ''split'' returns {columns, index, data},
+          ''records'' returns [{field: value}, ...]'
+        in: query
+        name: orient
+        required: false
+        schema:
+          default: split
+          description: 'JSON output format: ''split'' returns {columns, index, data},
+            ''records'' returns [{field: value}, ...]'
+          enum:
+          - split
+          - records
+          title: Orient
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - HTTPBearer: []
+      summary: Get Data Multiple Content Type
       tags:
       - fluidmodel
   /api/rafs-ddms/v2/fluidmodel/{record_id}/versions:

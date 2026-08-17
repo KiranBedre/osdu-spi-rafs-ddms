@@ -53,12 +53,8 @@ class CommonHelper:
     @staticmethod
     def generate_random_record_id(length: int = 10) -> str:
         """Generates a random sequence for record_id with a specified length."""
-        characters = (
-            string.ascii_letters + string.digits
-        )  # Include uppercase and lowercase letters, as well as digits
-        random_id = (
-            f"autotest_{''.join(secrets.choice(characters) for _ in range(length))}"
-        )
+        characters = string.ascii_letters + string.digits  # Include uppercase and lowercase letters, as well as digits
+        random_id = f"autotest_{''.join(secrets.choice(characters) for _ in range(length))}"
         return random_id
 
     def create_data_copies(self, original_data, num_copies) -> list:
@@ -124,9 +120,7 @@ class CommonHelper:
 
         raise ValueError(f"Unsupported content type: {content_type}")
 
-    def compare_responses(
-        self, json_body: dict, response_body, response_type="parquet"
-    ):
+    def compare_responses(self, json_body: dict, response_body, response_type="parquet"):
         """
         Compares request body to actual response (both JSON or Parquet), ignoring dynamic fields.
 
@@ -135,9 +129,7 @@ class CommonHelper:
         :param response_type: Type of expected response ('json' or 'parquet').
         """
         if response_type == "parquet":
-            response_data = self.load_parquet_data(
-                response_body, content_type="parquet"
-            )
+            response_data = self.load_parquet_data(response_body, content_type="parquet")
         elif response_type == "json":
             response_data = response_body
         else:
@@ -164,9 +156,7 @@ class CommonHelper:
         """
         for key, expected_value in expected.items():
             assert key in actual, f"Missing field: {key}"
-            assert (
-                actual[key] == expected_value
-            ), f"{key}: expected {expected_value!r}, got {actual[key]!r}"
+            assert actual[key] == expected_value, f"{key}: expected {expected_value!r}, got {actual[key]!r}"
 
     def delete_by_path(self, json_body: dict, path: str) -> None:
         """
@@ -187,9 +177,7 @@ class CommonHelper:
             try:
                 idx = int(last)
             except ValueError as exc:
-                raise ValueError(
-                    f"List index must be int in pointer: {path}: {exc}"
-                ) from exc
+                raise ValueError(f"List index must be int in pointer: {path}: {exc}") from exc
             if 0 <= idx < len(parent):
                 parent.pop(idx)
 
@@ -204,9 +192,7 @@ class CommonHelper:
         except JsonPointerException as exc:
             raise AssertionError(f"Invalid JSON pointer '{path}': {exc}") from exc
 
-    def wait_for_search_record(
-        self, search_func, record_id: str, max_attempts: int = 30, interval: int = 5
-    ) -> dict:
+    def wait_for_search_record(self, search_func, record_id: str, max_attempts: int = 30, interval: int = 5) -> dict:
         """
         Polls the search function until the specified record_id appears in the results or times out.
         :param search_func: Function with no arguments that returns a search response dict (must have 'result' list)
@@ -296,13 +282,9 @@ class CommonHelper:
 
             if id_column in columns:
                 id_column_index = columns.index(id_column)
-                actual_record_ids = {
-                    row[id_column_index].removesuffix(":") for row in rows
-                }
+                actual_record_ids = {row[id_column_index].removesuffix(":") for row in rows}
 
-            if actual_record_ids == expected_record_ids and last_response.get(
-                "total_size"
-            ) == len(expected_record_ids):
+            if actual_record_ids == expected_record_ids and last_response.get("total_size") == len(expected_record_ids):
                 consecutive_matches += 1
                 if consecutive_matches >= required_consecutive_matches:
                     return last_response
@@ -357,9 +339,7 @@ class CommonHelper:
         assert second_page["page_limit"] == 1, context
         assert second_page["offset"] == 1, context
         assert len(second_page["result"]) == 1, context
-        assert (
-            set(first_page["result"] + second_page["result"]) == expected_record_ids
-        ), context
+        assert set(first_page["result"] + second_page["result"]) == expected_record_ids, context
 
     @staticmethod
     def verify_data_pagination(search_func, pagination_case: dict) -> None:
@@ -404,13 +384,9 @@ class CommonHelper:
         assert second_page["page_limit"] == 1, context
         assert second_page["offset"] == 1, context
         assert len(_record_ids(second_page)) == 1, context
-        assert (
-            (_record_ids(first_page) | _record_ids(second_page)) == expected_record_ids
-        ), context
+        assert (_record_ids(first_page) | _record_ids(second_page)) == expected_record_ids, context
 
-    def wait_for_search_data(
-        self, search_func, record_id: str, max_attempts: int = 30, interval: int = 5
-    ) -> dict:
+    def wait_for_search_data(self, search_func, record_id: str, max_attempts: int = 30, interval: int = 5) -> dict:
         """
         Polls the search function until the specified record_id appears in the results or times out.
         :param search_func: Function with no arguments that returns a search response dict (must have 'result' list)
@@ -429,9 +405,7 @@ class CommonHelper:
             data = result.get("data", [])
 
             if not data:
-                logger.warning(
-                    f"No results yet (attempt {attempt + 1}/{max_attempts})."
-                )
+                logger.warning(f"No results yet (attempt {attempt + 1}/{max_attempts}).")
             else:
                 for row in data:
                     if row[0] == f"{record_id}:":
@@ -484,17 +458,33 @@ class CommonHelper:
 
         for data in fixed_id_records:
             record_data = copy.deepcopy(tests_data(data))
-            api.storage.create_or_update_records([record_data])
             created_ids[f"{data}_fixed_id"] = record_data["id"]
+            record_response = api.storage.get(
+                path=f"/records/{record_data['id']}",
+                allowed_codes=[200, 404],
+            )
+            fixed_record_was_created = record_response.status_code == 404
+            created_ids[f"{data}_fixed_id_created"] = fixed_record_was_created
+
+            if fixed_record_was_created:
+                api.storage.create_or_update_records([record_data])
 
         return created_ids
 
     def purge_reference_records(
-        self, api, state: dict, storage_dependencies: set, record_to_create: list
+        self,
+        api,
+        state: dict,
+        storage_dependencies: set,
+        record_to_create: list,
+        fixed_id_records: list = None,
     ) -> None:
         """Purge SAR record and reference records."""
         for data_type, _, _ in record_to_create:
             api.storage.purge_record(state[f"{data_type}_record_id"])
+        for data in fixed_id_records or []:
+            if state.get(f"{data}_fixed_id_created"):
+                api.storage.purge_record(state[f"{data}_fixed_id"])
         for reference_id in storage_dependencies:
             if "reference-data" in reference_id:
                 continue

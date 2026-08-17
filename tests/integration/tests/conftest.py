@@ -57,9 +57,7 @@ def create_legal_tag(api, tmp_path_factory):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def create_referenced_records(
-    api, helper, tests_data, tmp_path_factory, create_legal_tag
-):
+def create_referenced_records(api, helper, tests_data, tmp_path_factory, create_legal_tag):
     """Fixture to create referenced records and delete them after a test."""
     partition = CONFIG["DATA_PARTITION"]
 
@@ -98,6 +96,8 @@ def create_referenced_records(
     fixed_id_records = [
         DataFiles.SAMPLE,
     ]
+    fixed_record_ids = {copy.deepcopy(tests_data(data))["id"] for data in fixed_id_records}
+    storage_dependencies.difference_update(fixed_record_ids)
 
     shared_dir = tmp_path_factory.getbasetemp().parent
 
@@ -165,17 +165,13 @@ def create_record(api, helper, tests_data):
 
         max_attempts = 30
         for attempt in range(max_attempts):
-            logger.info(
-                "Checking whether record is available "
-                f"(attempt {attempt + 1}/{max_attempts})"
-            )
+            logger.info("Checking whether record is available " f"(attempt {attempt + 1}/{max_attempts})")
             try:
                 resource.get_record(record_data["id"])
             except AssertionError as exception:
                 if attempt == max_attempts - 1:
                     raise AssertionError(
-                        "Created record did not become available within "
-                        f"{max_attempts}s: {record_data['id']}"
+                        "Created record did not become available within " f"{max_attempts}s: {record_data['id']}"
                     ) from exception
                 time.sleep(1)
             else:
@@ -193,9 +189,7 @@ def create_record(api, helper, tests_data):
             cleanup_errors.append((record_id, exception))
 
     if cleanup_errors:
-        details = "\n".join(
-            f"- {record_id}: {exception}" for record_id, exception in cleanup_errors
-        )
+        details = "\n".join(f"- {record_id}: {exception}" for record_id, exception in cleanup_errors)
         pytest.fail(f"Failed to purge test-owned resources:\n{details}")
 
 
@@ -219,9 +213,7 @@ def delete_record(api):
             cleanup_errors.append((record_id, exception))
 
     if cleanup_errors:
-        details = "\n".join(
-            f"- {record_id}: {exception}" for record_id, exception in cleanup_errors
-        )
+        details = "\n".join(f"- {record_id}: {exception}" for record_id, exception in cleanup_errors)
         pytest.fail(f"Failed to purge test-owned resources:\n{details}")
 
 
@@ -245,16 +237,12 @@ def create_isolated_pagination_case(api, delete_record, helper, request, tests_d
             "master",
         )
         invocation_id = f"{worker_id}_{helper.generate_random_record_id()}"
-        scope_id = (
-            f"{CONFIG['DATA_PARTITION']}:master-data--{scope_kind}:" f"{invocation_id}"
-        )
+        scope_id = f"{CONFIG['DATA_PARTITION']}:master-data--{scope_kind}:" f"{invocation_id}"
         scope_value = f"{scope_id}:"
 
         scope_record = copy.deepcopy(tests_data(DataFiles.OSDU_GENERIC_RECORD))
         scope_record["id"] = scope_id
-        scope_record["kind"] = (
-            f"{CONFIG['DATA_PARTITION']}:wks:master-data--{scope_kind}:1.0.0"
-        )
+        scope_record["kind"] = f"{CONFIG['DATA_PARTITION']}:wks:master-data--{scope_kind}:1.0.0"
         api.storage.create_or_update_records([scope_record])
         delete_record(scope_id)
 
@@ -266,18 +254,12 @@ def create_isolated_pagination_case(api, delete_record, helper, request, tests_d
         id_column = None
         for _ in range(2):
             record = copy.deepcopy(tests_data(record_file, analysis_type))
-            record["id"] = (
-                f"{id_template}{invocation_id}_{helper.generate_random_record_id()}"
-            )
+            record["id"] = f"{id_template}{invocation_id}_{helper.generate_random_record_id()}"
 
             if scope_kind == "Wellbore":
                 record["data"]["WellboreID"] = scope_value
             else:
-                field_context = next(
-                    context
-                    for context in record["data"]["GeoContexts"]
-                    if "FieldID" in context
-                )
+                field_context = next(context for context in record["data"]["GeoContexts"] if "FieldID" in context)
                 field_context["FieldID"] = scope_value
 
             resource.post_record([record])

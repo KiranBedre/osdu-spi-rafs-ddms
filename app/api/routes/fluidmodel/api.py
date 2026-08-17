@@ -14,16 +14,87 @@
 
 from fastapi import APIRouter
 
-from app.api.dependencies.validation import validate_fluid_model_v2_payload
+from app.api.dependencies.validation import (
+    validate_fluid_model_v2_payload,
+    validate_filters_for_content_type,
+    get_geo_context_scope,
+)
+from app.api.routes.common.dynamic_search import (
+    DynamicGenericSearchView,
+    get_search_data_description_template,
+    get_search_description_template,
+)
+from app.api.routes.common.endpoints import (
+    GenericTypesView,
+    GenericSchemasView,
+    build_extractor_for_param_name,
+)
 from app.api.routes.fluidmodel.endpoints import FluidModelRecordView
+from app.api.routes.v2.data.endpoints import DynamicContentTypeDataViewV2
+from app.models.data_schemas.base import MAPS_TO_DATA_MODEL
+from app.resources.paths import FLUID_MODEL_STR
+from app.models.data_schemas.fluid_model_v2.base import MAP_TO_FLUID_MODEL_MODELS_API_V2
+from app.search.fluid_model_ids_fetcher import SearchServiceFluidModelIdsFetcher
 
 FM_ID_REGEX_STR = r"^[\w\-\.]+:work-product-component--FluidModel:[\w\-\.\:\%]+$"
 
-fm_record_router_v2 = APIRouter()
+fm_record_router_v2 = APIRouter(redirect_slashes=False)
+
+GenericTypesView(
+    router=fm_record_router_v2,
+    endpoint_path="/fluidmodeltypes",
+    paths_to_data_model=MAP_TO_FLUID_MODEL_MODELS_API_V2,
+)
 
 FluidModelRecordView(
     router=fm_record_router_v2,
     id_regex_str=FM_ID_REGEX_STR,
     validate_records_payload=validate_fluid_model_v2_payload,
     record_type="FluidModel",
+)
+
+GenericSchemasView(
+    router=fm_record_router_v2,
+    endpoint_config={
+        "path": "/{fluid_model_type}/data/schema",
+        "mapping": MAPS_TO_DATA_MODEL["v2"][FLUID_MODEL_STR],
+        "param_extractor": build_extractor_for_param_name("fluid_model_type"),
+        "description": " ".join(
+            [
+                "Get the (`content schema`) for a given `{fluid_model_type}`. <br><br>",
+                "Use the `content_schema_version` query parameter to specify content schema version ",
+                "(e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.",
+            ],
+        ),
+    },
+)
+
+DynamicContentTypeDataViewV2(
+    router=fm_record_router_v2,
+    id_regex_str=FM_ID_REGEX_STR,
+    multiple_content_type_param="fluid_model_type",
+    record_id_column="FluidModelID",
+)
+
+DynamicGenericSearchView(
+    router=fm_record_router_v2,
+    ddms_dataset_ids_fetcher_class=SearchServiceFluidModelIdsFetcher,
+    endpoints_config=[
+        {
+            "path": "/{fluid_model_type}/search",
+            "handler": "get_search",
+            "param_name": "fluid_model_type",
+            "filter_dep": validate_filters_for_content_type,
+            "scope_dep": get_geo_context_scope,
+            "description": get_search_description_template("{fluid_model_type}"),
+        },
+        {
+            "path": "/{fluid_model_type}/search/data",
+            "handler": "get_search_data",
+            "param_name": "fluid_model_type",
+            "filter_dep": validate_filters_for_content_type,
+            "scope_dep": get_geo_context_scope,
+            "description": get_search_data_description_template("{fluid_model_type}"),
+        },
+    ],
 )

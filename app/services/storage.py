@@ -16,6 +16,7 @@ from typing import List, Optional
 
 from starlette import status
 
+from app.core.http_status import HTTP_422_UNPROCESSABLE
 from app.core.settings.app import AppSettings
 from app.models.schemas.user import User
 from app.services.base import IStorageService
@@ -115,7 +116,7 @@ class StorageService(IStorageService):
             status.HTTP_404_NOT_FOUND,
         ],
         detail=build_storage_service_exception_detail("upsert"),
-        remap_codes={status.HTTP_400_BAD_REQUEST: status.HTTP_422_UNPROCESSABLE_ENTITY},
+        remap_codes={status.HTTP_400_BAD_REQUEST: HTTP_422_UNPROCESSABLE},
     )
     async def upsert_records(self, records: List[dict]) -> dict:
         """Upsert records.

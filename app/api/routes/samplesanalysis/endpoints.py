@@ -40,6 +40,7 @@ from app.api.routes.v2.data.endpoints import BaseDataViewV2
 from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
+from app.core.http_status import HTTP_422_UNPROCESSABLE
 from app.depth_shift.augmenter import augment_dataframe
 from app.depth_shift.extractor import extract_sample_wellbore_id
 from app.depth_shift.metadata import resolve_metadata_warning_state
@@ -314,7 +315,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
 
         if "SampleID" not in base_df.columns:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=(
                     "Depth-shift augmentation requires a 'SampleID' column in the "
                     "bulk data, but it was not found. Only analysis types that carry "
@@ -414,7 +415,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
 
         if missing:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=(
                     "Depth shift requires every sample record to resolve to a WellboreID. "
                     f"Missing WellboreID for sample ids: {sorted(str(s) for s in missing)}."
@@ -422,7 +423,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             )
         if not wellbore_ids:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=(
                     "Depth shift requires sample records to resolve to a WellboreID. "
                     "Provide a wellbore-scoped search result set."
@@ -430,7 +431,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             )
         if len(wellbore_ids) > 1:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=(
                     "Depth shift requires wellbore-scoped results. "
                     f"Resolved multiple WellboreIDs: {sorted(wellbore_ids)}."

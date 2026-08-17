@@ -33,7 +33,7 @@ from app.api.routes.samplesanalysis.endpoints import (
     SAMPLESANALYSIS_ID_REGEX_STR,
     SamplesAnalysisDataView,
 )
-from app.models.data_schemas.base import MAPS_TO_DATA_MODEL, SAMPLES_ANALYSIS
+from app.models.data_schemas.base import ALL_PATHS_TO_SA_DATA_MODEL, MAPS_TO_DATA_MODEL, SAMPLES_ANALYSIS
 from app.search.ddms_dataset_ids_fetcher import (
     SearchServiceSamplesAnalysisTypeIdsFetcher,
 )
@@ -41,7 +41,11 @@ from app.search.ddms_dataset_ids_fetcher import (
 sa_router = APIRouter()
 RECORD_TYPE = "SamplesAnalysis"
 
-GenericTypesView(sa_router)
+GenericTypesView(
+    router=sa_router,
+    endpoint_path="/analysistypes",
+    paths_to_data_model=ALL_PATHS_TO_SA_DATA_MODEL,
+)
 
 BaseStorageRecordView(
     router=sa_router,
