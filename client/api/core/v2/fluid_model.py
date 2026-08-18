@@ -29,6 +29,8 @@ class FluidModelPaths(object):
     GET_DATA = "/fluidmodel/{record_id}/data/{fluid_model_type}/{dataset_id}"
     GET_SCHEMA = "/fluidmodel/{fluid_model_type}/data/schema"
     GET_FLUID_MODEL_TYPES = "/fluidmodel/fluidmodeltypes"
+    SEARCH = "/fluidmodel/{fluid_model_type}/search"
+    SEARCH_DATA = "/fluidmodel/{fluid_model_type}/search/data"
 
 
 class FluidModel(SchemaVersionedAPIResource):
@@ -100,4 +102,34 @@ class FluidModel(SchemaVersionedAPIResource):
     def get_fluid_model_types(self, raw: bool = False, **kwargs) -> dict:
         """Get available types."""
         response = self.get(path=FluidModelPaths.GET_FLUID_MODEL_TYPES, **kwargs)
+        return response if raw else response.json()
+
+    def search_records(
+        self,
+        fluid_model_type: FluidModelTypes,
+        schema_version: Optional[str] = SchemaVersions.DEFAULT,
+        raw: bool = False,
+        **kwargs,
+    ) -> dict:
+        """Search for FluidModel record ids."""
+        kwargs = self._merge_params(kwargs, schema_version)
+        response = self.get(
+            path=FluidModelPaths.SEARCH.format(fluid_model_type=fluid_model_type),
+            **kwargs,
+        )
+        return response if raw else response.json()
+
+    def search_data(
+        self,
+        fluid_model_type: FluidModelTypes,
+        schema_version: Optional[str] = SchemaVersions.DEFAULT,
+        raw: bool = False,
+        **kwargs,
+    ) -> dict:
+        """Search for FluidModel bulk data."""
+        kwargs = self._merge_params(kwargs, schema_version)
+        response = self.get(
+            path=FluidModelPaths.SEARCH_DATA.format(fluid_model_type=fluid_model_type),
+            **kwargs,
+        )
         return response if raw else response.json()

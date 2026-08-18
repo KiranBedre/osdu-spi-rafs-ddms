@@ -16,7 +16,14 @@ import copy
 
 import pytest
 
-from tests.integration.config import DataFiles, FluidModelTypes, SchemaVersions
+from tests.integration.config import (
+    CONFIG,
+    DataFiles,
+    DataTemplates,
+    DataTypes,
+    FluidModelTypes,
+    SchemaVersions,
+)
 
 
 @pytest.fixture(scope="package")
@@ -51,3 +58,24 @@ def fresh_dataset_id(api, helper, fresh_record_id, tests_data, fluid_model_type)
         schema_version=SchemaVersions.V1_0_0,
     )
     return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
+
+
+@pytest.fixture
+def pagination_case(create_isolated_pagination_case, fluid_model_type):
+    """Create two Black Oil FluidModel records isolated by a unique field."""
+    return create_isolated_pagination_case(
+        api_path=DataTypes.FLUID_MODEL,
+        record_file=DataFiles.FLUID_MODEL,
+        data_file=DataFiles.BLACK_OIL_FLUID_MODEL_DATA_V1,
+        id_template=DataTemplates.ID_FLUID_MODEL.format(
+            partition=CONFIG["DATA_PARTITION"],
+        ),
+        schema_version=SchemaVersions.V1_0_0,
+        resource_kwargs={"fluid_model_type": fluid_model_type},
+        record_data_updates={
+            "FluidModelTypeID": (
+                f"{CONFIG['DATA_PARTITION']}:reference-data--FluidModelType:BlackOil:"
+            ),
+        },
+        scope_kind="Field",
+    )
