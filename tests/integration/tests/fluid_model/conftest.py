@@ -21,6 +21,7 @@ from tests.integration.config import (
     DataFiles,
     DataTemplates,
     DataTypes,
+    SchemaVersions,
 )
 
 
@@ -66,6 +67,31 @@ def version(api, record_id):
     response = api.fluid_model.get_record_versions(record_id)
     versions = response.get("versions", [])
     return versions[-1]
+
+
+@pytest.fixture(scope="function")
+def search_available(api, helper, record_id, dataset_id, fluid_model_type):
+    """Wait until the created FluidModel record and data are available in search results."""
+    params = {"rows_filter": f"FluidModelID,eq,{record_id}:"}
+
+    # Wait until search returns the record_id in its result set
+    helper.wait_for_search_record(
+        lambda: api.fluid_model.search_records(
+            fluid_model_type=fluid_model_type,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        record_id,
+        max_attempts=5,
+    )
+    helper.wait_for_search_data(
+        lambda: api.fluid_model.search_data(
+            fluid_model_type=fluid_model_type,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        record_id,
+    )
 
 
 @pytest.fixture(scope="module")
