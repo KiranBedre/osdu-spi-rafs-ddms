@@ -1270,9 +1270,9 @@
           "title": "Enthalpy Aqueous",
           "description": "This represents the aqueous enthalpy and heat of vaporization models for a thermal fluid having components soluble in water.",
           "properties": {
-            "EnthalphyAqueousHeatCapacityCoefficient": {
+            "EnthalpyAqueousHeatCapacityCoefficient": {
               "type": "object",
-              "title": "Enthalphy Aqueous Heat Capacity Coefficient",
+              "title": "Enthalpy Aqueous Heat Capacity Coefficient",
               "description": "This represents the component heat capacity coefficients used for aqueous enthalpy calculations.",
               "properties": {
                 "AqueousHeatCapacityCoefficient1": {

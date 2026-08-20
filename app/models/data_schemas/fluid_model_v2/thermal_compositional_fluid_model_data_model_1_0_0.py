@@ -744,7 +744,7 @@ class Enthalpy3(RafsBaseModel):
     )
 
 
-class EnthalphyAqueousHeatCapacityCoefficient(RafsBaseModel):
+class EnthalpyAqueousHeatCapacityCoefficient(RafsBaseModel):
     class Config:
         extra = Extra.forbid
 
@@ -769,12 +769,12 @@ class Enthalpy4(RafsBaseModel):
     class Config:
         extra = Extra.forbid
 
-    EnthalphyAqueousHeatCapacityCoefficient: Optional[
-        EnthalphyAqueousHeatCapacityCoefficient
+    EnthalpyAqueousHeatCapacityCoefficient: Optional[
+        EnthalpyAqueousHeatCapacityCoefficient
     ] = Field(
         None,
         description="This represents the component heat capacity coefficients used for aqueous enthalpy calculations.",
-        title="Enthalphy Aqueous Heat Capacity Coefficient",
+        title="Enthalpy Aqueous Heat Capacity Coefficient",
     )
 
 

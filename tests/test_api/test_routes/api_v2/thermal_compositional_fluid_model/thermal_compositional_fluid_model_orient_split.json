@@ -535,7 +535,7 @@
           "name":"J\/(kg.K)",
           "unitOfMeasureID":"osdu:reference-data--UnitOfMeasure:JkgK:",
           "propertyNames":[
-            "Enthalpy.EnthalphyAqueousHeatCapacityCoefficient.AqueousHeatCapacityCoefficient1[*]"
+            "Enthalpy.EnthalpyAqueousHeatCapacityCoefficient.AqueousHeatCapacityCoefficient1[*]"
           ]
         },
         {
@@ -543,7 +543,7 @@
           "name":"J\/(kg.K2)",
           "unitOfMeasureID":"osdu:reference-data--UnitOfMeasure:JkgK2:",
           "propertyNames":[
-            "Enthalpy.EnthalphyAqueousHeatCapacityCoefficient.AqueousHeatCapacityCoefficient2[*]"
+            "Enthalpy.EnthalpyAqueousHeatCapacityCoefficient.AqueousHeatCapacityCoefficient2[*]"
           ]
         },
         {
@@ -551,7 +551,7 @@
           "name":"degC",
           "unitOfMeasureID":"osdu:reference-data--UnitOfMeasure:degC:",
           "propertyNames":[
-            "Enthalpy.EnthalphyAqueousHeatCapacityCoefficient.ReferenceTemperature[*]"
+            "Enthalpy.EnthalpyAqueousHeatCapacityCoefficient.ReferenceTemperature[*]"
           ]
         },
         {
