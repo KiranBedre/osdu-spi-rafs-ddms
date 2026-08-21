@@ -12,11 +12,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Optional
+from typing import Optional, Union
 
 from fastapi_cache.backends.redis import RedisBackend
 from loguru import logger
 from redis.asyncio.client import Redis
+from redis.asyncio.cluster import RedisCluster
 from redis.exceptions import (
     AuthenticationError,
     ConnectionError,
@@ -33,10 +34,10 @@ from app.providers.dependencies.redis_factory import get_redis_factory
 class LoggingRedisBackend(RedisBackend):
     """Redis backend with logging for cache hits and misses."""
 
-    def __init__(self, redis: Redis, key_prefix: str = ""):
+    def __init__(self, redis: Union[Redis, RedisCluster], key_prefix: str = ""):
         """Initialize the backend.
 
-        :param Redis redis: connected Redis client
+        :param Union[Redis, RedisCluster] redis: connected Redis or RedisCluster client
         :param str key_prefix: optional prefix prepended to every key, used to
             simulate logical database isolation when the Redis server does not
             support multiple databases
@@ -50,7 +51,7 @@ class LoggingRedisBackend(RedisBackend):
         :param str key: cache key
         :return Optional[bytes]: cached value or None
         """
-        cached_data = await super().get(key)
+        cached_data = await super().get(self._apply_prefix(key))
         if cached_data is None:
             logger.debug(f"Cache MISS for key: {key}")
         else:
@@ -149,14 +150,15 @@ class RedisCacheBackend(BaseCacheBackend):
         logger.info("Redis cache backend initialized with provider-specific client")
         return LoggingRedisBackend(redis_client, key_prefix=key_prefix)
 
-    async def _validate_redis_connection(self, redis_client: Redis) -> None:
+    async def _validate_redis_connection(self, redis_client: Union[Redis, RedisCluster]) -> None:
         """Validate Redis connection by pinging the server.
 
-        :param Redis redis_client: redis instance
+        :param Union[Redis, RedisCluster] redis_client: redis instance
         :raises:
           AuthenticationError: for wrong password
           ConnectionError: for wrong host or port
           ResponseError: for wrong db
+          TimeoutError: for connection timeout
         """
         try:
             logger.debug("Validating Redis connection...")

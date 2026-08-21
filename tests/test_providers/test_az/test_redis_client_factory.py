@@ -255,3 +255,139 @@ class TestResolveRedisHostname:
 
         assert result == "akv-resolved.redis.cache.windows.net"
         mock_kv_client.get_secret.assert_called_once_with(azure_config.redis_hostname_secret_name)
+
+
+class TestAzureRedisClientFactoryClusterSupport:
+    """Tests for RedisCluster support (AMR cluster mode)."""
+
+    @pytest.mark.asyncio
+    async def test_create_client_with_msi_auth_amr_returns_redis_cluster(self):
+        """Test that AMR with MSI auth returns RedisCluster instead of Redis."""
+        azure_config = AzureConfig(redis_use_passwordless_auth=True)
+
+        with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config), \
+             patch("app.providers.dependencies.az.redis_client_factory.AzureRedisCredentialProvider") as mock_provider_class, \
+             patch("app.providers.dependencies.az.redis_client_factory.RedisCluster") as mock_cluster_class:
+
+            mock_credential_provider = MagicMock()
+            mock_provider_class.return_value = mock_credential_provider
+
+            mock_cluster = MagicMock()
+            mock_cluster_class.return_value = mock_cluster
+
+            config = _make_config(redis_port=AMR_PORT, redis_ssl=True)
+            factory = AzureRedisClientFactory(config, use_index_database=False)
+            client = await factory.create_client()
+
+        # RedisCluster should be created (not ConnectionPool + Redis)
+        mock_cluster_class.assert_called_once()
+        cluster_kwargs = mock_cluster_class.call_args.kwargs
+        assert cluster_kwargs["credential_provider"] is mock_credential_provider
+        assert cluster_kwargs["host"] == config.redis_hostname
+        assert cluster_kwargs["port"] == AMR_PORT
+        # RedisCluster doesn't take 'db' parameter
+        assert "db" not in cluster_kwargs
+
+        assert client is mock_cluster
+
+    @pytest.mark.asyncio
+    async def test_create_client_with_msi_auth_acr_returns_redis(self):
+        """Test that ACR with MSI auth returns standard Redis (not RedisCluster)."""
+        azure_config = AzureConfig(redis_use_passwordless_auth=True)
+
+        with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config), \
+             patch("app.providers.dependencies.az.redis_client_factory.AzureRedisCredentialProvider") as mock_provider_class, \
+             patch("app.providers.dependencies.az.redis_client_factory.ConnectionPool") as mock_pool_class, \
+             patch("app.providers.dependencies.az.redis_client_factory.Redis") as mock_redis_class:
+
+            mock_credential_provider = MagicMock()
+            mock_provider_class.return_value = mock_credential_provider
+
+            mock_pool = MagicMock()
+            mock_pool_class.return_value = mock_pool
+
+            mock_redis = MagicMock()
+            mock_redis_class.return_value = mock_redis
+
+            config = _make_config(redis_port=ACR_PORT, redis_ssl=True)
+            factory = AzureRedisClientFactory(config, use_index_database=False)
+            client = await factory.create_client()
+
+        # Standard Redis should be created with ConnectionPool
+        mock_pool_class.assert_called_once()
+        pool_kwargs = mock_pool_class.call_args.kwargs
+        assert pool_kwargs["credential_provider"] is mock_credential_provider
+        assert int(pool_kwargs["db"]) == 13  # ACR supports multiple databases
+
+        mock_redis_class.assert_called_once_with(connection_pool=mock_pool)
+        assert client is mock_redis
+
+    @pytest.mark.asyncio
+    async def test_create_password_client_amr_returns_redis_cluster(self):
+        """Test that password auth with AMR returns RedisCluster."""
+        azure_config = AzureConfig(redis_use_passwordless_auth=False)
+
+        with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config), \
+             patch("app.providers.dependencies.az.redis_client_factory.RedisCluster") as mock_cluster_class:
+
+            mock_cluster = AsyncMock()
+            mock_cluster.ping = AsyncMock()  # Successful ping
+            mock_cluster_class.return_value = mock_cluster
+
+            config = _make_config(redis_port=AMR_PORT, redis_password="mypassword", redis_ssl=True)
+            factory = AzureRedisClientFactory(config, use_index_database=False)
+            client = await factory.create_client()
+
+        # RedisCluster should be created with password
+        mock_cluster_class.assert_called_once()
+        cluster_kwargs = mock_cluster_class.call_args.kwargs
+        assert cluster_kwargs["password"] == "mypassword"
+        assert cluster_kwargs["host"] == config.redis_hostname
+        assert cluster_kwargs["port"] == AMR_PORT
+        assert cluster_kwargs["ssl"] is True
+
+        mock_cluster.ping.assert_called_once()
+        assert client is mock_cluster
+
+    @pytest.mark.asyncio
+    async def test_create_password_client_acr_delegates_to_base(self):
+        """Test that password auth with ACR delegates to base class."""
+        azure_config = AzureConfig(redis_use_passwordless_auth=False)
+
+        mock_redis = AsyncMock()
+
+        with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config), \
+             patch("app.providers.dependencies.az.redis_client_factory.RedisClientFactory.create_client", return_value=mock_redis) as mock_parent_create:
+
+            config = _make_config(redis_port=ACR_PORT, redis_password="mypassword")
+            factory = AzureRedisClientFactory(config, use_index_database=False)
+            client = await factory.create_client()
+
+        # Should delegate to parent class for ACR
+        mock_parent_create.assert_called_once()
+        assert client is mock_redis
+
+    @pytest.mark.asyncio
+    async def test_msi_fallback_to_password_amr_uses_redis_cluster(self):
+        """Test that MSI fallback to password with AMR uses RedisCluster."""
+        azure_config = AzureConfig(redis_use_passwordless_auth=True)
+
+        with patch("app.providers.dependencies.az.redis_client_factory.get_provider_config", return_value=azure_config), \
+             patch("app.providers.dependencies.az.redis_client_factory.AzureRedisCredentialProvider", side_effect=Exception("MSI failed")), \
+             patch("app.providers.dependencies.az.redis_client_factory.RedisCluster") as mock_cluster_class:
+
+            mock_cluster = AsyncMock()
+            mock_cluster.ping = AsyncMock()
+            mock_cluster_class.return_value = mock_cluster
+
+            config = _make_config(redis_port=AMR_PORT, redis_password="fallback-password", redis_ssl=True)
+            factory = AzureRedisClientFactory(config, use_index_database=False)
+            client = await factory.create_client()
+
+        # Should fall back to password auth with RedisCluster
+        mock_cluster_class.assert_called_once()
+        cluster_kwargs = mock_cluster_class.call_args.kwargs
+        assert cluster_kwargs["password"] == "fallback-password"
+        assert cluster_kwargs["port"] == AMR_PORT
+
+        assert client is mock_cluster
