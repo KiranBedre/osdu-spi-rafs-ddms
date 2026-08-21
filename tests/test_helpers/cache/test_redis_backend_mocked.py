@@ -15,13 +15,25 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from redis.exceptions import AuthenticationError, ConnectionError, ResponseError
+from redis.exceptions import (
+    AuthenticationError,
+    ConnectionError,
+    ResponseError,
+    TimeoutError,
+)
 
 from app.core.helpers.cache.backends.redis_cache import RedisCacheBackend
 from app.core.helpers.cache.errors import CacheBackendError
 
 
-@pytest.mark.parametrize("error", (AuthenticationError, ConnectionError, ResponseError))
+@pytest.mark.parametrize(
+    "error", (
+        AuthenticationError,
+        ConnectionError,
+        ResponseError,
+        TimeoutError,
+    )
+)
 @pytest.mark.asyncio
 async def test_validate_redis_connection(error):
     redis_mock = AsyncMock()
@@ -90,6 +102,27 @@ async def test_get_backend_with_empty_prefix(mock_get_redis_factory):
 
 @pytest.mark.asyncio
 @patch("app.core.helpers.cache.backends.redis_cache.get_redis_factory")
+async def test_get_applies_key_prefix(mock_get_redis_factory):
+    """Test that get reads from the prefixed AMR namespace."""
+    mock_redis_client = AsyncMock()
+    mock_factory = AsyncMock()
+    mock_factory.create_client.return_value = mock_redis_client
+    mock_factory.get_key_prefix = MagicMock(return_value="db13:")
+    mock_get_redis_factory.return_value = mock_factory
+
+    logging_backend = await RedisCacheBackend().get_backend()
+
+    with patch("fastapi_cache.backends.redis.RedisBackend.get", new_callable=AsyncMock) as mock_parent_get:
+        mock_parent_get.return_value = b"cached"
+
+        result = await logging_backend.get("sample")
+
+        mock_parent_get.assert_called_once_with("db13:sample")
+        assert result == b"cached"
+
+
+@pytest.mark.asyncio
+@patch("app.core.helpers.cache.backends.redis_cache.get_redis_factory")
 async def test_clear_with_namespace(mock_get_redis_factory):
     """Test that clear(namespace=...) correctly applies the key prefix."""
     mock_redis_client = AsyncMock()
@@ -112,3 +145,20 @@ async def test_clear_with_namespace(mock_get_redis_factory):
         # The parent RedisBackend.clear() will convert this to the pattern "db13:myns:*"
         mock_parent_clear.assert_called_once_with("db13:myns", None)
         assert result == 5
+
+
+@pytest.mark.asyncio
+async def test_logging_redis_backend_accepts_redis_cluster():
+    """Test that LoggingRedisBackend can be initialized with RedisCluster."""
+    from redis.asyncio.cluster import RedisCluster
+    from app.core.helpers.cache.backends.redis_cache import LoggingRedisBackend
+
+    # Create a mock RedisCluster
+    mock_cluster = AsyncMock(spec=RedisCluster)
+
+    # Should not raise - LoggingRedisBackend accepts Union[Redis, RedisCluster]
+    backend = LoggingRedisBackend(mock_cluster, key_prefix="db13:")
+
+    assert backend.redis is mock_cluster
+    assert backend._key_prefix == "db13:"
+
