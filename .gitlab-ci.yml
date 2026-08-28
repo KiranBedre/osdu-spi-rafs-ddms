@@ -10,13 +10,6 @@ variables:
   AZURE_TEST_TYPE: python
   AZURE_SKIP_COVERAGE: "true"
 
-  # AWS specific
-  AWS_BUILD_SUBDIR: ./
-  AWS_SERVICE: rafs-ddms
-  AWS_DEPLOY_TARGET: TF
-  AWS_SERVICE_NAMESPACE_SUFFIX: rafs-ddms
-  AWS_EKS_DEPLOYMENT_NAME: os-rafs-ddms
-
 include:
   
   # IMPORTS FROM CENTRAL CI/CD REPOSITORY (https://community.opengroup.org/osdu/platform/ci-cd-pipelines)
@@ -44,10 +37,6 @@ include:
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/azure.yml"
 
-  # AWS provider
-  - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/aws-global.yml"
-
   # GC provider
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/gc-global.yml"
@@ -71,9 +60,6 @@ include:
 
   # AZURE provider
   - local: "/devops/azure/override-stages.yml"
-
-  # AWS provider
-  - local: "/devops/aws/override-stages.yml"
 
   # GC provider
   - local: "devops/gc/pipeline/override-stages.yml"
