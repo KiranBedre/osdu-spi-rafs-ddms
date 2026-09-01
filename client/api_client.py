@@ -70,9 +70,19 @@ class APIClient(object):
     def delete(self, path: str, **kwargs) -> requests.Response:
         return self._send_request(method=HTTPMethods.DELETE, path=path, **kwargs)
 
+    def _current_token(self) -> str:
+        """Resolve the token, which may be a provider that refreshes on expiry.
+
+        :return: bearer token
+        :rtype: str
+        """
+        if callable(self.token):
+            return self.token()
+        return self.token
+
     def _build_headers(self, kwargs):
         headers = {
-            AUTHORIZATION: f"Bearer {self.token}",
+            AUTHORIZATION: f"Bearer {self._current_token()}",
             CONTENT_TYPE: "application/json",
             DATA_PARTITION_ID: self.data_partition,
             ACCEPT: "application/json",

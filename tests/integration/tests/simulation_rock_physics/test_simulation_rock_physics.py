@@ -236,7 +236,7 @@ def test_rsrp_search_record_filtered_out_by_row(api, record_id, dataset_id, sear
 
 def test_rsrp_search_record_filtered_in_by_start_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered in by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_start_date": current_date}
     response = api.simulation_rock_physics.search_records(params=params)
 
@@ -246,7 +246,7 @@ def test_rsrp_search_record_filtered_in_by_start_date(api, record_id, dataset_id
 
 def test_rsrp_search_record_filtered_out_by_start_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered out by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.simulation_rock_physics.search_records(params=params)
@@ -257,7 +257,7 @@ def test_rsrp_search_record_filtered_out_by_start_date(api, record_id, dataset_i
 
 def test_rsrp_search_record_filtered_in_by_end_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered in by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_end_date": current_date}
     response = api.simulation_rock_physics.search_records(params=params)
 
@@ -267,7 +267,7 @@ def test_rsrp_search_record_filtered_in_by_end_date(api, record_id, dataset_id, 
 
 def test_rsrp_search_record_filtered_out_by_end_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered out by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.simulation_rock_physics.search_records(params=params)
@@ -327,7 +327,7 @@ def test_rsrp_search_data_aggregated(api, record_id, dataset_id, search_availabl
 
 def test_rsrp_search_data_filtered_in_by_start_date(api, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered in by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_start_date": current_date}
     response = api.simulation_rock_physics.search_data(params=params)
 
@@ -340,7 +340,7 @@ def test_rsrp_search_data_filtered_in_by_start_date(api, tests_data, record_id, 
 
 def test_rsrp_search_data_filtered_out_by_start_date(api, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.simulation_rock_physics.search_data(params=params)
@@ -353,7 +353,7 @@ def test_rsrp_search_data_filtered_out_by_start_date(api, record_id, dataset_id,
 
 def test_rsrp_search_data_filtered_in_by_end_date(api, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered in by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_end_date": current_date}
     response = api.simulation_rock_physics.search_data(params=params)
 
@@ -366,7 +366,7 @@ def test_rsrp_search_data_filtered_in_by_end_date(api, tests_data, record_id, da
 
 def test_rsrp_search_data_filtered_out_by_end_date(api, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.simulation_rock_physics.search_data(params=params)

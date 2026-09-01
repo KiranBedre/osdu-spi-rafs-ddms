@@ -153,6 +153,18 @@ Some values are injected automatically during the helm upgrade:
 
 This ensures that deployments are fully parameterized and environment-specific, without hardcoding values in values.yaml.
 
+## Integration test job chain (reference-data bootstrap)
+
+Python integration tests on CIMPL assume reference-data records already exist in the partition. Pytest does not create `reference-data--*` stubs.
+
+Trusted/main CIMPL pipeline order:
+
+1. `cimpl-deploy` — install/upgrade the RAFS DDMS Helm release
+2. `cimpl-seed-reference-data` — Newman run of [RAFS DDMS CI Reference Bootstrap](./qa/Postman%20Collection/Collection/RAFS%20DDMS%20CI%20Reference%20Bootstrap.postman_collection.json) directly against Storage Service
+3. `cimpl-test-python` — pytest integration suite (`needs` the seed job)
+
+See [deployments/README.md](../../deployments/README.md) (CIMPL dev1 CI bootstrap) for the list of seeded IDs and a local Newman example. Use `python scripts/list_integration_reference_gaps.py` to detect fixture reference IDs still missing from the MVP manifest.
+
 ## OpenTelemetry Integration
 
 RAFS DDMS supports OpenTelemetry (OTEL) for distributed tracing, metrics, and log correlation. The integration is based on the [opentelemetry-distro](https://pypi.org/project/opentelemetry-distro/) package, which is included in the container image and can be activated via runtime arguments — analogous to the Java agent approach used in other OSDU services (e.g. `JAVA_TOOL_OPTIONS=-javaagent:...` for Java services).

@@ -16,9 +16,11 @@ from datetime import date
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from fastapi import HTTPException
 
-from app.search.ddms_dataset_ids_fetcher import SearchServiceSamplesAnalysisTypeIdsFetcher
+from app.search.ddms_dataset_ids_fetcher import (
+    SearchServiceSamplesAnalysisTypeIdsFetcher,
+    build_indexed_date_clauses,
+)
 
 
 @pytest.fixture
@@ -28,6 +30,59 @@ def mock_search_service():
 
 def _make_fetcher(search_service):
     return SearchServiceSamplesAnalysisTypeIdsFetcher(search_service=search_service)
+
+
+@pytest.mark.parametrize(
+    (
+        "indexed_start_date",
+        "indexed_end_date",
+        "expected",
+    ),
+    [
+        pytest.param(
+            None,
+            None,
+            [],
+            id="without-date-filters",
+        ),
+        pytest.param(
+            date(2024, 1, 1),
+            None,
+            [
+                "index.lastUpdateTime:" '["2024-01-01T00:00:00.000Z" TO *]',
+            ],
+            id="start-date-only",
+        ),
+        pytest.param(
+            None,
+            date(2024, 12, 31),
+            [
+                "index.lastUpdateTime:" '[* TO "2024-12-31T23:59:59.999Z"]',
+            ],
+            id="end-date-only",
+        ),
+        pytest.param(
+            date(2024, 1, 1),
+            date(2024, 12, 31),
+            [
+                "index.lastUpdateTime:" '["2024-01-01T00:00:00.000Z" TO "2024-12-31T23:59:59.999Z"]',
+            ],
+            id="complete-date-range",
+        ),
+    ],
+)
+def test_build_indexed_date_clauses(
+    indexed_start_date,
+    indexed_end_date,
+    expected,
+):
+    """Build UTC boundaries that include each complete specified day."""
+    result = build_indexed_date_clauses(
+        indexed_start_date,
+        indexed_end_date,
+    )
+
+    assert result == expected
 
 
 @pytest.mark.asyncio
