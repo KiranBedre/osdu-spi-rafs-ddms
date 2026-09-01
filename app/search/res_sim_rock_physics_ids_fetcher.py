@@ -24,6 +24,7 @@ from app.models.schemas.search_scope import SearchScope
 from app.resources.paths import RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR
 from app.search.ddms_dataset_ids_fetcher import (
     DDMSDatasetIdsFetcher,
+    build_indexed_date_clauses,
     build_result_ids,
 )
 from app.search.scope import (
@@ -96,19 +97,9 @@ class SearchServiceResSimRockPhysicsIdsFetcher(DDMSDatasetIdsFetcher):
                     scope_profile=SCOPE_PROFILE_RES_SIM_ROCK_PHYSICS,
                 )
             )
-        # Append time filters based on start and end dates
-        if indexed_start_date and indexed_end_date:
-            query_parts.append(
-                f"index.lastUpdateTime:[{indexed_start_date.isoformat()} TO {indexed_end_date.isoformat()}]",
-            )
-        elif indexed_start_date:
-            query_parts.append(
-                f"index.lastUpdateTime:[{indexed_start_date.isoformat()} TO *]",
-            )
-        elif indexed_end_date:
-            query_parts.append(
-                f"index.lastUpdateTime:[* TO {indexed_end_date.isoformat()}]",
-            )
+        query_parts.extend(
+            build_indexed_date_clauses(indexed_start_date, indexed_end_date),
+        )
         query = " AND ".join(query_parts)
         logger.debug(f"Query for search service: {query}")
         return query

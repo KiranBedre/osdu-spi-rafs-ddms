@@ -16,7 +16,6 @@ import copy
 import datetime
 
 from app.resources.common_headers import ACCEPT
-
 from tests.integration.config import (
     DataFiles,
     SamplesAnalysisTypes,
@@ -205,7 +204,7 @@ def test_capillary_pressure_search_data_filtered_in_by_row(api, helper, tests_da
             analysis_type=SamplesAnalysisTypes.CAPILLARY_PRESSURE,
             schema_version=SchemaVersions.V1_1_0,
             params=params,
-    ),
+        ),
         record_id,
     )
 
@@ -227,15 +226,18 @@ def test_capillary_pressure_search_record_filtered_out_by_row(api, record_id, da
 
 
 def test_capillary_pressure_search_record_filtered_in_by_start_date(
-    api, record_id, dataset_id_v1_1, search_available_v1_1
+    api, record_id, dataset_id_v1_1, search_available_v1_1, helper
 ):
     """Verify record is filtered in by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_start_date": current_date}
-    response = api.sample_analysis.search_records(
-        analysis_type=SamplesAnalysisTypes.CAPILLARY_PRESSURE,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
+    response = helper.wait_for_search_record(
+        lambda: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.CAPILLARY_PRESSURE,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -246,7 +248,7 @@ def test_capillary_pressure_search_record_filtered_out_by_start_date(
     api, record_id, dataset_id_v1_1, search_available_v1_1
 ):
     """Verify record is filtered out by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.sample_analysis.search_records(
@@ -260,15 +262,18 @@ def test_capillary_pressure_search_record_filtered_out_by_start_date(
 
 
 def test_capillary_pressure_search_record_filtered_in_by_end_date(
-    api, record_id, dataset_id_v1_1, search_available_v1_1
+    api, record_id, dataset_id_v1_1, search_available_v1_1, helper
 ):
     """Verify record is filtered in by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_end_date": current_date}
-    response = api.sample_analysis.search_records(
-        analysis_type=SamplesAnalysisTypes.CAPILLARY_PRESSURE,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
+    response = helper.wait_for_search_record(
+        lambda: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.CAPILLARY_PRESSURE,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -279,7 +284,7 @@ def test_capillary_pressure_search_record_filtered_out_by_end_date(
     api, record_id, dataset_id_v1_1, search_available_v1_1
 ):
     """Verify record is filtered out by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.sample_analysis.search_records(
@@ -361,15 +366,18 @@ def test_capillary_pressure_search_data_aggregated(api, record_id, dataset_id_v1
 
 
 def test_capillary_pressure_search_data_filtered_in_by_start_date(
-    api, tests_data, record_id, dataset_id_v1_1, search_available_v1_1
+    api, tests_data, record_id, dataset_id_v1_1, search_available_v1_1, helper
 ):
     """Verify bulk data is filtered in by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_start_date": current_date}
-    response = api.sample_analysis.search_data(
-        analysis_type=SamplesAnalysisTypes.CAPILLARY_PRESSURE,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
+    response = helper.wait_for_search_data(
+        lambda: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.CAPILLARY_PRESSURE,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -383,7 +391,7 @@ def test_capillary_pressure_search_data_filtered_out_by_start_date(
     api, record_id, dataset_id_v1_1, search_available_v1_1
 ):
     """Verify bulk data is filtered out by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.sample_analysis.search_data(
@@ -399,15 +407,18 @@ def test_capillary_pressure_search_data_filtered_out_by_start_date(
 
 
 def test_capillary_pressure_search_data_filtered_in_by_end_date(
-    api, tests_data, record_id, dataset_id_v1_1, search_available_v1_1
+    api, tests_data, record_id, dataset_id_v1_1, search_available_v1_1, helper
 ):
     """Verify bulk data is filtered in by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_end_date": current_date}
-    response = api.sample_analysis.search_data(
-        analysis_type=SamplesAnalysisTypes.CAPILLARY_PRESSURE,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
+    response = helper.wait_for_search_data(
+        lambda: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.CAPILLARY_PRESSURE,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -421,7 +432,7 @@ def test_capillary_pressure_search_data_filtered_out_by_end_date(
     api, tests_data, record_id, dataset_id_v1_1, search_available_v1_1
 ):
     """Verify bulk data is filtered out by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.sample_analysis.search_data(
@@ -464,7 +475,7 @@ def test_capillary_pressure_search_record_filtered_out_by_schema_version(
         analysis_type=SamplesAnalysisTypes.CAPILLARY_PRESSURE,
         schema_version=SchemaVersions.V1_0_0,
         params=params,
-        )
+    )
 
     # Assert
     assert record_id not in response["result"]
