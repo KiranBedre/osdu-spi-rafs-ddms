@@ -15,7 +15,7 @@
 from functools import lru_cache
 from typing import Dict, Optional, Type
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 from app.core.settings.app import AppSettings
 from app.core.settings.base import AppEnvTypes, BaseAppSettings

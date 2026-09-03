@@ -102,7 +102,7 @@ class GenericSchemasView(object):
             if model_versions:
                 break
         if model_versions and (model := model_versions.get(content_schema_version)):  # noqa: WPS332
-            return JSONResponse(content=model.schema())
+            return JSONResponse(content=model.model_json_schema())
 
         available_versions = set(model_versions.keys()) if model_versions else set()
         raise_model_not_found(content_type, content_schema_version, available_versions)

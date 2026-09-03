@@ -16,11 +16,10 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:master-data--Sample:1.0.0
 #   timestamp: 2023-10-24T20:27:08+00:00
 
-from __future__ import annotations
 
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 from ..osdu_wks_AbstractAliasNames_1 import field_0
 from ..osdu_wks_AbstractGeoContext_1 import field_0 as field_0_1
@@ -47,13 +46,11 @@ class Field0(BaseModel):
         description="This describes the reason that caused the creation of a new version of this master data.",
     )
     TechnicalAssuranceTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-TechnicalAssuranceType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-TechnicalAssuranceType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description='DEPRECATED: (in favor of more nuanced TechnicalAssurances[] array) Describes a master-data record\'s overall suitability for general business consumption based on data quality. Clarifications: Since Certified is the highest classification of suitable quality, any further change or versioning of a Certified record should be carefully considered and justified. If a Technical Assurance value is not populated then one can assume the data has not been evaluated or its quality is unknown (=Unevaluated). Technical Assurance values are not intended to be used for the identification of a single "preferred" or "definitive" record by comparison with other records.',
-        example="namespace:reference-data--TechnicalAssuranceType:Certified:",
+        json_schema_extra={"example": "namespace:reference-data--TechnicalAssuranceType:Certified:"},
         title="Technical Assurance Type ID",
     )
     GeoContexts: Optional[List[field_0_1.Field0]] = Field(

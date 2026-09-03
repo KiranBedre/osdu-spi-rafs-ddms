@@ -24,9 +24,9 @@ async def data_validation_http_error_handler(  # noqa: ASYNC910, ASYNC124
     exc: DataValidationException,
 ) -> JSONResponse:
     return JSONResponse(  # noqa: ASYNC910
-        ValidationErrorResponse.construct(
+        ValidationErrorResponse.model_construct(
             reason=exc.detail,
             errors=exc.errors,
-        ).dict(),
+        ).model_dump(),
         status_code=exc.status_code,
     )

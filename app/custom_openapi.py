@@ -698,13 +698,13 @@ def _apply_request_body_overrides(openapi_schema: dict, settings: AppSettings) -
     path_key = "{0}/v2/samplesanalysis/{{record_id}}/data/{{analysis_type}}".format(
         prefix,
     )
-    _set_request_body(paths[path_key], OrientSplit.schema(), "multiple_salinity.json")
+    _set_request_body(paths[path_key], OrientSplit.model_json_schema(), "multiple_salinity.json")
 
     # SaturationFunctionSet data POST
     path_key = "{0}/v2/saturationfunctionset/{{record_id}}/data".format(prefix)
     _set_request_body(
         paths[path_key],
-        OrientSplit.schema(),
+        OrientSplit.model_json_schema(),
         "saturation_function_set_post_content_example.json",
     )
 
@@ -723,7 +723,7 @@ def _apply_request_body_overrides(openapi_schema: dict, settings: AppSettings) -
     )
     _set_request_body(
         paths[path_key],
-        OrientSplit.schema(),
+        OrientSplit.model_json_schema(),
         "reservoir_simulation_rock_physics_content_model.json",
     )
 
@@ -735,7 +735,7 @@ def _apply_masterdata_override(
 ) -> None:
     """Apply masterdata POST override with proper schema resolution."""
     route = "{0}/v2/masterdata".format(prefix)
-    osdu_record_schema = OsduStorageRecord.schema()
+    osdu_record_schema = OsduStorageRecord.model_json_schema()
     _copy_definitions_to_root(osdu_record_schema, openapi_schema)
     array_schema = {
         "title": "MasterDataRecords",

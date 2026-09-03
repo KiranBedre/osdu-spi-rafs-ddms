@@ -57,6 +57,16 @@ GENERIC_INVALID_TYPE_FIELDS = [
     ("/data", "data", "data value is not a valid dict"),
 ]
 
+# pydantic v1 produces e.g. "str type expected"; pydantic v2 produces "Input should be
+# a valid string" (and, for BaseModel fields like legal/acl, appends "or instance of X").
+# Match on this stable v2 prefix rather than the full message so the model class name
+# suffix doesn't need to be hardcoded per field.
+_V1_TO_V2_TYPE_MSG_PREFIX = {
+    "str type expected": "Input should be a valid string",
+    "value is not a valid dict": "Input should be a valid dictionary",
+    "value is not a valid list": "Input should be a valid list",
+}
+
 SPECIFIC_INVALID_TYPE_FIELDS = [
     ("/data/Name", ["Name"], "['Name'] is not of type 'string'"),
     ("/data/Description", ["Description"], "['Description'] is not of type 'string'"),
@@ -401,7 +411,8 @@ def test_sfs_negative_create_record_missing_mandatory_generic_field(api, tests_d
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert f"{field_name} field required" in body["errors"]
+    # pydantic v1 produces "field required"; pydantic v2 produces "Field required" (case-insensitive check).
+    assert any(f"{field_name} field required".lower() == err.lower() for err in body["errors"])
     assert len(body["errors"]) == 1, f"Expected errors list length 1, got {len(body['errors'])}"
 
 
@@ -445,7 +456,9 @@ def test_sfs_negative_create_record_invalid_type_generic_field(
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert error_message in body["errors"]
+    field_name, v1_suffix = error_message.split(" ", 1)
+    v2_prefix = f"{field_name} {_V1_TO_V2_TYPE_MSG_PREFIX[v1_suffix]}"
+    assert any(err == error_message or err.startswith(v2_prefix) for err in body["errors"])
     assert len(body["errors"]) == 1
 
 
@@ -528,7 +541,12 @@ def test_sfs_negative_create_record_extra_field_generic(api, tests_data, helper,
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert f"{field_name} extra fields not permitted" in body["errors"]
+    # pydantic v1 produces "extra fields not permitted"; pydantic v2 produces
+    # "Extra inputs are not permitted".
+    assert any(
+        err in (f"{field_name} extra fields not permitted", f"{field_name} Extra inputs are not permitted")
+        for err in body["errors"]
+    )
     assert len(body["errors"]) == 1
 
 
@@ -793,7 +811,10 @@ def test_sfs_negative_create_record_invalid_payload_format(api, tests_data):
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "body value is not a valid list" in body["errors"]
+    v1_message = "body value is not a valid list"
+    field_name, v1_suffix = v1_message.split(" ", 1)
+    v2_prefix = f"{field_name} {_V1_TO_V2_TYPE_MSG_PREFIX[v1_suffix]}"
+    assert any(err == v1_message or err.startswith(v2_prefix) for err in body["errors"])
 
 
 def test_sfs_negative_add_data_invalid_payload_format(api, tests_data, record_id):

@@ -133,15 +133,9 @@ def normalize_openapi_schema(schema: dict) -> dict:
 
                 target_key = "title" if key == "app_name" else key
 
-                # OpenAPI 3 requires exclusiveMinimum/exclusiveMaximum as booleans.
-                if key == "exclusiveMinimum" and isinstance(item, (int, float)) and not isinstance(item, bool):
-                    normalized["minimum"] = item
-                    normalized["exclusiveMinimum"] = True
-                    continue
-                if key == "exclusiveMaximum" and isinstance(item, (int, float)) and not isinstance(item, bool):
-                    normalized["maximum"] = item
-                    normalized["exclusiveMaximum"] = True
-                    continue
+                # Under OpenAPI 3.1 (JSON Schema 2020-12), exclusiveMinimum/exclusiveMaximum
+                # must be numbers, not booleans -- pydantic v2 already emits the numeric form
+                # natively, so it's passed through unchanged here.
 
                 normalized[target_key] = _normalize(item)
 

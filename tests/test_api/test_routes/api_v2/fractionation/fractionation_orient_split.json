@@ -1,5 +1,5 @@
 {
-  "columns":[
+  "columns": [
     "SamplesAnalysisID",
     "SampleID",
     "Meta",
@@ -14,10 +14,10 @@
     "FractionNormalisation",
     "IsNormalised"
   ],
-  "index":[
+  "index": [
     0
   ],
-  "data":[
+  "data": [
     [
       "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:Example_Sample:",
@@ -45,15 +45,15 @@
       1.23,
       [
         {
-          "ComponentID":"opendes:reference-data--FractionationComponent:FractionationComponent:",
-          "MassFraction":1.23,
-          "Mass":1.23,
-          "Remarks":[
+          "ComponentID": "opendes:reference-data--FractionationComponent:FractionationComponent:",
+          "MassFraction": 1.23,
+          "Mass": 1.23,
+          "Remarks": [
             {
-              "RemarkSequenceNumber":1.23,
-              "Remark":"Remark",
-              "RemarkSource":"RemarkSource",
-              "RemarkDate":"2025-01-01"
+              "RemarkSequenceNumber": 1,
+              "Remark": "Remark",
+              "RemarkSource": "RemarkSource",
+              "RemarkDate": "2025-01-01"
             }
           ]
         }

@@ -23,9 +23,7 @@ from fastapi.openapi.utils import (
 from pydantic import ValidationError
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from starlette.status import (
-    HTTP_400_BAD_REQUEST,
-)
+from starlette.status import HTTP_400_BAD_REQUEST
 
 from app.core.http_status import HTTP_422_UNPROCESSABLE
 from app.models.schemas.errors import ValidationErrorResponse
@@ -41,7 +39,7 @@ def _format_single_error(error: dict) -> str:
         pattern = error["ctx"]["pattern"]
         entity = pattern.split(":")[1]
         return f'{entity} ID is not provided in expected OSDU pattern "{pattern}"'
-    if error_type == "header" and error["msg"] == "field required":
+    if error_type == "header" and error["msg"].lower() == "field required":
         return f"No {error_field} in headers"
     return f'{error_field} {error["msg"]}'
 
@@ -73,19 +71,19 @@ async def http422_error_handler(  # noqa: ASYNC910, ASYNC124
     # Return 400 for missing headers (RFC 4918: headers are request metadata)
     if _is_header_error(errors):
         return JSONResponse(  # noqa: ASYNC910
-            ValidationErrorResponse.construct(
+            ValidationErrorResponse.model_construct(
                 code=HTTP_400_BAD_REQUEST,
                 reason="Bad request.",
                 errors=format_errors(errors),
-            ).dict(),
+            ).model_dump(),
             status_code=HTTP_400_BAD_REQUEST,
         )
 
     return JSONResponse(  # noqa: ASYNC910
-        ValidationErrorResponse.construct(
+        ValidationErrorResponse.model_construct(
             reason="Unprocessable entity.",
             errors=format_errors(errors),
-        ).dict(),
+        ).model_dump(),
         status_code=HTTP_422_UNPROCESSABLE,
     )
 

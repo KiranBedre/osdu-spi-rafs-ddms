@@ -23,7 +23,7 @@ from azure.identity.aio import DefaultAzureCredential
 from azure.keyvault.secrets.aio import SecretClient
 from fastapi_cache import FastAPICache
 from fastapi_cache.decorator import cache
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 from app.core.config import AppSettings
 from app.core.helpers.cache.settings import (

@@ -16,12 +16,11 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:work-product-component--SamplesAnalysis:1.0.0
 #   timestamp: 2023-10-19T20:18:16+00:00
 
-from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
@@ -36,9 +35,7 @@ class Field0(BaseModel):
         title="Termination Date Time",
     )
     ActivityStatusID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ActivityStatus:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ActivityStatus:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The ActivityStatus is a set of major activity phases that are significant to business stakeholders.",

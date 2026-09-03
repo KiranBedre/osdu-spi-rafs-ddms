@@ -16,11 +16,10 @@
 #   filename:  api/schema-service/v1/schema/osdu:wks:master-data--SampleAcquisitionJob:1.0.0
 #   timestamp: 2023-12-12T16:53:25+00:00
 
-from __future__ import annotations
 
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 from ..osdu_wks_AbstractActivityParameter_1 import field_1
 from ..osdu_wks_AbstractActivityState_1 import field_0
@@ -38,9 +37,7 @@ class Field0(BaseModel):
         title="Parameters",
     )
     ActivityTemplateID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:master-data\-\-ActivityTemplate:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-ActivityTemplate:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The relation to the ActivityTemplate carrying expected parameter definitions and default values.",
@@ -52,7 +49,7 @@ class Field0(BaseModel):
         title="Last Activity State",
     )
     ParentProjectID: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The relationship to a parent project acting as a parent activity.",

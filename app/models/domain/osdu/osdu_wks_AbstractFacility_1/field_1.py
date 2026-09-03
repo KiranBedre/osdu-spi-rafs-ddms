@@ -16,11 +16,10 @@
 #   filename:  api/schema-service/v1/schema/osdu:wks:master-data--GenericFacility:1.0.0
 #   timestamp: 2023-12-12T16:50:26+00:00
 
-from __future__ import annotations
 
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 from ..osdu_wks_AbstractAliasNames_1 import field_0
 from ..osdu_wks_AbstractFacilityEvent_1 import field_1 as field_1_1
@@ -42,7 +41,7 @@ class Field0(BaseModel):
         None, description="A list of key facility events."
     )
     CurrentOperatorID: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The current operator organization ID; the organization ID may also be found in the FacilityOperatorOrganisationID of the FacilityOperator array providing the actual dates.",
@@ -55,9 +54,7 @@ class Field0(BaseModel):
         title="External Facility Identifier",
     )
     OperatingEnvironmentID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-OperatingEnvironment:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-OperatingEnvironment:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Identifies the Facility's general location as being onshore vs. offshore.",
@@ -67,7 +64,7 @@ class Field0(BaseModel):
         description="facilitySpecification maintains the specification like slot name, wellbore drilling permit number, rig name etc.",
     )
     DataSourceOrganisationID: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(None, description="The main source of the header information.")
     FacilityDescription: Optional[str] = Field(
         None,
@@ -75,7 +72,7 @@ class Field0(BaseModel):
         title="Facility Description",
     )
     InitialOperatorID: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="A initial operator organization ID; the organization ID may also be found in the FacilityOperatorOrganisationID of the FacilityOperator array providing the actual dates.",
@@ -85,7 +82,7 @@ class Field0(BaseModel):
         None, description="The history of operator organizations of the facility."
     )
     FacilityTypeID: Optional[
-        constr(regex=r"^[\w\-\.]+:reference-data\-\-FacilityType:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-FacilityType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The definition of a kind of capability to perform a business function or a service.",

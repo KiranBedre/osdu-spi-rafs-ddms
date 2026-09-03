@@ -28,7 +28,7 @@ def get_info() -> InfoResponse:
     :return: application info
     :rtype: InfoResponse
     """
-    return InfoResponse.construct(
+    return InfoResponse.model_construct(
         name=settings.app_name,
         app_version=settings.app_version,
         build_time=settings.build_date,

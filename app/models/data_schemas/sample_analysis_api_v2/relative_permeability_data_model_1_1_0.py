@@ -16,49 +16,38 @@
 #   filename:  relative_permeability.1.1.0.json
 #   timestamp: 2026-06-30T19:59:21+00:00
 
-from __future__ import annotations
-
 from app.models.config import RafsBaseModel
 
 from datetime import date
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import Extra, Field, constr
+from pydantic import Field
+from pydantic import StringConstraints
 
 
 class Meta(RafsBaseModel):
     kind: Literal["Unit"] = Field(
         "Unit",
-        const=True,
         description="The kind of reference, 'Unit' for FrameOfReferenceUOM.",
         title="UOM Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The unit symbol or name of the unit.",
-        example="ft[US]",
         title="UOM Unit Symbol",
     )
     persistableReference: str | None = Field(
         None,
         description="The self-contained, persistable reference string uniquely identifying the Unit.",
-        example='{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}',
         title="UOM Persistable Reference",
     )
-    unitOfMeasureID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    unitOfMeasureID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="SRN to unit of measure reference.",
-        example="namespace:reference-data--UnitOfMeasure:ftUS:",
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides Unit context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["HorizontalDeflection.EastWest", "HorizontalDeflection.NorthSouth"],
         title="UOM Property Names",
     )
 
@@ -66,36 +55,26 @@ class Meta(RafsBaseModel):
 class Meta1(RafsBaseModel):
     kind: Literal["CRS"] = Field(
         "CRS",
-        const=True,
         description="The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
         title="CRS Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The name of the CRS.",
-        example="WGS 84 / UTM zone 15N",
         title="CRS Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying the CRS.",
-        example='{"authCode":{"auth":"EPSG","code":"32615"},"name":"WGS_1984_UTM_Zone_15N","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"WGS_1984_UTM_Zone_15N\\",GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Transverse_Mercator\\"],PARAMETER[\\"False_Easting\\",500000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-93.0],PARAMETER[\\"Scale_Factor\\",0.9996],PARAMETER[\\"Latitude_Of_Origin\\",0.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",32615]]"}',
         title="CRS Persistable Reference",
     )
-    coordinateReferenceSystemID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    coordinateReferenceSystemID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="SRN to CRS reference.",
-        example="namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides CRS context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["KickOffPosition.X", "KickOffPosition.Y"],
         title="CRS Property Names",
     )
 
@@ -103,26 +82,22 @@ class Meta1(RafsBaseModel):
 class Meta2(RafsBaseModel):
     kind: Literal["DateTime"] = Field(
         "DateTime",
-        const=True,
         description="The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
         title="DateTime Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The name of the DateTime format and reference.",
-        example="UTC",
         title="DateTime Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying DateTime reference.",
-        example='{"format":"yyyy-MM-ddTHH:mm:ssZ","timeZone":"UTC","type":"DTM"}',
         title="DateTime Persistable Reference",
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides DateTime context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Acquisition.StartTime", "Acquisition.EndTime"],
         title="DateTime Property Names",
     )
 
@@ -130,40 +105,28 @@ class Meta2(RafsBaseModel):
 class Meta3(RafsBaseModel):
     kind: Literal["AzimuthReference"] = Field(
         "AzimuthReference",
-        const=True,
         description="The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
         title="AzimuthReference Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The name of the CRS or the symbol/name of the unit.",
-        example="TrueNorth",
         title="AzimuthReference Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying AzimuthReference.",
-        example='{"code":"TrueNorth","type":"AZR"}',
         title="AzimuthReference Persistable Reference",
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides AzimuthReference context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Bearing"],
         title="AzimuthReference Property Names",
     )
 
 
 class EffectivePermeability(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    PermeabilityMeasurementMethodID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-PermeabilityMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    PermeabilityMeasurementMethodID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-PermeabilityMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
         title="Permeability Measurement Method ID",
@@ -171,12 +134,7 @@ class EffectivePermeability(RafsBaseModel):
     Value: float | None = Field(
         None, description="The effective permeability value.", title="Value"
     )
-    FluidTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    FluidTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="The fluid type used in determining effective permeability.",
         title="Fluid Type ID",
@@ -184,28 +142,15 @@ class EffectivePermeability(RafsBaseModel):
 
 
 class RelativePermeability(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
     Value: float | None = Field(
         None, description="The relative permeability value.", title="Value"
     )
-    FluidSystemAnalysisTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-FluidSystemAnalysisType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    FluidSystemAnalysisTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-FluidSystemAnalysisType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="DEPRECATED: Use FluidTypeID. The fluid system used in determining relative permeability.",
         title="Fluid System Analysis Type ID",
     )
-    FluidTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    FluidTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="The fluid type for which the relative permeability is reported.",
         title="Fluid Type ID",
@@ -213,49 +158,39 @@ class RelativePermeability(RafsBaseModel):
 
 
 class Saturation(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
     Value: float | None = Field(
         None, description="The saturation value.", title="Value"
     )
-    FluidTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    FluidTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="The fluid type used for this saturation.",
         title="Fluid Type ID",
     )
-    SaturationMeasurementLocationID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SaturationMeasurementLocation:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    SaturationMeasurementLocationID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SaturationMeasurementLocation:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="Identifies the area of focus for this saturation measurement, e.g. 'End Face' or 'Average'",
         title="Saturation Measurement Location ID",
     )
 
 
-class InitialConditions(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
+# Aliases avoid Pydantic v2 field-name/class-name collision in the classes below.
+_EffectivePermeabilityT = EffectivePermeability
+_RelativePermeabilityT = RelativePermeability
+_SaturationT = Saturation
 
-    EffectivePermeability: EffectivePermeability | None = Field(
+
+class InitialConditions(RafsBaseModel):
+    EffectivePermeability: _EffectivePermeabilityT | None = Field(
         None,
         description="A measure of how easily fluids can flow through a porous sample, taking into consideration the saturation, presence of other fluids, and the interactions between those fluids into account.",
         title="Effective Permeability",
     )
-    RelativePermeability: RelativePermeability | None = Field(
+    RelativePermeability: _RelativePermeabilityT | None = Field(
         None,
         description="Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
         title="Relative Permeability",
     )
-    Saturation: Saturation | None = Field(
+    Saturation: _SaturationT | None = Field(
         None,
         description="At the start of the experiment, the extent to which pore space within the sample is filled with fluids.",
         title="Saturation",
@@ -293,20 +228,17 @@ class InitialConditions(RafsBaseModel):
 
 
 class TerminalConditions(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    EffectivePermeability: EffectivePermeability | None = Field(
+    EffectivePermeability: _EffectivePermeabilityT | None = Field(
         None,
         description="A measure of how easily fluids can flow through a porous sample, taking into consideration the saturation, presence of other fluids, and the interactions between those fluids into account.",
         title="Effective Permeability",
     )
-    RelativePermeability: RelativePermeability | None = Field(
+    RelativePermeability: _RelativePermeabilityT | None = Field(
         None,
         description="Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
         title="Relative Permeability",
     )
-    Saturation: Saturation | None = Field(
+    Saturation: _SaturationT | None = Field(
         None,
         description="At the end of the experiment, the extent to which pore space within the sample is filled with fluids.",
         title="Saturation",
@@ -314,20 +246,12 @@ class TerminalConditions(RafsBaseModel):
 
 
 class ReferencePermeabilityItem(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
     Value: float | None = Field(
         None,
         description="The permeability value acting as a reference for this experiment.",
         title="Value",
     )
-    PermeabilityMeasurementMethodID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-PermeabilityMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    PermeabilityMeasurementMethodID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-PermeabilityMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
         title="Permeability Measurement Method ID",
@@ -335,33 +259,17 @@ class ReferencePermeabilityItem(RafsBaseModel):
 
 
 class InjectionRateItem(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
     Value: float | None = Field(None, description="The flow rate value.", title="Value")
-    FluidTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    FluidTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None, description="Fluid Type injected into the sample.", title="Fluid Type ID"
     )
 
 
 class CumulativeProduction(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
     Value: float | None = Field(
         None, description="The cumulative production value at this step.", title="Value"
     )
-    FluidTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    FluidTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="Fluid Type displaced from the sample due to injection",
         title="Fluid Type ID",
@@ -369,15 +277,7 @@ class CumulativeProduction(RafsBaseModel):
 
 
 class EffectivePermeabilityItem(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
-    PermeabilityMeasurementMethodID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-PermeabilityMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    PermeabilityMeasurementMethodID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-PermeabilityMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
         title="Permeability Measurement Method ID",
@@ -385,12 +285,7 @@ class EffectivePermeabilityItem(RafsBaseModel):
     Value: float | None = Field(
         None, description="The effective permeability value.", title="Value"
     )
-    FluidTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    FluidTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="The fluid type used in determining effective permeability.",
         title="Fluid Type ID",
@@ -398,28 +293,15 @@ class EffectivePermeabilityItem(RafsBaseModel):
 
 
 class RelativePermeabilityItem(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
     Value: float | None = Field(
         None, description="The relative permeability value.", title="Value"
     )
-    FluidSystemAnalysisTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-FluidSystemAnalysisType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    FluidSystemAnalysisTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-FluidSystemAnalysisType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="DEPRECATED: Use FluidTypeID. The fluid system used in determining relative permeability.",
         title="Fluid System Analysis Type ID",
     )
-    FluidTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    FluidTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="The fluid type for which the relative permeability is reported.",
         title="Fluid Type ID",
@@ -427,9 +309,6 @@ class RelativePermeabilityItem(RafsBaseModel):
 
 
 class InSituSaturationProfile(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
     Time: float | None = Field(
         None,
         description="The time at which the in-situ saturation was measured.",
@@ -449,9 +328,6 @@ class InSituSaturationProfile(RafsBaseModel):
 
 
 class DifferentialPressureProfile(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
     Time: float | None = Field(
         None, description="The time at which the pressure was measured.", title="Time"
     )
@@ -463,31 +339,19 @@ class DifferentialPressureProfile(RafsBaseModel):
 
 
 class ProductionProfile(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
     Time: float | None = Field(
         None, description="The time at which the pressure was measured.", title="Time"
     )
     ProductionRate: float | None = Field(
         None, description="The rate of fluid production", title="Production Rate"
     )
-    FluidTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(None, description="The type of fluid.", title="Fluid Type ID")
+    FluidTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(None, description="The type of fluid.", title="Fluid Type ID")
 
 
 class Remark(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
-
     RemarkSequenceNumber: int | None = Field(
         None,
         description="A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
-        example=1,
         title="Remark Sequence Number",
     )
     Remark: str | None = Field(
@@ -503,10 +367,10 @@ class Remark(RafsBaseModel):
     )
 
 
-class PermeabilityTestStep(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
+_CumulativeProductionT = CumulativeProduction
 
+
+class PermeabilityTestStep(RafsBaseModel):
     StartTime: float | None = Field(
         None,
         description="The start time of this test step, typically in minutes.",
@@ -522,7 +386,7 @@ class PermeabilityTestStep(RafsBaseModel):
         description="The rate at which the fluid is injected into the sample.",
         title="Injection Rate",
     )
-    CumulativeProduction: CumulativeProduction | None = Field(
+    CumulativeProduction: _CumulativeProductionT | None = Field(
         None,
         description="The cumulative amount of fluid displaced from the sample",
         title="Cumulative Production",
@@ -537,7 +401,7 @@ class PermeabilityTestStep(RafsBaseModel):
         description="Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
         title="Relative Permeability",
     )
-    Saturation: Saturation | None = Field(
+    Saturation: _SaturationT | None = Field(
         None,
         description="The extent to which pore space within the sample is filled with fluids.",
         title="Saturation",
@@ -565,49 +429,40 @@ class PermeabilityTestStep(RafsBaseModel):
     Remarks: list[Remark] | None = Field(
         None,
         description="Array object capturing remarks or additional information for this test step.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
-        example="",
         title="Remarks",
     )
 
 
-class RelativePermeabilityModel110(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
+_MetaUnionT = Meta | Meta1 | Meta2 | Meta3
+_InitialConditionsT = InitialConditions
+_TerminalConditionsT = TerminalConditions
 
-    SamplesAnalysisID: constr(
-        regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+
+class RelativePermeabilityModel110(RafsBaseModel):
+    SamplesAnalysisID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ...,
         description="OSDU Identifier for this SamplesAnalysis.",
         title="Samples Analysis ID",
     )
-    SampleID: constr(
-        regex=r"^[\w\-\.]+:master-data\-\-Sample:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+    SampleID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Sample:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ..., description="OSDU Identifier for this SamplesAnalysis.", title="Sample ID"
     )
-    Meta: list[Meta | Meta1 | Meta2 | Meta3] = Field(
+    Meta: list[_MetaUnionT] = Field(
         ...,
         description="A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
-        example="",
         title="Meta",
     )
-    DesaturationMethodID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-DesaturationMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    DesaturationMethodID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-DesaturationMethod:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="The identifier for the method by which the sample was desaturated.",
         title="Desaturation Method ID",
     )
-    InitialConditions: InitialConditions | None = Field(
+    InitialConditions: _InitialConditionsT | None = Field(
         None,
         description="The initial conditions of permeability, saturation, and flow rate within the sample.",
         title="Initial Conditions",
     )
-    TerminalConditions: TerminalConditions | None = Field(
+    TerminalConditions: _TerminalConditionsT | None = Field(
         None,
         description="The permeability and saturation conditions of the sample at the end of the experiment.",
         title="Terminal Conditions",
@@ -627,12 +482,7 @@ class RelativePermeabilityModel110(RafsBaseModel):
         description="e.g. gas permeability kg, gas permeability at minimum liquid saturation kg@Slmin, oil permeability ko, water permeability kw, etc",
         title="Reference Permeability",
     )
-    SaturationProcessMethodID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SaturationProcessMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    SaturationProcessMethodID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SaturationProcessMethod:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="The method used to saturate the rock sample with a particular fluid in the experiment.",
         title="Saturation Process Method ID",
@@ -677,12 +527,7 @@ class RelativePermeabilityModel110(RafsBaseModel):
         description="The mass per volume of water in the sample.",
         title="Water Density",
     )
-    FluidSystemAnalysisTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-FluidSystemAnalysisType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    FluidSystemAnalysisTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-FluidSystemAnalysisType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="The type of fluid system in this analysis, e.g. gasbrine or gasoil.",
         title="Fluid System Analysis Type ID",
@@ -690,32 +535,17 @@ class RelativePermeabilityModel110(RafsBaseModel):
     PermeabilityTestSteps: list[PermeabilityTestStep] | None = Field(
         None, description="Permeability Test Steps", title="Permeability Test Steps"
     )
-    OilTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    OilTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="Identifies the type of oil used in the experiment.",
         title="Oil Type ID",
     )
-    GasTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    GasTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="Identifies the type of gas used in the experiment.",
         title="Gas Type ID",
     )
-    WaterTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    WaterTypeID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoreAnalysisFluidType:[\w\-\.\:\%]+:[0-9]*$")] | None = Field(
         None,
         description="Identifies the type of gas used in the experiment.",
         title="Water Type ID",

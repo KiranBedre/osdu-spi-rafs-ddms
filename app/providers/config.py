@@ -14,19 +14,21 @@
 
 from typing import Optional
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class AzureConfig(BaseSettings):
-    service_name: str = None
+    model_config = SettingsConfigDict(env_file=".env")
 
-    az_keyvault_url: str = None
+    service_name: Optional[str] = None
+
+    az_keyvault_url: Optional[str] = None
 
     az_use_partition_service: bool = True
 
-    az_logger_level: str = None
+    az_logger_level: Optional[str] = None
 
-    az_ai_instrumentation_key: str = None
+    az_ai_instrumentation_key: Optional[str] = None
 
     az_container_name: str = "rafs-ddms"
 
@@ -43,9 +45,6 @@ class AzureConfig(BaseSettings):
     redis_socket_keepalive: bool = True
 
     redis_use_passwordless_auth: bool = True
-
-    class Config(object):
-        env_file = ".env"
 
 
 def get_cloud_provider_config(cloud_provider: str) -> Optional[BaseSettings]:

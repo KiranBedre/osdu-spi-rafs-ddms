@@ -16,12 +16,11 @@
 #   filename:  api/schema-service/v1/schema/osdu:wks:master-data--GenericFacility:1.0.0
 #   timestamp: 2023-12-12T16:50:26+00:00
 
-from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
@@ -35,7 +34,7 @@ class Field0(BaseModel):
         description="The date and time at which the facility operator becomes effective.",
     )
     FacilityOperatorOrganisationID: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The company that currently operates, or previously operated the facility",

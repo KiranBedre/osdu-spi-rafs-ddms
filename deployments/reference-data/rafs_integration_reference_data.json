@@ -671,6 +671,34 @@
     }
   },
   {
+    "id": "{{NAMESPACE}}:reference-data--CoreAnalysisFluidType:Brine",
+    "kind": "osdu:wks:reference-data--CoreAnalysisFluidType:1.0.0",
+    "acl": {
+      "owners": [
+        "{{DATA_OWNERS_GROUP}}"
+      ],
+      "viewers": [
+        "{{DATA_VIEWERS_GROUP}}"
+      ]
+    },
+    "legal": {
+      "legaltags": [
+        "{{LEGAL_TAG}}"
+      ],
+      "otherRelevantDataCountries": [
+        "{{ISO_3166_ALPHA_2_CODE}}"
+      ]
+    },
+    "data": {
+      "Name": "Brine",
+      "ID": "Brine",
+      "Description": "Saltwater solution used in drilling and formation fluid simulations to mimic natural reservoir conditions.",
+      "Code": "Brine",
+      "Source": "Workbook ReferenceValues/Published/CoreAnalysisFluidType.1.xlsx; commit SHA 02aa5573.",
+      "CommitDate": "2026-07-07T04:57:55+00:00"
+    }
+  },
+  {
     "id": "{{NAMESPACE}}:reference-data--CoreAnalysisFluidType:Gas",
     "kind": "osdu:wks:reference-data--CoreAnalysisFluidType:1.0.0",
     "acl": {

@@ -11,6 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
+from client.api.core.info import AppInfo
 from client.api.core.v2.depth_shift import DepthShift
 from client.api.core.v2.fluid_model import FluidModel
 from client.api.core.v2.master_data import MasterDataV2Core
@@ -28,6 +29,7 @@ class ApiWorker(object):
     def __init__(self, host: str, url_prefix: str, data_partition: str, token: str) -> None:
         self.storage = APIStorage(data_partition, token)
         self.legal = APILegal(data_partition, token)
+        self.app_info = AppInfo(host, url_prefix, data_partition, token)
         self.sar = SamplesAnalysesReportV2Core(host, url_prefix, data_partition, token)
         self.masterdata = MasterDataV2Core(host, url_prefix, data_partition, token)
         self.sample_analysis = SamplesAnalysis(host, url_prefix, data_partition, token)

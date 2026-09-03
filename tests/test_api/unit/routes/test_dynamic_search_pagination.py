@@ -88,19 +88,31 @@ def _get_page_limit_query(fn):
     return inspect.signature(fn).parameters["page_limit"].default
 
 
+def _get_query_le(query):
+    """Extract the upper-bound (le) constraint from a Query's metadata list.
+
+    FastAPI >= 0.130 / Pydantic v2 stores constraints in query.metadata rather
+    than as direct attributes, so query.le no longer exists.
+    """
+    for item in getattr(query, "metadata", []):
+        if hasattr(item, "le"):
+            return item.le
+    return getattr(query, "le", None)  # fallback for older FastAPI
+
+
 class TestPaginationParamLimits:
 
     def test_search_pagination_max_is_1000(self):
-        assert _get_page_limit_query(get_search_pagination_parameters).le == 1000
+        assert _get_query_le(_get_page_limit_query(get_search_pagination_parameters)) == 1000
 
     def test_search_pagination_default_is_1000(self):
         assert _get_page_limit_query(get_search_pagination_parameters).default == 1000
 
     def test_search_data_pagination_max_is_100(self):
-        assert _get_page_limit_query(get_search_data_pagination_parameters).le == 100
+        assert _get_query_le(_get_page_limit_query(get_search_data_pagination_parameters)) == 100
 
     def test_search_data_pagination_default_is_100(self):
         assert _get_page_limit_query(get_search_data_pagination_parameters).default == 100
 
     def test_search_pagination_allows_more_than_100(self):
-        assert _get_page_limit_query(get_search_pagination_parameters).le > 100
+        assert _get_query_le(_get_page_limit_query(get_search_pagination_parameters)) > 100

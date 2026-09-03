@@ -247,7 +247,7 @@ async def validate_osdu_wks_records(
     try:
         async with asyncio.TaskGroup() as group:  # pylint: disable=no-member
             for index, record in enumerate(records_list):
-                record_dict = record.dict(exclude_none=True)
+                record_dict = record.model_dump(exclude_none=True)
                 validate_kind(record_dict.get("kind", ""), valid_kind_bases=valid_kind_bases)
                 records.append(record_dict)
                 tasks.append(
@@ -638,14 +638,14 @@ async def get_validated_bulk_data_json(request: Request) -> Tuple[str, str]:
             )
         return _validate_records_format(parsed), "records"
 
-    bulk_data = OrientSplit.parse_obj(parsed)
+    bulk_data = OrientSplit.model_validate(parsed)
 
     index_length = len(bulk_data.index)
     data_length = len(bulk_data.data)
     if index_length != data_length:
         detail = f"Data error: 'index' length: {index_length} != 'data' length: {data_length}"
         raise UnprocessableContentException(detail=detail)
-    return bulk_data.json(), "split"
+    return bulk_data.model_dump_json(), "split"
 
 
 def validate_and_parse_date(date_str: Optional[str], field_name: str) -> Optional[date]:

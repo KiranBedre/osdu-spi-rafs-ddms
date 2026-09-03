@@ -69,7 +69,7 @@ def storage_service(mock_user):
 
 @pytest.fixture
 def mock_get_response(mock_record_client, storage_service):
-    response_json = OSDU_GENERIC_RECORD.dict(exclude_none=True)
+    response_json = OSDU_GENERIC_RECORD.model_dump(exclude_none=True)
     mock_record_client.client = MagicMock(spec=httpx.AsyncClient)
     mock_record_client.get_latest_record.return_value = response_json
     mock_record_client.get_specific_record.return_value = response_json
@@ -127,7 +127,7 @@ async def test_get_latest_record(storage_service, mock_record_client, mock_user,
 
     record = await storage_service.get_record(record_id)
 
-    assert record == OSDU_GENERIC_RECORD.dict(exclude_none=True)
+    assert record == OSDU_GENERIC_RECORD.model_dump(exclude_none=True)
     mock_record_client.get_latest_record.assert_called_once_with(record_id)
 
 
@@ -138,7 +138,7 @@ async def test_get_specific_record(storage_service, mock_record_client, mock_use
 
     record = await storage_service.get_record(record_id, version)
 
-    assert record == OSDU_GENERIC_RECORD.dict(exclude_none=True)
+    assert record == OSDU_GENERIC_RECORD.model_dump(exclude_none=True)
     mock_record_client.get_specific_record.assert_called_once_with(
         record_id,
         version,
@@ -164,7 +164,7 @@ async def test_get_record_versions(storage_service, mock_record_client, mock_use
 
 @pytest.mark.asyncio
 async def test_upsert_records(storage_service, mock_record_client, mock_user):
-    records = [OSDU_GENERIC_RECORD.dict(exclude_none=True)]
+    records = [OSDU_GENERIC_RECORD.model_dump(exclude_none=True)]
     response_json = {
         "recordCount": 1,
         "recordIds": [

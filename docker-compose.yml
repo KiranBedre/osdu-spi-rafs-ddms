@@ -43,6 +43,7 @@ services:
       - ./setup.cfg:/setup.cfg
       - ./tests/:/tests
       - ./client/:/client
+      - ./scripts/:/scripts
     entrypoint: [ "bash", "-c"]
     profiles: ["tests"]
     command: ["python -m pytest -p no:cacheprovider --ignore=integration"]

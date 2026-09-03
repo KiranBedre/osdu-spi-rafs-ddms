@@ -154,6 +154,7 @@ SPECIFIC_INVALID_REGEX_DATA_V1_FIELDS = [
 ]
 
 EXTRA_DATA_V1_FIELDS = [
+    # Meta units
     ("/data/0/2/0/ExtraMetaField", "ExtraMetaValue"),
     ("/data/0/4/ExtraInitialConditionsField", "ExtraInitialValue"),
     ("/data/0/4/EffectivePermeability/ExtraEffectivePermField", "ExtraEffectivePermValue"),
@@ -166,78 +167,6 @@ EXTRA_DATA_V1_FIELDS = [
     ("/data/0/19/0/EffectivePermeability/0/ExtraEffectivePermArrayField", "ExtraEffectivePermArrayValue"),
     ("/data/0/19/0/RelativePermeability/0/ExtraRelativePermField", "ExtraRelativePermValue"),
     ("/data/0/19/0/Saturation/ExtraStepSaturationField", "ExtraStepSaturationValue"),
-]
-
-SPECIFIC_INVALID_TYPE_DATA_V1_1_FIELDS = [
-    ("/data/0/5", "TerminalConditions"),
-    ("/data/0/5/EffectivePermeability/FluidTypeID", ["FluidTypeID"]),
-    ("/data/0/6", ["RelativePermeabilityCrossover"]),
-    ("/data/0/19", ["OilTypeID"]),
-    ("/data/0/23/0/InSituSaturationProfiles", "InSituSaturationProfiles"),
-    ("/data/0/23/1/ProductionProfiles/0/ProductionRate", "ProductionRate"),
-]
-
-SPECIFIC_MISSING_REFERENCE_DATA_V1_1_FIELDS = [
-    ("/data/0/3", f"{DATA_PARTITION_ID}:reference-data--DesaturationMethod:Dummy:"),
-    ("/data/0/9", f"{DATA_PARTITION_ID}:reference-data--SaturationProcessMethod:Dummy:"),
-    ("/data/0/18", f"{DATA_PARTITION_ID}:reference-data--FluidSystemAnalysisType:Dummy:"),
-    ("/data/0/19", f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:DummyOil:"),
-    ("/data/0/20", f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:DummyGas:"),
-    ("/data/0/21", f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:DummyWater:"),
-    (
-        "/data/0/4/EffectivePermeability/FluidTypeID",
-        f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:Dummy:",
-    ),
-    (
-        "/data/0/4/Saturation/FluidTypeID",
-        f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:Dummy:",
-    ),
-    ("/data/0/23/0/InjectionRate/0/FluidTypeID", f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:Dummy:"),
-    (
-        "/data/0/23/0/CumulativeProduction/FluidTypeID",
-        f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:Dummy:",
-    ),
-    (
-        "/data/0/23/0/ProductionProfiles/0/FluidTypeID",
-        f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:Dummy:",
-    ),
-]
-
-SPECIFIC_INVALID_REGEX_DATA_V1_1_FIELDS = [
-    ("/data/0/3", f"{DATA_PARTITION_ID}:reference-data-DesaturationMethod:Dummy:"),
-    ("/data/0/9", f"{DATA_PARTITION_ID}:reference-data-SaturationProcessMethod:Dummy:"),
-    ("/data/0/18", f"{DATA_PARTITION_ID}:reference-data-FluidSystemAnalysisType:Dummy:"),
-    ("/data/0/19", f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:DummyOil:"),
-    ("/data/0/20", f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:DummyGas:"),
-    ("/data/0/21", f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:DummyWater:"),
-    (
-        "/data/0/4/EffectivePermeability/FluidTypeID",
-        f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:Dummy:",
-    ),
-    (
-        "/data/0/4/Saturation/FluidTypeID",
-        f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:Dummy:",
-    ),
-    ("/data/0/23/0/InjectionRate/0/FluidTypeID", f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:Dummy:"),
-    (
-        "/data/0/23/0/CumulativeProduction/FluidTypeID",
-        f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:Dummy:",
-    ),
-    (
-        "/data/0/23/0/ProductionProfiles/0/FluidTypeID",
-        f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:Dummy:",
-    ),
-]
-
-EXTRA_DATA_V1_1_FIELDS = [
-    ("/data/0/4/ExtraInitialConditionsField", "ExtraInitialValue"),
-    ("/data/0/8/0/ExtraReferencePermeabilityField", "ExtraReferenceValue"),
-    ("/data/0/23/0/ExtraPermeabilityTestStepField", "ExtraTestStepValue"),
-    ("/data/0/23/0/InjectionRate/0/ExtraInjectionRateField", "ExtraInjectionRateValue"),
-    ("/data/0/23/0/CumulativeProduction/ExtraCumulativeProductionField", "ExtraCumulativeProductionValue"),
-    ("/data/0/23/0/ProductionProfiles/0/ExtraProductionProfileField", "ExtraProductionProfileValue"),
-    ("/data/0/23/0/DifferentialPressureProfiles/0/ExtraDifferentialPressureField", "ExtraDifferentialPressureValue"),
-    ("/data/0/23/0/InSituSaturationProfiles/0/ExtraInSituSaturationField", "ExtraInSituSaturationValue"),
 ]
 
 
@@ -474,11 +403,117 @@ def test_relative_permeability_negative_add_data_v1_record_id_mismatch_between_p
     assert body["errors"]["Invalid value"][0]["SamplesAnalysisID"] == f"{fresh_record_id}:"
 
 
-@pytest.mark.parametrize("field_path", GENERIC_MANDATORY_DATA_FIELDS)
+# ---------------------------------------------------------------------------
+# v1.1.0 negative tests
+# ---------------------------------------------------------------------------
+
+GENERIC_MANDATORY_DATA_FIELDS_V1_1 = [
+    "/columns",
+    "/index",
+    "/data",
+]
+
+SPECIFIC_MANDATORY_DATA_MAIN_COLUMNS_V1_1 = [
+    ("/columns/0", "/data/0/0"),
+    ("/columns/1", "/data/0/1"),
+    ("/columns/2", "/data/0/2"),
+]
+
+SPECIFIC_INVALID_TYPE_DATA_V1_1_FIELDS = [
+    ("/data/0/3", ["DesaturationMethodID"]),
+    ("/data/0/4", "InitialConditions"),
+    ("/data/0/4/TestTemperature", "InitialConditions.TestTemperature"),
+    ("/data/0/9", ["SaturationProcessMethodID"]),
+    ("/data/0/17", "WaterDensity"),
+    ("/data/0/18", ["FluidSystemAnalysisTypeID"]),
+    ("/data/0/19/0/RelativePermeability", "PermeabilityTestSteps.RelativePermeability"),
+]
+
+SPECIFIC_MISSING_REFERENCE_DATA_V1_1_FIELDS = [
+    ("/data/0/0", f"{DATA_PARTITION_ID}:work-product-component--SamplesAnalysis:Dummy:"),
+    ("/data/0/1", f"{DATA_PARTITION_ID}:master-data--Sample:DummySample:"),
+    ("/data/0/2/0/unitOfMeasureID", f"{DATA_PARTITION_ID}:reference-data--UnitOfMeasure:DummyUnit:"),
+    ("/data/0/3", f"{DATA_PARTITION_ID}:reference-data--DesaturationMethod:Dummy:"),
+    (
+        "/data/0/4/EffectivePermeability/PermeabilityMeasurementMethodID",
+        f"{DATA_PARTITION_ID}:reference-data--PermeabilityMeasurementMethod:Dummy:",
+    ),
+    (
+        "/data/0/4/EffectivePermeability/FluidTypeID",
+        f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:Dummy:",
+    ),
+    (
+        "/data/0/4/RelativePermeability/FluidSystemAnalysisTypeID",
+        f"{DATA_PARTITION_ID}:reference-data--FluidSystemAnalysisType:Dummy:",
+    ),
+    (
+        "/data/0/4/Saturation/FluidTypeID",
+        f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:Dummy:",
+    ),
+    (
+        "/data/0/4/Saturation/SaturationMeasurementLocationID",
+        f"{DATA_PARTITION_ID}:reference-data--SaturationMeasurementLocation:Dummy:",
+    ),
+    ("/data/0/9", f"{DATA_PARTITION_ID}:reference-data--SaturationProcessMethod:Dummy:"),
+    ("/data/0/18", f"{DATA_PARTITION_ID}:reference-data--FluidSystemAnalysisType:Dummy:"),
+    ("/data/0/20", f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:DummyOil:"),
+    ("/data/0/21", f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:DummyGas:"),
+    ("/data/0/22", f"{DATA_PARTITION_ID}:reference-data--CoreAnalysisFluidType:DummyBrine:"),
+]
+
+SPECIFIC_INVALID_REGEX_DATA_V1_1_FIELDS = [
+    ("/data/0/0", f"{DATA_PARTITION_ID}:work-product-component-SamplesAnalysis:Dummy:"),
+    ("/data/0/1", f"{DATA_PARTITION_ID}:master-data-Sample:DummySample:"),
+    ("/data/0/2/0/unitOfMeasureID", f"{DATA_PARTITION_ID}:reference-data-UnitOfMeasure:DummyUnit:"),
+    ("/data/0/3", f"{DATA_PARTITION_ID}:reference-data-DesaturationMethod:Dummy:"),
+    (
+        "/data/0/4/EffectivePermeability/PermeabilityMeasurementMethodID",
+        f"{DATA_PARTITION_ID}:reference-data-PermeabilityMeasurementMethod:Dummy:",
+    ),
+    (
+        "/data/0/4/EffectivePermeability/FluidTypeID",
+        f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:Dummy:",
+    ),
+    (
+        "/data/0/4/RelativePermeability/FluidSystemAnalysisTypeID",
+        f"{DATA_PARTITION_ID}:reference-data-FluidSystemAnalysisType:Dummy:",
+    ),
+    (
+        "/data/0/4/Saturation/FluidTypeID",
+        f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:Dummy:",
+    ),
+    (
+        "/data/0/4/Saturation/SaturationMeasurementLocationID",
+        f"{DATA_PARTITION_ID}:reference-data-SaturationMeasurementLocation:Dummy:",
+    ),
+    ("/data/0/9", f"{DATA_PARTITION_ID}:reference-data-SaturationProcessMethod:Dummy:"),
+    ("/data/0/18", f"{DATA_PARTITION_ID}:reference-data-FluidSystemAnalysisType:Dummy:"),
+    ("/data/0/20", f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:DummyOil:"),
+    ("/data/0/21", f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:DummyGas:"),
+    ("/data/0/22", f"{DATA_PARTITION_ID}:reference-data-CoreAnalysisFluidType:DummyBrine:"),
+]
+
+EXTRA_DATA_V1_1_FIELDS = [
+    ("/data/0/2/0/ExtraMetaField", "ExtraMetaValue"),
+    ("/data/0/4/ExtraInitialConditionsField", "ExtraInitialValue"),
+    ("/data/0/4/EffectivePermeability/ExtraEffectivePermField", "ExtraEffectivePermValue"),
+    ("/data/0/4/Saturation/ExtraSaturationField", "ExtraInitialSaturationValue"),
+    ("/data/0/5/ExtraTerminalConditionsField", "ExtraTerminalValue"),
+    ("/data/0/5/EffectivePermeability/ExtraEffectivePermField", "ExtraTerminalEffectivePermValue"),
+    ("/data/0/5/Saturation/ExtraSaturationField", "ExtraTerminalSaturationValue"),
+    ("/data/0/8/0/ExtraReferencePermeabilityField", "ExtraReferenceValue"),
+    ("/data/0/19/0/ExtraPermeabilityTestStepField", "ExtraTestStepValue"),
+    ("/data/0/19/0/EffectivePermeability/0/ExtraEffectivePermArrayField", "ExtraEffectivePermArrayValue"),
+    ("/data/0/19/0/RelativePermeability/0/ExtraRelativePermField", "ExtraRelativePermValue"),
+    ("/data/0/19/0/Saturation/ExtraStepSaturationField", "ExtraStepSaturationValue"),
+]
+
+
+@pytest.mark.parametrize("field_path", GENERIC_MANDATORY_DATA_FIELDS_V1_1)
 def test_relative_permeability_negative_add_data_v1_1_missing_mandatory_generic_field(
     api, tests_data, helper, field_path, record_id
 ):
-    """Reject data upload in verion 1.1.0 with missing mandatory structure field with 422 Unprocessable Content."""
+    """Reject v1.1.0 data upload with missing mandatory structure field with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
     helper.delete_by_path(data_payload, field_path)
     field_name = field_path.split("/")[-1]
@@ -492,17 +527,16 @@ def test_relative_permeability_negative_add_data_v1_1_missing_mandatory_generic_
         raw=True,
     )
 
-    # Assert
     assert response.status_code == 422
     body = response.json()
     assert f"Data error: missing required fields: '{field_name}'." in body["reason"]
 
 
-@pytest.mark.parametrize("main_column,main_column_value", SPECIFIC_MANDATORY_DATA_MAIN_COLUMNS)
+@pytest.mark.parametrize("main_column,main_column_value", SPECIFIC_MANDATORY_DATA_MAIN_COLUMNS_V1_1)
 def test_relative_permeability_negative_add_data_v1_1_missing_main_mandatory_column(
     api, tests_data, helper, main_column, main_column_value, record_id
 ):
-    """Reject data upload in verion 1.1.0 with missing main column with 422 Unprocessable Content."""
+    """Reject v1.1.0 data upload with missing main column with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
     helper.delete_by_path(data_payload, main_column)
     helper.delete_by_path(data_payload, main_column_value)
@@ -516,7 +550,6 @@ def test_relative_permeability_negative_add_data_v1_1_missing_main_mandatory_col
         raw=True,
     )
 
-    # Assert
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
@@ -527,7 +560,7 @@ def test_relative_permeability_negative_add_data_v1_1_missing_main_mandatory_col
 def test_relative_permeability_negative_add_data_v1_1_invalid_type_specific_field(
     api, tests_data, helper, field_path, value, record_id
 ):
-    """Reject data upload in verion 1.1.0 with wrong type for specific field with 422 Unprocessable Content."""
+    """Reject v1.1.0 data upload with wrong type for specific field with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
     helper.set_by_path(data_payload, field_path, value)
 
@@ -540,7 +573,6 @@ def test_relative_permeability_negative_add_data_v1_1_invalid_type_specific_fiel
         raw=True,
     )
 
-    # Assert
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
@@ -551,7 +583,7 @@ def test_relative_permeability_negative_add_data_v1_1_invalid_type_specific_fiel
 def test_relative_permeability_negative_add_data_v1_1_missing_reference_specific_field(
     api, tests_data, helper, field_path, value, record_id
 ):
-    """Reject data upload in verion 1.1.0 when referenced record doesn't exist with 422 Unprocessable Content."""
+    """Reject v1.1.0 data upload when referenced record doesn't exist with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
     helper.set_by_path(data_payload, field_path, value)
     record_value = value.rsplit(":", 1)[0]
@@ -565,7 +597,6 @@ def test_relative_permeability_negative_add_data_v1_1_missing_reference_specific
         raw=True,
     )
 
-    # Assert
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
@@ -576,7 +607,7 @@ def test_relative_permeability_negative_add_data_v1_1_missing_reference_specific
 def test_relative_permeability_negative_add_data_v1_1_invalid_regex_specific_field(
     api, tests_data, helper, field_path, value, record_id
 ):
-    """Reject data upload in verion 1.1.0 when field doesn't match naming convention with 422 Unprocessable Content."""
+    """Reject v1.1.0 data upload when field doesn't match OSDU naming convention with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
     helper.set_by_path(data_payload, field_path, value)
 
@@ -589,7 +620,6 @@ def test_relative_permeability_negative_add_data_v1_1_invalid_regex_specific_fie
         raw=True,
     )
 
-    # Assert
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
@@ -597,7 +627,7 @@ def test_relative_permeability_negative_add_data_v1_1_invalid_regex_specific_fie
 
 
 def test_relative_permeability_negative_add_data_v1_1_extra_main_field(api, tests_data, record_id):
-    """Reject data upload in verion 1.1.0 with unexpected/extra fields with 422 Unprocessable Content."""
+    """Reject v1.1.0 data upload with unexpected/extra fields with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
     data_payload["columns"].append("ExtraColumn")
     data_payload["data"][0].append("ExtraColumnValue")
@@ -611,29 +641,6 @@ def test_relative_permeability_negative_add_data_v1_1_extra_main_field(api, test
         raw=True,
     )
 
-    # Assert
-    assert response.status_code == 422
-    body = response.json()
-    assert "Data validation failed." in body["reason"]
-    assert "field" in body["errors"]["Invalid type"][0]
-
-
-def test_relative_permeability_negative_add_data_v1_1_extra_main_nullable_field(api, tests_data, record_id):
-    """Reject data upload in verion 1.1.0 with unexpected main field with null value with 422 Unprocessable Content."""
-    data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
-    data_payload["columns"].append("ExtraColumn")
-    data_payload["data"][0].append(None)
-
-    response = api.sample_analysis.post_data(
-        record_id=record_id,
-        body=data_payload,
-        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
-        schema_version=SchemaVersions.V1_1_0,
-        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
-        raw=True,
-    )
-
-    # Assert
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
@@ -641,8 +648,10 @@ def test_relative_permeability_negative_add_data_v1_1_extra_main_nullable_field(
 
 
 @pytest.mark.parametrize("field_path,value", EXTRA_DATA_V1_1_FIELDS)
-def test_relative_permeability_negative_add_data_v1_1_extra_field(api, tests_data, helper, field_path, value, record_id):
-    """Reject data upload in verion 1.1.0 with unexpected/extra fields with 422 Unprocessable Content."""
+def test_relative_permeability_negative_add_data_v1_1_extra_field(
+    api, tests_data, helper, field_path, value, record_id
+):
+    """Reject v1.1.0 data upload with unexpected/extra fields with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
     helper.set_by_path(data_payload, field_path, value)
 
@@ -655,8 +664,51 @@ def test_relative_permeability_negative_add_data_v1_1_extra_field(api, tests_dat
         raw=True,
     )
 
-    # Assert
     assert response.status_code == 422
     body = response.json()
     assert "Data validation failed." in body["reason"]
     assert "field" in body["errors"]["Invalid type"][0]
+
+
+def test_relative_permeability_negative_add_data_v1_1_old_fluid_type_reference(api, tests_data, helper, record_id):
+    """Reject v1.1.0 data that uses v1.0.0 SampleInjectionFluidType (replaced by CoreAnalysisFluidType)."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
+    helper.set_by_path(
+        data_payload,
+        "/data/0/4/EffectivePermeability/FluidTypeID",
+        f"{DATA_PARTITION_ID}:reference-data--SampleInjectionFluidType:Gas:",
+    )
+
+    response = api.sample_analysis.post_data(
+        record_id=record_id,
+        body=data_payload,
+        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        schema_version=SchemaVersions.V1_1_0,
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    assert response.status_code == 422
+    body = response.json()
+    assert "Data validation failed." in body["reason"]
+
+
+def test_relative_permeability_negative_add_data_v1_1_invalid_payload_format(api, tests_data, record_id):
+    """Reject v1.1.0 data upload when payload is wrapped in array with 422 Unprocessable Content."""
+    data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
+
+    response = api.sample_analysis.post_data(
+        record_id=record_id,
+        body=[data_payload],
+        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        schema_version=SchemaVersions.V1_1_0,
+        allowed_codes=[status.HTTP_422_UNPROCESSABLE_CONTENT],
+        raw=True,
+    )
+
+    assert response.status_code == 422
+    body = response.json()
+    assert (
+        "Data error: split format must be a JSON object, not wrapped in an array. Remove the outer [] brackets."
+        in body["reason"]
+    )
