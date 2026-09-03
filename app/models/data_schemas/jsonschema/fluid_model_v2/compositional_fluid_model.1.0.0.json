@@ -1,0 +1,1417 @@
+{
+  "x-osdu-license": "Copyright 2026, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.\n",
+  "x-osdu-review-status": "Accepted",
+  "x-osdu-governance-model": "LOCAL",
+  "x-osdu-governance-authorities": [
+    "OSDU"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Compositional Fluid Model",
+  "description": "Define a set of properties for a compositional fluid model.",
+  "type": "object",
+  "x-osdu-virtual-properties": {
+    "data.VirtualProperties.DefaultName": {
+      "type": "string",
+      "priority": [
+        {
+          "path": "data.Name"
+        }
+      ]
+    },
+    "data.VirtualProperties.DefaultLocation": {
+      "type": "object",
+      "priority": [
+        {
+          "path": "data.SpatialArea"
+        },
+        {
+          "path": "data.SpatialPoint"
+        }
+      ]
+    }
+  },
+  "properties": {
+    "FluidModelID": {
+      "type": "string",
+      "title": "Fluid Model ID",
+      "description": "OSDU Identifier of the associated Fluid Model WPC.",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-FluidModel:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "work-product-component",
+          "EntityType": "FluidModel"
+        }
+      ]
+    },
+    "Meta": {
+      "type": "array",
+      "title": "Meta",
+      "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+      "example": "",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "x-osdu-license": "Copyright 2022, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+        "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractMetaItem.1.0.0.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "x-osdu-schema-source": "osdu:wks:AbstractMetaItem:1.0.0",
+        "title": "Frame of Reference Meta Data Item",
+        "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+        "oneOf": [
+          {
+            "title": "FrameOfReferenceUOM",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "UOM Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                "const": "Unit"
+              },
+              "name": {
+                "title": "UOM Unit Symbol",
+                "description": "The unit symbol or name of the unit.",
+                "type": "string",
+                "example": "ft[US]"
+              },
+              "persistableReference": {
+                "title": "UOM Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                "type": "string",
+                "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}"
+              },
+              "unitOfMeasureID": {
+                "description": "SRN to unit of measure reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "UnitOfMeasure"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "UOM Property Names",
+                "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "HorizontalDeflection.EastWest",
+                  "HorizontalDeflection.NorthSouth"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceCRS",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "CRS Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                "const": "CRS"
+              },
+              "name": {
+                "title": "CRS Name",
+                "description": "The name of the CRS.",
+                "type": "string",
+                "example": "WGS 84 / UTM zone 15N"
+              },
+              "persistableReference": {
+                "title": "CRS Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                "type": "string",
+                "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}"
+              },
+              "coordinateReferenceSystemID": {
+                "description": "SRN to CRS reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "CoordinateReferenceSystem"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "CRS Property Names",
+                "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "KickOffPosition.X",
+                  "KickOffPosition.Y"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceDateTime",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "DateTime Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                "const": "DateTime"
+              },
+              "name": {
+                "title": "DateTime Name",
+                "description": "The name of the DateTime format and reference.",
+                "type": "string",
+                "example": "UTC"
+              },
+              "persistableReference": {
+                "title": "DateTime Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                "type": "string",
+                "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}"
+              },
+              "propertyNames": {
+                "title": "DateTime Property Names",
+                "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Acquisition.StartTime",
+                  "Acquisition.EndTime"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceAzimuthReference",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "AzimuthReference Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                "const": "AzimuthReference"
+              },
+              "name": {
+                "title": "AzimuthReference Name",
+                "description": "The name of the CRS or the symbol/name of the unit.",
+                "type": "string",
+                "example": "TrueNorth"
+              },
+              "persistableReference": {
+                "title": "AzimuthReference Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                "type": "string",
+                "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}"
+              },
+              "propertyNames": {
+                "title": "AzimuthReference Property Names",
+                "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Bearing"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          }
+        ],
+        "x-osdu-inheriting-from-kind": []
+      }
+    },
+    "OilViscosityModel": {
+      "title": "Oil Viscosity Model",
+      "description": "The type of model chosen for the viscosity of hydrocarbon liquid phases.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "title": "Viscosity LBC",
+          "properties": {
+            "C1": {
+              "type": "number",
+              "title": "C1",
+              "description": "First coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C2": {
+              "type": "number",
+              "title": "C2",
+              "description": "Second coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C3": {
+              "type": "number",
+              "title": "C3",
+              "description": "Third coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C4": {
+              "type": "number",
+              "title": "C4",
+              "description": "Fourth coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C5": {
+              "type": "number",
+              "title": "C5",
+              "description": "Fifth coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "CriticalVolumeLBC": {
+              "type": "array",
+              "title": "Critical Volume LBC",
+              "items": {
+                "type": "number"
+              },
+              "description": "Component critical molar volumes (VCrit) specifically used in the LBC correlation.  These values may differ from the critical volume values within , but the order and number of components here should match the order and number within .",
+              "x-osdu-frame-of-reference": "UOM:molar volume"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "CriticalVolumeLBC"
+          ]
+        },
+        {
+          "type": "object",
+          "title": "Viscosity LBC Exponential",
+          "properties": {
+            "C1": {
+              "type": "number",
+              "title": "C1",
+              "description": "First coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C2": {
+              "type": "number",
+              "title": "C2",
+              "description": "Second coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C3": {
+              "type": "number",
+              "title": "C3",
+              "description": "Third coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C4": {
+              "type": "number",
+              "title": "C4",
+              "description": "Fourth coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C5": {
+              "type": "number",
+              "title": "C5",
+              "description": "Fifth coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "CriticalVolumeLBC": {
+              "type": "array",
+              "title": "Critical Volume LBC",
+              "items": {
+                "type": "number"
+              },
+              "description": "Component critical molar volumes (VCrit) specifically used in the LBC correlation.  These values may differ from the critical volume values within, but the number and order of entries in the list should correspond to the components defined in SequencedComponentList.",
+              "x-osdu-frame-of-reference": "UOM:molar volume"
+            },
+            "CompactVolume": {
+              "type": "array",
+              "title": "Compact Volume",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of values of the compact molar volumes of the components to be used in the modified LBC calculations. The number and order of entries in the list should correspond to the components defined in SequencedComponentList.",
+              "x-osdu-frame-of-reference": "UOM:molar volume"
+            },
+            "MixingCoefficient": {
+              "type": "number",
+              "title": "Mixing Coefficient",
+              "description": "Specifies the value of the mixing coefficient alpha to be used in the modified LBC calculations.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "CriticalVolumeLBC",
+            "CompactVolume",
+            "MixingCoefficient"
+          ]
+        },
+        {
+          "type": "object",
+          "title": "Viscosity Pedersen",
+          "properties": {
+            "C1": {
+              "type": "number",
+              "title": "C1",
+              "description": "First coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 0.291, and 1.0 respectively.\n\nIn Pedersen 1987, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 1.304 x 10^-4, and 2.303 respectively.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C2": {
+              "type": "number",
+              "title": "C2",
+              "description": "Second coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 0.291, and 1.0 respectively.\n\nIn Pedersen 1987, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 1.304 x 10^-4, and 2.303 respectively.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C3": {
+              "type": "number",
+              "title": "C3",
+              "description": "Third coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C4": {
+              "type": "number",
+              "title": "C4",
+              "description": "Fourth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C5": {
+              "type": "number",
+              "title": "C5",
+              "description": "Fifth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C6": {
+              "type": "number",
+              "title": "C6",
+              "description": "Sixth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the reference rotational coupling coefficient is found by α0 = 1 + c6*ρrm^c4. A typical default value of c6 is c3 x MWo^c5, or 8.377x 10^-4.\n\nIn Pedersen 1987, the reference rotational coupling coefficient is found by α0 = 1 + c6*ρrm^c4. A typical default value of c6 is c3 x MWo^c5, or 0.031.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "C6"
+          ]
+        },
+        {
+          "type": "object",
+          "title": "Viscosity Friction Theory",
+          "properties": {
+            "CriticalViscosity": {
+              "type": "array",
+              "title": "Critical Viscosity",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of critical viscosities, one for each component. If zero is entered for a component, its critical viscosity will be calculated from corresponding entries in CriticalViscosityConstantCoefficient and CriticalViscosityTemperatureCoefficient.",
+              "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+            },
+            "CriticalViscosityConstantCoefficient": {
+              "type": "array",
+              "title": "Critical Viscosity Constant Coefficient",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of constant (temperature independent) coefficients for critical viscosity, one for each component. If a CriticalViscosity is specified for a component, this coefficient will be ignored for that component.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "CriticalViscosityTemperatureCoefficient": {
+              "type": "array",
+              "title": "Critical Viscosity Temperature Coefficient",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of temperature dependent coefficients for critical viscosity, one for each component. If a CriticalViscosity is specified for a component, this coefficient will be ignored for that component.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "VolumeShiftConstantCoefficient": {
+              "type": "array",
+              "title": "Volume Shift Constant Coefficient",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of constant (temperature independent) coefficients for volume shift, one for each component.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "VolumeShiftTemperatureCoefficient": {
+              "type": "array",
+              "title": "Volume Shift Temperature Coefficient",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of temperature dependent coefficients for critical viscosity, one for each component.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "CriticalViscosity",
+            "CriticalViscosityConstantCoefficient",
+            "CriticalViscosityTemperatureCoefficient",
+            "VolumeShiftConstantCoefficient",
+            "VolumeShiftTemperatureCoefficient"
+          ]
+        }
+      ]
+    },
+    "OilViscosityModelTypeID": {
+      "type": "string",
+      "title": "Oil Viscosity Model Type ID",
+      "description": "The type of model chosen for the viscosity of hydrocarbon liquid phases.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-ViscosityModelType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "ViscosityModelType"
+        }
+      ]
+    },
+    "GasViscosityModel": {
+      "title": "Gas Viscosity Model",
+      "description": "The type of model chosen for the viscosity of hydrocarbon vapor phases.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "oneOf": [
+        {
+          "type": "object",
+          "title": "Viscosity LBC",
+          "properties": {
+            "C1": {
+              "type": "number",
+              "title": "C1",
+              "description": "First coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C2": {
+              "type": "number",
+              "title": "C2",
+              "description": "Second coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C3": {
+              "type": "number",
+              "title": "C3",
+              "description": "Third coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C4": {
+              "type": "number",
+              "title": "C4",
+              "description": "Fourth coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C5": {
+              "type": "number",
+              "title": "C5",
+              "description": "Fifth coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "CriticalVolumeLBC": {
+              "type": "array",
+              "title": "Critical Volume LBC",
+              "items": {
+                "type": "number"
+              },
+              "description": "Component critical molar volumes (VCrit) specifically used in the LBC correlation.  These values may differ from the critical volume values within , but the order and number of components here should match the order and number within .",
+              "x-osdu-frame-of-reference": "UOM:molar volume"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "CriticalVolumeLBC"
+          ]
+        },
+        {
+          "type": "object",
+          "title": "Viscosity LBC Exponential",
+          "properties": {
+            "C1": {
+              "type": "number",
+              "title": "C1",
+              "description": "First coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C2": {
+              "type": "number",
+              "title": "C2",
+              "description": "Second coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C3": {
+              "type": "number",
+              "title": "C3",
+              "description": "Third coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C4": {
+              "type": "number",
+              "title": "C4",
+              "description": "Fourth coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C5": {
+              "type": "number",
+              "title": "C5",
+              "description": "Fifth coefficient for adjusting the LBC viscosity model.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "CriticalVolumeLBC": {
+              "type": "array",
+              "title": "Critical Volume LBC",
+              "items": {
+                "type": "number"
+              },
+              "description": "Component critical molar volumes (VCrit) specifically used in the LBC correlation.  These values may differ from the critical volume values within, but the number and order of entries in the list should correspond to the components defined in SequencedComponentList.",
+              "x-osdu-frame-of-reference": "UOM:molar volume"
+            },
+            "CompactVolume": {
+              "type": "array",
+              "title": "Compact Volume",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of values of the compact molar volumes of the components to be used in the modified LBC calculations. The number and order of entries in the list should correspond to the components defined in SequencedComponentList.",
+              "x-osdu-frame-of-reference": "UOM:molar volume"
+            },
+            "MixingCoefficient": {
+              "type": "number",
+              "title": "Mixing Coefficient",
+              "description": "Specifies the value of the mixing coefficient alpha to be used in the modified LBC calculations.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "CriticalVolumeLBC",
+            "CompactVolume",
+            "MixingCoefficient"
+          ]
+        },
+        {
+          "type": "object",
+          "title": "Viscosity Pedersen",
+          "properties": {
+            "C1": {
+              "type": "number",
+              "title": "C1",
+              "description": "First coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 0.291, and 1.0 respectively.\n\nIn Pedersen 1987, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 1.304 x 10^-4, and 2.303 respectively.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C2": {
+              "type": "number",
+              "title": "C2",
+              "description": "Second coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 0.291, and 1.0 respectively.\n\nIn Pedersen 1987, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 1.304 x 10^-4, and 2.303 respectively.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C3": {
+              "type": "number",
+              "title": "C3",
+              "description": "Third coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C4": {
+              "type": "number",
+              "title": "C4",
+              "description": "Fourth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C5": {
+              "type": "number",
+              "title": "C5",
+              "description": "Fifth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by αmix = 1 + c3*ρrm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "C6": {
+              "type": "number",
+              "title": "C6",
+              "description": "Sixth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the reference rotational coupling coefficient is found by α0 = 1 + c6*ρrm^c4. A typical default value of c6 is c3 x MWo^c5, or 8.377x 10^-4.\n\nIn Pedersen 1987, the reference rotational coupling coefficient is found by α0 = 1 + c6*ρrm^c4. A typical default value of c6 is c3 x MWo^c5, or 0.031.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "C1",
+            "C2",
+            "C3",
+            "C4",
+            "C5",
+            "C6"
+          ]
+        },
+        {
+          "type": "object",
+          "title": "Viscosity Friction Theory",
+          "properties": {
+            "CriticalViscosity": {
+              "type": "array",
+              "title": "Critical Viscosity",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of critical viscosities, one for each component. If zero is entered for a component, its critical viscosity will be calculated from corresponding entries in CriticalViscosityConstantCoefficient and CriticalViscosityTemperatureCoefficient.",
+              "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+            },
+            "CriticalViscosityConstantCoefficient": {
+              "type": "array",
+              "title": "Critical Viscosity Constant Coefficient",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of constant (temperature independent) coefficients for critical viscosity, one for each component. If a CriticalViscosity is specified for a component, this coefficient will be ignored for that component.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "CriticalViscosityTemperatureCoefficient": {
+              "type": "array",
+              "title": "Critical Viscosity Temperature Coefficient",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of temperature dependent coefficients for critical viscosity, one for each component. If a CriticalViscosity is specified for a component, this coefficient will be ignored for that component.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "VolumeShiftConstantCoefficient": {
+              "type": "array",
+              "title": "Volume Shift Constant Coefficient",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of constant (temperature independent) coefficients for volume shift, one for each component.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            },
+            "VolumeShiftTemperatureCoefficient": {
+              "type": "array",
+              "title": "Volume Shift Temperature Coefficient",
+              "items": {
+                "type": "number"
+              },
+              "description": "A list of temperature dependent coefficients for critical viscosity, one for each component.",
+              "x-osdu-frame-of-reference": "UOM:dimensionless"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "CriticalViscosity",
+            "CriticalViscosityConstantCoefficient",
+            "CriticalViscosityTemperatureCoefficient",
+            "VolumeShiftConstantCoefficient",
+            "VolumeShiftTemperatureCoefficient"
+          ]
+        }
+      ]
+    },
+    "GasViscosityModelTypeID": {
+      "type": "string",
+      "title": "Gas Viscosity Model Type ID",
+      "description": "The type of model chosen for the viscosity of hydrocarbon vapor phases.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-ViscosityModelType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "ViscosityModelType"
+        }
+      ]
+    },
+    "StandardCondition": {
+      "x-osdu-license": "Copyright 2024, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+      "x-osdu-review-status": "Accepted",
+      "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractPTCondition.1.1.0.json",
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "x-osdu-schema-source": "osdu:wks:AbstractPTCondition:1.1.0",
+      "title": "Standard Condition",
+      "description": "Represents the standard condition (pressure and temperature) referenced in the model.  If used, both pressure and temperature must be provided.",
+      "type": "object",
+      "properties": {
+        "Pressure": {
+          "type": "number",
+          "title": "Pressure",
+          "description": "The recorded absolute pressure condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit Pa (Pascal).",
+          "example": "1 bar",
+          "x-osdu-frame-of-reference": "UOM:pressure"
+        },
+        "Temperature": {
+          "type": "number",
+          "title": "Temperature",
+          "description": "The recorded temperature condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit K (Kelvin).",
+          "example": "15 degC",
+          "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+        },
+        "IsStandardConditions": {
+          "type": "boolean",
+          "title": "Is Standard Conditions",
+          "description": "To capture when Measurement have been made at Standard Conditions (25°C / 100 kPa)\nMutually Exclusive with Pressure/Temperature.\nCapture"
+        },
+        "NonStandardConditionsReference": {
+          "type": "string",
+          "title": "Non Standard Conditions Reference",
+          "description": "Open Text Box to capture the P & T Reference when measurements are made at non standard conditions (such as \"Reservoir\", \"Tank\",…)"
+        }
+      },
+      "required": [
+        "Pressure",
+        "Temperature"
+      ],
+      "x-osdu-inheriting-from-kind": [],
+      "additionalProperties": false
+    },
+    "StandardPressure": {
+      "type": "number",
+      "title": "Standard Pressure",
+      "description": "Defines the standard pressure used in fluid property models.",
+      "x-osdu-frame-of-reference": "UOM:pressure"
+    },
+    "StandardTemperature": {
+      "type": "number",
+      "title": "Standard Temperature",
+      "description": "Defines the standard temperature used in fluid property models.",
+      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+    },
+    "SequencedComponentList": {
+      "type": "array",
+      "title": "Sequenced Component List",
+      "description": "Array of sequenced components governing BinaryInteractionCoefficient, Equation of State, and Viscosity Models.  All array objects related to the SequencedComponentList should be of equal length and ordered identically by component.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "string"
+      }
+    },
+    "BinaryInteractionCoefficient": {
+      "type": "object",
+      "title": "Binary Interaction Coefficient",
+      "description": "Strict lower triangle of the binary interaction coefficient matrix and corresponding approximation level.",
+      "properties": {
+        "SequencedComponentList": {
+          "type": "array",
+          "title": "Sequenced Component List",
+          "description": "Array of components used in defining the rows and columns of this binary interaction coefficient matrix. The order of the components should be maintained when defining the associated values, e.g., [a,b,c,d,e,. . .].",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Elements": {
+          "type": "array",
+          "title": "Elements",
+          "description": "Array of length n(n-1)/2, where n is equal to the number of components in SequencedComponentList, comprising the lower triangle of kij values within the binary interaction coefficient matrix in (row,column) order, e.g., [kij value for (2,1), kij value for (3,1), kij value for (3,2), kij value for (4,1), kij value for (4,2), kij value for (4,3), value for (5,1), etc.].  Note the array does not include the values of the diagonal, i.e. where the row and column component are the same.",
+          "x-osdu-frame-of-reference": "UOM:dimensionless",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "required": [
+        "SequencedComponentList",
+        "Elements"
+      ],
+      "additionalProperties": false
+    },
+    "ComponentProperties": {
+      "type": "object",
+      "title": "ComponentProperties",
+      "description": "Component properties required for phase behavior modeling using an equation of state.  The length of each array within ComponentProperties should be equal.",
+      "properties": {
+        "MolecularWeight": {
+          "type": "array",
+          "title": "Molecular Weight",
+          "description": "Array of molecular weights corresponding to SequencedComponentList values.",
+          "x-osdu-frame-of-reference": "UOM:molecular weight",
+          "items": {
+            "type": "number"
+          }
+        },
+        "CarbonContent": {
+          "type": "array",
+          "title": "Carbon Content",
+          "description": "Array of the carbon mole to component mole ratio values corresponding to SequencedComponentList values.",
+          "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance",
+          "items": {
+            "type": "number"
+          }
+        },
+        "CriticalTemperature": {
+          "type": "array",
+          "title": "Critical Temperature",
+          "description": "Array of critical temperature values corresponding to SequencedComponentList values.",
+          "x-osdu-frame-of-reference": "UOM:thermodynamic temperature",
+          "items": {
+            "type": "number"
+          }
+        },
+        "CriticalPressure": {
+          "type": "array",
+          "title": "Critical Pressure",
+          "description": "Array of critical pressure values corresponding to SequencedComponentList values.",
+          "x-osdu-frame-of-reference": "UOM:pressure",
+          "items": {
+            "type": "number"
+          }
+        },
+        "CriticalVolume": {
+          "type": "array",
+          "title": "Critical Volume",
+          "description": "Array of critical volume (VCrit) values corresponding to SequencedComponentList values.",
+          "x-osdu-frame-of-reference": "UOM:molar volume",
+          "items": {
+            "type": "number"
+          }
+        },
+        "CriticalCompressibilityFactor": {
+          "type": "array",
+          "title": "Critical Compressibility Factor",
+          "description": "Array of critical compressibility factor values corresponding to SequencedComponentList values. It could also be calculated from critical temperature, pressure and volume values.",
+          "x-osdu-frame-of-reference": "UOM:dimensionless",
+          "items": {
+            "type": "number"
+          }
+        },
+        "AcentricFactor": {
+          "type": "array",
+          "title": "Acentric Factor",
+          "description": "Array of acentric factor values corresponding to SequencedComponentList values.",
+          "x-osdu-frame-of-reference": "UOM:dimensionless",
+          "items": {
+            "type": "number"
+          }
+        },
+        "Parachor": {
+          "type": "array",
+          "title": "Parachor",
+          "description": "Array of parachor values corresponding to SequencedComponentList values.",
+          "x-osdu-frame-of-reference": "UOM:dimensionless",
+          "items": {
+            "type": "number"
+          }
+        },
+        "SpecificGravity": {
+          "type": "array",
+          "title": "Specific Gravity",
+          "description": "Array of specific gravity values corresponding to SequencedComponentList values.",
+          "x-osdu-frame-of-reference": "UOM:dimensionless",
+          "items": {
+            "type": "number"
+          }
+        },
+        "NormalBoilingPoint": {
+          "type": "array",
+          "title": "Normal Boiling Point",
+          "description": "Array of normal boiling point values corresponding to SequencedComponentList values.",
+          "x-osdu-frame-of-reference": "UOM:thermodynamic temperature",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "required": [
+        "MolecularWeight",
+        "CarbonContent",
+        "CriticalTemperature",
+        "CriticalPressure",
+        "CriticalVolume",
+        "CriticalCompressibilityFactor",
+        "AcentricFactor",
+        "Parachor",
+        "SpecificGravity",
+        "NormalBoilingPoint"
+      ],
+      "additionalProperties": false
+    },
+    "EquationOfState": {
+      "type": "object",
+      "title": "EquationOfState",
+      "description": "Defines the parameters to create an equation of state that describes this compositional fluid model.",
+      "properties": {
+        "NonDimensionalVolumeShift": {
+          "type": "array",
+          "title": "Non-Dimensional Volume Shift",
+          "description": "Non-dimensional volume shift parameters used in the Peneloux et. al. volume correction within the cubic equation of state. For its usage, the component's molar volume accounting for the peneloux volume shift is equal to the component's molar volume without the peneloux volume shift MINUS the NonDimensionalVolumeShift times the b parameter.\nA typical non-dimenional volume shift for Methane is near 0.02 for SRK and -0.19 for PR (Peng Robinson). A typical non-dimensional volume shift for n-heptane is near 0.15 for SRK and 0.02 for PR.",
+          "x-osdu-frame-of-reference": "UOM:dimensionless",
+          "items": {
+            "type": "number"
+          }
+        },
+        "DimensionalVolumeShift": {
+          "type": "array",
+          "title": "Dimensional Volume Shift",
+          "description": "Dimensional volume shift parameters used in the Peneloux et. al. volume correction within the cubic equation of state. For its usage, the component's molar volume accounting for the peneloux volume shift is equal to the component's molar volume without the peneloux volume shift MINUS the DimensionalVolumeShift.",
+          "x-osdu-frame-of-reference": "UOM:molar volume",
+          "items": {
+            "type": "number"
+          }
+        },
+        "FormulationMethodID": {
+          "type": "string",
+          "title": "Formulation Method ID",
+          "description": "Identifies the formulation method used in generating the numerical values assigned to the model property (e.g., Peng-Robinson).  There is only one FormulationMethodID identified for an equation of state within a compositional model.",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidModelPropertyFormulationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+          "x-osdu-relationship": [
+            {
+              "GroupType": "reference-data",
+              "EntityType": "FluidModelPropertyFormulationMethod"
+            }
+          ]
+        },
+        "LiFactor": {
+          "type": "number",
+          "title": "Li Factor",
+          "description": "A multiplication factor to correct the critical temperature calculated by algorithms within some simulator applications. There is only one Li Factor identified for an equation of state within a compositional model.",
+          "x-osdu-frame-of-reference": "UOM:dimensionless"
+        },
+        "ComponentList": {
+          "type": "array",
+          "title": "Component List",
+          "description": "Array of component names.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "NonDimensionalVolumeShift",
+        "DimensionalVolumeShift",
+        "FormulationMethodID",
+        "LiFactor",
+        "ComponentList"
+      ],
+      "additionalProperties": false
+    },
+    "WaterCompressibility": {
+      "type": "object",
+      "title": "Water Compressibility",
+      "description": "This is an object used in calculating water  properties using compressibilities and a  reference pressure.",
+      "properties": {
+        "SurfaceDensity": {
+          "type": "number",
+          "title": "Surface Density",
+          "description": "The surface mass density of water.",
+          "x-osdu-frame-of-reference": "UOM:mass per volume"
+        },
+        "ReferencePressure": {
+          "type": "number",
+          "title": "Reference Pressure",
+          "description": "This a pressure reference (e.g., Initial reservoir pressure) used in defining the water properties of the black oil fluid model.",
+          "x-osdu-frame-of-reference": "UOM:pressure"
+        },
+        "FormationVolumeFactor": {
+          "type": "number",
+          "title": "Formation Volume Factor",
+          "description": "This is the water formation volume factor values corresponding to the reference pressure.",
+          "x-osdu-frame-of-reference": "UOM:volume per volume"
+        },
+        "Viscosity": {
+          "type": "number",
+          "title": "Viscosity",
+          "description": "This is the water viscosity corresponding to the reference pressure.",
+          "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+        },
+        "Compressibility": {
+          "type": "number",
+          "title": "Compressibility",
+          "description": "This is the average water compressibility corresponding to the reference pressure and used in calculating the formation volume factor at other pressures.",
+          "x-osdu-frame-of-reference": "UOM:reciprocal pressure"
+        },
+        "ViscosityCompressibility": {
+          "type": "number",
+          "title": "Viscosity Compressibility",
+          "description": "This is the average water viscosity compressibility corresponding to the reference pressure andf used in calculating the viscosity at other pressures.",
+          "x-osdu-frame-of-reference": "UOM:reciprocal pressure"
+        }
+      },
+      "required": [
+        "SurfaceDensity",
+        "ReferencePressure",
+        "FormationVolumeFactor",
+        "Viscosity",
+        "Compressibility",
+        "ViscosityCompressibility"
+      ],
+      "additionalProperties": false
+    },
+    "WaterTable": {
+      "type": "array",
+      "title": "Water Table",
+      "description": "This is an array of water properties, such as viscosity and formation volume factor, as a function of pressure and constant temperature.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Water Table",
+        "description": "This object captures the water properties, such as viscosity and formation volume factor, as a function of pressure and constant temperature.",
+        "properties": {
+          "SurfaceDensity": {
+            "type": "number",
+            "title": "Surface Density",
+            "description": "Surface mass density of water",
+            "x-osdu-frame-of-reference": "UOM:mass per volume"
+          },
+          "Pressure": {
+            "type": "array",
+            "title": "Pressure",
+            "description": "This a pressure reference (e.g Initial reservoir pressure) used in defining the water properties of the black oil fluid model.",
+            "x-osdu-frame-of-reference": "UOM:pressure",
+            "items": {
+              "type": "number"
+            }
+          },
+          "FormationVolumeFactor": {
+            "type": "array",
+            "title": "Formation Volume Factor",
+            "description": "This is the water formation volume factor values corresponding to the reference pressure.",
+            "x-osdu-frame-of-reference": "UOM:volume per volume",
+            "items": {
+              "type": "number"
+            }
+          },
+          "Viscosity": {
+            "type": "array",
+            "title": "Viscosity",
+            "description": "This is the water viscosity corresponding to the reference pressure.",
+            "x-osdu-frame-of-reference": "UOM:dynamic viscosity",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "SurfaceDensity",
+          "Pressure",
+          "FormationVolumeFactor",
+          "Viscosity"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "TemperatureAtDepth": {
+      "type": "object",
+      "title": "Temperature At Depth",
+      "description": "This is an array of reservoir temperatures reported at specific depths.",
+      "properties": {
+        "TrueVerticalDepths": {
+          "type": "array",
+          "title": "True Vertical Depths",
+          "description": "Array of True Vertical Depth (TVD) Values to be used as a reference for any other property mapped against depth. This column is required if any other property is populated.",
+          "x-osdu-frame-of-reference": "UOM:depth",
+          "items": {
+            "type": "number"
+          }
+        },
+        "Temperatures": {
+          "type": "array",
+          "title": "Temperatures",
+          "description": "Array of Temperature Values at a given Depth. The usage of Temperature against Depth is mutually exclusive with the usage of any other property.",
+          "x-osdu-frame-of-reference": "UOM:thermodynamic-temperature",
+          "items": {
+            "type": "number"
+          }
+        }
+      },
+      "required": [
+        "TrueVerticalDepths",
+        "Temperatures"
+      ],
+      "additionalProperties": false
+    },
+    "CompositionsAtDepth": {
+      "type": "array",
+      "title": "Compositions At Depth",
+      "description": "This is an array in which each element defines the compositions at a given depth; also known as a compositional model table.  Each ComponentMoleFraction array is arranged in accordance with the SequencedComponentList.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Composition At Depth",
+        "description": "Description of the composition of a mixed fluid at a single depth.",
+        "properties": {
+          "CompositionTypeID": {
+            "type": "string",
+            "title": "Composition Type ID",
+            "description": "Indicating that the table consists of phase component mole fractions versus depth. (Total, Liquid, Vapor, Aqueous, Residual Oil, Solid)",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-ReservoirComponentCompositionType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "ReservoirComponentCompositionType"
+              }
+            ]
+          },
+          "TrueVerticalDepth": {
+            "type": "number",
+            "title": "True Vertical Depth",
+            "description": "A depth (TVD) value at which the component mole fractions will be specified.",
+            "x-osdu-frame-of-reference": "UOM:length"
+          },
+          "ComponentMoleFractions": {
+            "type": "array",
+            "title": "Component Mole Fractions",
+            "description": "A list of component mole fractions at the designated depth corresponding to the appropriate component id (e.g. 0.0121, 0.0194, etc.). These values should sum up to one.",
+            "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "CompositionTypeID",
+          "TrueVerticalDepth",
+          "ComponentMoleFractions"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "FlashValidationExamples": {
+      "type": "array",
+      "title": "Flash Validation Examples",
+      "description": "One or more examples of flash calculations from this model, provided as a benchmark for quality control of model parameters.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Flash Validation Example",
+        "description": "An example of flash calculations from this model, provided as a benchmark for quality control of model parameters.",
+        "properties": {
+          "Pressure": {
+            "type": "number",
+            "title": "Pressure",
+            "description": "Defines the pressure used in this flash validation example.",
+            "x-osdu-frame-of-reference": "UOM:pressure"
+          },
+          "Temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "description": "Defines the temperature used in this flash validation example.",
+            "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+          },
+          "PhaseProperties": {
+            "type": "array",
+            "title": "Phase Properties",
+            "description": "Properties, such as relative amount, composition, density, viscosity, and z factor, for phases identified in this FlashValidationExample.  Each unique phase is identified by both its CompositionTypeID and its PhaseIndex.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Phase Properties",
+              "description": "Properties, such as relative amount, composition, density, viscosity, and z factor, for phases identified in this FlashValidationExample.  Each unique phase is identified by both its CompositionTypeID and its PhaseIndex.",
+              "properties": {
+                "PhaseTypeID": {
+                  "type": "string",
+                  "title": "Phase Type ID",
+                  "description": "Indicating that the table consists of phase component mole fractions versus depth. (Total, Liquid, Vapor, Aqueous, Residual Oil, Solid)",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-ReservoirComponentCompositionType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "ReservoirComponentCompositionType"
+                    }
+                  ]
+                },
+                "MolePercent": {
+                  "type": "number",
+                  "title": "Mole Percent",
+                  "description": "The molar percentage of this phase.",
+                  "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance"
+                },
+                "MassPercent": {
+                  "type": "number",
+                  "title": "Mass Percent",
+                  "description": "The volume percentage of this phase.",
+                  "x-osdu-frame-of-reference": "UOM:mass per mass"
+                },
+                "VolumePercent": {
+                  "type": "number",
+                  "title": "Volume Percent",
+                  "description": "The volume percentage of this phase.",
+                  "x-osdu-frame-of-reference": "UOM:volume per volume"
+                },
+                "Density": {
+                  "type": "number",
+                  "title": "Density",
+                  "description": "The mass density of this phase.",
+                  "x-osdu-frame-of-reference": "UOM:mass per volume"
+                },
+                "MoleVolume": {
+                  "type": "number",
+                  "title": "Mole Volume",
+                  "description": "The mole volume of this phase.",
+                  "x-osdu-frame-of-reference": "UOM:volume per amount of substance"
+                },
+                "Viscosity": {
+                  "type": "number",
+                  "title": "Viscosity",
+                  "description": "The viscosity of this phase.",
+                  "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+                },
+                "MoleWeight": {
+                  "type": "number",
+                  "title": "Mole Weight",
+                  "description": "The molecular weight of this phase.",
+                  "x-osdu-frame-of-reference": "UOM:molecular weight"
+                },
+                "ZFactor": {
+                  "type": "number",
+                  "title": "Z Factor",
+                  "description": "The Z factor of this phase.",
+                  "x-osdu-frame-of-reference": "UOM:dimensionless"
+                },
+                "ComponentMoleFractions": {
+                  "type": "array",
+                  "title": "Component Mole Fractions",
+                  "description": "A list of component mole fractions corresponding to the SequencedComponentList (e.g. 0.0121, 0.0194, etc.). These values should sum up to one.",
+                  "x-osdu-indexing": {
+                    "type": "nested"
+                  },
+                  "x-osdu-frame-of-reference": "UOM:amount of substance per amount of substance",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "ComponentFugacities": {
+                  "type": "array",
+                  "title": "Component Fugacities",
+                  "description": "A list of calculated component fugacities corresponding to the SequencedComponentList. Fugacity is defined as the pressure an ideal gas would require to have the same chemical potential as a real gas at a given temperature.",
+                  "x-osdu-indexing": {
+                    "type": "nested"
+                  },
+                  "x-osdu-frame-of-reference": "UOM:pressure",
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              },
+              "required": [
+                "PhaseTypeID",
+                "MolePercent",
+                "MassPercent",
+                "VolumePercent",
+                "Density",
+                "MoleVolume",
+                "Viscosity",
+                "MoleWeight",
+                "ZFactor",
+                "ComponentMoleFractions",
+                "ComponentFugacities"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "InterfacialTensions": {
+            "type": "array",
+            "title": "Interfacial Tensions",
+            "description": "Interfacial tensions between pairs of phases in this FlashValidationExample.  Each element specifies PhaseIndex1 and PhaseIndex2, the two PhaseIndex values within PhaseProperties that were used for each interfacial tension value.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Interfacial Tension",
+              "description": "The measured tension at the interface between two phases.",
+              "properties": {
+                "PhaseIndex1": {
+                  "type": "integer",
+                  "title": "Phase Index 1",
+                  "description": "Identifies the first PhaseIndex value within PhaseProperties that is used for this InterfacialTension calculation.",
+                  "x-osdu-frame-of-reference": "UOM:non-dimensional"
+                },
+                "PhaseIndex2": {
+                  "type": "integer",
+                  "title": "Phase Index 2",
+                  "description": "Interfacial Tension value for the interface of the phases identified by PhaseIndex1 and PhaseIndex2.",
+                  "x-osdu-frame-of-reference": "UOM:non-dimensional"
+                },
+                "Value": {
+                  "type": "number",
+                  "title": "Value",
+                  "description": "Interfacial Tension value for the interface of the phases identified by PhaseIndex1 and PhaseIndex2.",
+                  "x-osdu-frame-of-reference": "UOM:force per length"
+                }
+              },
+              "required": [
+                "PhaseIndex1",
+                "PhaseIndex2",
+                "Value"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "Pressure",
+          "Temperature",
+          "PhaseProperties",
+          "InterfacialTensions"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "FluidModelID",
+    "Meta",
+    "OilViscosityModel",
+    "OilViscosityModelTypeID",
+    "GasViscosityModel",
+    "GasViscosityModelTypeID",
+    "StandardCondition",
+    "StandardPressure",
+    "StandardTemperature",
+    "SequencedComponentList",
+    "BinaryInteractionCoefficient",
+    "ComponentProperties",
+    "EquationOfState",
+    "WaterCompressibility",
+    "WaterTable",
+    "TemperatureAtDepth",
+    "CompositionsAtDepth",
+    "FlashValidationExamples"
+  ],
+  "$id": "compositional_fluid_model.1.0.0.json",
+  "additionalProperties": false
+}

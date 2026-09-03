@@ -433,7 +433,8 @@ docker compose down
         │   │   └── conftest.py         - Specific test fixtures shared across different types of tests.
         │   ├── conftest.py             - Main infrastructure fixtures.
         │   ├── config.py               - Configuration file with constants and data file paths.
-        │   └── data_provider.py        - Data class to create the final data source for tests.
+        │   ├── data_provider.py        - Data class to create the final data source for tests.
+        |   └── pytest.ini              - Pytest settings
         ├── test_cache_integration      - Redis cache integration tests (isolated, requires CACHE_ENABLE=True).
         │   └── test_redis_cache.py     - Tests for Redis cache operations with real Redis connection.
         └── test_helpers
@@ -527,9 +528,7 @@ In other cases, all checks run automatically on commit.
 
 ### AWS
 
-* AWS recommends the Terraform CLI for DDMS deployments
-  * Instructions can be found in the deployment-ddms directory at the root level of the downloaded AWS artifact or in the [aws-terraform-deployment repository](https://community.opengroup.org/osdu/platform/deployment-and-operations/terraform-deployment-aws).
-  * Make sure you have selected the branch corresponding to the current release.
+The AWS provider has been removed from this repository.
 
 ### Google
 

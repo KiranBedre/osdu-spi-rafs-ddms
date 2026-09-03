@@ -17,15 +17,24 @@
 # Pylint cannot always resolve Azure namespace packages in static analysis.
 # pylint: disable=no-name-in-module
 
+import asyncio
+
 from azure.identity.aio import DefaultAzureCredential
 from azure.keyvault.secrets.aio import SecretClient
 from loguru import logger
 from redis.asyncio import Redis
+from redis.asyncio.cluster import RedisCluster
 from redis.asyncio.connection import ConnectionPool, SSLConnection
+from redis.exceptions import (
+    AuthenticationError,
+    ConnectionError,
+    ResponseError,
+    TimeoutError,
+)
 
 from app.core.config import get_provider_config
 from app.core.helpers.cache.config import RedisCacheConfig
-from app.core.helpers.cache.redis_client_factory import RedisClientFactory
+from app.core.helpers.cache.redis_client_factory import WAIT_FOR_REDIS, RedisClientFactory
 from app.providers.config import AzureConfig
 from app.providers.dependencies.az.redis_credential_provider import AzureRedisCredentialProvider
 
@@ -66,39 +75,64 @@ class AzureRedisClientFactory(RedisClientFactory):
             return f"db{db_num}:"
         return ""
 
-    async def create_client(self) -> Redis:
+    async def create_client(self) -> Redis | RedisCluster:
         """Create Redis client with Entra credential provider for auto-refresh.
 
         Overrides base implementation to use AzureRedisCredentialProvider which
         automatically refreshes tokens before expiration.
+        Uses RedisCluster for Azure Managed Redis to handle cluster mode.
 
-        :return: Configured Redis client instance
-        :rtype: Redis
+        :return: Configured Redis or RedisCluster client instance
+        :rtype: Redis | RedisCluster
         """
-        # Check if passwordless auth is enabled
-        if not (isinstance(self.azure_config, AzureConfig) and self.azure_config.redis_use_passwordless_auth):
+        # Try MSI auth if enabled
+        if isinstance(self.azure_config, AzureConfig) and self.azure_config.redis_use_passwordless_auth:
+            try:
+                return await self._create_msi_client()
+            except Exception as exc:  # noqa: B902
+                # Don't log exception details (may contain credentials/tokens)
+                exc_type = type(exc).__name__
+                logger.error(f"Error setting up Entra auth ({exc_type}), falling back to password")
+        else:
             logger.debug("Redis passwordless auth disabled, using password authentication")
-            return await super().create_client()
 
-        try:
-            # Use credential provider for auto-refresh
-            credential_provider = AzureRedisCredentialProvider(self.azure_config)
-            logger.info("Using Azure Entra credential provider for Redis (auto-refresh enabled)")
+        return await self._create_password_client()
 
-            # Get SSL connection configuration
-            connection_class, connection_kwargs = self._get_ssl_connection_params()
+    async def _create_msi_client(self) -> Redis | RedisCluster:
+        """Create Redis client with MSI (Entra ID) authentication.
 
-            # Build pool parameters using credential provider
-            # The credential_provider will be called automatically by Redis when needed.
-            # No username/password needed
-            pool_params = await self._build_pool_params(credential_provider, connection_class, connection_kwargs)
-            pool = ConnectionPool(**pool_params)
+        :return: Configured Redis or RedisCluster client instance
+        :rtype: Redis | RedisCluster
+        """
+        # Use credential provider for auto-refresh
+        credential_provider = AzureRedisCredentialProvider(self.azure_config)
+        logger.info("Using Azure Entra credential provider for Redis (auto-refresh enabled)")
 
-            return Redis(connection_pool=pool)  # noqa: ASYNC910
+        # Get SSL connection configuration
+        connection_class, connection_kwargs = self._get_ssl_connection_params()
 
-        except Exception as exc:  # noqa: B902
-            logger.error(f"Error setting up Entra auth, falling back to password: {exc}")
-            return await super().create_client()
+        # Build common parameters compatible with both Redis and RedisCluster
+        common_params = await self._build_common_redis_client_params(credential_provider, connection_kwargs)
+
+        # Use RedisCluster for Azure Managed Redis (cluster mode)
+        if self._is_amr:
+            logger.info("Using RedisCluster with MSI auth for Azure Managed Redis (cluster mode support)")
+            # RedisCluster handles its own connection pooling and cluster topology
+            return RedisCluster(
+                **common_params,
+                ssl=self.config.redis_ssl,
+            )
+
+        logger.info("Using standard Redis client with MSI auth for Azure Cache for Redis")
+        # ConnectionPool needs db and connection_class in addition to common params
+        pool_params = {
+            **common_params,
+            "db": self._get_database(),
+        }
+        if connection_class:
+            pool_params["connection_class"] = connection_class
+        pool = ConnectionPool(**pool_params)
+        return Redis(connection_pool=pool)
 
     @property
     def _is_amr(self) -> bool:
@@ -165,31 +199,86 @@ class AzureRedisClientFactory(RedisClientFactory):
                 logger.info(f"Resolved Redis hostname from AKV: {hostname}")
                 return hostname
 
-    async def _build_pool_params(self, credential_provider, connection_class, connection_kwargs):
-        """Build connection pool parameters.
+    async def _build_common_redis_client_params(self, credential_provider=None, connection_kwargs=None):
+        """Build common Redis parameters for both Redis and RedisCluster clients.
 
-        Resolves the Redis hostname (from config or AKV) before building the parameters.
+        Resolves the Redis hostname and returns parameters that are compatible with both
+        client types. Used by both MSI (Entra) and password authentication paths.
 
-        :param credential_provider: Azure Redis credential provider instance
-        :param connection_class: Connection class to use (or None for default)
-        :param connection_kwargs: Additional connection keyword arguments
-        :return: Dictionary of pool parameters
+        :param credential_provider: Optional Azure Redis credential provider for MSI auth
+        :param connection_kwargs: Optional connection keyword arguments (SSL params)
+        :return: Dictionary of common parameters
         """
-
+        connection_kwargs = connection_kwargs or {}
         hostname = await self._resolve_redis_hostname()
-        pool_params = {
+        client_params = {
             "host": hostname,
             "port": self.config.redis_port,
-            "db": self._get_database(),
-            "credential_provider": credential_provider,
             "decode_responses": False,
             "socket_connect_timeout": self.azure_config.redis_socket_connect_timeout,
             "socket_keepalive": self.azure_config.redis_socket_keepalive,
             "health_check_interval": self.azure_config.redis_health_check_interval,
             **connection_kwargs,
         }
+        if credential_provider:
+            client_params["credential_provider"] = credential_provider
+        return client_params
 
-        if connection_class:
-            pool_params["connection_class"] = connection_class
+    async def _create_password_client(self) -> Redis | RedisCluster:
+        """Create Redis client with password authentication.
 
-        return pool_params
+        Uses RedisCluster for Azure Managed Redis, standard Redis for Azure Cache.
+
+        :return: Configured Redis or RedisCluster client instance
+        :rtype: Redis | RedisCluster
+        """
+        if self._is_amr:
+            return await self._create_amr_password_cluster()
+
+        # For Azure Cache for Redis, use base class implementation
+        logger.info("Using standard Redis client with password auth for Azure Cache for Redis")
+        return await RedisClientFactory.create_client(self)
+
+    async def _create_amr_password_cluster(self) -> RedisCluster:
+        """Create RedisCluster with password auth for Azure Managed Redis.
+
+        :return: Configured RedisCluster client instance
+        :rtype: RedisCluster
+        """
+        while True:
+            try:
+                return await self._attempt_cluster_connection()
+            except (AuthenticationError, ConnectionError, ResponseError, TimeoutError) as exc:  # noqa: WPS239
+                # Don't log full exception message for AuthenticationError (may contain credentials)
+                exc_type = type(exc).__name__
+                if isinstance(exc, AuthenticationError):
+                    logger.error(f"Redis authentication failed: {exc_type}")
+                else:
+                    logger.error(f"Redis client error ({exc_type}): {exc}")
+                await asyncio.sleep(WAIT_FOR_REDIS)
+
+    async def _attempt_cluster_connection(self) -> RedisCluster:
+        """Attempt to create and connect to RedisCluster.
+
+        :return: Connected RedisCluster instance
+        :rtype: RedisCluster
+        :raises AuthenticationError: If authentication fails
+        :raises ConnectionError: If connection fails
+        :raises ResponseError: If Redis returns an error response
+        :raises TimeoutError: If connection times out
+        """
+        logger.info("Using RedisCluster with password auth for Azure Managed Redis (cluster mode support)")
+
+        # Get SSL params and build common parameters
+        _, ssl_kwargs = self._get_ssl_connection_params()
+        common_params = await self._build_common_redis_client_params(connection_kwargs=ssl_kwargs)
+
+        redis_client = RedisCluster(
+            **common_params,
+            password=self.config.redis_password,
+            ssl=self.config.redis_ssl,
+        )
+
+        await redis_client.ping()
+        logger.debug("Redis client connected successfully")
+        return redis_client

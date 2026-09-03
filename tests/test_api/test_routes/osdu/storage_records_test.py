@@ -342,7 +342,7 @@ async def test_get_record_version_invalid_version(path, record_id, version):
                 headers=TEST_HEADERS,
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     storage_record_service_mock.get_record.assert_not_called()
 
 

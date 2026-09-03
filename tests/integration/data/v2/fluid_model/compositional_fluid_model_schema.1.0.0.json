@@ -1,0 +1,1296 @@
+{
+    "title": "CompositionalFluidModelModel100",
+    "type": "object",
+    "properties": {
+        "FluidModelID": {
+            "title": "Fluid Model ID",
+            "description": "OSDU Identifier of the associated Fluid Model WPC.",
+            "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-FluidModel:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "Meta": {
+            "title": "Meta",
+            "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+            "example": "",
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    {
+                        "$ref": "#/definitions/MetaItem"
+                    },
+                    {
+                        "$ref": "#/definitions/MetaItem1"
+                    },
+                    {
+                        "$ref": "#/definitions/MetaItem2"
+                    },
+                    {
+                        "$ref": "#/definitions/MetaItem3"
+                    }
+                ]
+            }
+        },
+        "OilViscosityModel": {
+            "title": "Oil Viscosity Model",
+            "description": "The type of model chosen for the viscosity of hydrocarbon liquid phases.",
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/OilViscosityModel"
+                },
+                {
+                    "$ref": "#/definitions/OilViscosityModel1"
+                },
+                {
+                    "$ref": "#/definitions/OilViscosityModel2"
+                },
+                {
+                    "$ref": "#/definitions/OilViscosityModel3"
+                }
+            ]
+        },
+        "OilViscosityModelTypeID": {
+            "title": "Oil Viscosity Model Type ID",
+            "description": "The type of model chosen for the viscosity of hydrocarbon liquid phases.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-ViscosityModelType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "GasViscosityModel": {
+            "title": "Gas Viscosity Model",
+            "description": "The type of model chosen for the viscosity of hydrocarbon vapor phases.",
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/GasViscosityModel"
+                },
+                {
+                    "$ref": "#/definitions/GasViscosityModel1"
+                },
+                {
+                    "$ref": "#/definitions/GasViscosityModel2"
+                },
+                {
+                    "$ref": "#/definitions/GasViscosityModel3"
+                }
+            ]
+        },
+        "GasViscosityModelTypeID": {
+            "title": "Gas Viscosity Model Type ID",
+            "description": "The type of model chosen for the viscosity of hydrocarbon vapor phases.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-ViscosityModelType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "type": "string"
+        },
+        "StandardCondition": {
+            "title": "Standard Condition",
+            "description": "Represents the standard condition (pressure and temperature) referenced in the model.  If used, both pressure and temperature must be provided.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/StandardCondition"
+                }
+            ]
+        },
+        "StandardPressure": {
+            "title": "Standard Pressure",
+            "description": "Defines the standard pressure used in fluid property models.",
+            "type": "number"
+        },
+        "StandardTemperature": {
+            "title": "Standard Temperature",
+            "description": "Defines the standard temperature used in fluid property models.",
+            "type": "number"
+        },
+        "SequencedComponentList": {
+            "title": "Sequenced Component List",
+            "description": "Array of sequenced components governing BinaryInteractionCoefficient, Equation of State, and Viscosity Models.  All array objects related to the SequencedComponentList should be of equal length and ordered identically by component.",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "BinaryInteractionCoefficient": {
+            "title": "Binary Interaction Coefficient",
+            "description": "Strict lower triangle of the binary interaction coefficient matrix and corresponding approximation level.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/BinaryInteractionCoefficient"
+                }
+            ]
+        },
+        "ComponentProperties": {
+            "title": "ComponentProperties",
+            "description": "Component properties required for phase behavior modeling using an equation of state.  The length of each array within ComponentProperties should be equal.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/ComponentProperties"
+                }
+            ]
+        },
+        "EquationOfState": {
+            "title": "EquationOfState",
+            "description": "Defines the parameters to create an equation of state that describes this compositional fluid model.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/EquationOfState"
+                }
+            ]
+        },
+        "WaterCompressibility": {
+            "title": "Water Compressibility",
+            "description": "This is an object used in calculating water  properties using compressibilities and a  reference pressure.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/WaterCompressibility"
+                }
+            ]
+        },
+        "WaterTable": {
+            "title": "Water Table",
+            "description": "This is an array of water properties, such as viscosity and formation volume factor, as a function of pressure and constant temperature.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/WaterTableItem"
+            }
+        },
+        "TemperatureAtDepth": {
+            "title": "Temperature At Depth",
+            "description": "This is an array of reservoir temperatures reported at specific depths.",
+            "allOf": [
+                {
+                    "$ref": "#/definitions/TemperatureAtDepth"
+                }
+            ]
+        },
+        "CompositionsAtDepth": {
+            "title": "Compositions At Depth",
+            "description": "This is an array in which each element defines the compositions at a given depth; also known as a compositional model table.  Each ComponentMoleFraction array is arranged in accordance with the SequencedComponentList.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/CompositionsAtDepthItem"
+            }
+        },
+        "FlashValidationExamples": {
+            "title": "Flash Validation Examples",
+            "description": "One or more examples of flash calculations from this model, provided as a benchmark for quality control of model parameters.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/FlashValidationExample"
+            }
+        }
+    },
+    "required": [
+        "FluidModelID",
+        "Meta",
+        "OilViscosityModel",
+        "OilViscosityModelTypeID",
+        "GasViscosityModel",
+        "GasViscosityModelTypeID",
+        "StandardCondition",
+        "StandardPressure",
+        "StandardTemperature",
+        "SequencedComponentList",
+        "BinaryInteractionCoefficient",
+        "ComponentProperties",
+        "EquationOfState",
+        "WaterCompressibility",
+        "WaterTable",
+        "TemperatureAtDepth",
+        "CompositionsAtDepth",
+        "FlashValidationExamples"
+    ],
+    "additionalProperties": false,
+    "definitions": {
+        "MetaItem": {
+            "title": "MetaItem",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "UOM Reference Kind",
+                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                    "default": "Unit",
+                    "const": "Unit",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "UOM Unit Symbol",
+                    "description": "The unit symbol or name of the unit.",
+                    "example": "ft[US]",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "UOM Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+                    "type": "string"
+                },
+                "unitOfMeasureID": {
+                    "title": "Unitofmeasureid",
+                    "description": "SRN to unit of measure reference.",
+                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "UOM Property Names",
+                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "HorizontalDeflection.EastWest",
+                        "HorizontalDeflection.NorthSouth"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "MetaItem1": {
+            "title": "MetaItem1",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "CRS Reference Kind",
+                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                    "default": "CRS",
+                    "const": "CRS",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "CRS Name",
+                    "description": "The name of the CRS.",
+                    "example": "WGS 84 / UTM zone 15N",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "CRS Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
+                    "type": "string"
+                },
+                "coordinateReferenceSystemID": {
+                    "title": "Coordinatereferencesystemid",
+                    "description": "SRN to CRS reference.",
+                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "CRS Property Names",
+                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "KickOffPosition.X",
+                        "KickOffPosition.Y"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "MetaItem2": {
+            "title": "MetaItem2",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "DateTime Reference Kind",
+                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                    "default": "DateTime",
+                    "const": "DateTime",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "DateTime Name",
+                    "description": "The name of the DateTime format and reference.",
+                    "example": "UTC",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "DateTime Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "DateTime Property Names",
+                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Acquisition.StartTime",
+                        "Acquisition.EndTime"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "MetaItem3": {
+            "title": "MetaItem3",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "title": "AzimuthReference Reference Kind",
+                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                    "default": "AzimuthReference",
+                    "const": "AzimuthReference",
+                    "type": "string"
+                },
+                "name": {
+                    "title": "AzimuthReference Name",
+                    "description": "The name of the CRS or the symbol/name of the unit.",
+                    "example": "TrueNorth",
+                    "type": "string"
+                },
+                "persistableReference": {
+                    "title": "AzimuthReference Persistable Reference",
+                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "title": "AzimuthReference Property Names",
+                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Bearing"
+                    ],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "additionalProperties": false
+        },
+        "OilViscosityModel": {
+            "title": "OilViscosityModel",
+            "type": "object",
+            "properties": {
+                "C1": {
+                    "title": "C1",
+                    "description": "First coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C2": {
+                    "title": "C2",
+                    "description": "Second coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C3": {
+                    "title": "C3",
+                    "description": "Third coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C4": {
+                    "title": "C4",
+                    "description": "Fourth coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C5": {
+                    "title": "C5",
+                    "description": "Fifth coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "CriticalVolumeLBC": {
+                    "title": "Critical Volume LBC",
+                    "description": "Component critical molar volumes (VCrit) specifically used in the LBC correlation.  These values may differ from the critical volume values within , but the order and number of components here should match the order and number within .",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "CriticalVolumeLBC"
+            ],
+            "additionalProperties": false
+        },
+        "OilViscosityModel1": {
+            "title": "OilViscosityModel1",
+            "type": "object",
+            "properties": {
+                "C1": {
+                    "title": "C1",
+                    "description": "First coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C2": {
+                    "title": "C2",
+                    "description": "Second coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C3": {
+                    "title": "C3",
+                    "description": "Third coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C4": {
+                    "title": "C4",
+                    "description": "Fourth coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C5": {
+                    "title": "C5",
+                    "description": "Fifth coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "CriticalVolumeLBC": {
+                    "title": "Critical Volume LBC",
+                    "description": "Component critical molar volumes (VCrit) specifically used in the LBC correlation.  These values may differ from the critical volume values within, but the number and order of entries in the list should correspond to the components defined in SequencedComponentList.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CompactVolume": {
+                    "title": "Compact Volume",
+                    "description": "A list of values of the compact molar volumes of the components to be used in the modified LBC calculations. The number and order of entries in the list should correspond to the components defined in SequencedComponentList.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "MixingCoefficient": {
+                    "title": "Mixing Coefficient",
+                    "description": "Specifies the value of the mixing coefficient alpha to be used in the modified LBC calculations.",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "CriticalVolumeLBC",
+                "CompactVolume",
+                "MixingCoefficient"
+            ],
+            "additionalProperties": false
+        },
+        "OilViscosityModel2": {
+            "title": "OilViscosityModel2",
+            "type": "object",
+            "properties": {
+                "C1": {
+                    "title": "C1",
+                    "description": "First coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 0.291, and 1.0 respectively.\n\nIn Pedersen 1987, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 1.304 x 10^-4, and 2.303 respectively.",
+                    "type": "number"
+                },
+                "C2": {
+                    "title": "C2",
+                    "description": "Second coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 0.291, and 1.0 respectively.\n\nIn Pedersen 1987, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 1.304 x 10^-4, and 2.303 respectively.",
+                    "type": "number"
+                },
+                "C3": {
+                    "title": "C3",
+                    "description": "Third coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+                    "type": "number"
+                },
+                "C4": {
+                    "title": "C4",
+                    "description": "Fourth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+                    "type": "number"
+                },
+                "C5": {
+                    "title": "C5",
+                    "description": "Fifth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+                    "type": "number"
+                },
+                "C6": {
+                    "title": "C6",
+                    "description": "Sixth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the reference rotational coupling coefficient is found by \u03b10 = 1 + c6*\u03c1rm^c4. A typical default value of c6 is c3 x MWo^c5, or 8.377x 10^-4.\n\nIn Pedersen 1987, the reference rotational coupling coefficient is found by \u03b10 = 1 + c6*\u03c1rm^c4. A typical default value of c6 is c3 x MWo^c5, or 0.031.",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "C6"
+            ],
+            "additionalProperties": false
+        },
+        "OilViscosityModel3": {
+            "title": "OilViscosityModel3",
+            "type": "object",
+            "properties": {
+                "CriticalViscosity": {
+                    "title": "Critical Viscosity",
+                    "description": "A list of critical viscosities, one for each component. If zero is entered for a component, its critical viscosity will be calculated from corresponding entries in CriticalViscosityConstantCoefficient and CriticalViscosityTemperatureCoefficient.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CriticalViscosityConstantCoefficient": {
+                    "title": "Critical Viscosity Constant Coefficient",
+                    "description": "A list of constant (temperature independent) coefficients for critical viscosity, one for each component. If a CriticalViscosity is specified for a component, this coefficient will be ignored for that component.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CriticalViscosityTemperatureCoefficient": {
+                    "title": "Critical Viscosity Temperature Coefficient",
+                    "description": "A list of temperature dependent coefficients for critical viscosity, one for each component. If a CriticalViscosity is specified for a component, this coefficient will be ignored for that component.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "VolumeShiftConstantCoefficient": {
+                    "title": "Volume Shift Constant Coefficient",
+                    "description": "A list of constant (temperature independent) coefficients for volume shift, one for each component.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "VolumeShiftTemperatureCoefficient": {
+                    "title": "Volume Shift Temperature Coefficient",
+                    "description": "A list of temperature dependent coefficients for critical viscosity, one for each component.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "CriticalViscosity",
+                "CriticalViscosityConstantCoefficient",
+                "CriticalViscosityTemperatureCoefficient",
+                "VolumeShiftConstantCoefficient",
+                "VolumeShiftTemperatureCoefficient"
+            ],
+            "additionalProperties": false
+        },
+        "GasViscosityModel": {
+            "title": "GasViscosityModel",
+            "type": "object",
+            "properties": {
+                "C1": {
+                    "title": "C1",
+                    "description": "First coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C2": {
+                    "title": "C2",
+                    "description": "Second coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C3": {
+                    "title": "C3",
+                    "description": "Third coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C4": {
+                    "title": "C4",
+                    "description": "Fourth coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C5": {
+                    "title": "C5",
+                    "description": "Fifth coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "CriticalVolumeLBC": {
+                    "title": "Critical Volume LBC",
+                    "description": "Component critical molar volumes (VCrit) specifically used in the LBC correlation.  These values may differ from the critical volume values within , but the order and number of components here should match the order and number within .",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "CriticalVolumeLBC"
+            ],
+            "additionalProperties": false
+        },
+        "GasViscosityModel1": {
+            "title": "GasViscosityModel1",
+            "type": "object",
+            "properties": {
+                "C1": {
+                    "title": "C1",
+                    "description": "First coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C2": {
+                    "title": "C2",
+                    "description": "Second coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C3": {
+                    "title": "C3",
+                    "description": "Third coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C4": {
+                    "title": "C4",
+                    "description": "Fourth coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "C5": {
+                    "title": "C5",
+                    "description": "Fifth coefficient for adjusting the LBC viscosity model.",
+                    "type": "number"
+                },
+                "CriticalVolumeLBC": {
+                    "title": "Critical Volume LBC",
+                    "description": "Component critical molar volumes (VCrit) specifically used in the LBC correlation.  These values may differ from the critical volume values within, but the number and order of entries in the list should correspond to the components defined in SequencedComponentList.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CompactVolume": {
+                    "title": "Compact Volume",
+                    "description": "A list of values of the compact molar volumes of the components to be used in the modified LBC calculations. The number and order of entries in the list should correspond to the components defined in SequencedComponentList.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "MixingCoefficient": {
+                    "title": "Mixing Coefficient",
+                    "description": "Specifies the value of the mixing coefficient alpha to be used in the modified LBC calculations.",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "CriticalVolumeLBC",
+                "CompactVolume",
+                "MixingCoefficient"
+            ],
+            "additionalProperties": false
+        },
+        "GasViscosityModel2": {
+            "title": "GasViscosityModel2",
+            "type": "object",
+            "properties": {
+                "C1": {
+                    "title": "C1",
+                    "description": "First coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 0.291, and 1.0 respectively.\n\nIn Pedersen 1987, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 1.304 x 10^-4, and 2.303 respectively.",
+                    "type": "number"
+                },
+                "C2": {
+                    "title": "C2",
+                    "description": "Second coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 0.291, and 1.0 respectively.\n\nIn Pedersen 1987, the mixture molecular weight is given by MWmix = c1 x (MWw ^ c2 - MWn ^ c2) + MWn. Values provided by the original publication for c1 and c2 are 1.304 x 10^-4, and 2.303 respectively.",
+                    "type": "number"
+                },
+                "C3": {
+                    "title": "C3",
+                    "description": "Third coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+                    "type": "number"
+                },
+                "C4": {
+                    "title": "C4",
+                    "description": "Fourth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+                    "type": "number"
+                },
+                "C5": {
+                    "title": "C5",
+                    "description": "Fifth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.747 x 10^-5, 4.265, and 0.8579 respectively.\n\nIn Pedersen 1987, the mixture rotational coupling coefficient is found by \u03b1mix = 1 + c3*\u03c1rm^c4 + MWmix^c5. Values provided by the original publication for c3, c4, and c5 are 7.378 x 10^-3, 1.847, and 0.5173 respectively.",
+                    "type": "number"
+                },
+                "C6": {
+                    "title": "C6",
+                    "description": "Sixth coefficient for adjusting the Pedersen viscosity model.\n\nIn Pedersen 1984, the reference rotational coupling coefficient is found by \u03b10 = 1 + c6*\u03c1rm^c4. A typical default value of c6 is c3 x MWo^c5, or 8.377x 10^-4.\n\nIn Pedersen 1987, the reference rotational coupling coefficient is found by \u03b10 = 1 + c6*\u03c1rm^c4. A typical default value of c6 is c3 x MWo^c5, or 0.031.",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "C1",
+                "C2",
+                "C3",
+                "C4",
+                "C5",
+                "C6"
+            ],
+            "additionalProperties": false
+        },
+        "GasViscosityModel3": {
+            "title": "GasViscosityModel3",
+            "type": "object",
+            "properties": {
+                "CriticalViscosity": {
+                    "title": "Critical Viscosity",
+                    "description": "A list of critical viscosities, one for each component. If zero is entered for a component, its critical viscosity will be calculated from corresponding entries in CriticalViscosityConstantCoefficient and CriticalViscosityTemperatureCoefficient.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CriticalViscosityConstantCoefficient": {
+                    "title": "Critical Viscosity Constant Coefficient",
+                    "description": "A list of constant (temperature independent) coefficients for critical viscosity, one for each component. If a CriticalViscosity is specified for a component, this coefficient will be ignored for that component.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CriticalViscosityTemperatureCoefficient": {
+                    "title": "Critical Viscosity Temperature Coefficient",
+                    "description": "A list of temperature dependent coefficients for critical viscosity, one for each component. If a CriticalViscosity is specified for a component, this coefficient will be ignored for that component.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "VolumeShiftConstantCoefficient": {
+                    "title": "Volume Shift Constant Coefficient",
+                    "description": "A list of constant (temperature independent) coefficients for volume shift, one for each component.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "VolumeShiftTemperatureCoefficient": {
+                    "title": "Volume Shift Temperature Coefficient",
+                    "description": "A list of temperature dependent coefficients for critical viscosity, one for each component.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "CriticalViscosity",
+                "CriticalViscosityConstantCoefficient",
+                "CriticalViscosityTemperatureCoefficient",
+                "VolumeShiftConstantCoefficient",
+                "VolumeShiftTemperatureCoefficient"
+            ],
+            "additionalProperties": false
+        },
+        "StandardCondition": {
+            "title": "StandardCondition",
+            "type": "object",
+            "properties": {
+                "Pressure": {
+                    "title": "Pressure",
+                    "description": "The recorded absolute pressure condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit Pa (Pascal).",
+                    "example": "1 bar",
+                    "type": "number"
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "The recorded temperature condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit K (Kelvin).",
+                    "example": "15 degC",
+                    "type": "number"
+                },
+                "IsStandardConditions": {
+                    "title": "Is Standard Conditions",
+                    "description": "To capture when Measurement have been made at Standard Conditions (25\u00b0C / 100 kPa)\nMutually Exclusive with Pressure/Temperature.\nCapture",
+                    "type": "boolean"
+                },
+                "NonStandardConditionsReference": {
+                    "title": "Non Standard Conditions Reference",
+                    "description": "Open Text Box to capture the P & T Reference when measurements are made at non standard conditions (such as \"Reservoir\", \"Tank\",\u2026)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Pressure",
+                "Temperature"
+            ],
+            "additionalProperties": false
+        },
+        "BinaryInteractionCoefficient": {
+            "title": "BinaryInteractionCoefficient",
+            "type": "object",
+            "properties": {
+                "SequencedComponentList": {
+                    "title": "Sequenced Component List",
+                    "description": "Array of components used in defining the rows and columns of this binary interaction coefficient matrix. The order of the components should be maintained when defining the associated values, e.g., [a,b,c,d,e,. . .].",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "Elements": {
+                    "title": "Elements",
+                    "description": "Array of length n(n-1)/2, where n is equal to the number of components in SequencedComponentList, comprising the lower triangle of kij values within the binary interaction coefficient matrix in (row,column) order, e.g., [kij value for (2,1), kij value for (3,1), kij value for (3,2), kij value for (4,1), kij value for (4,2), kij value for (4,3), value for (5,1), etc.].  Note the array does not include the values of the diagonal, i.e. where the row and column component are the same.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "SequencedComponentList",
+                "Elements"
+            ],
+            "additionalProperties": false
+        },
+        "ComponentProperties": {
+            "title": "ComponentProperties",
+            "type": "object",
+            "properties": {
+                "MolecularWeight": {
+                    "title": "Molecular Weight",
+                    "description": "Array of molecular weights corresponding to SequencedComponentList values.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CarbonContent": {
+                    "title": "Carbon Content",
+                    "description": "Array of the carbon mole to component mole ratio values corresponding to SequencedComponentList values.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CriticalTemperature": {
+                    "title": "Critical Temperature",
+                    "description": "Array of critical temperature values corresponding to SequencedComponentList values.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CriticalPressure": {
+                    "title": "Critical Pressure",
+                    "description": "Array of critical pressure values corresponding to SequencedComponentList values.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CriticalVolume": {
+                    "title": "Critical Volume",
+                    "description": "Array of critical volume (VCrit) values corresponding to SequencedComponentList values.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "CriticalCompressibilityFactor": {
+                    "title": "Critical Compressibility Factor",
+                    "description": "Array of critical compressibility factor values corresponding to SequencedComponentList values. It could also be calculated from critical temperature, pressure and volume values.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "AcentricFactor": {
+                    "title": "Acentric Factor",
+                    "description": "Array of acentric factor values corresponding to SequencedComponentList values.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Parachor": {
+                    "title": "Parachor",
+                    "description": "Array of parachor values corresponding to SequencedComponentList values.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "SpecificGravity": {
+                    "title": "Specific Gravity",
+                    "description": "Array of specific gravity values corresponding to SequencedComponentList values.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "NormalBoilingPoint": {
+                    "title": "Normal Boiling Point",
+                    "description": "Array of normal boiling point values corresponding to SequencedComponentList values.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "MolecularWeight",
+                "CarbonContent",
+                "CriticalTemperature",
+                "CriticalPressure",
+                "CriticalVolume",
+                "CriticalCompressibilityFactor",
+                "AcentricFactor",
+                "Parachor",
+                "SpecificGravity",
+                "NormalBoilingPoint"
+            ],
+            "additionalProperties": false
+        },
+        "EquationOfState": {
+            "title": "EquationOfState",
+            "type": "object",
+            "properties": {
+                "NonDimensionalVolumeShift": {
+                    "title": "Non-Dimensional Volume Shift",
+                    "description": "Non-dimensional volume shift parameters used in the Peneloux et. al. volume correction within the cubic equation of state. For its usage, the component's molar volume accounting for the peneloux volume shift is equal to the component's molar volume without the peneloux volume shift MINUS the NonDimensionalVolumeShift times the b parameter.\nA typical non-dimenional volume shift for Methane is near 0.02 for SRK and -0.19 for PR (Peng Robinson). A typical non-dimensional volume shift for n-heptane is near 0.15 for SRK and 0.02 for PR.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "DimensionalVolumeShift": {
+                    "title": "Dimensional Volume Shift",
+                    "description": "Dimensional volume shift parameters used in the Peneloux et. al. volume correction within the cubic equation of state. For its usage, the component's molar volume accounting for the peneloux volume shift is equal to the component's molar volume without the peneloux volume shift MINUS the DimensionalVolumeShift.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "FormulationMethodID": {
+                    "title": "Formulation Method ID",
+                    "description": "Identifies the formulation method used in generating the numerical values assigned to the model property (e.g., Peng-Robinson).  There is only one FormulationMethodID identified for an equation of state within a compositional model.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidModelPropertyFormulationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "LiFactor": {
+                    "title": "Li Factor",
+                    "description": "A multiplication factor to correct the critical temperature calculated by algorithms within some simulator applications. There is only one Li Factor identified for an equation of state within a compositional model.",
+                    "type": "number"
+                },
+                "ComponentList": {
+                    "title": "Component List",
+                    "description": "Array of component names.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "NonDimensionalVolumeShift",
+                "DimensionalVolumeShift",
+                "FormulationMethodID",
+                "LiFactor",
+                "ComponentList"
+            ],
+            "additionalProperties": false
+        },
+        "WaterCompressibility": {
+            "title": "WaterCompressibility",
+            "type": "object",
+            "properties": {
+                "SurfaceDensity": {
+                    "title": "Surface Density",
+                    "description": "The surface mass density of water.",
+                    "type": "number"
+                },
+                "ReferencePressure": {
+                    "title": "Reference Pressure",
+                    "description": "This a pressure reference (e.g., Initial reservoir pressure) used in defining the water properties of the black oil fluid model.",
+                    "type": "number"
+                },
+                "FormationVolumeFactor": {
+                    "title": "Formation Volume Factor",
+                    "description": "This is the water formation volume factor values corresponding to the reference pressure.",
+                    "type": "number"
+                },
+                "Viscosity": {
+                    "title": "Viscosity",
+                    "description": "This is the water viscosity corresponding to the reference pressure.",
+                    "type": "number"
+                },
+                "Compressibility": {
+                    "title": "Compressibility",
+                    "description": "This is the average water compressibility corresponding to the reference pressure and used in calculating the formation volume factor at other pressures.",
+                    "type": "number"
+                },
+                "ViscosityCompressibility": {
+                    "title": "Viscosity Compressibility",
+                    "description": "This is the average water viscosity compressibility corresponding to the reference pressure andf used in calculating the viscosity at other pressures.",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "SurfaceDensity",
+                "ReferencePressure",
+                "FormationVolumeFactor",
+                "Viscosity",
+                "Compressibility",
+                "ViscosityCompressibility"
+            ],
+            "additionalProperties": false
+        },
+        "WaterTableItem": {
+            "title": "WaterTableItem",
+            "type": "object",
+            "properties": {
+                "SurfaceDensity": {
+                    "title": "Surface Density",
+                    "description": "Surface mass density of water",
+                    "type": "number"
+                },
+                "Pressure": {
+                    "title": "Pressure",
+                    "description": "This a pressure reference (e.g Initial reservoir pressure) used in defining the water properties of the black oil fluid model.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "FormationVolumeFactor": {
+                    "title": "Formation Volume Factor",
+                    "description": "This is the water formation volume factor values corresponding to the reference pressure.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Viscosity": {
+                    "title": "Viscosity",
+                    "description": "This is the water viscosity corresponding to the reference pressure.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "SurfaceDensity",
+                "Pressure",
+                "FormationVolumeFactor",
+                "Viscosity"
+            ],
+            "additionalProperties": false
+        },
+        "TemperatureAtDepth": {
+            "title": "TemperatureAtDepth",
+            "type": "object",
+            "properties": {
+                "TrueVerticalDepths": {
+                    "title": "True Vertical Depths",
+                    "description": "Array of True Vertical Depth (TVD) Values to be used as a reference for any other property mapped against depth. This column is required if any other property is populated.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "Temperatures": {
+                    "title": "Temperatures",
+                    "description": "Array of Temperature Values at a given Depth. The usage of Temperature against Depth is mutually exclusive with the usage of any other property.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "TrueVerticalDepths",
+                "Temperatures"
+            ],
+            "additionalProperties": false
+        },
+        "CompositionsAtDepthItem": {
+            "title": "CompositionsAtDepthItem",
+            "type": "object",
+            "properties": {
+                "CompositionTypeID": {
+                    "title": "Composition Type ID",
+                    "description": "Indicating that the table consists of phase component mole fractions versus depth. (Total, Liquid, Vapor, Aqueous, Residual Oil, Solid)",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-ReservoirComponentCompositionType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "TrueVerticalDepth": {
+                    "title": "True Vertical Depth",
+                    "description": "A depth (TVD) value at which the component mole fractions will be specified.",
+                    "type": "number"
+                },
+                "ComponentMoleFractions": {
+                    "title": "Component Mole Fractions",
+                    "description": "A list of component mole fractions at the designated depth corresponding to the appropriate component id (e.g. 0.0121, 0.0194, etc.). These values should sum up to one.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "CompositionTypeID",
+                "TrueVerticalDepth",
+                "ComponentMoleFractions"
+            ],
+            "additionalProperties": false
+        },
+        "PhaseProperty": {
+            "title": "PhaseProperty",
+            "type": "object",
+            "properties": {
+                "PhaseTypeID": {
+                    "title": "Phase Type ID",
+                    "description": "Indicating that the table consists of phase component mole fractions versus depth. (Total, Liquid, Vapor, Aqueous, Residual Oil, Solid)",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-ReservoirComponentCompositionType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                "MolePercent": {
+                    "title": "Mole Percent",
+                    "description": "The molar percentage of this phase.",
+                    "type": "number"
+                },
+                "MassPercent": {
+                    "title": "Mass Percent",
+                    "description": "The volume percentage of this phase.",
+                    "type": "number"
+                },
+                "VolumePercent": {
+                    "title": "Volume Percent",
+                    "description": "The volume percentage of this phase.",
+                    "type": "number"
+                },
+                "Density": {
+                    "title": "Density",
+                    "description": "The mass density of this phase.",
+                    "type": "number"
+                },
+                "MoleVolume": {
+                    "title": "Mole Volume",
+                    "description": "The mole volume of this phase.",
+                    "type": "number"
+                },
+                "Viscosity": {
+                    "title": "Viscosity",
+                    "description": "The viscosity of this phase.",
+                    "type": "number"
+                },
+                "MoleWeight": {
+                    "title": "Mole Weight",
+                    "description": "The molecular weight of this phase.",
+                    "type": "number"
+                },
+                "ZFactor": {
+                    "title": "Z Factor",
+                    "description": "The Z factor of this phase.",
+                    "type": "number"
+                },
+                "ComponentMoleFractions": {
+                    "title": "Component Mole Fractions",
+                    "description": "A list of component mole fractions corresponding to the SequencedComponentList (e.g. 0.0121, 0.0194, etc.). These values should sum up to one.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                },
+                "ComponentFugacities": {
+                    "title": "Component Fugacities",
+                    "description": "A list of calculated component fugacities corresponding to the SequencedComponentList. Fugacity is defined as the pressure an ideal gas would require to have the same chemical potential as a real gas at a given temperature.",
+                    "type": "array",
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            },
+            "required": [
+                "PhaseTypeID",
+                "MolePercent",
+                "MassPercent",
+                "VolumePercent",
+                "Density",
+                "MoleVolume",
+                "Viscosity",
+                "MoleWeight",
+                "ZFactor",
+                "ComponentMoleFractions",
+                "ComponentFugacities"
+            ],
+            "additionalProperties": false
+        },
+        "InterfacialTension": {
+            "title": "InterfacialTension",
+            "type": "object",
+            "properties": {
+                "PhaseIndex1": {
+                    "title": "Phase Index 1",
+                    "description": "Identifies the first PhaseIndex value within PhaseProperties that is used for this InterfacialTension calculation.",
+                    "type": "integer"
+                },
+                "PhaseIndex2": {
+                    "title": "Phase Index 2",
+                    "description": "Interfacial Tension value for the interface of the phases identified by PhaseIndex1 and PhaseIndex2.",
+                    "type": "integer"
+                },
+                "Value": {
+                    "title": "Value",
+                    "description": "Interfacial Tension value for the interface of the phases identified by PhaseIndex1 and PhaseIndex2.",
+                    "type": "number"
+                }
+            },
+            "required": [
+                "PhaseIndex1",
+                "PhaseIndex2",
+                "Value"
+            ],
+            "additionalProperties": false
+        },
+        "FlashValidationExample": {
+            "title": "FlashValidationExample",
+            "type": "object",
+            "properties": {
+                "Pressure": {
+                    "title": "Pressure",
+                    "description": "Defines the pressure used in this flash validation example.",
+                    "type": "number"
+                },
+                "Temperature": {
+                    "title": "Temperature",
+                    "description": "Defines the temperature used in this flash validation example.",
+                    "type": "number"
+                },
+                "PhaseProperties": {
+                    "title": "Phase Properties",
+                    "description": "Properties, such as relative amount, composition, density, viscosity, and z factor, for phases identified in this FlashValidationExample.  Each unique phase is identified by both its CompositionTypeID and its PhaseIndex.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/PhaseProperty"
+                    }
+                },
+                "InterfacialTensions": {
+                    "title": "Interfacial Tensions",
+                    "description": "Interfacial tensions between pairs of phases in this FlashValidationExample.  Each element specifies PhaseIndex1 and PhaseIndex2, the two PhaseIndex values within PhaseProperties that were used for each interfacial tension value.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/InterfacialTension"
+                    }
+                }
+            },
+            "required": [
+                "Pressure",
+                "Temperature",
+                "PhaseProperties",
+                "InterfacialTensions"
+            ],
+            "additionalProperties": false
+        }
+    }
+}

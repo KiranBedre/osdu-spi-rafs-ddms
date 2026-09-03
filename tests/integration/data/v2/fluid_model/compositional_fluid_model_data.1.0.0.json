@@ -1,0 +1,208 @@
+{
+  "columns": [
+    "FluidModelID",
+    "Meta",
+    "OilViscosityModel",
+    "OilViscosityModelTypeID",
+    "GasViscosityModel",
+    "GasViscosityModelTypeID",
+    "StandardCondition",
+    "StandardPressure",
+    "StandardTemperature",
+    "SequencedComponentList",
+    "BinaryInteractionCoefficient",
+    "ComponentProperties",
+    "EquationOfState",
+    "WaterCompressibility",
+    "WaterTable",
+    "TemperatureAtDepth",
+    "CompositionsAtDepth",
+    "FlashValidationExamples"
+  ],
+  "index": [
+    0
+  ],
+  "data": [
+    [
+      "{data_partition_id}:work-product-component--FluidModel:{record_id}:",
+      [],
+      {
+        "C1": 0.0,
+        "C2": 0.0,
+        "C3": 0.0,
+        "C4": 0.0,
+        "C5": 0.0,
+        "CriticalVolumeLBC": [
+          0.0,
+          0.0
+        ]
+      },
+      "{data_partition_id}:reference-data--ViscosityModelType:FrictionTheory:",
+      {
+        "C1": 0.0,
+        "C2": 0.0,
+        "C3": 0.0,
+        "C4": 0.0,
+        "C5": 0.0,
+        "CriticalVolumeLBC": [
+          0.0,
+          0.0
+        ]
+      },
+      "{data_partition_id}:reference-data--ViscosityModelType:FrictionTheory:",
+      {
+        "Pressure": 1.0,
+        "Temperature": 15.0,
+        "IsStandardConditions": false,
+        "NonStandardConditionsReference": "string"
+      },
+      0.0,
+      0.0,
+      [
+        "string",
+        "string2"
+      ],
+      {
+        "SequencedComponentList": [
+          "string",
+          "string2"
+        ],
+        "Elements": [
+          0.0
+        ]
+      },
+      {
+        "MolecularWeight": [
+          0.0,
+          0.0
+        ],
+        "CarbonContent": [
+          0.0,
+          0.0
+        ],
+        "CriticalTemperature": [
+          0.0,
+          0.0
+        ],
+        "CriticalPressure": [
+          0.0,
+          0.0
+        ],
+        "CriticalVolume": [
+          0.0,
+          0.0
+        ],
+        "CriticalCompressibilityFactor": [
+          0.0,
+          0.0
+        ],
+        "AcentricFactor": [
+          0.0,
+          0.0
+        ],
+        "Parachor": [
+          0.0,
+          0.0
+        ],
+        "SpecificGravity": [
+          0.0,
+          0.0
+        ],
+        "NormalBoilingPoint": [
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "NonDimensionalVolumeShift": [
+          0.0,
+          0.0
+        ],
+        "DimensionalVolumeShift": [
+          0.0,
+          0.0
+        ],
+        "FormulationMethodID": "{data_partition_id}:reference-data--FluidModelPropertyFormulationMethod:Compositional.PengRobinson:",
+        "LiFactor": 0.0,
+        "ComponentList": [
+          "string",
+          "string2"
+        ]
+      },
+      {
+        "SurfaceDensity": 0.0,
+        "ReferencePressure": 0.0,
+        "FormationVolumeFactor": 0.0,
+        "Viscosity": 0.0,
+        "Compressibility": 0.0,
+        "ViscosityCompressibility": 0.0
+      },
+      [
+        {
+          "SurfaceDensity": 0.0,
+          "Pressure": [
+            0.0
+          ],
+          "FormationVolumeFactor": [
+            0.0
+          ],
+          "Viscosity": [
+            0.0
+          ]
+        }
+      ],
+      {
+        "TrueVerticalDepths": [
+          0.0
+        ],
+        "Temperatures": [
+          0.0
+        ]
+      },
+      [
+        {
+          "CompositionTypeID": "{data_partition_id}:reference-data--ReservoirComponentCompositionType:Solid:",
+          "TrueVerticalDepth": 0.0,
+          "ComponentMoleFractions": [
+            1.0,
+            1.0
+          ]
+        }
+      ],
+      [
+        {
+          "Pressure": 0.0,
+          "Temperature": 0.0,
+          "PhaseProperties": [
+            {
+              "PhaseTypeID": "{data_partition_id}:reference-data--ReservoirComponentCompositionType:Solid:",
+              "MolePercent": 100.0,
+              "MassPercent": 100.0,
+              "VolumePercent": 100.0,
+              "Density": 0.0,
+              "MoleVolume": 0.0,
+              "Viscosity": 0.0,
+              "MoleWeight": 0.0,
+              "ZFactor": 0.0,
+              "ComponentMoleFractions": [
+                1.0,
+                1.0
+              ],
+              "ComponentFugacities": [
+                0.0,
+                0.0
+              ]
+            }
+          ],
+          "InterfacialTensions": [
+            {
+              "PhaseIndex1": 0,
+              "PhaseIndex2": 0,
+              "Value": 0.0
+            }
+          ]
+        }
+      ]
+    ]
+  ]
+}

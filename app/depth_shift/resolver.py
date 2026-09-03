@@ -24,6 +24,7 @@ from httpx import HTTPStatusError
 from starlette import status
 
 from app.api.routes.utils.records import find_dataset_id, get_id
+from app.core.http_status import HTTP_422_UNPROCESSABLE
 from app.depth_shift.calculator import validate_shift_values
 from app.models.schemas.depth_shift_query import DepthShiftQueryParams
 from app.resources.paths import DEPTH_SHIFT_STR
@@ -90,12 +91,12 @@ class DepthShiftResolver(object):  # noqa: WPS306
 
         if not found_ids:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail="No DefinitiveDepthShift found in any sample record.",
             )
         if len(found_ids) > 1:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail="Samples reference multiple different definitive depth shifts.",
             )
         return found_ids.pop()
@@ -142,7 +143,7 @@ class DepthShiftResolver(object):  # noqa: WPS306
         df = pd.read_parquet(io.BytesIO(parquet_bytes))
         if len(df) != 1:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=(
                     "CoreToLog content for DepthShift WPC {0} must contain exactly 1 row,"
                     + " but {1} rows were found. Each DepthShift WPC must reference a single CoreToLog record."
@@ -278,7 +279,7 @@ class DepthShiftResolver(object):  # noqa: WPS306
             validate_shift_values(shift_set)
         except ValueError as exc:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=str(exc),
             ) from exc
         return shift_set
