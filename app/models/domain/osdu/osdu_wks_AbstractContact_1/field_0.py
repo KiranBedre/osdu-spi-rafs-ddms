@@ -16,25 +16,22 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:work-product-component--MultiStageSeparatorTest:1.0.0
 #   timestamp: 2023-04-11T05:01:11+00:00
 
-from __future__ import annotations
 
-from typing import Optional
+from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
     RoleTypeID: Optional[
-        constr(
-            regex=r'^[\w\-\.]+:reference-data\-\-ContactRoleType:[\w\-\.\:\%]+:[0-9]*$'
-        )
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:reference-data\-\-ContactRoleType:[\w\-\.\:\%]+:[0-9]*$')]
     ] = Field(
         None,
         description='The identifier of a reference value for the role of the contact within the associated organisation, such as Account owner, Sales Representative, Technical Support, Project Manager, Party Chief, Client Representative, Senior Observer.',
         title='Role Type ID',
     )
     OrganisationID: Optional[
-        constr(regex=r'^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$')
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$')]
     ] = Field(
         None,
         description='Reference to the company the contact is associated with.',
@@ -46,13 +43,13 @@ class Field0(BaseModel):
     PhoneNumber: Optional[str] = Field(
         None,
         description='Contact phone number. Property may be left empty where it is inappropriate to provide personally identifiable information.',
-        example='1-555-281-5555',
+        json_schema_extra={"example": '1-555-281-5555'},
         title='Phone Number',
     )
     EmailAddress: Optional[str] = Field(
         None,
         description='Contact email address. Property may be left empty where it is inappropriate to provide personally identifiable information.',
-        example='support@company.com',
+        json_schema_extra={"example": 'support@company.com'},
         title='Email Address',
     )
     Name: Optional[str] = Field(

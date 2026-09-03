@@ -3,6 +3,14 @@ variables:
   GC_INT_TEST_TYPE: python
   GC_SUPPORTED_PLATFORM: "linux/amd64"
 
+gc-helm-charts-gitlab:
+  # Not allowed to fail the pipeline: .commits_behind_main_check (shared
+  # ci-cd-pipelines) always compares against CI_DEFAULT_BRANCH (main)
+  # instead of the MR's real target, so it false-positives on any MR
+  # targeting a long-lived branch like release/0.30. See job 4563892
+  # on pipeline 387888 (MR !745, target release/0.30).
+  allow_failure: true
+
 gc-containerize-gitlab:
   variables:
     BUILD_PATH: "./devops/gc/Dockerfile"

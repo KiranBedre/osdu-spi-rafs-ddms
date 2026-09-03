@@ -104,7 +104,7 @@ def with_patched_storage_created_200(storage_method, osdu_record):
             storage_record_service_mock,
             "query_records",
             return_value={
-                "records": [OSDU_GENERIC_RECORD.dict()],
+                "records": [OSDU_GENERIC_RECORD.model_dump()],
                 "invalidRecords": [],
                 "retryRecords": [],
             },
@@ -148,7 +148,7 @@ def with_patched_storage_raises_40x(storage_method, api_status_code):
 @pytest.fixture
 def with_patched_storage_get_success_200(storage_method, osdu_record):
     """Patch storage to 200 success."""
-    with patch.object(storage_record_service_mock, storage_method, return_value=osdu_record):
+    with patch.object(storage_record_service_mock, storage_method, return_value=osdu_record.model_dump()):
         yield
 
 
@@ -444,7 +444,7 @@ async def test_delete_record_not_found(
     ],
 )
 async def test_post_record_no_kind(path):
-    osdu_generic_record = OSDU_GENERIC_RECORD.dict()
+    osdu_generic_record = OSDU_GENERIC_RECORD.model_dump()
     osdu_generic_record.pop("kind")
 
     with storage_override():
@@ -532,7 +532,7 @@ async def test_post_record_invalid_payload_type(path):
             "upsert_records",
             f"{API_VERSION_V2}/masterdata",
             storage_mock_objects.GENERIC_FACILITY_RECORD,
-            storage_mock_objects.GENERIC_FACILITY_RECORD.schema(),
+            storage_mock_objects.GENERIC_FACILITY_RECORD.model_json_schema(),
         ),
         (
             "upsert_records",
@@ -567,13 +567,13 @@ async def test_post_record_success_with_jsonschema(
             response = await client.post(
                 f"/api/os-rafs-ddms/{path}",
                 headers=TEST_HEADERS,
-                json=[osdu_record.dict(exclude_none=True)],
+                json=[osdu_record.model_dump(exclude_none=True)],
             )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == EXPECTED_200_CREATED_RESPONSE
     storage_record_service_mock.upsert_records.assert_called_once_with(
-        [osdu_record.dict(exclude_none=True)],
+        [osdu_record.model_dump(exclude_none=True)],
     )
 
 
@@ -605,7 +605,7 @@ async def test_post_samplesanalysis_with_missing_reference(
             response = await client.post(
                 f"/api/os-rafs-ddms/{path}",
                 headers=TEST_HEADERS,
-                json=[osdu_record.dict(exclude_none=True)],
+                json=[osdu_record.model_dump(exclude_none=True)],
             )
 
     title = "Request can't be processed due to missing referenced records."
@@ -649,13 +649,13 @@ async def test_post_samplesanalysis_success(
             response = await client.post(
                 f"/api/os-rafs-ddms/{path}",
                 headers=TEST_HEADERS,
-                json=[osdu_record.dict(exclude_none=True)],
+                json=[osdu_record.model_dump(exclude_none=True)],
             )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == EXPECTED_200_CREATED_RESPONSE
     storage_record_service_mock.upsert_records.assert_called_once_with(
-        [osdu_record.dict(exclude_none=True)],
+        [osdu_record.model_dump(exclude_none=True)],
     )
 
 
@@ -723,7 +723,7 @@ async def test_post_record_no_id(
     with_patched_storage_created_200,
     with_patched_schema_validate_success,
 ):
-    osdu_record_json = osdu_record.dict(
+    osdu_record_json = osdu_record.model_dump(
         exclude={"id"},
         exclude_none=True,
     )
@@ -824,7 +824,7 @@ async def test_get_record_success(
             response = await client.get(f"/api/os-rafs-ddms/{path}/{record_id}", headers=TEST_HEADERS)
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == osdu_record.dict()
+    assert response.json() == osdu_record.model_dump()
     storage_record_service_mock.get_record.assert_called_once_with(record_id)
 
 
@@ -916,7 +916,7 @@ async def test_get_record_version_success(
             )
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == osdu_record.dict()
+    assert response.json() == osdu_record.model_dump()
     storage_record_service_mock.get_record.assert_called_once_with(record_id, test_version)
 
 
@@ -1098,7 +1098,7 @@ async def test_get_record_auth_errors(
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
         response = await client.get(f"/api/os-rafs-ddms/{path}", headers=TEST_HEADERS_NO_AUTH)
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 @pytest.mark.asyncio
@@ -1168,7 +1168,7 @@ async def test_delete_record_auth_errors(
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
         response = await client.delete(f"/api/os-rafs-ddms/{path}", headers=TEST_HEADERS_NO_AUTH)
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 @pytest.mark.asyncio
@@ -1256,7 +1256,7 @@ async def test_post_record_auth_errors_from_storage(
             response = await client.post(
                 f"/api/os-rafs-ddms/{path}",
                 headers=TEST_HEADERS,
-                json=[osdu_record.dict(exclude_none=True)],
+                json=[osdu_record.model_dump(exclude_none=True)],
             )
 
     assert response.status_code == api_status_code
@@ -1308,10 +1308,10 @@ async def test_post_record_auth_errors(
         response = await client.post(
             f"/api/os-rafs-ddms/{path}",
             headers=TEST_HEADERS_NO_AUTH,
-            json=[osdu_record.dict(exclude_none=True)],
+            json=[osdu_record.model_dump(exclude_none=True)],
         )
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 @pytest.mark.asyncio
@@ -1339,10 +1339,10 @@ async def test_get_record_wrong_id_pattern(endpoint, record_id):
 @pytest.mark.parametrize(
     "endpoint,manifest",
     [
-        (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
-        (storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
-        (storage_mock_objects.FLUID_MODEL_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
-        (storage_mock_objects.MASTER_DATA_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.dict()),
+        (storage_mock_objects.SAMPLESANALYSES_REPORT_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.model_dump()),
+        (storage_mock_objects.SAMPLESANALYSIS_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.model_dump()),
+        (storage_mock_objects.FLUID_MODEL_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.model_dump()),
+        (storage_mock_objects.MASTER_DATA_ENDPOINT_PATH_V2, OSDU_GENERIC_RECORD.model_dump()),
     ],
 )
 async def test_post_record_wrong_kind(endpoint, manifest):
@@ -1384,7 +1384,7 @@ async def test_post_record_wrong_kind(endpoint, manifest):
     ],
 )
 async def test_post_record_new_semver_passes_kind_validation(endpoint, osdu_record, schema, new_version):
-    record_dict = osdu_record.dict(exclude_none=True)
+    record_dict = osdu_record.model_dump(exclude_none=True)
     kind_base = ":".join(record_dict["kind"].split(":")[:3])
     record_dict["kind"] = f"{kind_base}:{new_version}"
 
@@ -1477,7 +1477,7 @@ async def test_delete_record_wrong_id_pattern(endpoint, record_id):
 async def test_post_record_invalid_field_type_jsonschema(
     path, osdu_record, field, schema, with_patched_schema_get_success
 ):
-    osdu_record_wrong_field_type = osdu_record.dict(exclude_none=True)
+    osdu_record_wrong_field_type = osdu_record.model_dump(exclude_none=True)
     osdu_record_wrong_field_type.update(
         {
             "data": {

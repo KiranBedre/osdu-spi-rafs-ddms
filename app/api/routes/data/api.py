@@ -13,8 +13,9 @@
 #  limitations under the License.
 
 import io
+import types
 import uuid
-from typing import List, Optional
+from typing import List, Optional, Union, get_args, get_origin
 
 import pandas as pd
 import pyarrow
@@ -75,6 +76,31 @@ def _normalize_nan_to_none(df: pd.DataFrame) -> None:
     df[obj_cols] = df[obj_cols].where(df[obj_cols].notna(), None)
 
 
+def _unwrap_optional(annotation):
+    """Return the inner type of Optional[T] (Union[T, None] or T | None); preserve genuine multi-member unions.
+
+    Only unwraps when NoneType is present and exactly one non-None member remains, so a
+    real union like Union[str, int] is returned unchanged rather than collapsed to `str`.
+    """
+    is_union = get_origin(annotation) is Union or isinstance(annotation, types.UnionType)
+    if not is_union:
+        return annotation
+    args = get_args(annotation)
+    if type(None) not in args:  # noqa: WPS516, E721
+        return annotation
+    non_none = [arg for arg in args if arg is not type(None)]  # noqa: WPS516, E721
+    return non_none[0] if len(non_none) == 1 else annotation
+
+
+def _str_field_names(model: type) -> List[str]:
+    """Return model field names annotated as str (including Optional[str])."""
+    return [
+        field_name
+        for field_name, field_info in model.model_fields.items()
+        if _unwrap_optional(field_info.annotation) is str
+    ]
+
+
 def _cast_float_columns(df: pd.DataFrame, model: type) -> None:
     """Cast DataFrame columns to float64 for fields annotated as float in the model.
 
@@ -82,9 +108,40 @@ def _cast_float_columns(df: pd.DataFrame, model: type) -> None:
     so float fields sent as 2.0 are stored as integers in parquet and returned
     as 2 on GET. This corrects the dtype before parquet storage.
     """
-    for field_name, field in model.__fields__.items():
-        if field.type_ is float and field_name in df.columns:
+    for field_name, field_info in model.model_fields.items():
+        annotation = _unwrap_optional(field_info.annotation)
+        if annotation is float and field_name in df.columns:
             df[field_name] = df[field_name].astype(float)
+
+
+def _format_numeric_as_str(numeric_value):
+    """Render a numeric scalar as str without forcing whole numbers into '<n>.0' form."""
+    if pd.isna(numeric_value):
+        return numeric_value
+    return str(int(numeric_value)) if float(numeric_value).is_integer() else str(numeric_value)
+
+
+def _cast_str_columns(df: pd.DataFrame, model: type) -> bool:
+    """Cast numeric DataFrame columns back to str for fields annotated as str.
+
+    Backstop for input that bypasses the `pd.read_json` dtype hint in
+    `_read_dataframe` (e.g. a parquet upload with a numeric-typed column for
+    a str field). Pydantic v2 rejects integers for str fields (unlike v1,
+    which coerced silently), and a naive `astype(str)` would render a
+    whole-number float like 1.0 as "1.0" instead of "1".
+
+    :return: True if any column was coerced, signalling that parquet bytes
+        derived from this DataFrame before the call are now stale.
+    """
+    changed = False
+    for field_name in _str_field_names(model):
+        if field_name not in df.columns:
+            continue
+        col = df[field_name]
+        if pd.api.types.is_numeric_dtype(col):
+            df[field_name] = col.map(_format_numeric_as_str)
+            changed = True
+    return changed
 
 
 class BaseDataView(object):
@@ -302,7 +359,7 @@ class BaseDataView(object):
 
         if "validation error" in error_msg and "OrientSplit" in error_msg:
             required_keys = ["columns", "index", "data"]
-            missing_fields = [f"'{key}'" for key in required_keys if f"{key}\n  field required" in error_msg]
+            missing_fields = [f"'{key}'" for key in required_keys if f"{key}\n  field required" in error_msg.lower()]
 
             if missing_fields:
                 fields_str = ", ".join(missing_fields)
@@ -333,7 +390,9 @@ class BaseDataView(object):
 
         For JSON input, raw_parquet_bytes is None and the caller must convert df
         to parquet. For parquet input, raw_parquet_bytes holds the original bytes
-        and df is a JSON-round-tripped copy used only for validation.
+        and df is read directly; pydantic v2 validates raw parquet cell types
+        (numpy arrays for list fields, datetime.date) without the JSON
+        round-trip that pydantic v1 required.
 
         :param request: request object
         :type request: Request
@@ -347,11 +406,14 @@ class BaseDataView(object):
                 raw_parquet = await request.body()
                 logger.debug(pd.get_option("io.parquet.engine"))
                 df = pd.read_parquet(io.BytesIO(raw_parquet))
-                # workaround to pass pandera validation
-                # TODO remove when migration to pyarrow validation is done
-                df = pd.read_json(io.StringIO(df.to_json(orient="split")), orient="split")
                 return df, raw_parquet
             validated_json, orient = await get_validated_bulk_data_json(request)
+            # No str-column dtype hint here: pandas' "string" dtype silently
+            # stringifies non-scalar values (e.g. a list sent for a str field)
+            # via str(), masking genuine type errors instead of letting them
+            # reach pydantic. Numeric-looking strings misread as int64/float64
+            # are corrected afterwards by the caller's _cast_str_columns(),
+            # which only touches genuinely numeric-dtype columns.
             df = pd.read_json(io.StringIO(validated_json), orient=orient)
             _normalize_nan_to_none(df)
             return df, None
@@ -384,6 +446,23 @@ class BaseDataView(object):
             self._handle_errors(
                 {"invalid_value": [{column_name: str(sid)} for sid in mismatched]},
             )
+
+    @staticmethod
+    def _regenerate_parquet_file(df: pd.DataFrame, model: type, parquet_file: Optional[bytes]) -> bytes:
+        """Build parquet bytes from `df` for storage, casting float/str columns first if needed.
+
+        :raises exceptions.InvalidDatasetException: when conversion to parquet fails
+        """
+        try:
+            if not parquet_file:
+                _cast_float_columns(df, model)
+                _cast_str_columns(df, model)
+            logger.debug(f"Dataset info: {df.size} elements; {df.columns}")
+            return df.to_parquet(index=False)
+        except Exception as exc:  # noqa: B902
+            reason = f"Parquet conversion error: {exc}"
+            logger.debug(reason)
+            raise exceptions.InvalidDatasetException(detail=reason)
 
     @with_gc_collect
     async def _get_validated_payload(
@@ -419,6 +498,10 @@ class BaseDataView(object):
         df, parquet_file = await self._read_dataframe(request, mime_type)
         logger.info(f"Data has been read from {mime_type} format")
 
+        # Cast numeric-looking str columns before validation: pydantic v2 rejects
+        # integers for str fields; pd.read_json converts "1" → int64.
+        str_columns_changed = _cast_str_columns(df, model)
+
         # Use bulk_mode for relaxed validation: allows NaN in optional object fields
         # This handles DataFrame column alignment constraint in bulk ingestion
         errors = await data_validator.validate(df, bulk_mode=True)
@@ -428,15 +511,12 @@ class BaseDataView(object):
         if record_id:
             self._validate_record_id_column(df, record_id, self._record_id_column)
 
-        if not parquet_file:
-            try:
-                _cast_float_columns(df, model)
-                logger.debug(f"Dataset info: {df.size} elements; {df.columns}")
-                parquet_file = df.to_parquet(index=False)
-            except Exception as exc:  # noqa: B902
-                reason = f"Parquet conversion error: {exc}"
-                logger.debug(reason)
-                raise exceptions.InvalidDatasetException(detail=reason)
+        # Regenerate parquet bytes whenever coercion touched the DataFrame, so stored
+        # data matches what was validated. Otherwise a parquet upload with a numeric
+        # column for a str field would validate against the coerced df but persist
+        # with its original (uncoerced) bytes, and disagree with the schema on GET.
+        if not parquet_file or str_columns_changed:
+            parquet_file = self._regenerate_parquet_file(df, model, parquet_file)
         del df
         return parquet_file
 

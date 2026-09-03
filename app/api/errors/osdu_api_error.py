@@ -51,17 +51,17 @@ def format_request_exc(exc: HTTPError) -> dict:
         exc_message = _unwrap_osdu_error(json.loads(exc.response.text))
         if not isinstance(exc_message, dict):
             raise TypeError("Response is not a JSON object")
-        formatted_exc = OsduApiErrorResponse.construct(
+        formatted_exc = OsduApiErrorResponse.model_construct(
             code=exc_message.get(ERROR_FIELD_CODE) or exc.response.status_code,
             reason=exc_message.get(ERROR_FIELD_REASON) or exc.response.reason,
             message=exc_message.get(ERROR_FIELD_MESSAGE) or exc.response.text,
-        ).dict()
+        ).model_dump()
     except (TypeError, json.JSONDecodeError):
-        formatted_exc = OsduApiErrorResponse.construct(
+        formatted_exc = OsduApiErrorResponse.model_construct(
             code=exc.response.status_code,
             reason=exc.response.reason,
             message=exc.response.text,
-        ).dict()
+        ).model_dump()
     return transform_to_human_readable(formatted_exc)
 
 
@@ -86,17 +86,17 @@ def format_exc(exc: HTTPStatusError) -> dict:
         exc_message = _unwrap_osdu_error(json.loads(exc.response.text))
         if not isinstance(exc_message, dict):
             raise TypeError("Response is not a JSON object")
-        formatted_exc = OsduApiErrorResponse.construct(
+        formatted_exc = OsduApiErrorResponse.model_construct(
             code=exc_message.get(ERROR_FIELD_CODE) or exc.response.status_code,
             reason=exc_message.get(ERROR_FIELD_REASON) or exc.response.reason_phrase,
             message=exc_message.get(ERROR_FIELD_MESSAGE) or exc.response.text,
-        ).dict()
+        ).model_dump()
     except (TypeError, json.JSONDecodeError):
-        formatted_exc = OsduApiErrorResponse.construct(
+        formatted_exc = OsduApiErrorResponse.model_construct(
             code=exc.response.status_code,
             reason=exc.response.reason_phrase,
             message=exc.response.text,
-        ).dict()
+        ).model_dump()
     return transform_to_human_readable(formatted_exc)
 
 
@@ -139,6 +139,6 @@ async def osdu_api_custom_exc_handler(  # noqa: ASYNC910, ASYNC124
             f"OSDU API custom exception: {exc.status_code} - {exc.detail}",
         )
     return JSONResponse(  # noqa: ASYNC910
-        OsduApiErrorResponse.construct(**error_kwargs).dict(),
+        OsduApiErrorResponse.model_construct(**error_kwargs).model_dump(),
         status_code=exc.status_code,
     )

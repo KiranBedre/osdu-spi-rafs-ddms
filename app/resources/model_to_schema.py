@@ -30,7 +30,7 @@ def _deep_merge_dicts(first_dict: Dict[str, Any], second_dict: Dict[str, Any]) -
     return merged
 
 
-def _normalize_schema(node: Any) -> Any:  # noqa: WPS231, CCR001
+def _normalize_schema(node: Any) -> Any:  # noqa: WPS231, CCR001, WPS210
     """
     Recursively normalize a JSON schema node:
     - Resolve anyOf/oneOf/allOf by merging branches.
@@ -47,8 +47,14 @@ def _normalize_schema(node: Any) -> Any:  # noqa: WPS231, CCR001
     # 1) Handle combiners at this level: anyOf / oneOf / allOf
     for combiner in ("anyOf", "oneOf", "allOf"):
         if combiner in node:
+            variants = node[combiner]  # noqa: WPS529
+            # pydantic v2 encodes Optional[T] as anyOf: [T-schema, {type: null}].
+            # Filter out null-only branches so Optional[str] resolves to str, not null.
+            non_null = [variant for variant in variants if variant != {"type": "null"}]
+            if non_null:
+                variants = non_null
             merged: Dict[str, Any] = {}
-            for variant in node[combiner]:  # noqa: WPS529
+            for variant in variants:  # noqa: WPS529
                 normalized_variant = _normalize_schema(variant)
                 merged = _deep_merge_dicts(merged, normalized_variant)
             # After merging, treat as canonical schema for this node
@@ -84,6 +90,6 @@ def build_normalized_schema_from_model(model: BaseModel) -> Dict[str, Any]:
     - anyOf/oneOf/allOf merged
     - type inferred when possible
     """
-    raw_schema = model.schema()
+    raw_schema = model.model_json_schema()
     expanded = jsonref.replace_refs(copy.deepcopy(raw_schema))
     return _normalize_schema(expanded)

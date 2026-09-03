@@ -1,3 +1,9 @@
+aws-update-tf:
+  # Not allowed to fail the pipeline: this job fails due to broken AWS
+  # SSM/Secrets Manager lookups in the shared CI environment, unrelated
+  # to the code under review. See pipeline 387670, job 4560723.
+  allow_failure: true
+
 aws_test_py:
   extends:
     - .aws

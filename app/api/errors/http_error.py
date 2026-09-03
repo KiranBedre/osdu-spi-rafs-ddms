@@ -24,6 +24,6 @@ async def http_error_handler(  # noqa: ASYNC910, ASYNC124
     exc: HTTPException,
 ) -> JSONResponse:
     return JSONResponse(  # noqa: ASYNC910
-        BadRequestResponse.construct(code=exc.status_code, reason=exc.detail).dict(),
+        BadRequestResponse.model_construct(code=exc.status_code, reason=exc.detail).model_dump(),
         status_code=exc.status_code,
     )

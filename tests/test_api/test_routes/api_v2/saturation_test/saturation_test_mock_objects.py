@@ -26,7 +26,7 @@ TEST_DDMS_URN = f"urn://rafs-v2/saturationtestdata/partition:work-product-compon
 TEST_SCHEMA_VERSION = "1.0.0"
 TEST_DDMS_URN_WITH_VERSION = f"{TEST_DDMS_URN}/{TEST_SCHEMA_VERSION}"
 RECORD_DATA = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
     **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN],
@@ -34,7 +34,7 @@ RECORD_DATA = {
     },
 }
 RECORD_DATA_WITH_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
     **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION],
@@ -42,7 +42,7 @@ RECORD_DATA_WITH_SCHEMA_VERSION = {
     },
 }
 RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
     **{
         "data": {
             "DDMSDatasets": [f"{TEST_DDMS_URN}/2.0.0"],
@@ -83,7 +83,7 @@ TEST_FILTERED_DATA = {
     "data": [
         [
             "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
-            "1",
+            "SAT-1",
             "opendes:master-data--Sample:Example_Sample:",
         ],
     ],

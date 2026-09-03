@@ -16,7 +16,6 @@
 #   filename:  api/schema-service/v1/schema/osdu:wks:master-data--Sample:2.0.0
 #   timestamp: 2023-12-12T17:04:26+00:00
 
-from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
@@ -25,12 +24,12 @@ class Field0(BaseModel):
     Temperature: float = Field(
         ...,
         description="The recorded temperature condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit K (Kelvin).",
-        example="15 degC",
+        json_schema_extra={"example": "15 degC"},
         title="Temperature",
     )
     Pressure: float = Field(
         ...,
         description="The recorded absolute pressure condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit Pa (Pascal).",
-        example="1 bar",
+        json_schema_extra={"example": "1 bar"},
         title="Pressure",
     )

@@ -24,6 +24,6 @@ async def unsupported_media_type_error_handler(  # noqa: ASYNC124
     exc: UnsupportedMediaTypeException,
 ) -> JSONResponse:
     return JSONResponse(  # noqa: ASYNC910
-        UnsupportedMediaTypeResponse(reason=exc.detail).dict(),
+        UnsupportedMediaTypeResponse(reason=exc.detail).model_dump(),
         status_code=exc.status_code,
     )

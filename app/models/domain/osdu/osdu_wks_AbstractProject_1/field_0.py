@@ -16,21 +16,18 @@
 #   filename:  api/schema-service/v1/schema/osdu:wks:master-data--SampleAcquisitionJob:1.0.0
 #   timestamp: 2023-12-12T16:53:25+00:00
 
-from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 from ..osdu_wks_AbstractAliasNames_1 import field_0
 
 
 class ProjectState(BaseModel):
     ProjectStateTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ProjectStateType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ProjectStateType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None, description="The Project life cycle state from planning to completion."
     )
@@ -48,12 +45,10 @@ class Contractor(BaseModel):
         description="Name of the team, unit, crew, party, or other subdivision of the Contractor that provided services.",
     )
     ContractorOrganisationID: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(None, description="Reference to a company that provided services.")
     ContractorTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ContractorType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ContractorType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The identifier of a reference value for the role of a contractor providing services, such as Recording, Line Clearing, Positioning, Data Processing.",
@@ -72,7 +67,7 @@ class FundsAuthorization(BaseModel):
         None, description="The date and time when the funds were approved."
     )
     CurrencyID: Optional[
-        constr(regex=r"^[\w\-\.]+:reference-data\-\-Currency:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-Currency:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(None, description="Type of currency for the authorized expenditure.")
 
 
@@ -81,13 +76,13 @@ class PersonnelItem(BaseModel):
         None, description="Name of an individual supporting the Project."
     )
     ProjectRoleID: Optional[
-        constr(regex=r"^[\w\-\.]+:reference-data\-\-ProjectRole:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ProjectRole:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The identifier of a reference value for the role of an individual supporting a Project, such as Project Manager, Party Chief, Client Representative, Senior Observer.",
     )
     CompanyOrganisationID: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(None, description="Reference to the company which employs Personnel.")
 
 
@@ -110,9 +105,7 @@ class ProjectSpecification(BaseModel):
         description="The date and time at which a ProjectSpecification becomes effective.",
     )
     UnitOfMeasureID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The unit for the quantity parameter if overriding the default for this ParameterType, like metre (m in SI units system) for quantity Length.",
@@ -122,15 +115,13 @@ class ProjectSpecification(BaseModel):
         description="The actual date and time value of the parameter.  ISO format permits specification of time or date only.",
     )
     ParameterTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ParameterType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ParameterType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(None, description="Parameter type of property or characteristic.")
 
 
 class Field0(BaseModel):
     Operator: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The organisation which controlled the conduct of the project.",
@@ -176,7 +167,7 @@ class Field0(BaseModel):
         description="DEPRECATED: please use data.NameAliases. The history of Project names, codes, and other business identifiers.",
     )
     ContractIDs: Optional[
-        List[constr(regex=r"^[\w\-\.]+:master-data\-\-Agreement:[\w\-\.\:\%]+:[0-9]*$")]
+        List[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Agreement:[\w\-\.\:\%]+:[0-9]*$")]]
     ] = Field(
         None,
         description="References to applicable agreements in external contract database system of record.",

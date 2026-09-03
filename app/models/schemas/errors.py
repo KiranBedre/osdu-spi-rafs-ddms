@@ -12,9 +12,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Optional
+from typing import Any, Optional
 
-from pydantic.main import BaseModel
+from pydantic import BaseModel
 from starlette import status
 
 from app.core.http_status import HTTP_422_UNPROCESSABLE
@@ -22,7 +22,7 @@ from app.core.http_status import HTTP_422_UNPROCESSABLE
 
 class BadRequestResponse(BaseModel):
     code: int = status.HTTP_400_BAD_REQUEST
-    reason: str
+    reason: Any
 
 
 class OsduApiErrorResponse(BadRequestResponse):
@@ -36,4 +36,4 @@ class UnsupportedMediaTypeResponse(BaseModel):
 
 class ValidationErrorResponse(BadRequestResponse):
     code: int = HTTP_422_UNPROCESSABLE
-    errors: Optional[dict]
+    errors: Optional[Any] = None

@@ -16,16 +16,15 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:master-data--Sample:1.0.0
 #   timestamp: 2023-10-24T20:27:08+00:00
 
-from __future__ import annotations
 
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
     ResourceHomeRegionID: Optional[
-        constr(regex=r"^[\w\-\.]+:reference-data\-\-OSDURegion:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-OSDURegion:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The name of the home [cloud environment] region for this OSDU resource object.",
@@ -33,9 +32,9 @@ class Field0(BaseModel):
     )
     ResourceHostRegionIDs: Optional[
         List[
-            constr(
-                regex=r"^[\w\-\.]+:reference-data\-\-OSDURegion:[\w\-\.\:\%]+:[0-9]*$"
-            )
+            Annotated[str, StringConstraints(
+                pattern=r"^[\w\-\.]+:reference-data\-\-OSDURegion:[\w\-\.\:\%]+:[0-9]*$"
+            )]
         ]
     ] = Field(
         None,
@@ -43,45 +42,35 @@ class Field0(BaseModel):
         title="Resource Host Region ID",
     )
     ResourceLifecycleStatus: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ResourceLifecycleStatus:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ResourceLifecycleStatus:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Describes the current Resource Lifecycle status.",
         title="Resource Lifecycle Status",
     )
     ResourceSecurityClassification: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ResourceSecurityClassification:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ResourceSecurityClassification:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Classifies the security level of the resource.",
         title="Resource Security Classification",
     )
     ResourceCurationStatus: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ResourceCurationStatus:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ResourceCurationStatus:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Describes the current Curation status.",
         title="Resource Curation Status",
     )
     ExistenceKind: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ExistenceKind:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ExistenceKind:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Where does this data resource sit in the cradle-to-grave span of its existence?",
         title="Existence Kind",
     )
     TechnicalAssuranceID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-TechnicalAssuranceType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-TechnicalAssuranceType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description='DEPRECATED: Describes a record\'s overall suitability for general business consumption based on data quality. Clarifications: Since Certified is the highest classification of suitable quality, any further change or versioning of a Certified record should be carefully considered and justified. If a Technical Assurance value is not populated then one can assume the data has not been evaluated or its quality is unknown (=Unevaluated). Technical Assurance values are not intended to be used for the identification of a single "preferred" or "definitive" record by comparison with other records.',

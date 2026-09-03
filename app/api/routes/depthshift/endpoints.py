@@ -18,11 +18,11 @@ from typing import Annotated, List, Optional
 import pandas as pd
 from fastapi import Body, Depends, HTTPException, Request
 from pydantic import BaseModel
-from starlette import status
 
 from app.api.dependencies.services import get_async_storage_service
 from app.api.routes.osdu.storage_records import BaseStorageRecordView
 from app.api.routes.v2.data.endpoints import DynamicContentTypeDataViewV2
+from app.core.http_status import HTTP_422_UNPROCESSABLE
 from app.depth_shift.calculator import validate_shift_values
 from app.models.schemas.osdu_storage import StorageUpsertResponse
 from app.resources.load_model_example import load_data_example
@@ -69,7 +69,7 @@ class DepthShiftDataViewV2(DynamicContentTypeDataViewV2):
         if len(df) == 1:
             return
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=HTTP_422_UNPROCESSABLE,
             detail=(
                 "CoreToLog content for DepthShift WPC {0} must contain exactly 1 row, "
                 "but {1} rows were found. Each DepthShift WPC must reference a single "
@@ -85,7 +85,7 @@ class DepthShiftDataViewV2(DynamicContentTypeDataViewV2):
             validate_shift_values(shift_set)
         except ValueError as exc:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=str(exc),
             ) from exc
 

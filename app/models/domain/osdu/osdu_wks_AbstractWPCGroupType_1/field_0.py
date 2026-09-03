@@ -16,33 +16,32 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:work-product-component--MultiStageSeparatorTest:1.0.0
 #   timestamp: 2023-04-11T05:01:11+00:00
 
-from __future__ import annotations
 
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 from ..osdu_wks_AbstractTechnicalAssurance_1 import field_0
 
 
 class Artefact(BaseModel):
     ResourceID: Optional[
-        constr(regex=r'^[\w\-\.]+:dataset\-\-[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$')
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:dataset\-\-[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$')]
     ] = Field(None, description='The SRN which identifies this OSDU Artefact resource.')
     ResourceKind: Optional[
-        constr(regex=r'^[\w\-\.]+:[\w\-\.]+:[\w\-\.]+:[0-9]+.[0-9]+.[0-9]+$')
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:[\w\-\.]+:[\w\-\.]+:[0-9]+.[0-9]+.[0-9]+$')]
     ] = Field(
         None,
         description='The kind or schema ID of the artefact. Resolvable with the Schema Service.',
     )
     RoleID: Optional[
-        constr(regex=r'^[\w\-\.]+:reference-data\-\-ArtefactRole:[\w\-\.\:\%]+:[0-9]*$')
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:reference-data\-\-ArtefactRole:[\w\-\.\:\%]+:[0-9]*$')]
     ] = Field(None, description="The SRN of this artefact's role.")
 
 
 class Field0(BaseModel):
     Datasets: Optional[
-        List[constr(regex=r'^[\w\-\.]+:dataset\-\-[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$')]
+        List[Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:dataset\-\-[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$')]]
     ] = Field(
         None,
         description='The record id, which identifies this OSDU File or dataset resource.',

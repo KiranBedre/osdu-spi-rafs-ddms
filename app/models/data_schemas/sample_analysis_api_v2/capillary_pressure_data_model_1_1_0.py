@@ -16,86 +16,75 @@
 #   filename:  capillary_pressure.1.1.0.json
 #   timestamp: 2026-04-15T20:29:32+00:00
 
-from __future__ import annotations
 
 from app.models.config import RafsBaseModel
 
 from datetime import date
-from typing import Literal
+from typing import Annotated, Literal, Optional
 
-from pydantic import Extra, Field, constr
+from pydantic import Field, StringConstraints
 
 
 class Meta(RafsBaseModel):
     kind: Literal["Unit"] = Field(
         "Unit",
-        const=True,
         description="The kind of reference, 'Unit' for FrameOfReferenceUOM.",
         title="UOM Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The unit symbol or name of the unit.",
-        example="ft[US]",
+        json_schema_extra={"example": "ft[US]"},
         title="UOM Unit Symbol",
     )
     persistableReference: str | None = Field(
         None,
         description="The self-contained, persistable reference string uniquely identifying the Unit.",
-        example='{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}',
+        json_schema_extra={"example": '{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}'},
         title="UOM Persistable Reference",
     )
-    unitOfMeasureID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    unitOfMeasureID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="SRN to unit of measure reference.",
-        example="namespace:reference-data--UnitOfMeasure:ftUS:",
+        json_schema_extra={"example": "namespace:reference-data--UnitOfMeasure:ftUS:"},
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides Unit context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["HorizontalDeflection.EastWest", "HorizontalDeflection.NorthSouth"],
+        json_schema_extra={"example": ["HorizontalDeflection.EastWest", "HorizontalDeflection.NorthSouth"]},
         title="UOM Property Names",
     )
 
 
+
+_MetaModel = Meta
 class Meta1(RafsBaseModel):
     kind: Literal["CRS"] = Field(
         "CRS",
-        const=True,
         description="The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
         title="CRS Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The name of the CRS.",
-        example="WGS 84 / UTM zone 15N",
+        json_schema_extra={"example": "WGS 84 / UTM zone 15N"},
         title="CRS Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying the CRS.",
-        example='{"authCode":{"auth":"EPSG","code":"32615"},"name":"WGS_1984_UTM_Zone_15N","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"WGS_1984_UTM_Zone_15N\\",GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Transverse_Mercator\\"],PARAMETER[\\"False_Easting\\",500000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-93.0],PARAMETER[\\"Scale_Factor\\",0.9996],PARAMETER[\\"Latitude_Of_Origin\\",0.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",32615]]"}',
+        json_schema_extra={"example": '{"authCode":{"auth":"EPSG","code":"32615"},"name":"WGS_1984_UTM_Zone_15N","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"WGS_1984_UTM_Zone_15N\\",GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Transverse_Mercator\\"],PARAMETER[\\"False_Easting\\",500000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-93.0],PARAMETER[\\"Scale_Factor\\",0.9996],PARAMETER[\\"Latitude_Of_Origin\\",0.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",32615]]"}'},
         title="CRS Persistable Reference",
     )
-    coordinateReferenceSystemID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    coordinateReferenceSystemID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="SRN to CRS reference.",
-        example="namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+        json_schema_extra={"example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:"},
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides CRS context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["KickOffPosition.X", "KickOffPosition.Y"],
+        json_schema_extra={"example": ["KickOffPosition.X", "KickOffPosition.Y"]},
         title="CRS Property Names",
     )
 
@@ -103,26 +92,25 @@ class Meta1(RafsBaseModel):
 class Meta2(RafsBaseModel):
     kind: Literal["DateTime"] = Field(
         "DateTime",
-        const=True,
         description="The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
         title="DateTime Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The name of the DateTime format and reference.",
-        example="UTC",
+        json_schema_extra={"example": "UTC"},
         title="DateTime Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying DateTime reference.",
-        example='{"format":"yyyy-MM-ddTHH:mm:ssZ","timeZone":"UTC","type":"DTM"}',
+        json_schema_extra={"example": '{"format":"yyyy-MM-ddTHH:mm:ssZ","timeZone":"UTC","type":"DTM"}'},
         title="DateTime Persistable Reference",
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides DateTime context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Acquisition.StartTime", "Acquisition.EndTime"],
+        json_schema_extra={"example": ["Acquisition.StartTime", "Acquisition.EndTime"]},
         title="DateTime Property Names",
     )
 
@@ -130,33 +118,30 @@ class Meta2(RafsBaseModel):
 class Meta3(RafsBaseModel):
     kind: Literal["AzimuthReference"] = Field(
         "AzimuthReference",
-        const=True,
         description="The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
         title="AzimuthReference Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The name of the CRS or the symbol/name of the unit.",
-        example="TrueNorth",
+        json_schema_extra={"example": "TrueNorth"},
         title="AzimuthReference Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying AzimuthReference.",
-        example='{"code":"TrueNorth","type":"AZR"}',
+        json_schema_extra={"example": '{"code":"TrueNorth","type":"AZR"}'},
         title="AzimuthReference Persistable Reference",
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides AzimuthReference context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Bearing"],
+        json_schema_extra={"example": ["Bearing"]},
         title="AzimuthReference Property Names",
     )
 
 
 class TransientDatum(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     ProductionProfile: float | None = Field(
         None,
@@ -176,76 +161,59 @@ class TransientDatum(RafsBaseModel):
 
 
 class Permeability(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: float | None = Field(
         None,
         description="The numeric value of this permeability measurement.",
         title="Value",
     )
-    PermeabilityMeasurementTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-PermeabilityMeasurementType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    PermeabilityMeasurementTypeID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-PermeabilityMeasurementType:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The OSDU reference-data ID corresponding to the type of permeability being measured.",
         title="Permeability Measurement Type ID",
     )
 
 
+
+_PermeabilityModel = Permeability
 class Porosity(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: float | None = Field(
         None,
         description="The numeric value of this porosity measurement.",
         title="Value",
     )
-    PorosityMeasurementTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-PorosityMeasurementType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    PorosityMeasurementTypeID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-PorosityMeasurementType:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The OSDU reference-data ID corresponding to the type of porosity being measured.",
         title="Porosity Measurement Type ID",
     )
 
 
+
+_PorosityModel = Porosity
 class Pressure(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: float | None = Field(
         None,
         description="The numeric value of this pressure measurement.",
         title="Value",
     )
-    PressureMeasurementTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-PressureMeasurementType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    PressureMeasurementTypeID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-PressureMeasurementType:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The OSDU reference-data ID corresponding to the type of pressure being measured.",
         title="Pressure Measurement Type ID",
     )
 
 
+
+_PressureModel = Pressure
 class Remarks(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     RemarkSequenceNumber: int | None = Field(
         None,
         description="A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
-        example=1,
+        json_schema_extra={"example": 1},
         title="Remark Sequence Number",
     )
     Remark: str | None = Field(
@@ -261,9 +229,9 @@ class Remarks(RafsBaseModel):
     )
 
 
+
+_RemarksModel = Remarks
 class CalculatedProperties(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     PoreThroatRadius: float | None = Field(
         None,
@@ -275,12 +243,7 @@ class CalculatedProperties(RafsBaseModel):
         description="This is the P50 (median) of the Pore Throat Radius distribution.",
         title="Pore Throat Median Radius",
     )
-    EndFaceEstimationMethodID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-EndFaceEstimationMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    EndFaceEstimationMethodID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-EndFaceEstimationMethod:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The method used to calculate the end face phase saturation, e.g. HasslerBrunner,\nForbes.",
         title="End Face Estimation Method ID",
@@ -332,26 +295,26 @@ class CalculatedProperties(RafsBaseModel):
     )
 
 
+
+_CalculatedPropertiesModel = CalculatedProperties
 class TestDatum(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     TransientData: list[TransientDatum] | None = Field(
         None,
         description="Object containing volume measurements over time for centrifuge and porous plate analyses.",
         title="Transient Data",
     )
-    Permeability: Permeability | None = Field(
+    Permeability: _PermeabilityModel | None = Field(
         None,
         description="Quantifies the ability for fluids or gas to flow through a sample.",
         title="Permeability",
     )
-    Porosity: Porosity | None = Field(
+    Porosity: _PorosityModel | None = Field(
         None,
         description="The amount of pore space relative to the volume of a sample.",
         title="Porosity",
     )
-    Pressure: Pressure | None = Field(
+    Pressure: _PressureModel | None = Field(
         None,
         description="The value and unit of measure of the pressure of the sample environment.",
         title="Pressure",
@@ -386,12 +349,12 @@ class TestDatum(RafsBaseModel):
         description="The volume and type of fluid injected into the sample for this step.  This volume is identical to the volume of fluid produced from the sample.",
         title="Phase Injected Volume",
     )
-    Remarks: Remarks | None = Field(
+    Remarks: _RemarksModel | None = Field(
         None,
         description="Additional notes or observations relevant to the specific test step.",
         title="Remarks",
     )
-    CalculatedProperties: CalculatedProperties | None = Field(
+    CalculatedProperties: _CalculatedPropertiesModel | None = Field(
         None,
         description="Object containing calculated properties such as averages, Jfunction, and height above free water level.",
         title="Calculated Properties",
@@ -414,8 +377,6 @@ class TestDatum(RafsBaseModel):
 
 
 class Endpoints(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     CapillaryPressureMax: float | None = Field(
         None,
@@ -464,9 +425,9 @@ class Endpoints(RafsBaseModel):
     )
 
 
+
+_EndpointsModel = Endpoints
 class ForcedImbibition(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     InitialWaterSaturation: float | None = Field(
         None,
@@ -478,17 +439,12 @@ class ForcedImbibition(RafsBaseModel):
         description="The permeability value acting as a reference for this experiment.",
         title="Test Data",
     )
-    Endpoints: Endpoints | None = Field(
+    Endpoints: _EndpointsModel | None = Field(
         None,
         description="The type of permeability measurement being used as a reference value for this experiment.",
         title="Endpoints",
     )
-    InjectionFluidID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SampleInjectionFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    InjectionFluidID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SampleInjectionFluidType:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The injection fluid used during this phase of the experiment.",
         title="Injection Fluid Type ID",
@@ -498,12 +454,7 @@ class ForcedImbibition(RafsBaseModel):
         description="The fraction of injection fluid imbibed spontaneously prior to forced injection.",
         title="Spontaneous Imbibition",
     )
-    WOGnCycleNotationID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-WOGnCycleNotation:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    WOGnCycleNotationID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-WOGnCycleNotation:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The WOGn notation description of this capillary pressure cycle.",
         title="Water Oil Gas Number ID",
@@ -513,26 +464,26 @@ class ForcedImbibition(RafsBaseModel):
     )
 
 
+
+_ForcedImbibitionModel = ForcedImbibition
 class TestDatum1(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     TransientData: list[TransientDatum] | None = Field(
         None,
         description="Object containing volume measurements over time for centrifuge and porous plate analyses.",
         title="Transient Data",
     )
-    Permeability: Permeability | None = Field(
+    Permeability: _PermeabilityModel | None = Field(
         None,
         description="Quantifies the ability for fluids or gas to flow through a sample.",
         title="Permeability",
     )
-    Porosity: Porosity | None = Field(
+    Porosity: _PorosityModel | None = Field(
         None,
         description="The amount of pore space relative to the volume of a sample.",
         title="Porosity",
     )
-    Pressure: Pressure | None = Field(
+    Pressure: _PressureModel | None = Field(
         None,
         description="The value and unit of measure of the pressure of the sample environment.",
         title="Pressure",
@@ -567,12 +518,12 @@ class TestDatum1(RafsBaseModel):
         description="The volume and type of fluid injected into the sample for this step.  This volume is identical to the volume of fluid produced from the sample.",
         title="Phase Injected Volume",
     )
-    Remarks: Remarks | None = Field(
+    Remarks: _RemarksModel | None = Field(
         None,
         description="Additional notes or observations relevant to the specific test step.",
         title="Remarks",
     )
-    CalculatedProperties: CalculatedProperties | None = Field(
+    CalculatedProperties: _CalculatedPropertiesModel | None = Field(
         None,
         description="Object containing calculated properties such as averages, Jfunction, and height above free water level.",
         title="Calculated Properties",
@@ -595,8 +546,6 @@ class TestDatum1(RafsBaseModel):
 
 
 class ForcedDrainage(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     InitialWaterSaturation: float | None = Field(
         None,
@@ -608,17 +557,12 @@ class ForcedDrainage(RafsBaseModel):
         description="The permeability value acting as a reference for this experiment.",
         title="Test Data",
     )
-    Endpoints: Endpoints | None = Field(
+    Endpoints: _EndpointsModel | None = Field(
         None,
         description="The type of permeability measurement being used as a reference value for this experiment.",
         title="Endpoints",
     )
-    InjectionFluidID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SampleInjectionFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    InjectionFluidID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SampleInjectionFluidType:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The injection fluid used during this phase of the experiment.",
         title="Injection Fluid Type ID",
@@ -628,12 +572,7 @@ class ForcedDrainage(RafsBaseModel):
         description="The fraction of injection fluid imbibed spontaneously prior to forced injection.",
         title="Spontaneous Imbibition",
     )
-    WOGnCycleNotationID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-WOGnCycleNotation:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    WOGnCycleNotationID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-WOGnCycleNotation:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The WOGn notation description of this capillary pressure cycle.",
         title="Water Oil Gas Number Cycle Notation ID",
@@ -643,20 +582,20 @@ class ForcedDrainage(RafsBaseModel):
     )
 
 
+
+_ForcedDrainageModel = ForcedDrainage
 class InitialConditions(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Pressure: float = Field(
         ...,
         description="The recorded absolute pressure condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit Pa (Pascal).",
-        example="1 bar",
+        json_schema_extra={"example": "1 bar"},
         title="Pressure",
     )
     Temperature: float = Field(
         ...,
         description="The recorded temperature condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit K (Kelvin).",
-        example="15 degC",
+        json_schema_extra={"example": "15 degC"},
         title="Temperature",
     )
     IsStandardConditions: bool | None = Field(
@@ -671,21 +610,16 @@ class InitialConditions(RafsBaseModel):
     )
 
 
+
+_InitialConditionsModel = InitialConditions
 class ReferencePermeabilityItem(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: float | None = Field(
         None,
         description="The permeability value acting as a reference for this experiment.",
         title="Value",
     )
-    PermeabilityMeasurementTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-PermeabilityMeasurementType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    PermeabilityMeasurementTypeID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-PermeabilityMeasurementType:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The type of permeability measurement being used as a reference value for this experiment.",
         title="Permeability Measurement Type ID",
@@ -693,52 +627,36 @@ class ReferencePermeabilityItem(RafsBaseModel):
 
 
 class CapillaryPressureModel110(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
-    SamplesAnalysisID: constr(
-        regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+    SamplesAnalysisID: Annotated[str, StringConstraints(pattern="^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ...,
         description="The OSDU Identifier for this SamplesAnalysis.",
         title="Sample Analysis ID",
     )
-    SampleID: constr(
-        regex=r"^[\w\-\.]+:master-data\-\-Sample:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+    SampleID: Annotated[str, StringConstraints(pattern="^[\w\-\.]+:master-data\-\-Sample:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ...,
         description="The OSDU Identifier for the Sample associated with this analysis.",
         title="Sample ID",
     )
-    Meta: list[Meta | Meta1 | Meta2 | Meta3] = Field(
-        ..., description="Object", example="", title="Meta"
+    Meta: list[_MetaModel | Meta1 | Meta2 | Meta3] = Field(
+        ..., description="Object", json_schema_extra={"example": ""}, title="Meta"
     )
-    SaturationProcessMethodID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SaturationProcessMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    SaturationProcessMethodID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SaturationProcessMethod:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="SaturationProcessMethod, intended to be paired with SampleAnalysisType for Capillary Pressure Subfamilies.  e.g. PrimaryDrainage, PrimaryImbibition, SecondaryDrainage, SecondaryImbibition, TertiaryDrainage.",
         title="Saturation Process Method ID",
     )
-    FluidSystemAnalysisTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-FluidSystemAnalysisType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    FluidSystemAnalysisTypeID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-FluidSystemAnalysisType:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="Identifier for the Fluid System (e.g. oil-brine) that is present in this sample.",
         title="Fluid System Analysis Type ID",
     )
-    ForcedImbibition: ForcedImbibition | None = Field(
+    ForcedImbibition: _ForcedImbibitionModel | None = Field(
         None,
         description="Array Object containing the test steps for this analysis.",
         title="Forced Imbibition",
     )
-    ForcedDrainage: ForcedDrainage | None = Field(
+    ForcedDrainage: _ForcedDrainageModel | None = Field(
         None,
         description="Array Object containing the test steps for this analysis.",
         title="Forced Drainage",
@@ -758,7 +676,7 @@ class CapillaryPressureModel110(RafsBaseModel):
         description="The concentration of salt within brine which may be called saturant or saturant brine.",
         title="Brine Salinity",
     )
-    InitialConditions: InitialConditions | None = Field(
+    InitialConditions: _InitialConditionsModel | None = Field(
         None,
         description="The pressure and temperature condition of the sample when the secondary phase is introduced.",
         title="Initial Conditions",
@@ -768,12 +686,7 @@ class CapillaryPressureModel110(RafsBaseModel):
         description="Pressure applied on the sample with sleeve(s) prior to the capillary pressure experiment, also known as Net Overburden Pressure (NOBP), or Net confining stress (NCS).",
         title="Applied Over Burden Stress",
     )
-    DesaturationMethodID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-DesaturationMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    DesaturationMethodID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-DesaturationMethod:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The method by which the sample was desaturated.",
         title="Desaturation Method ID",
@@ -823,32 +736,17 @@ class CapillaryPressureModel110(RafsBaseModel):
         description="The mass per volume of gas in the sample.",
         title="Gas Density",
     )
-    OilTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-DisplacedFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    OilTypeID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-DisplacedFluidType:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="Identifies the type of oil used in the experiment.",
         title="Oil Type ID",
     )
-    GasTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SampleInjectionFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    GasTypeID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SampleInjectionFluidType:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="Identifies the type of gas used in the experiment.",
         title="Gas Type ID",
     )
-    WaterTypeID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SampleInjectionFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    WaterTypeID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SampleInjectionFluidType:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="Identifies the type of gas used in the experiment.",
         title="Water Type ID",

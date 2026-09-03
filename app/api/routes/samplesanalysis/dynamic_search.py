@@ -23,6 +23,8 @@ from fastapi_cache.decorator import cache
 from loguru import logger
 from starlette import status
 
+from app.core.http_status import HTTP_422_UNPROCESSABLE
+
 from app.api.dependencies.request import get_content_schema_version, get_depth_shift_params
 from app.api.dependencies.services import (
     get_async_dataset_service,
@@ -165,7 +167,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
             # Validate wellbore scope is provided
             if not search_scope.wellbore_id:
                 raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    status_code=HTTP_422_UNPROCESSABLE,
                     detail="Depth shift requires a wellbore-scoped search. Please provide wellbore_id parameter.",
                 )
 
@@ -176,7 +178,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
             # depth_shift_policy was explicitly requested, so SampleID is mandatory for non-empty data.
             if "SampleID" not in base_df.columns:
                 raise HTTPException(
-                    status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                    status_code=HTTP_422_UNPROCESSABLE,
                     detail=(
                         "Depth-shift augmentation requires a SampleID column in non-empty search results. "
                         + "Only analysis types with per-row SampleID support depth-shift retrieval."
@@ -237,7 +239,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
                     ShiftedSampleBase=row["ShiftedSampleBase"],
                     ShiftedSampleMean=row["ShiftedSampleMean"],
                     DepthShiftWarnings=row["DepthShiftWarnings"] if isinstance(row["DepthShiftWarnings"], list) else [],
-                ).dict()
+                ).model_dump()
                 for _, row in augmented_df[ds_cols].iterrows()
             ]
             clean_df = augmented_df.drop(columns=ds_cols)
@@ -268,7 +270,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
                     definitiveDepthShiftAvailable=definitive_available,
                     usedDefinitive=depth_shift_params.is_definitive,
                     warnings=metadata_warnings,
-                ).dict(),
+                ).model_dump(),
             }
 
             return Response(
@@ -343,7 +345,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
             + "Missing WellboreID for sample ids: {0}."
         ).format(missing_ids)
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=HTTP_422_UNPROCESSABLE,
             detail=msg,
         )
 
@@ -356,7 +358,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
                 + " Provide a wellbore-scoped search result set."
             )
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=msg,
             )
 
@@ -364,7 +366,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
             sorted_ids = sorted(wellbore_ids)
             msg = "Depth shift requires wellbore-scoped results. Resolved multiple WellboreIDs: {0}.".format(sorted_ids)
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=msg,
             )
 
@@ -382,7 +384,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
                 + "Requested: {0}; resolved from samples: {1}."
             ).format(requested_normalized, resolved_wellbore)
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=msg,
             )
 

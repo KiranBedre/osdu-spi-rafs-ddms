@@ -12,16 +12,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Any, List
+from typing import Annotated, Any, List
 
-from pydantic import BaseModel, Extra, conlist
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class OrientSplit(BaseModel):
-    class Config:
-        extra = Extra.forbid
-        validate_all = True
+    model_config = ConfigDict(extra="forbid", validate_default=True)
 
-    columns: conlist(item_type=str, min_items=1)
-    index: conlist(item_type=int, min_items=1)
-    data: conlist(item_type=List[Any], min_items=1)
+    columns: Annotated[List[str], Field(min_length=1)]
+    index: Annotated[List[int], Field(min_length=1)]
+    data: Annotated[List[List[Any]], Field(min_length=1)]

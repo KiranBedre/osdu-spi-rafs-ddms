@@ -15,7 +15,7 @@
 from enum import Enum
 from typing import Literal, Optional
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class AppEnvTypes(Enum):
@@ -25,15 +25,17 @@ class AppEnvTypes(Enum):
 
 
 class BaseAppSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
     app_env: AppEnvTypes = AppEnvTypes.prod
 
-    commit_id: str = None
+    commit_id: Optional[str] = None
 
-    commit_message: str = None
+    commit_message: Optional[str] = None
 
-    commit_branch: str = None
+    commit_branch: Optional[str] = None
 
-    build_date: str = None
+    build_date: Optional[str] = None
 
     cloud_provider: Literal["", "azure", "gc", "aws", "anthos", "ibm"] = ""
 
@@ -43,11 +45,8 @@ class BaseAppSettings(BaseSettings):
 
     request_timeout: float = 15.0  # request timeout in seconds
 
-    release_version: str = None  # Not the same as version (api version)
+    release_version: Optional[str] = None  # Not the same as version (api version)
 
     otel_exporter_otlp_endpoint: Optional[str] = None
 
     otel_service_name: str = "rafs-ddms"
-
-    class Config(object):
-        env_file = ".env"

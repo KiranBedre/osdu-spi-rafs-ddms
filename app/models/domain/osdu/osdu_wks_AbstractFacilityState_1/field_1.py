@@ -16,12 +16,11 @@
 #   filename:  api/schema-service/v1/schema/osdu:wks:master-data--GenericFacility:1.0.0
 #   timestamp: 2023-12-12T16:50:26+00:00
 
-from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
@@ -30,9 +29,7 @@ class Field0(BaseModel):
         description="The date and time at which the facility state becomes effective.",
     )
     FacilityStateTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-FacilityStateType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-FacilityStateType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Life Cycle [Facility State Type] is a set of major phases that are significant to regulators and/or business stakeholders. Life Cycle may apply to a well or its components [or other facility].",

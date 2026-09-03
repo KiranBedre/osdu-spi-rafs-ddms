@@ -19,11 +19,10 @@ CONFIG = {}
 
 WPC_VERSION = "1.0.0"
 PARQUET_HEADERS = {"Content-Type": "application/x-parquet"}
-ACCEPT_HEADERS = "*/*"
+ACCEPT_HEADERS = "*/*;version={version}"
 
 DATA_DIR = Path("tests", "integration", "data")
 TEST_DATA_STORE = {}
-SEARCH_PAGE_LIMITS = {"search_records": 1000, "search_data": 100}
 
 
 class SchemaVersions:
@@ -58,8 +57,8 @@ class DataFiles:
     PROPPANT_EMBEDMENT_SCHEMA_V1 = "v2/samples_analysis/proppant_embedment_schema.1.0.0.json"
 
     RELATIVE_PERMEABILITY_DATA_V1 = "v2/samples_analysis/relative_permeability_data.1.0.0.json"
-    RELATIVE_PERMEABILITY_DATA_V1_1 = "v2/samples_analysis/relative_permeability_data.1.1.0.json"
     RELATIVE_PERMEABILITY_SCHEMA_V1 = "v2/samples_analysis/relative_permeability_schema.1.0.0.json"
+    RELATIVE_PERMEABILITY_DATA_V1_1 = "v2/samples_analysis/relative_permeability_data.1.1.0.json"
     RELATIVE_PERMEABILITY_SCHEMA_V1_1 = "v2/samples_analysis/relative_permeability_schema.1.1.0.json"
 
     ROLLER_OVEN_TEST_DATA_V1 = "v2/samples_analysis/roller_oven_test_data.1.0.0.json"
@@ -344,6 +343,12 @@ class Endpoints(BaseEndpoints):
         ("search_data", ()),
         ("soft_delete_record", ("record_id",)),
     ]
+
+
+SEARCH_PAGE_LIMITS = {
+    "search_records": 1000,
+    "search_data": 100,
+}
 
 
 class SamplesAnalysisEndpoints(BaseEndpoints):

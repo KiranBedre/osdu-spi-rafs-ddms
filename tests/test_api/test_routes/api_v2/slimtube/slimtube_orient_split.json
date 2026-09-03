@@ -1,5 +1,5 @@
 {
-  "columns":[
+  "columns": [
     "SamplesAnalysisID",
     "SampleID",
     "Meta",
@@ -17,62 +17,62 @@
     "SlimTubeTestSteps",
     "SlimTubeTestVolumeSteps"
   ],
-  "index":[
+  "index": [
     0
   ],
-  "data":[
+  "data": [
     [
       "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:fluid_sample_test:",
       [
         {
-          "kind":"Unit",
-          "name":"degree Fahrenheit",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:degF:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "degree Fahrenheit",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:degF:",
+          "propertyNames": [
             "TestTemperature"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"metre",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:m:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "metre",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:m:",
+          "propertyNames": [
             "PackedColumnProperties[*].ColumnLength",
             "PackedColumnProperties[*].ColumnDiameter"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"percent",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:%25:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "percent",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:%25:",
+          "propertyNames": [
             "PackedColumnProperties[*].ColumnPorosity"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"millidarcy",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:mD:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "millidarcy",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:mD:",
+          "propertyNames": [
             "PackedColumnProperties[*].ColumnPermeability"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"cubic centimetre",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:cm3:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "cubic centimetre",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:cm3:",
+          "propertyNames": [
             "PackedColumnProperties[*].ColumnTotalPoreVolume",
             "CoreFlooding[*].PoreVolumeInjected",
             "SlimTubeTestVolumeSteps[*].CumulativeOilProductionSTO"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"percent [volume basis]",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:%25%5Bvol%5D:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "percent [volume basis]",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:%25%5Bvol%5D:",
+          "propertyNames": [
             "CoreFlooding[*].CumulativeOilRecovery",
             "PackedColumnDisplacement[*].CumulativeOilRecoveryVolume",
             "SlimTubeTestVolumeSteps[*].InjectionVolumeAtTestTemperature",
@@ -80,10 +80,10 @@
           ]
         },
         {
-          "kind":"Unit",
-          "name":"cubic metre per cubic metre",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:m3%2Fm3:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "cubic metre per cubic metre",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:m3%2Fm3:",
+          "propertyNames": [
             "PackedColumnDisplacement[*].GasOilRatio",
             "SlimTubeTestVolumeSteps[*].InjectedPoreVolumeFraction",
             "SlimTubeTestVolumeSteps[*].CumulativeOilProductionPercOOIP",
@@ -92,36 +92,36 @@
           ]
         },
         {
-          "kind":"Unit",
-          "name":"API gravity unit",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:dAPI:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "API gravity unit",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:dAPI:",
+          "propertyNames": [
             "CalculatedProperties[*].ResidueAPI"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"gram per cubic centimetre",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:g%2Fcm3:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "gram per cubic centimetre",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:",
+          "propertyNames": [
             "PackedColumnDisplacement[*].OilDensity",
             "CalculatedProperties[*].ResidueDensity",
             "CalculatedProperties[*].ResidueCalculatedProperties[*].ResidueDensity"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"metre per second",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:m%2Fs:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "metre per second",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:m%2Fs:",
+          "propertyNames": [
             "SlimTubeTestVolumeSteps[*].DarcyVelocity"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"pound-force per square inch",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:psi:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "pound-force per square inch",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:psi:",
+          "propertyNames": [
             "CoreFlooding[*].DisplacementPressure",
             "MinimumMiscibilityPressure",
             "SlimTubeTestSteps[*].StepAveragePressure",
@@ -129,10 +129,10 @@
           ]
         },
         {
-          "kind":"Unit",
-          "name":"percent [mass basis]",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:%25%5Bmass%5D:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "percent [mass basis]",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:%25%5Bmass%5D:",
+          "propertyNames": [
             "CoreFlooding[*].MaterialBalance",
             "CoreFlooding[*].AsphaltanceContentOfResidualOil",
             "PackedColumnDisplacement[*].CumulativeOilRecoveryWeight",
@@ -141,38 +141,38 @@
           ]
         },
         {
-          "kind":"Unit",
-          "name":"gram",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:g:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "gram",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:g:",
+          "propertyNames": [
             "MaterialBalanceData[*].MaterialInjectedWeight",
             "MaterialBalanceData[*].MaterialRecoveredWeight"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"mole per mole",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:mol%2Fmol:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "mole per mole",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:mol%2Fmol:",
+          "propertyNames": [
             "VaporCompositionalAnalysis[*].VaporComposition[*].VaporRelativeMole",
             "LiquidCompositionalAnalysis[*].LiquidRelativeMolarWeight",
             "CalculatedProperties[*].ResidueCalculatedProperties[*].ResidueRelativeMolarWeight"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"gram per mole",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:g%2Fmol:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "gram per mole",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:g%2Fmol:",
+          "propertyNames": [
             "CalculatedProperties[*].AvgMoleWeight",
             "CalculatedProperties[*].ResidueCalculatedProperties[*].ResidueMolecularWeight"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"second",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:s:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "second",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:s:",
+          "propertyNames": [
             "SlimTubeTestVolumeSteps[*].RunTime"
           ]
         }
@@ -180,115 +180,115 @@
       "1A",
       1.23,
       {
-        "RemarkSequenceNumber":1,
-        "Remark":"Remark",
-        "RemarkSource":"Remark Source",
-        "RemarkDate":"2025-01-01"
+        "RemarkSequenceNumber": 1,
+        "Remark": "Remark",
+        "RemarkSource": "Remark Source",
+        "RemarkDate": "2025-01-01"
       },
       [
         {
-          "ColumnLength":1.23,
-          "ColumnDiameter":1.23,
-          "PackingMaterial":"Packing Material",
-          "ColumnPorosity":1.23,
-          "ColumnTotalPoreVolume":1.23,
-          "ColumnPermeability":0
+          "ColumnLength": 1.23,
+          "ColumnDiameter": 1.23,
+          "PackingMaterial": "Packing Material",
+          "ColumnPorosity": 1.23,
+          "ColumnTotalPoreVolume": 1.23,
+          "ColumnPermeability": 0
         }
       ],
       [
         {
-          "DisplacementPressure":1.23,
-          "PoreVolumeInjected":1.23,
-          "CumulativeOilRecovery":1.23,
-          "MaterialBalance":1.23,
-          "AsphaltanceContentOfResidualOil":0
+          "DisplacementPressure": 1.23,
+          "PoreVolumeInjected": 1.23,
+          "CumulativeOilRecovery": 1.23,
+          "MaterialBalance": 1.23,
+          "AsphaltanceContentOfResidualOil": 0
         }
       ],
       1.23,
       [
         {
-          "IncrementNumber":"2A",
-          "PoresInjected":1.23,
-          "CumulativeOilRecoveryVolume":1.23,
-          "CumulativeOilRecoveryWeight":1.23,
-          "GasOilRatio":1.23,
-          "GasGravity":1.23,
-          "OilDensity":0
+          "IncrementNumber": "2A",
+          "PoresInjected": 1.23,
+          "CumulativeOilRecoveryVolume": 1.23,
+          "CumulativeOilRecoveryWeight": 1.23,
+          "GasOilRatio": 1.23,
+          "GasGravity": 1.23,
+          "OilDensity": 0
         }
       ],
       [
         {
-          "MaterialInjected":"Material Injected",
-          "MaterialInjectedWeight":1.23,
-          "MaterialRecovered":"Material Recovered",
-          "MaterialRecoveredWeight":1.23,
-          "MaterialRecoveredCumulativeWeight":1.23
+          "MaterialInjected": "Material Injected",
+          "MaterialInjectedWeight": 1.23,
+          "MaterialRecovered": "Material Recovered",
+          "MaterialRecoveredWeight": 1.23,
+          "MaterialRecoveredCumulativeWeight": 1.23
         }
       ],
       [
         {
-          "IncrementNumberSampled":1,
-          "PoreVolumeInjected":1.23,
-          "VaporComposition":[
+          "IncrementNumberSampled": 1,
+          "PoreVolumeInjected": 1.23,
+          "VaporComposition": [
             {
-              "ComponentNameID":"opendes:reference-data--SampleOrganicCompositionComponent:H2O:",
-              "VaporRelativeMole":1.23
+              "ComponentNameID": "opendes:reference-data--SampleOrganicCompositionComponent:H2O:",
+              "VaporRelativeMole": 1.23
             }
           ]
         }
       ],
       [
         {
-          "ComponentNameID":"opendes:reference-data--SampleOrganicCompositionComponent:H2O:",
-          "LiquidRelativeMolarWeight":1.23,
-          "FlashedLiquidRelativeMass":1.23
+          "ComponentNameID": "opendes:reference-data--SampleOrganicCompositionComponent:H2O:",
+          "LiquidRelativeMolarWeight": 1.23,
+          "FlashedLiquidRelativeMass": 1.23
         }
       ],
       [
         {
-          "AvgMoleWeight":1.23,
-          "ResidueDensity":1.23,
-          "ResidueAPI":1.23,
-          "ResidueCalculatedProperties":[
+          "AvgMoleWeight": 1.23,
+          "ResidueDensity": 1.23,
+          "ResidueAPI": 1.23,
+          "ResidueCalculatedProperties": [
             {
-              "ComponentNameID":"opendes:reference-data--SampleOrganicCompositionComponent:H2O:",
-              "ResidueRelativeMolarWeight":1.23,
-              "ResidueMolecularWeight":1.23,
-              "ResidueDensity":0
+              "ComponentNameID": "opendes:reference-data--SampleOrganicCompositionComponent:H2O:",
+              "ResidueRelativeMolarWeight": 1.23,
+              "ResidueMolecularWeight": 1.23,
+              "ResidueDensity": 0
             }
           ]
         }
       ],
       [
         {
-          "StepNumber":1.23,
-          "StepAveragePressure":1.23,
-          "Remarks":{
-            "RemarkSequenceNumber":1.23,
-            "Remark":"Remark",
-            "RemarkSource":"Remark Source",
-            "RemarkDate":"2025-01-01"
+          "StepNumber": 1.23,
+          "StepAveragePressure": 1.23,
+          "Remarks": {
+            "RemarkSequenceNumber": 1,
+            "Remark": "Remark",
+            "RemarkSource": "Remark Source",
+            "RemarkDate": "2025-01-01"
           }
         }
       ],
       [
         {
-          "StepNumber":1,
-          "DifferentialPressure":1.23,
-          "RunTime":1.23,
-          "InjectionVolumeAtTestTemperature":1.23,
-          "InjectionVolumeAtPumpTemperature":1.23,
-          "InjectedPoreVolumeFraction":1.23,
-          "DarcyVelocity":1.23,
-          "CumulativeOilProductionPercOOIP":1.23,
-          "CumulativeOilProductionSTO":1.23,
-          "IncrementalProducedGOR":1.23,
-          "CumulativeProducedGOR":1.23,
-          "Remarks":{
-            "RemarkSequenceNumber":1.23,
-            "Remark":"Remark",
-            "RemarkSource":"Remark Source",
-            "RemarkDate":"2025-01-01"
+          "StepNumber": 1,
+          "DifferentialPressure": 1.23,
+          "RunTime": 1.23,
+          "InjectionVolumeAtTestTemperature": 1.23,
+          "InjectionVolumeAtPumpTemperature": 1.23,
+          "InjectedPoreVolumeFraction": 1.23,
+          "DarcyVelocity": 1.23,
+          "CumulativeOilProductionPercOOIP": 1.23,
+          "CumulativeOilProductionSTO": 1.23,
+          "IncrementalProducedGOR": 1.23,
+          "CumulativeProducedGOR": 1.23,
+          "Remarks": {
+            "RemarkSequenceNumber": 1,
+            "Remark": "Remark",
+            "RemarkSource": "Remark Source",
+            "RemarkDate": "2025-01-01"
           }
         }
       ]

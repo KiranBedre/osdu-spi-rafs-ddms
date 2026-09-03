@@ -16,12 +16,11 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:master-data--Coring:1.1.0
 #   timestamp: 2023-10-24T20:24:16+00:00
 
-from __future__ import annotations
 
 from datetime import datetime, time
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Key(BaseModel):
@@ -41,7 +40,7 @@ class Key(BaseModel):
         title="String Parameter Key",
     )
     ObjectParameterKey: Optional[
-        constr(regex=r"^[\w\-\.]+:[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Relationship to an object ID, which acts as the parameter.",
@@ -61,16 +60,14 @@ class Field0(BaseModel):
         title="String Parameter",
     )
     ParameterRoleID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ParameterRole:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ParameterRole:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Reference data describing how the parameter was used by the activity, such as input, output, control, constraint, agent, predecessor activity, successor activity.",
         title="Parameter Role",
     )
     DataObjectParameter: Optional[
-        constr(regex=r"^[\w\-\.]+:[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Parameter referencing to a top level object.",
@@ -106,13 +103,9 @@ class Field0(BaseModel):
         description="Parameter containing a time index value.  It is assumed that all TimeIndexParameters within an Activity have the same date-time format, which is then described by the FrameOfReference mechanism.",
         title="Time Index Parameter",
     )
-    ParameterKindID: constr(
-        regex=r"^[\w\-\.]+:reference-data\-\-ParameterKind:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(..., description="[Added to cover lack of inheritance]")
+    ParameterKindID: Annotated[str, StringConstraints(pattern="^[\w\-\.]+:reference-data\-\-ParameterKind:[\w\-\.\:\%]+:[0-9]*$")] = Field(..., description="[Added to cover lack of inheritance]")
     DataQuantityParameterUOMID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Identifies unit of measure for floating point value.",

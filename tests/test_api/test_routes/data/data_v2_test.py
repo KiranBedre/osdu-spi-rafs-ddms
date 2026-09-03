@@ -13,8 +13,10 @@
 #  limitations under the License.
 
 import copy as _copy
+import io
 import json
 from contextlib import contextmanager
+from datetime import date
 from unittest.mock import AsyncMock, create_autospec, patch
 
 import pandas as pd
@@ -6622,7 +6624,7 @@ async def test_get_403(data_endpoint_path):
             headers=TEST_HEADERS_NO_AUTH,
         )
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 @pytest.mark.parametrize(
@@ -6689,7 +6691,7 @@ async def test_post_403(data_endpoint_path):
             headers=TEST_HEADERS_NO_AUTH,
         )
 
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 @pytest.mark.parametrize(
@@ -7780,3 +7782,124 @@ async def test_get_data_definitive_flat_path_recognized():
     body = response.json()
     assert body["DepthShiftMetadata"]["usedDefinitive"] is True
     assert body["DepthShiftMetadata"]["definitiveDepthShiftAvailable"] is True
+
+# ---------------------------------------------------------------------------
+# Issue #768 — lead review feedback: str-column corruption and general
+# (non-depth-shift) parquet path coverage
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_post_data_json_preserves_str_field_exact_value():
+    """A str-typed field must round-trip through the JSON ingestion path unchanged.
+
+    pd.read_json infers a numeric dtype for any numeric-looking string value.
+    Without a per-column dtype hint, "001" loses its leading zero (becomes the
+    float 1.0) before any defensive casting can recover it, and a naive
+    str(float) cast renders whole numbers as "1.0" instead of "1". This must
+    hold through the general POST /data JSON path, not just be a property of
+    a single private helper function.
+    """
+    columns = transport_test_mock_objects.TEST_DATA["columns"]
+    base_row = transport_test_mock_objects.TEST_DATA["data"][0]
+    test_number_idx = columns.index("TestNumber")
+    test_number_values = ["001", "1", None, "1A"]
+
+    payload = {
+        "columns": columns,
+        "index": list(range(len(test_number_values))),
+        "data": [
+            [
+                test_number_values[row_idx] if col_idx == test_number_idx else cell
+                for col_idx, cell in enumerate(base_row)
+            ]
+            for row_idx in range(len(test_number_values))
+        ],
+    }
+
+    uploaded_blobs = []
+
+    class _CapturingDatasetService:
+        async def upload_file(self, blob_file, dataset_id=None, parent_record=None):
+            uploaded_blobs.append(blob_file)
+            return transport_test_mock_objects.TEST_DATASET_RECORD_ID
+
+    async def mock_get_capturing_dataset_service():
+        yield _CapturingDatasetService()
+
+    with post_overrides(
+        transport_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        transport_test_mock_objects.TEST_DATASET_RECORD_ID,
+        payload,
+    ):
+        with dependencies.DependencyOverrider(app, {get_async_dataset_service: mock_get_capturing_dataset_service}):
+            async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                response = await client.post(
+                    TestContentPathsApiV2.TRANSPORT_TEST,
+                    headers=_headers_json("1.0.0"),
+                    content=json.dumps(payload),
+                )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(uploaded_blobs) == 1
+
+    uploaded_df = pd.read_parquet(io.BytesIO(uploaded_blobs[0]))
+    test_numbers = uploaded_df["TestNumber"].tolist()
+    assert test_numbers[0] == "001"
+    assert test_numbers[1] == "1"
+    assert pd.isna(test_numbers[2])
+    assert test_numbers[3] == "1A"
+
+
+@pytest.mark.asyncio
+async def test_post_data_parquet_accepts_null_scalar_and_nested_date_fields():
+    """The general (non-depth-shift) POST /data parquet path must accept nullable
+    optional scalar fields and a nested list field carrying a `date` value, not
+    just the happy-path fixtures the shared parametrize list covers.
+
+    Only the depth-shift-specific path had a regression test for nulled/nested
+    values after the JSON round-trip workaround was removed from `_read_dataframe`
+    (commit 5283b1bc); this exercises the same guarantee on a general record type.
+    """
+    columns = transport_test_mock_objects.TEST_DATA["columns"]
+    base_row = transport_test_mock_objects.TEST_DATA["data"][0]
+    test_steps_idx = columns.index("TestSteps")
+    test_number_idx = columns.index("TestNumber")
+    reservoir_pressure_idx = columns.index("ReservoirPressure")
+
+    row_with_nested_date = list(base_row)
+    row_with_nested_date[test_steps_idx] = [
+        {
+            **base_row[test_steps_idx][0],
+            "Remarks": [
+                {
+                    "RemarkSequenceNumber": 1,
+                    "Remark": "Logged during transport test.",
+                    "RemarkSource": "Lab",
+                    "RemarkDate": date(2024, 1, 1),
+                },
+            ],
+        },
+        *base_row[test_steps_idx][1:],
+    ]
+
+    row_with_nulls = list(base_row)
+    row_with_nulls[test_number_idx] = None
+    row_with_nulls[reservoir_pressure_idx] = None
+    row_with_nulls[test_steps_idx] = None
+
+    dataframe = pd.DataFrame([row_with_nested_date, row_with_nulls], columns=columns)
+
+    with post_overrides(
+        transport_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        transport_test_mock_objects.TEST_DATASET_RECORD_ID,
+        dataframe,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.TRANSPORT_TEST,
+                headers=_headers_parquet("1.0.0"),
+                content=dataframe.to_parquet(),
+            )
+
+    assert response.status_code == status.HTTP_200_OK

@@ -37,7 +37,7 @@ class TestAclExtraFieldsRejected:
                 owners=["owner@example.com"],
                 fakeField="this should be rejected",
             )
-        assert "extra fields not permitted" in str(exc_info.value)
+        assert "Extra inputs are not permitted" in str(exc_info.value)
 
     def test_acl_multiple_extra_fields_rejected(self):
         """Test that multiple extra fields in Acl are rejected."""
@@ -48,7 +48,7 @@ class TestAclExtraFieldsRejected:
                 fakeField1="rejected",
                 fakeField2="also rejected",
             )
-        assert "extra fields not permitted" in str(exc_info.value)
+        assert "Extra inputs are not permitted" in str(exc_info.value)
 
 
 class TestLegalExtraFieldsRejected:
@@ -82,7 +82,7 @@ class TestLegalExtraFieldsRejected:
                 otherRelevantDataCountries=["US"],
                 madeUpField="this should be rejected",
             )
-        assert "extra fields not permitted" in str(exc_info.value)
+        assert "Extra inputs are not permitted" in str(exc_info.value)
 
     def test_legal_multiple_extra_fields_rejected(self):
         """Test that multiple extra fields in Legal are rejected."""
@@ -94,4 +94,4 @@ class TestLegalExtraFieldsRejected:
                 madeUpField1="rejected",
                 madeUpField2="also rejected",
             )
-        assert "extra fields not permitted" in str(exc_info.value)
+        assert "Extra inputs are not permitted" in str(exc_info.value)

@@ -18,6 +18,7 @@ RUN pip install --upgrade pip==${pip_version} && pip install pip-tools && \
 COPY ./app /app
 COPY ./tests /tests
 COPY ./client /client
+COPY ./scripts /scripts
 
 WORKDIR ./tests
 

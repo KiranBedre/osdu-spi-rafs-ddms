@@ -16,11 +16,10 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:work-product-component--SamplesAnalysis:1.0.0
 #   timestamp: 2023-10-19T20:18:16+00:00
 
-from __future__ import annotations
 
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 from ..osdu_wks_AbstractAliasNames_1 import field_0
 from ..osdu_wks_AbstractTechnicalAssurance_1 import field_2
@@ -28,37 +27,40 @@ from ..osdu_wks_AbstractTechnicalAssurance_1 import field_2
 
 class Artefact(BaseModel):
     ResourceID: Optional[
-        constr(regex=r"^[\w\-\.]+:dataset\-\-[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:dataset\-\-[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(None, description="The SRN which identifies this OSDU Artefact resource.")
     ResourceKind: Optional[
-        constr(regex=r"^[\w\-\.]+:[\w\-\.]+:[\w\-\.]+:[0-9]+.[0-9]+.[0-9]+$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:[\w\-\.]+:[\w\-\.]+:[0-9]+.[0-9]+.[0-9]+$")]
     ] = Field(
         None,
         description="The kind or schema ID of the artefact. Resolvable with the Schema Service.",
     )
     RoleID: Optional[
-        constr(regex=r"^[\w\-\.]+:reference-data\-\-ArtefactRole:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ArtefactRole:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(None, description="The record id of this artefact's role.")
 
 
 class Field0(BaseModel):
     Datasets: Optional[
-        List[constr(regex=r"^[\w\-\.]+:dataset\-\-[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$")]
+        List[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:dataset\-\-[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$")]]
     ] = Field(
         None,
         description="The record id, which identifies this OSDU File or dataset resource.",
     )
     DDMSDatasets: Optional[
         List[
-            constr(regex=r"^(([^:/?#]+):)(\/\/([^/?#]+))(\/[^?#]+)(\?([^#]*))?(#(.*))?")
+            Annotated[
+                str,
+                StringConstraints(pattern=r"^(([^:/?#]+):)(\/\/([^/?#]+))(\/[^?#]+)(\?([^#]*))?(#(.*))?"),
+            ]
         ]
     ] = Field(
         None,
         description="An array of references to content in Domain Data Management Services represented by this work-product-component. The references are formed as URI following https://www.rfc-editor.org/rfc/rfc3986#page-16. This property is exclusively populated by DDMSs. If a work-product-component is represented in more than one DDMS, DDMSs are obliged to find the specific reference by inspecting the URI's authority values matching the DDMS id.",
-        example=[
+        json_schema_extra={"example": [
             "urn://wddms-3/uuid:20840361-adc0-4842-999b-5639bd07bb38",
             "eml://rddms-1/dataspace('demo/Volve')/resqml20.obj_ContinuousProperty(1615d8d2-2a2d-482c-885e-14225b89e90c)",
-        ],
+        ]},
         title="DDMS Datasets",
     )
     NameAliases: Optional[List[field_0.Field0]] = Field(
