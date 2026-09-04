@@ -20,7 +20,7 @@ import pandas as pd
 import pytest
 from starlette import status
 
-from app.resources.common_headers import ACCEPT, CONTENT_TYPE
+from app.resources.common_headers import ACCEPT, CACHE_CONTROL, CONTENT_TYPE
 from tests.integration.config import DataFiles, SchemaVersions
 
 
@@ -28,9 +28,10 @@ def test_compositional_add_data_json_v1(
     api,
     tests_data,
     record_id,
+    helper,
     fluid_model_type,
 ):
-    """Upload valid Compositional JSON content."""
+    """Upload Compositional JSON content and verify JSON and Parquet retrieval."""
     data_payload = copy.deepcopy(
         tests_data(DataFiles.COMPOSITIONAL_FLUID_MODEL_DATA_V1)
     )
@@ -43,9 +44,35 @@ def test_compositional_add_data_json_v1(
         fluid_model_type=fluid_model_type,
         schema_version=SchemaVersions.V1_0_0,
     )
+    dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
 
     assert "ddms_urn" in post_response
     assert post_response["ddms_urn"]
+
+    gotten_data = api.fluid_model.get_data(
+        record_id=record_id,
+        dataset_id=dataset_id,
+        fluid_model_type=fluid_model_type,
+        schema_version=SchemaVersions.V1_0_0,
+    )
+    assert gotten_data["columns"] == data_payload["columns"]
+    assert gotten_data["index"] == data_payload["index"]
+    assert gotten_data["data"] == data_payload["data"]
+
+    parquet_response = api.fluid_model.get_data(
+        record_id=record_id,
+        dataset_id=dataset_id,
+        fluid_model_type=fluid_model_type,
+        schema_version=SchemaVersions.V1_0_0,
+        json=False,
+        headers={ACCEPT: "application/x-parquet"},
+        raw=True,
+    ).content
+    parquet_data = helper.load_parquet_data(parquet_response, content_type="parquet")
+
+    assert parquet_data["columns"] == gotten_data["columns"]
+    assert parquet_data["index"] == gotten_data["index"]
+    assert parquet_data["data"] == gotten_data["data"]
 
     versions_after = api.fluid_model.get_record_versions(record_id)["versions"]
     assert len(versions_after) == len(versions_before) + 1
@@ -55,6 +82,7 @@ def test_compositional_add_data_parquet_v1(
     api,
     tests_data,
     fresh_record_id,
+    helper,
     fluid_model_type,
 ):
     """Upload valid Compositional Parquet content using the supported MIME value."""
@@ -79,6 +107,17 @@ def test_compositional_add_data_parquet_v1(
 
     assert "ddms_urn" in post_response
     assert post_response["ddms_urn"]
+
+    dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
+    gotten_data = api.fluid_model.get_data(
+        record_id=fresh_record_id,
+        dataset_id=dataset_id,
+        fluid_model_type=fluid_model_type,
+        schema_version=SchemaVersions.V1_0_0,
+    )
+    assert gotten_data["columns"] == data_payload["columns"]
+    assert gotten_data["index"] == data_payload["index"]
+    assert gotten_data["data"] == data_payload["data"]
 
     versions_after = api.fluid_model.get_record_versions(fresh_record_id)["versions"]
     assert len(versions_after) == len(versions_before) + 1
@@ -360,8 +399,10 @@ def test_compositional_get_data_aggregated(
     assert set(response["index"]) == {"count", "unique", "top", "freq"}
     assert f"{record_id}:" in (row[0] for row in response["data"])
 
+
 # TODO: Consolidate Fluid Model GET Schema tests into a parametrized suite
 # when Thermal Compositional Model coverage is added.
+
 
 def test_compositional_get_schema_v1(api, helper, tests_data, fluid_model_type):
     """Verify schema endpoint matches expected schema model."""
@@ -573,3 +614,33 @@ def test_compositional_get_data_filtered_parquet(
     assert parquet_data["index"] == baseline["index"]
     assert parquet_data["data"] == baseline["data"]
     assert all(len(row) == len(baseline["columns"]) for row in parquet_data["data"])
+
+
+def test_compositional_get_data_returns_identical_response_inside_cache_ttl(
+    api,
+    record_id,
+    dataset_id,
+    fluid_model_type,
+):
+    """Verify Compositional GET data response is served from cache inside TTL."""
+    cache_headers = {CACHE_CONTROL: "max-age=60"}
+
+    first_response = api.fluid_model.get_data(
+        record_id=record_id,
+        dataset_id=dataset_id,
+        fluid_model_type=fluid_model_type,
+        schema_version=SchemaVersions.V1_0_0,
+        headers=cache_headers,
+    )
+
+    # The second request should complete in less than one second because it hits the cache.
+    second_response = api.fluid_model.get_data(
+        record_id=record_id,
+        dataset_id=dataset_id,
+        fluid_model_type=fluid_model_type,
+        schema_version=SchemaVersions.V1_0_0,
+        headers=cache_headers,
+        timeout=0.9,
+    )
+
+    assert second_response == first_response
