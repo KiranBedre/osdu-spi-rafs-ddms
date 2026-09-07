@@ -34,7 +34,7 @@ from redis.exceptions import (
 
 from app.core.config import get_provider_config
 from app.core.helpers.cache.config import RedisCacheConfig
-from app.core.helpers.cache.redis_client_factory import RedisClientFactory, WAIT_FOR_REDIS
+from app.core.helpers.cache.redis_client_factory import WAIT_FOR_REDIS, RedisClientFactory
 from app.providers.config import AzureConfig
 from app.providers.dependencies.az.redis_credential_provider import AzureRedisCredentialProvider
 

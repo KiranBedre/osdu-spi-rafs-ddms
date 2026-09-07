@@ -16,7 +16,6 @@ import copy
 import datetime
 
 from app.resources.common_headers import ACCEPT
-
 from tests.integration.config import (
     CONFIG,
     DataFiles,
@@ -190,7 +189,7 @@ def test_depth_shift_search_record_filtered_out_by_row(api, record_id, dataset_i
 
 def test_depth_shift_search_record_filtered_in_by_start_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered in by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_start_date": current_date}
     response = api.depth_shift.search_records(params=params)
 
@@ -200,7 +199,7 @@ def test_depth_shift_search_record_filtered_in_by_start_date(api, record_id, dat
 
 def test_depth_shift_search_record_filtered_out_by_start_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered out by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.depth_shift.search_records(params=params)
@@ -211,7 +210,7 @@ def test_depth_shift_search_record_filtered_out_by_start_date(api, record_id, da
 
 def test_depth_shift_search_record_filtered_in_by_end_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered in by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_end_date": current_date}
     response = api.depth_shift.search_records(params=params)
 
@@ -221,7 +220,7 @@ def test_depth_shift_search_record_filtered_in_by_end_date(api, record_id, datas
 
 def test_depth_shift_search_record_filtered_out_by_end_date(api, record_id, dataset_id, search_available):
     """Verify record is filtered out by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.depth_shift.search_records(params=params)
@@ -281,7 +280,7 @@ def test_depth_shift_search_data_aggregated(api, record_id, dataset_id, search_a
 
 def test_depth_shift_search_data_filtered_in_by_start_date(api, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered in by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_start_date": current_date}
     response = api.depth_shift.search_data(params=params)
 
@@ -294,7 +293,7 @@ def test_depth_shift_search_data_filtered_in_by_start_date(api, tests_data, reco
 
 def test_depth_shift_search_data_filtered_out_by_start_date(api, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.depth_shift.search_data(params=params)
@@ -307,7 +306,7 @@ def test_depth_shift_search_data_filtered_out_by_start_date(api, record_id, data
 
 def test_depth_shift_search_data_filtered_in_by_end_date(api, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered in by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_end_date": current_date}
     response = api.depth_shift.search_data(params=params)
 
@@ -320,7 +319,7 @@ def test_depth_shift_search_data_filtered_in_by_end_date(api, tests_data, record
 
 def test_depth_shift_search_data_filtered_out_by_end_date(api, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data is filtered out by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.depth_shift.search_data(params=params)

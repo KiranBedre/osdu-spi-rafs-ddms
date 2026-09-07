@@ -1768,7 +1768,7 @@ paths:
                       IsModelViscosityOptimized: true
                       IsOptimizedForEnhancedRecoveryStudies: false
                       ModelPropertyFormulationMethods:
-                      - ModelPropertyFormulationMethodID: 'namespace:reference-data--FluidModelPropertyFormulationMethod:PengRobinson:'
+                      - ModelPropertyFormulationMethodID: 'namespace:reference-data--FluidModelPropertyFormulationMethod:Compositional.PengRobinson:'
                         ModelPropertyTypeID: 'namespace:reference-data--FluidModelPropertyType:Density:'
                       ModellingApplicationsUsed:
                       - PVTsim Nova 5.0

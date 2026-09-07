@@ -16,7 +16,6 @@ import copy
 import datetime
 
 from app.resources.common_headers import ACCEPT
-
 from tests.integration.config import (
     DataFiles,
     SamplesAnalysisTypes,
@@ -75,9 +74,7 @@ def test_xrf_add_data_v1_1(api, helper, tests_data, record_id):
     dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
 
     # GET data as JSON and compare with original payload
-    gotten_data = api.sample_analysis.get_data(
-        record_id, dataset_id, SamplesAnalysisTypes.XRF, SchemaVersions.V1_1_0
-    )
+    gotten_data = api.sample_analysis.get_data(record_id, dataset_id, SamplesAnalysisTypes.XRF, SchemaVersions.V1_1_0)
     helper.compare_responses(gotten_data, data_payload, response_type="json")
 
     # Verify JSON and Parquet responses are equivalent
@@ -226,14 +223,17 @@ def test_xrf_search_record_filtered_out_by_row(api, record_id, dataset_id_v1_1, 
     assert record_id not in response["result"]
 
 
-def test_xrf_search_record_filtered_in_by_start_date(api, record_id, dataset_id_v1_1, search_available_v1_1):
+def test_xrf_search_record_filtered_in_by_start_date(api, record_id, dataset_id_v1_1, search_available_v1_1, helper):
     """Verify record is filtered in by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_start_date": current_date}
-    response = api.sample_analysis.search_records(
-        analysis_type=SamplesAnalysisTypes.XRF,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
+    response = helper.wait_for_search_record(
+        lambda: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.XRF,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -242,7 +242,7 @@ def test_xrf_search_record_filtered_in_by_start_date(api, record_id, dataset_id_
 
 def test_xrf_search_record_filtered_out_by_start_date(api, record_id, dataset_id_v1_1, search_available_v1_1):
     """Verify record is filtered out by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.sample_analysis.search_records(
@@ -255,14 +255,17 @@ def test_xrf_search_record_filtered_out_by_start_date(api, record_id, dataset_id
     assert response["result"] == []
 
 
-def test_xrf_search_record_filtered_in_by_end_date(api, record_id, dataset_id_v1_1, search_available_v1_1):
+def test_xrf_search_record_filtered_in_by_end_date(api, record_id, dataset_id_v1_1, search_available_v1_1, helper):
     """Verify record is filtered in by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_end_date": current_date}
-    response = api.sample_analysis.search_records(
-        analysis_type=SamplesAnalysisTypes.XRF,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
+    response = helper.wait_for_search_record(
+        lambda: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.XRF,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -271,7 +274,7 @@ def test_xrf_search_record_filtered_in_by_end_date(api, record_id, dataset_id_v1
 
 def test_xrf_search_record_filtered_out_by_end_date(api, record_id, dataset_id_v1_1, search_available_v1_1):
     """Verify record is filtered out by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.sample_analysis.search_records(
@@ -349,14 +352,19 @@ def test_xrf_search_data_aggregated(api, record_id, dataset_id_v1_1, search_avai
     assert set(response["result"]["index"]) == {"count", "unique", "top", "freq"}
 
 
-def test_xrf_search_data_filtered_in_by_start_date(api, tests_data, record_id, dataset_id_v1_1, search_available_v1_1):
+def test_xrf_search_data_filtered_in_by_start_date(
+    api, tests_data, record_id, dataset_id_v1_1, search_available_v1_1, helper
+):
     """Verify bulk data is filtered in by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_start_date": current_date}
-    response = api.sample_analysis.search_data(
-        analysis_type=SamplesAnalysisTypes.XRF,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
+    response = helper.wait_for_search_data(
+        lambda: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.XRF,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -368,7 +376,7 @@ def test_xrf_search_data_filtered_in_by_start_date(api, tests_data, record_id, d
 
 def test_xrf_search_data_filtered_out_by_start_date(api, record_id, dataset_id_v1_1, search_available_v1_1):
     """Verify bulk data is filtered out by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.sample_analysis.search_data(
@@ -383,14 +391,19 @@ def test_xrf_search_data_filtered_out_by_start_date(api, record_id, dataset_id_v
     assert response["result"]["data"] == []
 
 
-def test_xrf_search_data_filtered_in_by_end_date(api, tests_data, record_id, dataset_id_v1_1, search_available_v1_1):
+def test_xrf_search_data_filtered_in_by_end_date(
+    api, tests_data, record_id, dataset_id_v1_1, search_available_v1_1, helper
+):
     """Verify bulk data is filtered in by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_end_date": current_date}
-    response = api.sample_analysis.search_data(
-        analysis_type=SamplesAnalysisTypes.XRF,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
+    response = helper.wait_for_search_data(
+        lambda: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.XRF,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -402,7 +415,7 @@ def test_xrf_search_data_filtered_in_by_end_date(api, tests_data, record_id, dat
 
 def test_xrf_search_data_filtered_out_by_end_date(api, tests_data, record_id, dataset_id_v1_1, search_available_v1_1):
     """Verify bulk data is filtered out by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.sample_analysis.search_data(

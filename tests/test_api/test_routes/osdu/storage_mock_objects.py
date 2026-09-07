@@ -334,7 +334,7 @@ FLUID_MODEL_RECORD = OsduStorageRecord(
             "ModelPropertyFormulationMethods": [
                 {
                     "ModelPropertyTypeID": "namespace:reference-data--FluidModelPropertyType:Density:",
-                    "ModelPropertyFormulationMethodID": "namespace:reference-data--FluidModelPropertyFormulationMethod:PengRobinson:",
+                    "ModelPropertyFormulationMethodID": "namespace:reference-data--FluidModelPropertyFormulationMethod:Compositional.PengRobinson:",
                 },
             ],
             "ModellingApplicationsUsed": [

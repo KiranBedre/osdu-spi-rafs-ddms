@@ -154,17 +154,16 @@ def test_samples_analysis_types_negative_missing_data_partition_id_header(api):
 
 
 def test_samples_analysis_types_negative_empty_data_partition_id_header(api):
-    """Reject requests with an empty Data-Partition-ID header with 400 Bad Request."""
+    """Reject requests with an empty Data-Partition-ID header with 403 Request."""
     response = api.sample_analysis.get_analysis_types(
-        headers={},
-        allowed_codes=[status.HTTP_400_BAD_REQUEST],
+        headers={DATA_PARTITION_ID: ""},
+        allowed_codes=[status.HTTP_403_FORBIDDEN],
         raw=True,
     )
 
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.status_code == status.HTTP_403_FORBIDDEN
     body = response.json()
-    assert len(body["errors"]) == 1, f"Expected errors list length 1, got {len(body['errors'])}"
-    assert "No data-partition-id in headers" in body["errors"]
+    assert "Invalid data partition id" in body["message"]
 
 
 def test_samples_analysis_types_negative_invalid_data_partition_id_header(api):

@@ -71,6 +71,20 @@ def build_result_ids(  # noqa: CCR001
     return result_ids
 
 
+def build_indexed_date_clauses(
+    indexed_start_date: Optional[date],
+    indexed_end_date: Optional[date],
+) -> List[str]:
+    """Build an inclusive UTC indexing-date range clause."""
+    if not indexed_start_date and not indexed_end_date:
+        return []
+
+    start = f'"{indexed_start_date.isoformat()}T00:00:00.000Z"' if indexed_start_date else "*"
+    end = f'"{indexed_end_date.isoformat()}T23:59:59.999Z"' if indexed_end_date else "*"
+
+    return [f"index.lastUpdateTime:[{start} TO {end}]"]
+
+
 class SearchServiceSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
 
     def __init__(self, search_service: search.SearchService):
@@ -104,6 +118,8 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
             query_date_range[1],
             sample_id_filter=sample_id_filter,
         )
+
+        logger.debug("Executing search query for SamplesAnalysis with query: {0}".format(query))
 
         result_records = []
         cursor = None
@@ -242,19 +258,10 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
             escaped_sample_ids = [_escape_query_value(sid) for sid in _dedupe_preserve_order(sample_id_variants)]
             sample_ids_str = " OR ".join(f'"{sid}"' for sid in escaped_sample_ids)
             query_parts.append(f"data.SampleIDs:({sample_ids_str})")
-        # Append time filters based on start and end dates
-        if indexed_start_date and indexed_end_date:
-            query_parts.append(
-                f"index.lastUpdateTime:[{indexed_start_date.isoformat()} TO {indexed_end_date.isoformat()}]",
-            )
-        elif indexed_start_date:
-            query_parts.append(
-                f"index.lastUpdateTime:[{indexed_start_date.isoformat()} TO *]",
-            )
-        elif indexed_end_date:
-            query_parts.append(
-                f"index.lastUpdateTime:[* TO {indexed_end_date.isoformat()}]",
-            )
+
+        query_parts.extend(
+            build_indexed_date_clauses(indexed_start_date, indexed_end_date),
+        )
         query = " AND ".join(query_parts)
         logger.debug("Query for search service: {0}", query)
         return query
