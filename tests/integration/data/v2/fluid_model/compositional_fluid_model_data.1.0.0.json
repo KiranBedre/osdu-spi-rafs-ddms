@@ -122,7 +122,7 @@
           0.0,
           0.0
         ],
-        "FormulationMethodID": "{data_partition_id}:reference-data--FluidModelPropertyFormulationMethod:PengRobinson:",
+        "FormulationMethodID": "{data_partition_id}:reference-data--FluidModelPropertyFormulationMethod:Compositional.PengRobinson:",
         "LiFactor": 0.0,
         "ComponentList": [
           "string",

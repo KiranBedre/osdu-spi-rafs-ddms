@@ -15,6 +15,7 @@
 import pytest
 
 from client.api import ApiWorker
+from client.token_provider import TokenProvider
 from tests.integration.config import CONFIG
 from tests.integration.data_provider import load_test_data
 from tests.integration.helpers import HelperManager
@@ -34,7 +35,9 @@ def pytest_addoption(parser: pytest.Parser):
 def pytest_configure(config: pytest.Config):
     """Extracts configuration from environment variables."""
     CONFIG["CLOUD_PROVIDER"] = config.getoption("--cloud-provider")
-    CONFIG["TOKEN"] = config.getoption("--bearer-token")
+    # A run outlives the Keycloak token lifetime, so hand the clients a provider
+    # that re-mints it instead of the single token captured at job start.
+    CONFIG["TOKEN"] = TokenProvider.from_env(config.getoption("--bearer-token"))
     CONFIG["DDMS_BASE_URL"] = config.getoption("--ddms-base-url")
     CONFIG["URL_PREFIX"] = config.getoption("--url-prefix")
     CONFIG["DATA_PARTITION"] = config.getoption("--partition")

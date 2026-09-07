@@ -93,6 +93,19 @@ python scripts/footprint_generator.py
 
 This will update the appropriate footprint file [here](../docs).
 
+## Integration reference-data gap analysis
+
+`list_integration_reference_gaps.py` compares OSDU `reference-data--*` IDs used under
+`tests/integration/data/v2` with IDs present in
+`deployments/rafsddms_ref_data_manifests_mvp.postman_collection.json`.
+
+```bash
+python scripts/list_integration_reference_gaps.py
+python scripts/list_integration_reference_gaps.py --json
+```
+
+Exit code is `1` when any fixture reference ID is missing from the MVP manifest.
+
 ## JSON Model Generation from XLS files 
 
 1. Clone the Open Subsurface Data Universe JSON Schema [repository](https://gitlab.opengroup.org/osdu/subcommittees/data-def/work-products/schema) 

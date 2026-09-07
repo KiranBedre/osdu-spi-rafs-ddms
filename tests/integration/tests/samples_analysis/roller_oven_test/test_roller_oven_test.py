@@ -243,14 +243,19 @@ def test_roller_oven_test_search_record_filtered_out_by_row(api, record_id, data
     assert record_id not in response["result"]
 
 
-def test_roller_oven_test_search_record_filtered_in_by_start_date(api, record_id, dataset_id_v1, search_available_v1):
+def test_roller_oven_test_search_record_filtered_in_by_start_date(
+    api, record_id, dataset_id_v1, search_available_v1, helper
+):
     """Verify record is filtered in by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_start_date": current_date}
-    response = api.sample_analysis.search_records(
-        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-        schema_version=SchemaVersions.V1_0_0,
-        params=params,
+    response = helper.wait_for_search_record(
+        lambda: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -259,7 +264,7 @@ def test_roller_oven_test_search_record_filtered_in_by_start_date(api, record_id
 
 def test_roller_oven_test_search_record_filtered_out_by_start_date(api, record_id, dataset_id_v1, search_available_v1):
     """Verify record is filtered out by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.sample_analysis.search_records(
@@ -272,14 +277,19 @@ def test_roller_oven_test_search_record_filtered_out_by_start_date(api, record_i
     assert response["result"] == []
 
 
-def test_roller_oven_test_search_record_filtered_in_by_end_date(api, record_id, dataset_id_v1, search_available_v1):
+def test_roller_oven_test_search_record_filtered_in_by_end_date(
+    api, record_id, dataset_id_v1, search_available_v1, helper
+):
     """Verify record is filtered in by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_end_date": current_date}
-    response = api.sample_analysis.search_records(
-        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-        schema_version=SchemaVersions.V1_0_0,
-        params=params,
+    response = helper.wait_for_search_record(
+        lambda: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -288,7 +298,7 @@ def test_roller_oven_test_search_record_filtered_in_by_end_date(api, record_id, 
 
 def test_roller_oven_test_search_record_filtered_out_by_end_date(api, record_id, dataset_id_v1, search_available_v1):
     """Verify record is filtered out by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.sample_analysis.search_records(
@@ -367,15 +377,18 @@ def test_roller_oven_test_search_data_aggregated(api, record_id, dataset_id_v1, 
 
 
 def test_roller_oven_test_search_data_filtered_in_by_start_date(
-    api, tests_data, record_id, dataset_id_v1, search_available_v1
+    api, tests_data, record_id, dataset_id_v1, search_available_v1, helper
 ):
     """Verify bulk data is filtered in by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_start_date": current_date}
-    response = api.sample_analysis.search_data(
-        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-        schema_version=SchemaVersions.V1_0_0,
-        params=params,
+    response = helper.wait_for_search_data(
+        lambda: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -387,7 +400,7 @@ def test_roller_oven_test_search_data_filtered_in_by_start_date(
 
 def test_roller_oven_test_search_data_filtered_out_by_start_date(api, record_id, dataset_id_v1, search_available_v1):
     """Verify bulk data is filtered out by the specified start date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     tomorrow_date = current_date + datetime.timedelta(days=1)
     params = {"indexed_start_date": tomorrow_date}
     response = api.sample_analysis.search_data(
@@ -403,15 +416,18 @@ def test_roller_oven_test_search_data_filtered_out_by_start_date(api, record_id,
 
 
 def test_roller_oven_test_search_data_filtered_in_by_end_date(
-    api, tests_data, record_id, dataset_id_v1, search_available_v1
+    api, tests_data, record_id, dataset_id_v1, search_available_v1, helper
 ):
     """Verify bulk data is filtered in by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     params = {"indexed_end_date": current_date}
-    response = api.sample_analysis.search_data(
-        analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
-        schema_version=SchemaVersions.V1_0_0,
-        params=params,
+    response = helper.wait_for_search_data(
+        lambda: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.ROLLER_OVEN_TEST,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        record_id,
     )
 
     # Assert
@@ -425,7 +441,7 @@ def test_roller_oven_test_search_data_filtered_out_by_end_date(
     api, tests_data, record_id, dataset_id_v1, search_available_v1
 ):
     """Verify bulk data is filtered out by the specified end date filter in the search results"""
-    current_date = datetime.date.today()
+    current_date = datetime.datetime.now(datetime.timezone.utc).date()
     yesterday_date = current_date - datetime.timedelta(days=1)
     params = {"indexed_end_date": yesterday_date}
     response = api.sample_analysis.search_data(
@@ -441,9 +457,7 @@ def test_roller_oven_test_search_data_filtered_out_by_end_date(
     assert not any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-def test_roller_oven_test_search_data_filtered_out_by_page_limit(
-    api, helper, pagination_case_v1
-):
+def test_roller_oven_test_search_data_filtered_out_by_page_limit(api, helper, pagination_case_v1):
     """Verify bulk data is filtered out by the specified page limit filter in the search results"""
     helper.verify_data_pagination(
         lambda params: api.sample_analysis.search_data(
