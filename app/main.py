@@ -33,7 +33,7 @@ from app.api.errors import (
 from app.api.routes.api import router as api_router
 from app.api.routes.v2.api import router as api_router_v2
 from app.core.config import get_app_settings
-from app.core.events import create_start_app_handler, create_stop_app_handler
+from app.core.events import build_lifespan
 from app.custom_openapi import get_custom_openapi_schema
 from app.dev.api.routes.v_dev.api import router as api_router_v_dev
 from app.exceptions.exceptions import (
@@ -70,7 +70,7 @@ def get_application() -> FastAPI:
 
     settings.configure_logging()
 
-    application = FastAPI(**settings.fastapi_kwargs)
+    application = FastAPI(lifespan=build_lifespan(settings), **settings.fastapi_kwargs)
 
     # Middleware registration is LIFO: last-registered = outermost at runtime.
     # Desired execution order: CORSMiddleware → TracingMiddleware → CorrelationIDMiddleware.
@@ -85,15 +85,6 @@ def get_application() -> FastAPI:
     application.add_middleware(CorrelationIDMiddleware)
     application.add_middleware(TracingMiddleware)
     init_metric(application, settings)
-
-    application.add_event_handler(
-        "startup",
-        create_start_app_handler(application, settings),
-    )
-    application.add_event_handler(
-        "shutdown",
-        create_stop_app_handler(application, settings),
-    )
 
     application.include_router(api_router, prefix=f"{settings.openapi_prefix}")
     application.include_router(api_router_v2, prefix=f"{settings.openapi_prefix}/v2")

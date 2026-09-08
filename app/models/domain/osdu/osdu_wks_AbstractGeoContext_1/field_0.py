@@ -16,11 +16,10 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:work-product-component--SamplesAnalysis:1.0.0
 #   timestamp: 2023-10-19T20:18:16+00:00
 
-from __future__ import annotations
 
 from typing import Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 
 from ..osdu_wks_AbstractGeoBasinContext_1 import field_0 as field_0_1
 from ..osdu_wks_AbstractGeoFieldContext_1 import field_0 as field_0_2
@@ -29,14 +28,17 @@ from ..osdu_wks_AbstractGeoPoliticalContext_1 import field_0
 from ..osdu_wks_AbstractGeoProspectContext_1 import field_0 as field_0_4
 
 
-class Field0(BaseModel):
-    __root__: Union[
-        field_0.Field0,
-        field_0_1.Field0,
-        field_0_2.Field0,
-        field_0_3.Field0,
-        field_0_4.Field0,
-    ] = Field(
+_GeoContextUnion = Union[
+    field_0.Field0,
+    field_0_1.Field0,
+    field_0_2.Field0,
+    field_0_3.Field0,
+    field_0_4.Field0,
+]
+
+
+class Field0(RootModel[_GeoContextUnion]):
+    root: _GeoContextUnion = Field(
         ...,
         description="A geographic context to an entity. It can be either a reference to a GeoPoliticalEntity, Basin, Field, Play or Prospect.",
         title="AbstractGeoContext",

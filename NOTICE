@@ -73,6 +73,8 @@ BSD-3-Clause
 ========================================================================
 The following software have components provided under the terms of this license:
 
+- Jinja2 (from http://jinja.pocoo.org/, https://palletsprojects.com/p/jinja/, https://pypi.org/project/Jinja2/)
+- MarkupSafe (from https://palletsprojects.com/p/markupsafe/, https://pypi.org/project/MarkupSafe/)
 - asgiref (from https://github.com/django/asgiref/)
 - click (from https://palletsprojects.com/p/click/, https://pypi.org/project/click/)
 - cryptography (from <https://github.com/pyca/cryptography>, https://github.com/pyca/cryptography)
@@ -124,6 +126,7 @@ The following software have components provided under the terms of this license:
 - PyYAML (from http://pyyaml.org/wiki/PyYAML, https://pyyaml.org/)
 - aiohttp (from https://github.com/aio-libs/aiohttp, https://github.com/aio-libs/aiohttp/, https://pypi.org/project/aiohttp/)
 - annotated-doc (from https://pypi.org/project/annotated-doc/)
+- annotated-types (from https://pypi.org/project/annotated-types/, https://pypi.org/project/annotated-types/0.5.0/, https://pypi.org/project/annotated-types/0.6.0/)
 - anyio (from https://pypi.org/project/anyio/, https://pypi.org/project/anyio/3.3.0/)
 - async-lru (from <https://github.com/aio-libs/async-lru>, https://github.com/aio-libs/async-lru)
 - attrs (from https://attrs.readthedocs.io/, https://pypi.org/project/attrs/, https://www.attrs.org/)
@@ -157,6 +160,8 @@ The following software have components provided under the terms of this license:
 - prometheus-fastapi-instrumentator (from <https://github.com/trallnag/prometheus-fastapi-instrumentator>, https://github.com/trallnag/prometheus-fastapi-instrumentator, https://pypi.org/project/prometheus-fastapi-instrumentator/)
 - protobuf (from https://developers.google.com/protocol-buffers/)
 - pydantic (from https://github.com/samuelcolvin/pydantic, https://pypi.org/project/pydantic/)
+- pydantic-settings (from https://pypi.org/project/pydantic-settings/)
+- pydantic_core (from https://github.com/pydantic/pydantic, https://github.com/pydantic/pydantic-core)
 - pytz (from <http://pythonhosted.org/pytz>, http://pythonhosted.org/pytz)
 - redis (from <https://github.com/redis/redis-py>, https://github.com/redis/redis-py, https://pypi.org/project/redis/)
 - referencing (from https://pypi.org/project/referencing/, https://pypi.org/project/referencing/0.30.2/, https://pypi.org/project/referencing/0.31.1/)
@@ -165,6 +170,7 @@ The following software have components provided under the terms of this license:
 - sniffio (from https://github.com/python-trio/sniffio, https://pypi.org/project/sniffio/, https://pypi.org/project/sniffio/1.3.1/)
 - typeguard (from https://pypi.org/project/typeguard/, https://pypi.org/project/typeguard/4.2.1/, https://pypi.org/project/typeguard/4.3.0/)
 - typing-inspect (from <https://github.com/ilevkivskyi/typing_inspect>, https://github.com/ilevkivskyi/typing_inspect)
+- typing-inspection (from https://pypi.org/project/typing-inspection/)
 - urllib3 (from https://pypi.org/project/urllib3/, https://pypi.org/project/urllib3/2.0.2/, https://pypi.org/project/urllib3/2.0.4/)
 - zipp (from https://pypi.org/project/zipp/, https://pypi.org/project/zipp/3.19.0/, https://pypi.org/project/zipp/3.19.2/)
 

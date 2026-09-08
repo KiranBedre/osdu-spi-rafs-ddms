@@ -14,7 +14,7 @@
 
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Extra, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class StorageUpsertResponse(BaseModel):
@@ -24,20 +24,18 @@ class StorageUpsertResponse(BaseModel):
 
 
 class Acl(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     viewers: List[str]
     owners: List[str]
 
-    class Config:
-        extra = Extra.forbid
-
 
 class Legal(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     legaltags: List[str]
     otherRelevantDataCountries: List[str]
-    status: Optional[str]
-
-    class Config:
-        extra = Extra.forbid
+    status: Optional[str] = None
 
 
 class OsduStorageRecord(BaseModel):

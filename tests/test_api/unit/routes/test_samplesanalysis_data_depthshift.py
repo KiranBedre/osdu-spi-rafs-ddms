@@ -21,9 +21,6 @@ import pytest
 from fastapi import HTTPException, Response
 from starlette import status
 
-if not hasattr(status, "HTTP_422_UNPROCESSABLE_CONTENT"):
-    status.HTTP_422_UNPROCESSABLE_CONTENT = status.HTTP_422_UNPROCESSABLE_CONTENT
-
 from app.api.routes.samplesanalysis.endpoints import SamplesAnalysisDataView
 from app.models.schemas.depth_shift_query import DepthShiftQueryParams
 
@@ -117,14 +114,14 @@ class TestValidateSingleWellboreScopeGetData:
         records = {"s0": self._record(self._WB), "s1": self._record(self._WB2)}
         with pytest.raises(HTTPException) as exc_info:
             view._validate_single_wellbore_scope(records)
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert "multiple WellboreIDs" in exc_info.value.detail
 
     def test_one_sample_missing_wellbore_raises_422(self, view):
         records = {"s0": self._record(self._WB), "s1": self._record(None)}
         with pytest.raises(HTTPException) as exc_info:
             view._validate_single_wellbore_scope(records)
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert "Missing WellboreID" in exc_info.value.detail
         assert "s1" in exc_info.value.detail
 
@@ -132,5 +129,5 @@ class TestValidateSingleWellboreScopeGetData:
         records = {"s0": self._record(None), "s1": self._record(None)}
         with pytest.raises(HTTPException) as exc_info:
             view._validate_single_wellbore_scope(records)
-        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+        assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
         assert "Missing WellboreID" in exc_info.value.detail

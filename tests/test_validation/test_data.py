@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-import pandera as pa
+from pandera import pandas as pa
 
 TEST_SCHEMA = pa.DataFrameSchema(
     {

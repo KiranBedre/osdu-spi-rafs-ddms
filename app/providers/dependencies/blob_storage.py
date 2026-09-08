@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 import aiofiles
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 from app.core.settings.app import AppSettings
 from app.exceptions.exceptions import (

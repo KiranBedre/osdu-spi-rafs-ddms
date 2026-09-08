@@ -16,12 +16,11 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:master-data--Sample:1.0.0
 #   timestamp: 2023-10-24T20:27:08+00:00
 
-from __future__ import annotations
 
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 
 
 class Type(Enum):
@@ -38,8 +37,8 @@ class GeometryItem(BaseModel):
     bbox: Optional[List[float]] = Field(None, min_items=4)
 
 
-class Coordinate(BaseModel):
-    __root__: List[Any]
+class Coordinate(RootModel[List[Any]]):
+    pass
 
 
 class TypeModel1(Enum):

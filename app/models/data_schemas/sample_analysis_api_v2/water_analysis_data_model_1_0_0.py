@@ -16,150 +16,137 @@
 #   filename:  water_analysis.1.0.0.json
 #   timestamp: 2025-02-13T20:04:47+00:00
 
-from __future__ import annotations
 
 from app.models.config import RafsBaseModel
 
 from datetime import date
-from typing import List, Optional, Union
+from typing import Annotated, List, Optional, Union, Literal
 
-from pydantic import Extra, Field, constr
+from pydantic import Field, StringConstraints
 
 
 class Meta(RafsBaseModel):
-    kind: str = Field(
-        "Unit",
-        const=True,
+    kind: Literal["Unit"] = Field("Unit",
         description="The kind of reference, 'Unit' for FrameOfReferenceUOM.",
         title="UOM Reference Kind",
     )
     name: Optional[str] = Field(
         None,
         description="The unit symbol or name of the unit.",
-        example="ft[US]",
+        json_schema_extra={"example": "ft[US]"},
         title="UOM Unit Symbol",
     )
     persistableReference: Optional[str] = Field(
         None,
         description="The self-contained, persistable reference string uniquely identifying the Unit.",
-        example='{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}',
+        json_schema_extra={"example": '{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}'},
         title="UOM Persistable Reference",
     )
     unitOfMeasureID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="SRN to unit of measure reference.",
-        example="namespace:reference-data--UnitOfMeasure:ftUS:",
+        json_schema_extra={"example": "namespace:reference-data--UnitOfMeasure:ftUS:"},
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides Unit context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["HorizontalDeflection.EastWest", "HorizontalDeflection.NorthSouth"],
+        json_schema_extra={"example": ["HorizontalDeflection.EastWest", "HorizontalDeflection.NorthSouth"]},
         title="UOM Property Names",
     )
 
 
+
+_MetaModel = Meta
 class Meta1(RafsBaseModel):
-    kind: str = Field(
-        "CRS",
-        const=True,
+    kind: Literal["CRS"] = Field("CRS",
         description="The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
         title="CRS Reference Kind",
     )
     name: Optional[str] = Field(
         None,
         description="The name of the CRS.",
-        example="WGS 84 / UTM zone 15N",
+        json_schema_extra={"example": "WGS 84 / UTM zone 15N"},
         title="CRS Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying the CRS.",
-        example='{"authCode":{"auth":"EPSG","code":"32615"},"name":"WGS_1984_UTM_Zone_15N","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"WGS_1984_UTM_Zone_15N\\",GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Transverse_Mercator\\"],PARAMETER[\\"False_Easting\\",500000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-93.0],PARAMETER[\\"Scale_Factor\\",0.9996],PARAMETER[\\"Latitude_Of_Origin\\",0.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",32615]]"}',
+        json_schema_extra={"example": '{"authCode":{"auth":"EPSG","code":"32615"},"name":"WGS_1984_UTM_Zone_15N","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"WGS_1984_UTM_Zone_15N\\",GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Transverse_Mercator\\"],PARAMETER[\\"False_Easting\\",500000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-93.0],PARAMETER[\\"Scale_Factor\\",0.9996],PARAMETER[\\"Latitude_Of_Origin\\",0.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",32615]]"}'},
         title="CRS Persistable Reference",
     )
     coordinateReferenceSystemID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="SRN to CRS reference.",
-        example="namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+        json_schema_extra={"example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:"},
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides CRS context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["KickOffPosition.X", "KickOffPosition.Y"],
+        json_schema_extra={"example": ["KickOffPosition.X", "KickOffPosition.Y"]},
         title="CRS Property Names",
     )
 
 
 class Meta2(RafsBaseModel):
-    kind: str = Field(
-        "DateTime",
-        const=True,
+    kind: Literal["DateTime"] = Field("DateTime",
         description="The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
         title="DateTime Reference Kind",
     )
     name: Optional[str] = Field(
         None,
         description="The name of the DateTime format and reference.",
-        example="UTC",
+        json_schema_extra={"example": "UTC"},
         title="DateTime Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying DateTime reference.",
-        example='{"format":"yyyy-MM-ddTHH:mm:ssZ","timeZone":"UTC","type":"DTM"}',
+        json_schema_extra={"example": '{"format":"yyyy-MM-ddTHH:mm:ssZ","timeZone":"UTC","type":"DTM"}'},
         title="DateTime Persistable Reference",
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides DateTime context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Acquisition.StartTime", "Acquisition.EndTime"],
+        json_schema_extra={"example": ["Acquisition.StartTime", "Acquisition.EndTime"]},
         title="DateTime Property Names",
     )
 
 
 class Meta3(RafsBaseModel):
-    kind: str = Field(
-        "AzimuthReference",
-        const=True,
+    kind: Literal["AzimuthReference"] = Field("AzimuthReference",
         description="The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
         title="AzimuthReference Reference Kind",
     )
     name: Optional[str] = Field(
         None,
         description="The name of the CRS or the symbol/name of the unit.",
-        example="TrueNorth",
+        json_schema_extra={"example": "TrueNorth"},
         title="AzimuthReference Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying AzimuthReference.",
-        example='{"code":"TrueNorth","type":"AZR"}',
+        json_schema_extra={"example": '{"code":"TrueNorth","type":"AZR"}'},
         title="AzimuthReference Persistable Reference",
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides AzimuthReference context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Bearing"],
+        json_schema_extra={"example": ["Bearing"]},
         title="AzimuthReference Property Names",
     )
 
 
 class Remark(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     RemarkSequenceNumber: Optional[int] = Field(
         None,
         description="A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
-        example=1,
+        json_schema_extra={"example": 1},
         title="Remark Sequence Number",
     )
     Remark: Optional[str] = Field(
@@ -176,14 +163,10 @@ class Remark(RafsBaseModel):
 
 
 class Resistivity(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: Optional[float] = Field(None, title="Value")
     FluidResistivityMeasurementMethodID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-FluidResistivityMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-FluidResistivityMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Method by which the resistivity of the fluid sample was measured.",
@@ -196,9 +179,9 @@ class Resistivity(RafsBaseModel):
     )
 
 
+
+_ResistivityModel = Resistivity
 class WaterDensity(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: Optional[float] = Field(None, title="Value")
     Temperature: Optional[float] = Field(
@@ -208,9 +191,9 @@ class WaterDensity(RafsBaseModel):
     )
 
 
+
+_WaterDensityModel = WaterDensity
 class Salinity(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: Optional[float] = Field(None, title="Value")
     Temperature: Optional[float] = Field(
@@ -220,9 +203,9 @@ class Salinity(RafsBaseModel):
     )
 
 
+
+_SalinityModel = Salinity
 class TotalDissolvedSolids(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: Optional[float] = Field(None, title="Value")
     Type: Optional[str] = Field(
@@ -232,9 +215,9 @@ class TotalDissolvedSolids(RafsBaseModel):
     )
 
 
+
+_TotalDissolvedSolidsModel = TotalDissolvedSolids
 class TotalSuspendedSolids(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: Optional[float] = Field(None, title="Value")
     Type: Optional[str] = Field(
@@ -244,9 +227,9 @@ class TotalSuspendedSolids(RafsBaseModel):
     )
 
 
+
+_TotalSuspendedSolidsModel = TotalSuspendedSolids
 class TotalHardness(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: Optional[float] = Field(None, title="Value")
     Type: Optional[str] = Field(
@@ -256,9 +239,9 @@ class TotalHardness(RafsBaseModel):
     )
 
 
+
+_TotalHardnessModel = TotalHardness
 class TotalAlkalinity(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: Optional[float] = Field(None, title="Value")
     Type: Optional[str] = Field(
@@ -268,9 +251,9 @@ class TotalAlkalinity(RafsBaseModel):
     )
 
 
+
+_TotalAlkalinityModel = TotalAlkalinity
 class TotalSedimentSolids(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: Optional[float] = Field(None, title="Value")
     Type: Optional[str] = Field(
@@ -280,15 +263,13 @@ class TotalSedimentSolids(RafsBaseModel):
     )
 
 
+
+_TotalSedimentSolidsModel = TotalSedimentSolids
 class PH(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: Optional[float] = Field(None, title="Value")
     PHMeasurementMethodID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-PHMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-PHMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The method by which pH was measured.",
@@ -302,14 +283,10 @@ class PH(RafsBaseModel):
 
 
 class Conductivity(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Value: Optional[float] = Field(None, title="Value")
     ConductivityMeasurementMethodID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ConductivityMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ConductivityMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The method by which Conductivity was measured.",
@@ -322,9 +299,9 @@ class Conductivity(RafsBaseModel):
     )
 
 
+
+_ConductivityModel = Conductivity
 class WaterGeneralAnalysis(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     AnalysisPressure: Optional[float] = Field(
         None,
@@ -346,7 +323,7 @@ class WaterGeneralAnalysis(RafsBaseModel):
         description="The concentration of oxygen gas dissolved in the water sample.",
         title="Dissolved O2",
     )
-    Resistivity: Optional[Resistivity] = Field(
+    Resistivity: Optional[_ResistivityModel] = Field(
         None,
         description="The electrical resistance of the water sample, often used to infer ion concentration.",
         title="Resistivity",
@@ -366,7 +343,7 @@ class WaterGeneralAnalysis(RafsBaseModel):
         description="The measure of the change in water viscosity under varying pressure conditions.",
         title="Water Viscous Compressibility",
     )
-    WaterDensity: Optional[WaterDensity] = Field(
+    WaterDensity: Optional[_WaterDensityModel] = Field(
         None,
         description="The mass per unit volume of the water sample.",
         title="Water Density",
@@ -416,32 +393,32 @@ class WaterGeneralAnalysis(RafsBaseModel):
         description="The inverse of water density, indicating the volume occupied by a unit mass of water.",
         title="Water Specific Volume",
     )
-    Salinity: Optional[Salinity] = Field(
+    Salinity: Optional[_SalinityModel] = Field(
         None,
         description="The total concentration of dissolved salts in the water sample.",
         title="Salinity",
     )
-    TotalDissolvedSolids: Optional[TotalDissolvedSolids] = Field(
+    TotalDissolvedSolids: Optional[_TotalDissolvedSolidsModel] = Field(
         None,
         description="The total concentration of solid substances dissolved in the water sample.",
         title="Total Dissolved Solids",
     )
-    TotalSuspendedSolids: Optional[TotalSuspendedSolids] = Field(
+    TotalSuspendedSolids: Optional[_TotalSuspendedSolidsModel] = Field(
         None,
         description="The total concentration of particles suspended in the water sample.",
         title="Total Suspended Solids",
     )
-    TotalHardness: Optional[TotalHardness] = Field(
+    TotalHardness: Optional[_TotalHardnessModel] = Field(
         None,
         description="The concentration of multivalent cations, primarily calcium and magnesium ions, in the water sample.",
         title="Total Hardness",
     )
-    TotalAlkalinity: Optional[TotalAlkalinity] = Field(
+    TotalAlkalinity: Optional[_TotalAlkalinityModel] = Field(
         None,
         description="The capacity of the water sample to neutralize acids, primarily due to the presence of bicarbonates, carbonates, and hydroxides.",
         title="Total Alkalinity",
     )
-    TotalSedimentSolids: Optional[TotalSedimentSolids] = Field(
+    TotalSedimentSolids: Optional[_TotalSedimentSolidsModel] = Field(
         None,
         description="The total concentration of sediment particles within the water sample.",
         title="Total Sediment Solids",
@@ -451,25 +428,23 @@ class WaterGeneralAnalysis(RafsBaseModel):
         description="A measure of the acidity or alkalinity of the water sample, based on the concentration of hydrogen ions.",
         title="pH",
     )
-    Conductivity: Optional[Conductivity] = Field(
+    Conductivity: Optional[_ConductivityModel] = Field(
         None,
         description="The measure of the water sample’s ability to conduct electrical current, related to the concentration of ions in the water.",
         title="Conductivity",
     )
 
 
+
+_WaterGeneralAnalysisModel = WaterGeneralAnalysis
 class Anion(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     ComponentNameID: Optional[str] = Field(
         None, description="The name of this anion.", title="Component Name ID"
     )
     Value: Optional[float] = Field(None, title="Value")
     ElementalMeasurementMethodID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ElementalMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ElementalMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Method of measurement for this component.",
@@ -478,17 +453,13 @@ class Anion(RafsBaseModel):
 
 
 class Cation(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     ComponentNameID: Optional[str] = Field(
         None, description="The name of this cation.", title="Component Name ID"
     )
     Value: Optional[float] = Field(None, title="Value")
     ElementalMeasurementMethodID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ElementalMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ElementalMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Method of measurement for this component.",
@@ -497,17 +468,13 @@ class Cation(RafsBaseModel):
 
 
 class DissolvedMetal(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     ComponentNameID: Optional[str] = Field(
         None, description="The name of this cation.", title="Component Name ID"
     )
     Value: Optional[float] = Field(None, title="Value")
     ElementalMeasurementMethodID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ElementalMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ElementalMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Method of measurement for this component.",
@@ -516,17 +483,13 @@ class DissolvedMetal(RafsBaseModel):
 
 
 class OrganicAcid(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     ComponentNameID: Optional[str] = Field(
         None, description="The name of this cation.", title="Component Name ID"
     )
     Value: Optional[float] = Field(None, title="Value")
     ElementalMeasurementMethodID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ElementalMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ElementalMeasurementMethod:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Method of measurement for this component.",
@@ -535,13 +498,11 @@ class OrganicAcid(RafsBaseModel):
 
 
 class Remarks(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     RemarkSequenceNumber: Optional[int] = Field(
         None,
         description="A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
-        example=1,
+        json_schema_extra={"example": 1},
         title="Remark Sequence Number",
     )
     Remark: Optional[str] = Field(
@@ -557,9 +518,9 @@ class Remarks(RafsBaseModel):
     )
 
 
+
+_RemarksModel = Remarks
 class WaterSampleComponentItem(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Anions: Optional[List[Anion]] = Field(
         None,
@@ -611,7 +572,7 @@ class WaterSampleComponentItem(RafsBaseModel):
         description="The concentration of this component relative to the detectable limits of the experiment.",
         title="Concentration Relative To Detectable Limits",
     )
-    Remarks: Optional[Remarks] = Field(
+    Remarks: Optional[_RemarksModel] = Field(
         None,
         description="Additional notes or observations regarding the test, conditions, or results that may be relevant for interpretation.",
         title="Remarks",
@@ -619,27 +580,21 @@ class WaterSampleComponentItem(RafsBaseModel):
 
 
 class WaterAnalysisModel100(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
-    SamplesAnalysisID: constr(
-        regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+    SamplesAnalysisID: Annotated[str, StringConstraints(pattern="^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ...,
         description="The OSDU Identifier for this SamplesAnalysis.",
         title="Samples Analysis ID",
     )
-    SampleID: constr(
-        regex=r"^[\w\-\.]+:master-data\-\-Sample:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+    SampleID: Annotated[str, StringConstraints(pattern="^[\w\-\.]+:master-data\-\-Sample:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ...,
         description="The OSDU Identifier for the Sample associated with this analysis.",
         title="Sample ID",
     )
-    Meta: List[Union[Meta, Meta1, Meta2, Meta3]] = Field(
+    Meta: List[Union[_MetaModel, Meta1, Meta2, Meta3]] = Field(
         ...,
         description="A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
-        example="",
+        json_schema_extra={"example": ""},
         title="Meta",
     )
     TestNumber: Optional[str] = Field(
@@ -655,10 +610,10 @@ class WaterAnalysisModel100(RafsBaseModel):
     Remarks: Optional[List[Remark]] = Field(
         None,
         description="Array object capturing remarks or additional information for this test step.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
-        example="",
+        json_schema_extra={"example": ""},
         title="Remarks",
     )
-    WaterGeneralAnalysis: Optional[WaterGeneralAnalysis] = Field(
+    WaterGeneralAnalysis: Optional[_WaterGeneralAnalysisModel] = Field(
         None,
         description="Object containing general analysis properties.",
         title="Water General Analysis",

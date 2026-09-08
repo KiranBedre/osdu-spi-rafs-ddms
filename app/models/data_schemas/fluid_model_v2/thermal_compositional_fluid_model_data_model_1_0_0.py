@@ -20,140 +20,132 @@ from __future__ import annotations
 
 from app.models.config import RafsBaseModel
 
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Annotated, Literal
 
-from pydantic import Extra, Field, constr
+from pydantic import Field
+from pydantic import StringConstraints
 
 
 class Meta(RafsBaseModel):
-    kind: str = Field(
+    kind: Literal["Unit"] = Field(
         "Unit",
-        const=True,
         description="The kind of reference, 'Unit' for FrameOfReferenceUOM.",
-        title="UOM Reference Kind",
+        title="UOM Reference Kind"
     )
     name: Optional[str] = Field(
         None,
         description="The unit symbol or name of the unit.",
-        example="ft[US]",
+        json_schema_extra={"example": "ft[US]"},
         title="UOM Unit Symbol",
     )
     persistableReference: Optional[str] = Field(
         None,
         description="The self-contained, persistable reference string uniquely identifying the Unit.",
-        example='{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}',
+        json_schema_extra={"example": '{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}'},
         title="UOM Persistable Reference",
     )
     unitOfMeasureID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="SRN to unit of measure reference.",
-        example="namespace:reference-data--UnitOfMeasure:ftUS:",
+        json_schema_extra={"example": "namespace:reference-data--UnitOfMeasure:ftUS:"},
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides Unit context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["HorizontalDeflection.EastWest", "HorizontalDeflection.NorthSouth"],
+        json_schema_extra={"example": ["HorizontalDeflection.EastWest", "HorizontalDeflection.NorthSouth"]},
         title="UOM Property Names",
     )
 
 
+_Meta = Meta
 class Meta1(RafsBaseModel):
-    kind: str = Field(
+    kind: Literal["CRS"] = Field(
         "CRS",
-        const=True,
         description="The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
-        title="CRS Reference Kind",
+        title="CRS Reference Kind"
     )
     name: Optional[str] = Field(
         None,
         description="The name of the CRS.",
-        example="WGS 84 / UTM zone 15N",
+        json_schema_extra={"example": "WGS 84 / UTM zone 15N"},
         title="CRS Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying the CRS.",
-        example='{"authCode":{"auth":"EPSG","code":"32615"},"name":"WGS_1984_UTM_Zone_15N","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"WGS_1984_UTM_Zone_15N\\",GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Transverse_Mercator\\"],PARAMETER[\\"False_Easting\\",500000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-93.0],PARAMETER[\\"Scale_Factor\\",0.9996],PARAMETER[\\"Latitude_Of_Origin\\",0.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",32615]]"}',
+        json_schema_extra={"example": '{"authCode":{"auth":"EPSG","code":"32615"},"name":"WGS_1984_UTM_Zone_15N","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"WGS_1984_UTM_Zone_15N\\",GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Transverse_Mercator\\"],PARAMETER[\\"False_Easting\\",500000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-93.0],PARAMETER[\\"Scale_Factor\\",0.9996],PARAMETER[\\"Latitude_Of_Origin\\",0.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",32615]]"}'},
         title="CRS Persistable Reference",
     )
     coordinateReferenceSystemID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="SRN to CRS reference.",
-        example="namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+        json_schema_extra={"example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:"},
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides CRS context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["KickOffPosition.X", "KickOffPosition.Y"],
+        json_schema_extra={"example": ["KickOffPosition.X", "KickOffPosition.Y"]},
         title="CRS Property Names",
     )
 
 
 class Meta2(RafsBaseModel):
-    kind: str = Field(
+    kind: Literal["DateTime"] = Field(
         "DateTime",
-        const=True,
         description="The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
-        title="DateTime Reference Kind",
+        title="DateTime Reference Kind"
     )
     name: Optional[str] = Field(
         None,
         description="The name of the DateTime format and reference.",
-        example="UTC",
+        json_schema_extra={"example": "UTC"},
         title="DateTime Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying DateTime reference.",
-        example='{"format":"yyyy-MM-ddTHH:mm:ssZ","timeZone":"UTC","type":"DTM"}',
+        json_schema_extra={"example": '{"format":"yyyy-MM-ddTHH:mm:ssZ","timeZone":"UTC","type":"DTM"}'},
         title="DateTime Persistable Reference",
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides DateTime context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Acquisition.StartTime", "Acquisition.EndTime"],
+        json_schema_extra={"example": ["Acquisition.StartTime", "Acquisition.EndTime"]},
         title="DateTime Property Names",
     )
 
 
 class Meta3(RafsBaseModel):
-    kind: str = Field(
+    kind: Literal["AzimuthReference"] = Field(
         "AzimuthReference",
-        const=True,
         description="The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
-        title="AzimuthReference Reference Kind",
+        title="AzimuthReference Reference Kind"
     )
     name: Optional[str] = Field(
         None,
         description="The name of the CRS or the symbol/name of the unit.",
-        example="TrueNorth",
+        json_schema_extra={"example": "TrueNorth"},
         title="AzimuthReference Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying AzimuthReference.",
-        example='{"code":"TrueNorth","type":"AZR"}',
+        json_schema_extra={"example": '{"code":"TrueNorth","type":"AZR"}'},
         title="AzimuthReference Persistable Reference",
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides AzimuthReference context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Bearing"],
+        json_schema_extra={"example": ["Bearing"]},
         title="AzimuthReference Property Names",
     )
 
 
 class OilViscosityModel(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     C1: Optional[float] = Field(
         None,
@@ -187,9 +179,8 @@ class OilViscosityModel(RafsBaseModel):
     )
 
 
+_OilViscosityModel = OilViscosityModel
 class OilViscosityModel1(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     C1: Optional[float] = Field(
         None,
@@ -234,8 +225,6 @@ class OilViscosityModel1(RafsBaseModel):
 
 
 class OilViscosityModel2(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     C1: Optional[float] = Field(
         None,
@@ -270,8 +259,6 @@ class OilViscosityModel2(RafsBaseModel):
 
 
 class OilViscosityModel3(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     CriticalViscosity: Optional[List[float]] = Field(
         None,
@@ -301,8 +288,6 @@ class OilViscosityModel3(RafsBaseModel):
 
 
 class GasViscosityModel(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     C1: Optional[float] = Field(
         None,
@@ -336,9 +321,8 @@ class GasViscosityModel(RafsBaseModel):
     )
 
 
+_GasViscosityModel = GasViscosityModel
 class GasViscosityModel1(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     C1: Optional[float] = Field(
         None,
@@ -383,8 +367,6 @@ class GasViscosityModel1(RafsBaseModel):
 
 
 class GasViscosityModel2(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     C1: Optional[float] = Field(
         None,
@@ -419,8 +401,6 @@ class GasViscosityModel2(RafsBaseModel):
 
 
 class GasViscosityModel3(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     CriticalViscosity: Optional[List[float]] = Field(
         None,
@@ -450,8 +430,6 @@ class GasViscosityModel3(RafsBaseModel):
 
 
 class WaterViscosityModel(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     CoefficientA0: Optional[List[float]] = Field(
         None,
@@ -470,9 +448,8 @@ class WaterViscosityModel(RafsBaseModel):
     )
 
 
+_WaterViscosityModel = WaterViscosityModel
 class TemperatureTable(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Temperature: Optional[List[float]] = Field(
         None,
@@ -486,9 +463,8 @@ class TemperatureTable(RafsBaseModel):
     )
 
 
+_TemperatureTable = TemperatureTable
 class WaterViscosityModel1(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     ReferencePressure: Optional[float] = Field(
         None,
@@ -500,7 +476,7 @@ class WaterViscosityModel1(RafsBaseModel):
         description="Specifies the water viscosity compressibility value at the reference pressure.",
         title="Water Viscosity Compressibility",
     )
-    TemperatureTable: Optional[TemperatureTable] = Field(
+    TemperatureTable: Optional[_TemperatureTable] = Field(
         None,
         description="Provides an array of viscosity values per component per temperature at the specified reference pressure",
         title="Temperature Table",
@@ -508,19 +484,17 @@ class WaterViscosityModel1(RafsBaseModel):
 
 
 class StandardCondition(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Pressure: float = Field(
         ...,
         description="The recorded absolute pressure condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit Pa (Pascal).",
-        example="1 bar",
+        json_schema_extra={"example": "1 bar"},
         title="Pressure",
     )
     Temperature: float = Field(
         ...,
         description="The recorded temperature condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit K (Kelvin).",
-        example="15 degC",
+        json_schema_extra={"example": "15 degC"},
         title="Temperature",
     )
     IsStandardConditions: Optional[bool] = Field(
@@ -535,9 +509,8 @@ class StandardCondition(RafsBaseModel):
     )
 
 
+_StandardCondition = StandardCondition
 class BinaryInteractionCoefficient(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     SequencedComponentList: List[str] = Field(
         ...,
@@ -551,9 +524,8 @@ class BinaryInteractionCoefficient(RafsBaseModel):
     )
 
 
+_BinaryInteractionCoefficient = BinaryInteractionCoefficient
 class ComponentProperties(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     MolecularWeight: List[float] = Field(
         ...,
@@ -607,9 +579,8 @@ class ComponentProperties(RafsBaseModel):
     )
 
 
+_ComponentProperties = ComponentProperties
 class Enthalpy(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     PhaseID: Optional[str] = Field(
         None, description="Specifies the name of the phase", title="Phase ID"
@@ -621,9 +592,8 @@ class Enthalpy(RafsBaseModel):
     )
 
 
+_Enthalpy = Enthalpy
 class Enthalpy1(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     LiquidHeatCapacityCoefficient: Optional[List[float]] = Field(
         None,
@@ -653,8 +623,6 @@ class Enthalpy1(RafsBaseModel):
 
 
 class Enthalpy2(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     VaporizationHeatConstantCoefficient: Optional[List[float]] = Field(
         None,
@@ -694,8 +662,6 @@ class Enthalpy2(RafsBaseModel):
 
 
 class Enthalpy3(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     LiquidHeatCapacityCoefficient: Optional[List[float]] = Field(
         None,
@@ -745,8 +711,6 @@ class Enthalpy3(RafsBaseModel):
 
 
 class EnthalpyAqueousHeatCapacityCoefficient(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     AqueousHeatCapacityCoefficient1: Optional[List[float]] = Field(
         None,
@@ -765,12 +729,11 @@ class EnthalpyAqueousHeatCapacityCoefficient(RafsBaseModel):
     )
 
 
+_EnthalpyAqueousHeatCapacityCoefficient = EnthalpyAqueousHeatCapacityCoefficient
 class Enthalpy4(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     EnthalpyAqueousHeatCapacityCoefficient: Optional[
-        EnthalpyAqueousHeatCapacityCoefficient
+        _EnthalpyAqueousHeatCapacityCoefficient
     ] = Field(
         None,
         description="This represents the component heat capacity coefficients used for aqueous enthalpy calculations.",
@@ -779,8 +742,6 @@ class Enthalpy4(RafsBaseModel):
 
 
 class KValueCorrelation(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     KValueCorrelationType: Optional[str] = Field(
         None,
@@ -804,17 +765,14 @@ class KValueCorrelation(RafsBaseModel):
     )
 
 
+_KValueCorrelation = KValueCorrelation
 class PressureTable(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Pressure: Optional[float] = Field(None, description="Pressure", title="Pressure")
     Kvalue: Optional[float] = Field(None, description="Kvalue", title="Kvalue")
 
 
 class KValueTable(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Temperature: Optional[float] = Field(
         None, description="Temperature", title="Temperature"
@@ -825,8 +783,6 @@ class KValueTable(RafsBaseModel):
 
 
 class EquationOfState(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     NonDimensionalVolumeShift: Optional[List[float]] = Field(
         None,
@@ -838,9 +794,7 @@ class EquationOfState(RafsBaseModel):
         description="Dimensional volume shift parameters used in the Peneloux et. al. volume correction within the cubic equation of state. For its usage, the component's molar volume accounting for the peneloux volume shift is equal to the component's molar volume without the peneloux volume shift MINUS the DimensionalVolumeShift.",
         title="Dimensional Volume Shift",
     )
-    FormulationMethodID: constr(
-        regex=r"^[\w\-\.]+:reference-data\-\-FluidModelPropertyFormulationMethod:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+    FormulationMethodID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-FluidModelPropertyFormulationMethod:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ...,
         description="Identifies the formulation method used in generating the numerical values assigned to the model property (e.g., Peng-Robinson).  There is only one FormulationMethodID identified for an equation of state within a compositional model.",
         title="Formulation Method ID",
@@ -855,9 +809,8 @@ class EquationOfState(RafsBaseModel):
     )
 
 
+_EquationOfState = EquationOfState
 class WaterCompressibility(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     SurfaceDensity: Optional[float] = Field(
         None, description="The surface mass density of water.", title="Surface Density"
@@ -889,9 +842,8 @@ class WaterCompressibility(RafsBaseModel):
     )
 
 
+_WaterCompressibility = WaterCompressibility
 class WaterTableItem(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     SurfaceDensity: Optional[float] = Field(
         None, description="Surface mass density of water", title="Surface Density"
@@ -914,8 +866,6 @@ class WaterTableItem(RafsBaseModel):
 
 
 class TemperatureAtDepth(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     TrueVerticalDepths: Optional[List[float]] = Field(
         None,
@@ -929,14 +879,11 @@ class TemperatureAtDepth(RafsBaseModel):
     )
 
 
+_TemperatureAtDepth = TemperatureAtDepth
 class CompositionsAtDepthItem(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     CompositionTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ReservoirComponentCompositionType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ReservoirComponentCompositionType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Indicating that the table consists of phase component mole fractions versus depth. (Total, Liquid, Vapor, Aqueous, Residual Oil, Solid)",
@@ -955,13 +902,9 @@ class CompositionsAtDepthItem(RafsBaseModel):
 
 
 class PhaseProperty(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     PhaseTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ReservoirComponentCompositionType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ReservoirComponentCompositionType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Indicating that the table consists of phase component mole fractions versus depth. (Total, Liquid, Vapor, Aqueous, Residual Oil, Solid)",
@@ -1009,8 +952,6 @@ class PhaseProperty(RafsBaseModel):
 
 
 class InterfacialTension(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     PhaseIndex1: Optional[int] = Field(
         None,
@@ -1030,8 +971,6 @@ class InterfacialTension(RafsBaseModel):
 
 
 class FlashValidationExample(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Pressure: Optional[float] = Field(
         None,
@@ -1056,21 +995,17 @@ class FlashValidationExample(RafsBaseModel):
 
 
 class ThermalCompositionalFluidModelModel100(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
-    FluidModelID: constr(
-        regex=r"^[\w\-\.]+:work-product-component\-\-FluidModel:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+    FluidModelID: Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:work-product-component\-\-FluidModel:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ...,
         description="OSDU Identifier of the associated Fluid Model WPC.",
         title="Fluid Model ID",
     )
-    Meta: List[Union[Meta, Meta1, Meta2, Meta3]] = Field(
+    Meta: List[Union[_Meta, Meta1, Meta2, Meta3]] = Field(
         ...,
         description="A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
-        example="",
-        title="Meta",
+        json_schema_extra={"example": ""},
+        title="_Meta",
     )
     Name: str = Field(
         ...,
@@ -1079,7 +1014,7 @@ class ThermalCompositionalFluidModelModel100(RafsBaseModel):
     )
     OilViscosityModel: Optional[
         Union[
-            OilViscosityModel,
+            _OilViscosityModel,
             OilViscosityModel1,
             OilViscosityModel2,
             OilViscosityModel3,
@@ -1090,9 +1025,7 @@ class ThermalCompositionalFluidModelModel100(RafsBaseModel):
         title="Oil Viscosity Model",
     )
     OilViscosityModelTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ViscosityModelType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ViscosityModelType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The type of model chosen for the viscosity of hydrocarbon liquid phases.",
@@ -1100,7 +1033,7 @@ class ThermalCompositionalFluidModelModel100(RafsBaseModel):
     )
     GasViscosityModel: Optional[
         Union[
-            GasViscosityModel,
+            _GasViscosityModel,
             GasViscosityModel1,
             GasViscosityModel2,
             GasViscosityModel3,
@@ -1111,15 +1044,13 @@ class ThermalCompositionalFluidModelModel100(RafsBaseModel):
         title="Gas Viscosity Model",
     )
     GasViscosityModelTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ViscosityModelType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ViscosityModelType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The type of model chosen for the viscosity of hydrocarbon vapor phases.",
         title="Gas Viscosity Model Type ID",
     )
-    WaterViscosityModel: Optional[Union[WaterViscosityModel, WaterViscosityModel1]] = (
+    WaterViscosityModel: Optional[Union[_WaterViscosityModel, WaterViscosityModel1]] = (
         Field(
             None,
             description="The water phase viscosity model.",
@@ -1127,15 +1058,13 @@ class ThermalCompositionalFluidModelModel100(RafsBaseModel):
         )
     )
     WaterViscosityModelTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ViscosityModelType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ViscosityModelType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The type of model chosen for the viscosity of water phases.",
         title="Water Viscosity Model Type ID",
     )
-    StandardCondition: Optional[StandardCondition] = Field(
+    StandardCondition: Optional[_StandardCondition] = Field(
         None,
         description="Represents the standard condition (pressure and temperature) referenced in the model.  If used, both pressure and temperature must be provided.",
         title="Standard Condition",
@@ -1160,24 +1089,24 @@ class ThermalCompositionalFluidModelModel100(RafsBaseModel):
         description="Array of sequenced list of components soluble in water or aqueous phase. Governs the EnthalpyAquaous Heart Capacity Models. All array objects related to this list should be of equal length and ordered identically by component.",
         title="Sequenced Soluble In Water Component List",
     )
-    BinaryInteractionCoefficient: BinaryInteractionCoefficient = Field(
+    BinaryInteractionCoefficient: _BinaryInteractionCoefficient = Field(
         ...,
         description="Strict lower triangle of the binary interaction coefficient matrix and corresponding approximation level.",
         title="Binary Interaction Coefficient",
     )
-    ComponentProperties: ComponentProperties = Field(
+    ComponentProperties: _ComponentProperties = Field(
         ...,
-        description="Component properties required for phase behavior modeling using an equation of state.  The length of each array within ComponentProperties should be equal.",
-        title="ComponentProperties",
+        description="Component properties required for phase behavior modeling using an equation of state.  The length of each array within _ComponentProperties should be equal.",
+        title="_ComponentProperties",
     )
-    Enthalpy: Optional[Union[Enthalpy, Enthalpy1, Enthalpy2, Enthalpy3, Enthalpy4]] = (
+    Enthalpy: Optional[Union[_Enthalpy, Enthalpy1, Enthalpy2, Enthalpy3, Enthalpy4]] = (
         Field(
             None,
             description="The enthalpy model used for the fluid phases.",
-            title="Enthalpy",
+            title="_Enthalpy",
         )
     )
-    KValueCorrelation: Optional[KValueCorrelation] = Field(
+    KValueCorrelation: Optional[_KValueCorrelation] = Field(
         None,
         description="Antonie or Crookston, used to define phase equilibrium.",
         title="K Value Correlation",
@@ -1185,17 +1114,17 @@ class ThermalCompositionalFluidModelModel100(RafsBaseModel):
     KValueTables: Optional[List[KValueTable]] = Field(
         None, description="used to define phase equilibrium", title="K Value Tables"
     )
-    EquationOfState: Optional[EquationOfState] = Field(
+    EquationOfState: Optional[_EquationOfState] = Field(
         None,
         description="Defines the parameters to create an equation of state that describes this compositional fluid model.",
-        title="EquationOfState",
+        title="_EquationOfState",
     )
     UseSteamTables: Optional[bool] = Field(
         None,
         description="If true, the Water Thermal Model uses the application-defined steam tables (e.g., IAPWS-IF97), and the WaterThermalModel object should be null.  If false, the user must provide their modified Kvalue, Density, Viscosity, and Enthalpy values within the water thermal model. Unspecified properties will use the application-defined steam tables.",
         title="Use Steam Tables",
     )
-    WaterCompressibility: Optional[WaterCompressibility] = Field(
+    WaterCompressibility: Optional[_WaterCompressibility] = Field(
         None,
         description="This is an object used in calculating water  properties using compressibilities and a  reference pressure.",
         title="Water Compressibility",
@@ -1205,7 +1134,7 @@ class ThermalCompositionalFluidModelModel100(RafsBaseModel):
         description="This is an array of water properties, such as viscosity and formation volume factor, as a function of pressure and constant temperature.",
         title="Water Table",
     )
-    TemperatureAtDepth: Optional[TemperatureAtDepth] = Field(
+    TemperatureAtDepth: Optional[_TemperatureAtDepth] = Field(
         None,
         description="This is an array of reservoir temperatures reported at specific depths.",
         title="Temperature At Depth",

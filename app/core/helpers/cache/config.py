@@ -12,18 +12,20 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Optional, Union
+from typing import Annotated, Optional, Union
 
-from pydantic import BaseSettings
-from pydantic.types import conint
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class RedisCacheConfig(BaseSettings):
     """Config with settings for redis instance."""
 
+    model_config = SettingsConfigDict(env_file=".env")
+
     redis_hostname: Optional[str] = None
 
-    redis_password: str = None
+    redis_password: Optional[str] = None
 
     redis_port: int = 6380
 
@@ -31,7 +33,4 @@ class RedisCacheConfig(BaseSettings):
 
     redis_ssl: bool = True
 
-    redis_index_database: conint(gt=-1, lt=1) = 0  # only at 'db = 0' can be created the index
-
-    class Config(object):
-        env_file = ".env"
+    redis_index_database: Annotated[int, Field(gt=-1, lt=1)] = 0  # only at 'db = 0' can be created the index

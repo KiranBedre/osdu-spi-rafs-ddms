@@ -28,15 +28,18 @@ from tests.integration.config import (
 def test_nmr_negative_missing_authorization_header(
     api, tests_data, endpoint, args, record_id, version, dataset_id_v1, analysis_type
 ):
-    """Reject requests missing Authorization header with 403 Forbidden."""
+    """Reject requests missing Authorization header with 403 Forbidden (401 for get_schema)."""
     dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
+    # get_schema has no record/entitlements dependency ahead of auth, so FastAPI's
+    # own HTTPBearer rejects a missing header with 401 before RAFS's 403 logic runs.
+    expected_code = status.HTTP_401_UNAUTHORIZED if endpoint == "get_schema" else status.HTTP_403_FORBIDDEN
     call_kwargs.update({
         "headers": {AUTHORIZATION: None},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [expected_code],
         "raw": True,
     })
 
@@ -50,7 +53,7 @@ def test_nmr_negative_missing_authorization_header(
     response = method(**call_kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == expected_code
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
@@ -59,15 +62,18 @@ def test_nmr_negative_missing_authorization_header(
 def test_nmr_negative_invalid_authorization_header(
     api, tests_data, endpoint, args, record_id, version, dataset_id_v1, analysis_type
 ):
-    """Reject malformed Authorization header with 403 Forbidden."""
+    """Reject malformed Authorization header with 403 Forbidden (401 for get_schema)."""
     dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
+    # get_schema has no record/entitlements dependency ahead of auth, so FastAPI's
+    # own HTTPBearer rejects a malformed header with 401 before RAFS's 403 logic runs.
+    expected_code = status.HTTP_401_UNAUTHORIZED if endpoint == "get_schema" else status.HTTP_403_FORBIDDEN
     call_kwargs.update({
         "headers": {AUTHORIZATION: "dummy"},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [expected_code],
         "raw": True,
     })
 
@@ -81,7 +87,7 @@ def test_nmr_negative_invalid_authorization_header(
     response = method(**call_kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == expected_code
     body = response.json()
     assert "Not authenticated" in body["reason"]
 

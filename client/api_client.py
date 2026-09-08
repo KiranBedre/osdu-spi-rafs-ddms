@@ -19,6 +19,7 @@ from typing import List
 from urllib.parse import urljoin, urlparse
 
 import requests
+import urllib3
 from loguru import logger
 from starlette import status
 
@@ -31,6 +32,8 @@ from app.resources.common_headers import (
     DATA_PARTITION_ID,
 )
 from client.api.settings import ApiClientSettings
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class APIException(Exception):
@@ -57,6 +60,7 @@ class APIClient(object):
         self.url: str
         self.retry_attempts = settings.retry_attempts
         self.retry_delay = settings.retry_delay
+        self.verify_ssl = settings.verify_ssl
 
     def post(self, path: str, **kwargs) -> requests.Response:
         return self._send_request(method=HTTPMethods.POST, path=path, **kwargs)
@@ -154,7 +158,7 @@ class APIClient(object):
         request = getattr(requests, method)
 
         try:
-            response = request(self.url, headers=headers, **kwargs)
+            response = request(self.url, headers=headers, verify=self.verify_ssl, **kwargs)
         except (requests.ConnectionError, requests.HTTPError, requests.Timeout) as error:
             raise APIException("{0}: {1}".format(type(error).__name__, str(error)))
 

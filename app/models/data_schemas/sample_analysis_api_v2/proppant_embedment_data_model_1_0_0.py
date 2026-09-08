@@ -16,145 +16,132 @@
 #   filename:  proppant_embedment.1.0.0.json
 #   timestamp: 2026-03-04T03:36:36+00:00
 
-from __future__ import annotations
 
 from app.models.config import RafsBaseModel
 
 from datetime import date
-from typing import List, Optional, Union
+from typing import Annotated, List, Optional, Union, Literal
 
-from pydantic import Extra, Field, constr
+from pydantic import Field, StringConstraints
 
 
 class Meta(RafsBaseModel):
-    kind: str = Field(
-        "Unit",
-        const=True,
+    kind: Literal["Unit"] = Field("Unit",
         description="The kind of reference, 'Unit' for FrameOfReferenceUOM.",
         title="UOM Reference Kind",
     )
     name: Optional[str] = Field(
         None,
         description="The unit symbol or name of the unit.",
-        example="ft[US]",
+        json_schema_extra={"example": "ft[US]"},
         title="UOM Unit Symbol",
     )
     persistableReference: Optional[str] = Field(
         None,
         description="The self-contained, persistable reference string uniquely identifying the Unit.",
-        example='{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}',
+        json_schema_extra={"example": '{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}'},
         title="UOM Persistable Reference",
     )
     unitOfMeasureID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="SRN to unit of measure reference.",
-        example="namespace:reference-data--UnitOfMeasure:ftUS:",
+        json_schema_extra={"example": "namespace:reference-data--UnitOfMeasure:ftUS:"},
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides Unit context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["HorizontalDeflection.EastWest", "HorizontalDeflection.NorthSouth"],
+        json_schema_extra={"example": ["HorizontalDeflection.EastWest", "HorizontalDeflection.NorthSouth"]},
         title="UOM Property Names",
     )
 
 
+
+_MetaModel = Meta
 class Meta1(RafsBaseModel):
-    kind: str = Field(
-        "CRS",
-        const=True,
+    kind: Literal["CRS"] = Field("CRS",
         description="The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
         title="CRS Reference Kind",
     )
     name: Optional[str] = Field(
         None,
         description="The name of the CRS.",
-        example="WGS 84 / UTM zone 15N",
+        json_schema_extra={"example": "WGS 84 / UTM zone 15N"},
         title="CRS Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying the CRS.",
-        example='{"authCode":{"auth":"EPSG","code":"32615"},"name":"WGS_1984_UTM_Zone_15N","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"WGS_1984_UTM_Zone_15N\\",GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Transverse_Mercator\\"],PARAMETER[\\"False_Easting\\",500000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-93.0],PARAMETER[\\"Scale_Factor\\",0.9996],PARAMETER[\\"Latitude_Of_Origin\\",0.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",32615]]"}',
+        json_schema_extra={"example": '{"authCode":{"auth":"EPSG","code":"32615"},"name":"WGS_1984_UTM_Zone_15N","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"WGS_1984_UTM_Zone_15N\\",GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Transverse_Mercator\\"],PARAMETER[\\"False_Easting\\",500000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-93.0],PARAMETER[\\"Scale_Factor\\",0.9996],PARAMETER[\\"Latitude_Of_Origin\\",0.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",32615]]"}'},
         title="CRS Persistable Reference",
     )
     coordinateReferenceSystemID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="SRN to CRS reference.",
-        example="namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+        json_schema_extra={"example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:"},
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides CRS context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["KickOffPosition.X", "KickOffPosition.Y"],
+        json_schema_extra={"example": ["KickOffPosition.X", "KickOffPosition.Y"]},
         title="CRS Property Names",
     )
 
 
 class Meta2(RafsBaseModel):
-    kind: str = Field(
-        "DateTime",
-        const=True,
+    kind: Literal["DateTime"] = Field("DateTime",
         description="The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
         title="DateTime Reference Kind",
     )
     name: Optional[str] = Field(
         None,
         description="The name of the DateTime format and reference.",
-        example="UTC",
+        json_schema_extra={"example": "UTC"},
         title="DateTime Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying DateTime reference.",
-        example='{"format":"yyyy-MM-ddTHH:mm:ssZ","timeZone":"UTC","type":"DTM"}',
+        json_schema_extra={"example": '{"format":"yyyy-MM-ddTHH:mm:ssZ","timeZone":"UTC","type":"DTM"}'},
         title="DateTime Persistable Reference",
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides DateTime context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Acquisition.StartTime", "Acquisition.EndTime"],
+        json_schema_extra={"example": ["Acquisition.StartTime", "Acquisition.EndTime"]},
         title="DateTime Property Names",
     )
 
 
 class Meta3(RafsBaseModel):
-    kind: str = Field(
-        "AzimuthReference",
-        const=True,
+    kind: Literal["AzimuthReference"] = Field("AzimuthReference",
         description="The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
         title="AzimuthReference Reference Kind",
     )
     name: Optional[str] = Field(
         None,
         description="The name of the CRS or the symbol/name of the unit.",
-        example="TrueNorth",
+        json_schema_extra={"example": "TrueNorth"},
         title="AzimuthReference Name",
     )
     persistableReference: str = Field(
         ...,
         description="The self-contained, persistable reference string uniquely identifying AzimuthReference.",
-        example='{"code":"TrueNorth","type":"AZR"}',
+        json_schema_extra={"example": '{"code":"TrueNorth","type":"AZR"}'},
         title="AzimuthReference Persistable Reference",
     )
     propertyNames: Optional[List[str]] = Field(
         None,
         description='The list of property names, to which this meta data item provides AzimuthReference context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Bearing"],
+        json_schema_extra={"example": ["Bearing"]},
         title="AzimuthReference Property Names",
     )
 
 
 class CrushTestDatum(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Fines: Optional[float] = Field(
         None,
@@ -169,8 +156,6 @@ class CrushTestDatum(RafsBaseModel):
 
 
 class SieveAnalysisDatum(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     PercentRetained: Optional[float] = Field(
         None,
@@ -185,8 +170,6 @@ class SieveAnalysisDatum(RafsBaseModel):
 
 
 class ISO135032Property(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     AbsoluteDensity: Optional[float] = Field(
         None,
@@ -267,8 +250,6 @@ class ISO135032Property(RafsBaseModel):
 
 
 class ISO135035PointItem(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     Conductivity: Optional[float] = Field(
         None, description="Proppant conductivity under stress.", title="Conductivity"
@@ -287,13 +268,11 @@ class ISO135035PointItem(RafsBaseModel):
 
 
 class ProppantAgent(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     ProppantName: Optional[str] = Field(
         None,
         description="The name of the proppant.",
-        example="70 Ottawa Sand",
+        json_schema_extra={"example": "70 Ottawa Sand"},
         title="Proppant Name",
     )
     FrictionCoefficientLaminar: Optional[float] = Field(
@@ -314,23 +293,21 @@ class ProppantAgent(RafsBaseModel):
     MeshSizeHigh: Optional[int] = Field(
         None,
         description="Integer high value of sieve mesh size: for 4070 sand, this value is 70. For a 70 sand this would be 70.",
-        example=70,
+        json_schema_extra={"example": 70},
         title="Mesh Size High",
     )
     MeshSizeLow: Optional[int] = Field(
         None,
         description="Integer low value of sieve mesh size: for 4070 sand, this value is 40.",
-        example=70,
+        json_schema_extra={"example": 70},
         title="Mesh Size Low",
     )
     ProppantTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-StimProppantAgentType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-StimProppantAgentType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Proppant type or function.",
-        example="namespace:reference-data--StimProppantAgentType:Sand:",
+        json_schema_extra={"example": "namespace:reference-data--StimProppantAgentType:Sand:"},
         title="Proppant Type ID",
     )
     UnconfinedCompressiveStrength: Optional[float] = Field(
@@ -347,11 +324,11 @@ class ProppantAgent(RafsBaseModel):
     SupplierName: Optional[str] = Field(
         None,
         description="The name of the proppant supplier.",
-        example="ASTM Sands",
+        json_schema_extra={"example": "ASTM Sands"},
         title="Supplier Name",
     )
     SupplierID: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Identifier of service company organisation providing this proppant agent for the stimulation job.",
@@ -360,7 +337,7 @@ class ProppantAgent(RafsBaseModel):
     SupplierProductCode: Optional[str] = Field(
         None,
         description="Supplier's product number/code.",
-        example="70OTTSAND",
+        json_schema_extra={"example": "70OTTSAND"},
         title="Supplier Product Code",
     )
     Remarks: Optional[str] = Field(
@@ -368,9 +345,9 @@ class ProppantAgent(RafsBaseModel):
     )
 
 
+
+_ProppantAgentModel = ProppantAgent
 class TestStep(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     StepNumber: Optional[int] = Field(
         None,
@@ -415,13 +392,11 @@ class TestStep(RafsBaseModel):
 
 
 class Remark(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
     RemarkSequenceNumber: Optional[int] = Field(
         None,
         description="A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
-        example=1,
+        json_schema_extra={"example": 1},
         title="Remark Sequence Number",
     )
     Remark: Optional[str] = Field(
@@ -438,27 +413,21 @@ class Remark(RafsBaseModel):
 
 
 class ProppantEmbedmentModel100(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
-    SamplesAnalysisID: constr(
-        regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+    SamplesAnalysisID: Annotated[str, StringConstraints(pattern="^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ...,
         description="The OSDU Identifier for this SamplesAnalysis.",
         title="Sample Analysis ID",
     )
-    SampleID: constr(
-        regex=r"^[\w\-\.]+:master-data\-\-Sample:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+    SampleID: Annotated[str, StringConstraints(pattern="^[\w\-\.]+:master-data\-\-Sample:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ...,
         description="The OSDU Identifier for the Sample associated with this analysis.",
         title="Sample ID",
     )
-    Meta: List[Union[Meta, Meta1, Meta2, Meta3]] = Field(
+    Meta: List[Union[_MetaModel, Meta1, Meta2, Meta3]] = Field(
         ...,
         description="A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
-        example="",
+        json_schema_extra={"example": ""},
         title="Meta",
     )
     LithologyDescription: Optional[str] = Field(
@@ -486,7 +455,7 @@ class ProppantEmbedmentModel100(RafsBaseModel):
         description="The calculated fracture conductivity expressed as the absolute permeability times the proppant pack width.",
         title="Fracture Conductivity",
     )
-    ProppantAgent: Optional[ProppantAgent] = Field(
+    ProppantAgent: Optional[_ProppantAgentModel] = Field(
         None,
         description="Defines the proppant used in the experiment and its properties.",
         title="Proppant Agent",
@@ -502,9 +471,7 @@ class ProppantEmbedmentModel100(RafsBaseModel):
         title="Proppant Layers",
     )
     WellFluidTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-WellFluidType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-WellFluidType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Fluid used for sample saturation and circulation during the embedment test.",

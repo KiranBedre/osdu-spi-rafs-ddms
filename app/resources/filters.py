@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple
 
 from loguru import logger
-from pydantic.main import BaseModel
+from pydantic import BaseModel
 
 from app.resources.errors import FilterValidationError
 from app.resources.model_to_schema import build_normalized_schema_from_model

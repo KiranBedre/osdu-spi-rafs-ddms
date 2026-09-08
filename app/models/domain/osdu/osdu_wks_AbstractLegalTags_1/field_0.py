@@ -16,28 +16,25 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:master-data--Sample:1.0.0
 #   timestamp: 2023-10-24T20:27:08+00:00
 
-from __future__ import annotations
 
-from typing import List, Optional
+from typing import Annotated, List, Optional, Set
 
-from pydantic import BaseModel, Extra, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
-    class Config:
-        extra = Extra.forbid
 
     legaltags: List[str] = Field(
         ...,
         description="The list of legal tags, which resolve to legal properties (like country of origin, export classification code, etc.) and rules with the help of the Compliance Service.",
         title="Legal Tags",
     )
-    otherRelevantDataCountries: List[constr(regex=r"^[A-Z]{2}$")] = Field(
+    otherRelevantDataCountries: List[Annotated[str, StringConstraints(pattern=r"^[A-Z]{2}$")]] = Field(
         ...,
         description="The list of other relevant data countries as an array of two-letter country codes, see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2.",
         title="Other Relevant Data Countries",
     )
-    status: Optional[constr(regex=r"^(compliant|uncompliant)$")] = Field(
+    status: Optional[Annotated[str, StringConstraints(pattern=r"^(compliant|uncompliant)$")]] = Field(
         None,
         description='The legal status. Set by the system after evaluation against the compliance rules associated with the "legaltags" using the Compliance Service.',
         title="Legal Status",

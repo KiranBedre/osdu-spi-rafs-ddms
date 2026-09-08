@@ -112,7 +112,7 @@ class GenericSchemasView(object):
                 break
         if model_versions and (model := model_versions.get(content_schema_version)):  # noqa: WPS332
             return JSONResponse(
-                content=model.schema(),
+                content=model.model_json_schema(),
                 headers=dict(response.headers),
             )
 

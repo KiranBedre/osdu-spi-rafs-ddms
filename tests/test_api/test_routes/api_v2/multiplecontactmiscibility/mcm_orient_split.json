@@ -1,5 +1,5 @@
 {
-  "columns":[
+  "columns": [
     "SamplesAnalysisID",
     "SampleID",
     "Meta",
@@ -12,27 +12,27 @@
     "MixRatio",
     "Remarks"
   ],
-  "index":[
+  "index": [
     0
   ],
-  "data":[
+  "data": [
     [
       "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:fluid_sample_test:",
       [
         {
-          "kind":"Unit",
-          "name":"degree Fahrenheit",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:degF:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "degree Fahrenheit",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:degF:",
+          "propertyNames": [
             "TestTemperature"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"percent",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:%25:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "percent",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:%25:",
+          "propertyNames": [
             "MolePercentOfInjectedGas"
           ]
         }
@@ -46,10 +46,10 @@
       1.23,
       [
         {
-          "RemarkSequenceNumber":1.23,
-          "Remark":"Remark",
-          "RemarkSource":"Remark Source",
-          "RemarkDate":"2025-01-01"
+          "RemarkSequenceNumber": 1,
+          "Remark": "Remark",
+          "RemarkSource": "Remark Source",
+          "RemarkDate": "2025-01-01"
         }
       ]
     ]

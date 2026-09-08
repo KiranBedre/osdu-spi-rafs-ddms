@@ -16,26 +16,23 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:work-product-component--MultiStageSeparatorTest:1.0.0
 #   timestamp: 2023-04-11T05:01:11+00:00
 
-from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 from ..osdu_wks_AbstractGeoContext_1 import field_0 as field_0_1
 from ..osdu_wks_AbstractSpatialLocation_1 import field_0
 
 
 class LineageAssertion(BaseModel):
-    ID: Optional[constr(regex=r'^[\w\-\.]+:[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$')] = Field(
+    ID: Optional[Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:[\w\-\.]+:[\w\-\.\:\%]+:[0-9]*$')]] = Field(
         None,
         description='The object reference identifying the DIRECT, INDIRECT, REFERENCE dependency.',
     )
     LineageRelationshipType: Optional[
-        constr(
-            regex=r'^[\w\-\.]+:reference-data\-\-LineageRelationshipType:[\w\-\.\:\%]+:[0-9]*$'
-        )
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:reference-data\-\-LineageRelationshipType:[\w\-\.\:\%]+:[0-9]*$')]
     ] = Field(
         None,
         description='Used by LineageAssertion to describe the nature of the line of descent of a work product component from a prior Resource, such as DIRECT, INDIRECT, REFERENCE.  It is not for proximity (number of nodes away), it is not to cover all the relationships in a full ontology or graph, and it is not to describe the type of activity that created the asserting WPC.  LineageAssertion does not encompass a full provenance, process history, or activity model.',

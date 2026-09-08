@@ -1,116 +1,1198 @@
 {
-    "title": "ProppantEmbedmentModel100",
-    "type": "object",
+    "$defs": {
+        "CrushTestDatum": {
+            "additionalProperties": false,
+            "properties": {
+                "Fines": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Mass percentage of fines after being exposed to stress.",
+                    "title": "Fines"
+                },
+                "Stress": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Stress measured at a point during a crush test.",
+                    "title": "Stress"
+                }
+            },
+            "title": "CrushTestDatum",
+            "type": "object"
+        },
+        "ISO135032Property": {
+            "additionalProperties": false,
+            "properties": {
+                "AbsoluteDensity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The density the material would have if no intra-granular porosity is present. (e.g. Boyle's Law porosimetry).",
+                    "title": "Absolute Density"
+                },
+                "AcidSolubility": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The solubility of a proppant in 12:3 HCl:HF for 30 minutes at 150\u00b0F is an indication of the amount of soluble materials (i.e. carbonates, feldspars, iron oxides, clays, etc) present in the proppant.",
+                    "title": "Acid Solubility"
+                },
+                "ApparentDensity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Apparent density excludes extra-granular porosity by placing a known mass in a volume of fluid and determining how much of the fluid is displaced (Archimedes).",
+                    "title": "Apparent Density"
+                },
+                "BulkDensity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Bulk density includes both the proppant and the porosity. This is measured by filling a known volume with dry proppant and measuring the weight.",
+                    "title": "Bulk Density"
+                },
+                "ClustersPercent": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Percentage of undesirable agglomerated discrete proppant particles which typically occurs more with inefficiently processed natural sand proppants as opposed to manufactured ceramic proppants. ISO 13503-2 and API RP19C limit the mass of clusters to less than 1%.",
+                    "title": "Clusters Percent"
+                },
+                "CrushTestData": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/CrushTestDatum"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Crush Test Data",
+                    "title": "Crush Test Data"
+                },
+                "KValue": {
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Crush test classification indicating the highest stress level at which a proppant generated no more than 10% crushed material rounded down to the nearest 1,000 psi during a crush test. For example, a value of 14 means 14k which is 14000 psi.",
+                    "title": "K Value"
+                },
+                "LossOnIgnition": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A mass loss (gravimetric) test method applied to coated proppants only, which determines the mass of resin coating applied to a natural sand or manufactured proppant by means of thorough combustion of the flammable resin from the nonflammable proppant. Reported as a % of original mass.",
+                    "title": "Loss On Ignition"
+                },
+                "MeanParticleDiameter": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mean diameter of particles in a sample of proppant.",
+                    "title": "Mean Particle Diameter"
+                },
+                "MedianParticleDiameter": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The median diameter of particles in a sample of proppant.",
+                    "title": "Median Particle Diameter"
+                },
+                "Roundness": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Krumbein Roundness Shape Factor that is a measure of the relative sharpness of grain corners or of grain curvature. Krumbein and Sloss (1963) are the most widely used method of determining shape factors.",
+                    "title": "Roundness"
+                },
+                "SieveAnalysisData": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/SieveAnalysisDatum"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Sieve Analysis Data",
+                    "title": "Sieve Analysis Data"
+                },
+                "SpecificGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Not formally part of ISO 13503.2 properties, the specific gravity is the apparent density of the proppant divided by the density of water.",
+                    "title": "Specific Gravity"
+                },
+                "Sphericity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Krumbein Sphericity Shape Factor that is a measure of how closely a proppant particle approaches the shape of a sphere. Krumbein and Sloss (1963) are the most widely used method of determining shape factors.",
+                    "title": "Sphericity"
+                },
+                "TurbidityNTU": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A measure of water clarity, how much the material suspended in water decreases the passage of light through the water.   Measured according to USEPA 180.1 and expressed in Nephelometric Turbidity Units (NTU).",
+                    "title": "Turbidity NTU"
+                },
+                "TurbidityFNU": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A measure of water clarity, how much the material suspended in water decreases the passage of light through the water. Measured according to ISO 7027 and expressed in Formazin Nephelometric Units (FNU).",
+                    "title": "Turbidity FNU"
+                }
+            },
+            "title": "ISO135032Property",
+            "type": "object"
+        },
+        "ISO135035PointItem": {
+            "additionalProperties": false,
+            "properties": {
+                "Conductivity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Proppant conductivity under stress.",
+                    "title": "Conductivity"
+                },
+                "Permeability": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Proppant permeability under stress.",
+                    "title": "Permeability"
+                },
+                "StressApplied": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The amount of stress applied.",
+                    "title": "Stress Applied"
+                },
+                "Temperature": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The temperature at the time measurements were taken.",
+                    "title": "Temperature"
+                }
+            },
+            "title": "ISO135035PointItem",
+            "type": "object"
+        },
+        "Meta": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "Unit",
+                    "default": "Unit",
+                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                    "title": "UOM Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The unit symbol or name of the unit.",
+                    "example": "ft[US]",
+                    "title": "UOM Unit Symbol"
+                },
+                "persistableReference": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+                    "title": "UOM Persistable Reference"
+                },
+                "unitOfMeasureID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "SRN to unit of measure reference.",
+                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                    "title": "Unitofmeasureid"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "HorizontalDeflection.EastWest",
+                        "HorizontalDeflection.NorthSouth"
+                    ],
+                    "title": "UOM Property Names"
+                }
+            },
+            "title": "Meta",
+            "type": "object"
+        },
+        "Meta1": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "CRS",
+                    "default": "CRS",
+                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                    "title": "CRS Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the CRS.",
+                    "example": "WGS 84 / UTM zone 15N",
+                    "title": "CRS Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
+                    "title": "CRS Persistable Reference",
+                    "type": "string"
+                },
+                "coordinateReferenceSystemID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "SRN to CRS reference.",
+                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                    "title": "Coordinatereferencesystemid"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "KickOffPosition.X",
+                        "KickOffPosition.Y"
+                    ],
+                    "title": "CRS Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta1",
+            "type": "object"
+        },
+        "Meta2": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "DateTime",
+                    "default": "DateTime",
+                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                    "title": "DateTime Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the DateTime format and reference.",
+                    "example": "UTC",
+                    "title": "DateTime Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
+                    "title": "DateTime Persistable Reference",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Acquisition.StartTime",
+                        "Acquisition.EndTime"
+                    ],
+                    "title": "DateTime Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta2",
+            "type": "object"
+        },
+        "Meta3": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "AzimuthReference",
+                    "default": "AzimuthReference",
+                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                    "title": "AzimuthReference Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the CRS or the symbol/name of the unit.",
+                    "example": "TrueNorth",
+                    "title": "AzimuthReference Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
+                    "title": "AzimuthReference Persistable Reference",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Bearing"
+                    ],
+                    "title": "AzimuthReference Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta3",
+            "type": "object"
+        },
+        "ProppantAgent": {
+            "additionalProperties": false,
+            "properties": {
+                "ProppantName": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the proppant.",
+                    "example": "70 Ottawa Sand",
+                    "title": "Proppant Name"
+                },
+                "FrictionCoefficientLaminar": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Laminar flow friction coefficient.",
+                    "title": "Friction Coefficient Laminar"
+                },
+                "FrictionCoefficientTurbulent": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Turbulent flow friction coefficient.",
+                    "title": "Friction Coefficient Turbulent"
+                },
+                "MassAbsorptionCoefficient": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Characterizes how easily radiation passes through a material. This can be used to compute the concentration of proppant in a slurry using a densitometer.",
+                    "title": "Mass Absorption Coefficient"
+                },
+                "MeshSizeHigh": {
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Integer high value of sieve mesh size: for 4070 sand, this value is 70. For a 70 sand this would be 70.",
+                    "example": 70,
+                    "title": "Mesh Size High"
+                },
+                "MeshSizeLow": {
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Integer low value of sieve mesh size: for 4070 sand, this value is 40.",
+                    "example": 70,
+                    "title": "Mesh Size Low"
+                },
+                "ProppantTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-StimProppantAgentType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Proppant type or function.",
+                    "example": "namespace:reference-data--StimProppantAgentType:Sand:",
+                    "title": "Proppant Type ID"
+                },
+                "UnconfinedCompressiveStrength": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The unconfined compressive strength of the proppant.",
+                    "title": "Unconfined Compressive Strength"
+                },
+                "ISO13503_2Properties": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/ISO135032Property"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "ISO 13503_2 Properties"
+                },
+                "ISO13503_5Point": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/ISO135035PointItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "ISO 13503_5 Point"
+                },
+                "SupplierName": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the proppant supplier.",
+                    "example": "ASTM Sands",
+                    "title": "Supplier Name"
+                },
+                "SupplierID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Organisation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Identifier of service company organisation providing this proppant agent for the stimulation job.",
+                    "title": "Supplier ID"
+                },
+                "SupplierProductCode": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Supplier's product number/code.",
+                    "example": "70OTTSAND",
+                    "title": "Supplier Product Code"
+                },
+                "Remarks": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "General remarks about this proppant agent.",
+                    "title": "Remarks"
+                }
+            },
+            "title": "ProppantAgent",
+            "type": "object"
+        },
+        "Remark": {
+            "additionalProperties": false,
+            "properties": {
+                "RemarkSequenceNumber": {
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                    "example": 1,
+                    "title": "Remark Sequence Number"
+                },
+                "Remark": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A descriptive comment for this remark.",
+                    "title": "Remark"
+                },
+                "RemarkSource": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The person, vendor, interpreter or other provider of information.",
+                    "title": "Remark Source"
+                },
+                "RemarkDate": {
+                    "anyOf": [
+                        {
+                            "format": "date",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The date the remark was issued.",
+                    "title": "Remark Date"
+                }
+            },
+            "title": "Remark",
+            "type": "object"
+        },
+        "SieveAnalysisDatum": {
+            "additionalProperties": false,
+            "properties": {
+                "PercentRetained": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The percentage of mass retained in the sieve.",
+                    "title": "Percent Retained"
+                },
+                "SieveNumber": {
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "ASTM US Standard Mesh opening size used in the sieve analysis test. To indicate Pan, use 0.",
+                    "title": "Sieve Number"
+                }
+            },
+            "title": "SieveAnalysisDatum",
+            "type": "object"
+        },
+        "TestStep": {
+            "additionalProperties": false,
+            "properties": {
+                "StepNumber": {
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Internal step number which identifies the repeated steps in this analysis.",
+                    "title": "Step Number"
+                },
+                "ElapsedTime": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Elapsed time since the start of the experiment.",
+                    "title": "Elapsed Time"
+                },
+                "AxialPistonPumpPressure": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Instantaneous pressure generated by the axial piston pump that drives the loading system",
+                    "title": "Axial Piston Pump Pressure"
+                },
+                "AxialPistonDisplacement": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Reading from the Linear Variable Differential Transformer (LVDT) that measures the relative axial displacement of the loading piston (or platen) with respect to a fixed reference point.",
+                    "title": "Axial Piston Displacement"
+                },
+                "AxialStress": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Calculated axial stress acting on the rock specimen.",
+                    "title": "Axial Stress"
+                },
+                "AxialDisplacement": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Net axial movement of the sample (or load) from its initial position, accounting for both piston displacement and any sample compression.",
+                    "title": "Axial Displacement"
+                },
+                "ProppantCompressionDisplacementCorrection": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Incremental correction applied to the measured axial displacement to account for the compressibility of a pure (unconsolidated) proppant pack",
+                    "title": "Proppant Compression Displacement Correction"
+                },
+                "EmbedmentDepth": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Depth of proppant indentation measured at the applied stress",
+                    "title": "Embedment Depth"
+                }
+            },
+            "title": "TestStep",
+            "type": "object"
+        }
+    },
+    "additionalProperties": false,
     "properties": {
         "SamplesAnalysisID": {
-            "title": "Sample Analysis ID",
             "description": "The OSDU Identifier for this SamplesAnalysis.",
             "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "title": "Sample Analysis ID",
             "type": "string"
         },
         "SampleID": {
-            "title": "Sample ID",
             "description": "The OSDU Identifier for the Sample associated with this analysis.",
             "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "title": "Sample ID",
             "type": "string"
         },
         "Meta": {
-            "title": "Meta",
             "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
             "example": "",
-            "type": "array",
             "items": {
                 "anyOf": [
                     {
-                        "$ref": "#/definitions/Meta"
+                        "$ref": "#/$defs/Meta"
                     },
                     {
-                        "$ref": "#/definitions/Meta1"
+                        "$ref": "#/$defs/Meta1"
                     },
                     {
-                        "$ref": "#/definitions/Meta2"
+                        "$ref": "#/$defs/Meta2"
                     },
                     {
-                        "$ref": "#/definitions/Meta3"
+                        "$ref": "#/$defs/Meta3"
                     }
                 ]
-            }
+            },
+            "title": "Meta",
+            "type": "array"
         },
         "LithologyDescription": {
-            "title": "Lithology Description",
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "A description of the physical and chemical characteristics of the sample.",
-            "type": "string"
+            "title": "Lithology Description"
         },
         "Temperature": {
-            "title": "Temperature",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The temperature at which the test was conducted.",
-            "type": "number"
+            "title": "Temperature"
         },
         "ConfiningStress": {
-            "title": "Confining Stress",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The pressure exerted on a sample from its environment during the test.",
-            "type": "number"
+            "title": "Confining Stress"
         },
         "MinimumEmbedmentPressure": {
-            "title": "Minimum Embedment Pressure",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Minimum pressure at which embedment begins.",
-            "type": "number"
+            "title": "Minimum Embedment Pressure"
         },
         "FractureConductivity": {
-            "title": "Fracture Conductivity",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The calculated fracture conductivity expressed as the absolute permeability times the proppant pack width.",
-            "type": "number"
+            "title": "Fracture Conductivity"
         },
         "ProppantAgent": {
-            "title": "Proppant Agent",
-            "description": "Defines the proppant used in the experiment and its properties.",
-            "allOf": [
+            "anyOf": [
                 {
-                    "$ref": "#/definitions/ProppantAgent"
+                    "$ref": "#/$defs/ProppantAgent"
+                },
+                {
+                    "type": "null"
                 }
-            ]
+            ],
+            "default": null,
+            "description": "Defines the proppant used in the experiment and its properties.",
+            "title": "Proppant Agent"
         },
         "ProppantLoad": {
-            "title": "Proppant Load",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Mass of proppant loaded per sample area.",
-            "type": "number"
+            "title": "Proppant Load"
         },
         "ProppantLayers": {
-            "title": "Proppant Layers",
+            "anyOf": [
+                {
+                    "type": "integer"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The number of discrete proppant beds or layers placed against the rock surface.",
-            "type": "integer"
+            "title": "Proppant Layers"
         },
         "WellFluidTypeID": {
-            "title": "Well Fluid Type ID",
+            "anyOf": [
+                {
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WellFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Fluid used for sample saturation and circulation during the embedment test.",
-            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-WellFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-            "type": "string"
+            "title": "Well Fluid Type ID"
         },
         "AverageEmbedmentPercentage": {
-            "title": "Average Embedment Percentage",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Average percentage of the proppant's nominal diameter that has been embedded into the rock surface at closure pressure.",
-            "type": "number"
+            "title": "Average Embedment Percentage"
         },
         "AverageEmbedmentDepthAtClosure": {
-            "title": "Average Embedment Depth At Closure",
-            "description": "Average depth of proppant indentation across the sample surface measured after the applied stress is equal to the fracture‑closure stress.",
-            "type": "number"
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "Average depth of proppant indentation across the sample surface measured after the applied stress is equal to the fracture\u2011closure stress.",
+            "title": "Average Embedment Depth At Closure"
         },
         "TestSteps": {
-            "title": "Test Steps",
+            "anyOf": [
+                {
+                    "items": {
+                        "$ref": "#/$defs/TestStep"
+                    },
+                    "type": "array"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The array of test data.",
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/TestStep"
-            }
+            "title": "Test Steps"
         },
         "Remarks": {
-            "title": "Remarks",
+            "anyOf": [
+                {
+                    "items": {
+                        "$ref": "#/$defs/Remark"
+                    },
+                    "type": "array"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Array object capturing remarks or additional information for this test step.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/Remark"
-            }
+            "title": "Remarks"
         }
     },
     "required": [
@@ -118,500 +1200,6 @@
         "SampleID",
         "Meta"
     ],
-    "additionalProperties": false,
-    "definitions": {
-        "Meta": {
-            "title": "Meta",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "UOM Reference Kind",
-                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
-                    "default": "Unit",
-                    "const": "Unit",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "UOM Unit Symbol",
-                    "description": "The unit symbol or name of the unit.",
-                    "example": "ft[US]",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "UOM Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
-                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
-                    "type": "string"
-                },
-                "unitOfMeasureID": {
-                    "title": "Unitofmeasureid",
-                    "description": "SRN to unit of measure reference.",
-                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "UOM Property Names",
-                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "HorizontalDeflection.EastWest",
-                        "HorizontalDeflection.NorthSouth"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "Meta1": {
-            "title": "Meta1",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "CRS Reference Kind",
-                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
-                    "default": "CRS",
-                    "const": "CRS",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "CRS Name",
-                    "description": "The name of the CRS.",
-                    "example": "WGS 84 / UTM zone 15N",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "CRS Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
-                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
-                    "type": "string"
-                },
-                "coordinateReferenceSystemID": {
-                    "title": "Coordinatereferencesystemid",
-                    "description": "SRN to CRS reference.",
-                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "CRS Property Names",
-                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "KickOffPosition.X",
-                        "KickOffPosition.Y"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "Meta2": {
-            "title": "Meta2",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "DateTime Reference Kind",
-                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
-                    "default": "DateTime",
-                    "const": "DateTime",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "DateTime Name",
-                    "description": "The name of the DateTime format and reference.",
-                    "example": "UTC",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "DateTime Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
-                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "DateTime Property Names",
-                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "Acquisition.StartTime",
-                        "Acquisition.EndTime"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "Meta3": {
-            "title": "Meta3",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "AzimuthReference Reference Kind",
-                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
-                    "default": "AzimuthReference",
-                    "const": "AzimuthReference",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "AzimuthReference Name",
-                    "description": "The name of the CRS or the symbol/name of the unit.",
-                    "example": "TrueNorth",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "AzimuthReference Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
-                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "AzimuthReference Property Names",
-                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "Bearing"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "CrushTestDatum": {
-            "title": "CrushTestDatum",
-            "type": "object",
-            "properties": {
-                "Fines": {
-                    "title": "Fines",
-                    "description": "Mass percentage of fines after being exposed to stress.",
-                    "type": "number"
-                },
-                "Stress": {
-                    "title": "Stress",
-                    "description": "Stress measured at a point during a crush test.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "SieveAnalysisDatum": {
-            "title": "SieveAnalysisDatum",
-            "type": "object",
-            "properties": {
-                "PercentRetained": {
-                    "title": "Percent Retained",
-                    "description": "The percentage of mass retained in the sieve.",
-                    "type": "number"
-                },
-                "SieveNumber": {
-                    "title": "Sieve Number",
-                    "description": "ASTM US Standard Mesh opening size used in the sieve analysis test. To indicate Pan, use 0.",
-                    "type": "integer"
-                }
-            },
-            "additionalProperties": false
-        },
-        "ISO135032Property": {
-            "title": "ISO135032Property",
-            "type": "object",
-            "properties": {
-                "AbsoluteDensity": {
-                    "title": "Absolute Density",
-                    "description": "The density the material would have if no intra-granular porosity is present. (e.g. Boyle's Law porosimetry).",
-                    "type": "number"
-                },
-                "AcidSolubility": {
-                    "title": "Acid Solubility",
-                    "description": "The solubility of a proppant in 12:3 HCl:HF for 30 minutes at 150°F is an indication of the amount of soluble materials (i.e. carbonates, feldspars, iron oxides, clays, etc) present in the proppant.",
-                    "type": "number"
-                },
-                "ApparentDensity": {
-                    "title": "Apparent Density",
-                    "description": "Apparent density excludes extra-granular porosity by placing a known mass in a volume of fluid and determining how much of the fluid is displaced (Archimedes).",
-                    "type": "number"
-                },
-                "BulkDensity": {
-                    "title": "Bulk Density",
-                    "description": "Bulk density includes both the proppant and the porosity. This is measured by filling a known volume with dry proppant and measuring the weight.",
-                    "type": "number"
-                },
-                "ClustersPercent": {
-                    "title": "Clusters Percent",
-                    "description": "Percentage of undesirable agglomerated discrete proppant particles which typically occurs more with inefficiently processed natural sand proppants as opposed to manufactured ceramic proppants. ISO 13503-2 and API RP19C limit the mass of clusters to less than 1%.",
-                    "type": "number"
-                },
-                "CrushTestData": {
-                    "title": "Crush Test Data",
-                    "description": "Crush Test Data",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/CrushTestDatum"
-                    }
-                },
-                "KValue": {
-                    "title": "K Value",
-                    "description": "Crush test classification indicating the highest stress level at which a proppant generated no more than 10% crushed material rounded down to the nearest 1,000 psi during a crush test. For example, a value of 14 means 14k which is 14000 psi.",
-                    "type": "integer"
-                },
-                "LossOnIgnition": {
-                    "title": "Loss On Ignition",
-                    "description": "A mass loss (gravimetric) test method applied to coated proppants only, which determines the mass of resin coating applied to a natural sand or manufactured proppant by means of thorough combustion of the flammable resin from the nonflammable proppant. Reported as a % of original mass.",
-                    "type": "number"
-                },
-                "MeanParticleDiameter": {
-                    "title": "Mean Particle Diameter",
-                    "description": "The mean diameter of particles in a sample of proppant.",
-                    "type": "number"
-                },
-                "MedianParticleDiameter": {
-                    "title": "Median Particle Diameter",
-                    "description": "The median diameter of particles in a sample of proppant.",
-                    "type": "number"
-                },
-                "Roundness": {
-                    "title": "Roundness",
-                    "description": "Krumbein Roundness Shape Factor that is a measure of the relative sharpness of grain corners or of grain curvature. Krumbein and Sloss (1963) are the most widely used method of determining shape factors.",
-                    "type": "number"
-                },
-                "SieveAnalysisData": {
-                    "title": "Sieve Analysis Data",
-                    "description": "Sieve Analysis Data",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/SieveAnalysisDatum"
-                    }
-                },
-                "SpecificGravity": {
-                    "title": "Specific Gravity",
-                    "description": "Not formally part of ISO 13503.2 properties, the specific gravity is the apparent density of the proppant divided by the density of water.",
-                    "type": "number"
-                },
-                "Sphericity": {
-                    "title": "Sphericity",
-                    "description": "Krumbein Sphericity Shape Factor that is a measure of how closely a proppant particle approaches the shape of a sphere. Krumbein and Sloss (1963) are the most widely used method of determining shape factors.",
-                    "type": "number"
-                },
-                "TurbidityNTU": {
-                    "title": "Turbidity NTU",
-                    "description": "A measure of water clarity, how much the material suspended in water decreases the passage of light through the water.   Measured according to USEPA 180.1 and expressed in Nephelometric Turbidity Units (NTU).",
-                    "type": "number"
-                },
-                "TurbidityFNU": {
-                    "title": "Turbidity FNU",
-                    "description": "A measure of water clarity, how much the material suspended in water decreases the passage of light through the water. Measured according to ISO 7027 and expressed in Formazin Nephelometric Units (FNU).",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "ISO135035PointItem": {
-            "title": "ISO135035PointItem",
-            "type": "object",
-            "properties": {
-                "Conductivity": {
-                    "title": "Conductivity",
-                    "description": "Proppant conductivity under stress.",
-                    "type": "number"
-                },
-                "Permeability": {
-                    "title": "Permeability",
-                    "description": "Proppant permeability under stress.",
-                    "type": "number"
-                },
-                "StressApplied": {
-                    "title": "Stress Applied",
-                    "description": "The amount of stress applied.",
-                    "type": "number"
-                },
-                "Temperature": {
-                    "title": "Temperature",
-                    "description": "The temperature at the time measurements were taken.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "ProppantAgent": {
-            "title": "ProppantAgent",
-            "type": "object",
-            "properties": {
-                "ProppantName": {
-                    "title": "Proppant Name",
-                    "description": "The name of the proppant.",
-                    "example": "70 Ottawa Sand",
-                    "type": "string"
-                },
-                "FrictionCoefficientLaminar": {
-                    "title": "Friction Coefficient Laminar",
-                    "description": "Laminar flow friction coefficient.",
-                    "type": "number"
-                },
-                "FrictionCoefficientTurbulent": {
-                    "title": "Friction Coefficient Turbulent",
-                    "description": "Turbulent flow friction coefficient.",
-                    "type": "number"
-                },
-                "MassAbsorptionCoefficient": {
-                    "title": "Mass Absorption Coefficient",
-                    "description": "Characterizes how easily radiation passes through a material. This can be used to compute the concentration of proppant in a slurry using a densitometer.",
-                    "type": "number"
-                },
-                "MeshSizeHigh": {
-                    "title": "Mesh Size High",
-                    "description": "Integer high value of sieve mesh size: for 4070 sand, this value is 70. For a 70 sand this would be 70.",
-                    "example": 70,
-                    "type": "integer"
-                },
-                "MeshSizeLow": {
-                    "title": "Mesh Size Low",
-                    "description": "Integer low value of sieve mesh size: for 4070 sand, this value is 40.",
-                    "example": 70,
-                    "type": "integer"
-                },
-                "ProppantTypeID": {
-                    "title": "Proppant Type ID",
-                    "description": "Proppant type or function.",
-                    "example": "namespace:reference-data--StimProppantAgentType:Sand:",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-StimProppantAgentType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "UnconfinedCompressiveStrength": {
-                    "title": "Unconfined Compressive Strength",
-                    "description": "The unconfined compressive strength of the proppant.",
-                    "type": "number"
-                },
-                "ISO13503_2Properties": {
-                    "title": "ISO 13503_2 Properties",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ISO135032Property"
-                    }
-                },
-                "ISO13503_5Point": {
-                    "title": "ISO 13503_5 Point",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ISO135035PointItem"
-                    }
-                },
-                "SupplierName": {
-                    "title": "Supplier Name",
-                    "description": "The name of the proppant supplier.",
-                    "example": "ASTM Sands",
-                    "type": "string"
-                },
-                "SupplierID": {
-                    "title": "Supplier ID",
-                    "description": "Identifier of service company organisation providing this proppant agent for the stimulation job.",
-                    "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Organisation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "SupplierProductCode": {
-                    "title": "Supplier Product Code",
-                    "description": "Supplier's product number/code.",
-                    "example": "70OTTSAND",
-                    "type": "string"
-                },
-                "Remarks": {
-                    "title": "Remarks",
-                    "description": "General remarks about this proppant agent.",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "TestStep": {
-            "title": "TestStep",
-            "type": "object",
-            "properties": {
-                "StepNumber": {
-                    "title": "Step Number",
-                    "description": "Internal step number which identifies the repeated steps in this analysis.",
-                    "type": "integer"
-                },
-                "ElapsedTime": {
-                    "title": "Elapsed Time",
-                    "description": "Elapsed time since the start of the experiment.",
-                    "type": "number"
-                },
-                "AxialPistonPumpPressure": {
-                    "title": "Axial Piston Pump Pressure",
-                    "description": "Instantaneous pressure generated by the axial piston pump that drives the loading system",
-                    "type": "number"
-                },
-                "AxialPistonDisplacement": {
-                    "title": "Axial Piston Displacement",
-                    "description": "Reading from the Linear Variable Differential Transformer (LVDT) that measures the relative axial displacement of the loading piston (or platen) with respect to a fixed reference point.",
-                    "type": "number"
-                },
-                "AxialStress": {
-                    "title": "Axial Stress",
-                    "description": "Calculated axial stress acting on the rock specimen.",
-                    "type": "number"
-                },
-                "AxialDisplacement": {
-                    "title": "Axial Displacement",
-                    "description": "Net axial movement of the sample (or load) from its initial position, accounting for both piston displacement and any sample compression.",
-                    "type": "number"
-                },
-                "ProppantCompressionDisplacementCorrection": {
-                    "title": "Proppant Compression Displacement Correction",
-                    "description": "Incremental correction applied to the measured axial displacement to account for the compressibility of a pure (unconsolidated) proppant pack",
-                    "type": "number"
-                },
-                "EmbedmentDepth": {
-                    "title": "Embedment Depth",
-                    "description": "Depth of proppant indentation measured at the applied stress",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "Remark": {
-            "title": "Remark",
-            "type": "object",
-            "properties": {
-                "RemarkSequenceNumber": {
-                    "title": "Remark Sequence Number",
-                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
-                    "example": 1,
-                    "type": "integer"
-                },
-                "Remark": {
-                    "title": "Remark",
-                    "description": "A descriptive comment for this remark.",
-                    "type": "string"
-                },
-                "RemarkSource": {
-                    "title": "Remark Source",
-                    "description": "The person, vendor, interpreter or other provider of information.",
-                    "type": "string"
-                },
-                "RemarkDate": {
-                    "title": "Remark Date",
-                    "description": "The date the remark was issued.",
-                    "type": "string",
-                    "format": "date"
-                }
-            },
-            "additionalProperties": false
-        }
-    }
+    "title": "ProppantEmbedmentModel100",
+    "type": "object"
 }
