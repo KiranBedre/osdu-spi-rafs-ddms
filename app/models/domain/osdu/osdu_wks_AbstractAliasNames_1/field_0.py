@@ -16,19 +16,16 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:master-data--Sample:1.0.0
 #   timestamp: 2023-10-24T20:27:08+00:00
 
-from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
     AliasNameTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-AliasNameType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-AliasNameType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="A classification of alias names such as by role played or type of source, such as regulatory name, regulatory code, company code, international standard name, etc.",
@@ -43,9 +40,7 @@ class Field0(BaseModel):
         None, description="The data and time when an alias name is no longer in effect."
     )
     DefinitionOrganisationID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:(reference-data\-\-StandardsOrganisation|master-data\-\-Organisation):[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:(reference-data\-\-StandardsOrganisation|master-data\-\-Organisation):[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The StandardsOrganisation (reference-data) or Organisation (master-data) that provided the name (the source).",

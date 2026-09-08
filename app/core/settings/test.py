@@ -28,4 +28,4 @@ class TestAppSettings(AppSettings):
     service_host_partition: str = "http://test-url"
     use_blob_storage: bool = False
     local_dev_mode: bool = True
-    enable_gc_collect = False
+    enable_gc_collect: bool = False

@@ -16,22 +16,19 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:master-data--Sample:1.0.0
 #   timestamp: 2023-10-24T20:27:08+00:00
 
-from __future__ import annotations
 
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Extra, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
-    class Config:
-        extra = Extra.forbid
 
     parents: Optional[
-        List[constr(regex=r"^[\w\-\.]+:[\w\-\.]+:[\w\-\.\:\%]+:[0-9]+$")]
+        List[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:[\w\-\.]+:[\w\-\.\:\%]+:[0-9]+$")]]
     ] = Field(
         None,
         description="An array of none, one or many entity references of 'direct parents' in the data platform, which mark the current record as a derivative. In contrast to other relationships, the source record version is required. During record creation or update the ancestry.parents[] relationships are used to collect the legal tags from the sources and aggregate them in the legal.legaltags[] array. As a consequence, should e.g., one or more of the legal tags of the source data expire, the access to the derivatives is also terminated. For details, see ComplianceService tutorial, 'Creating derivative Records'.",
-        example=[],
+        json_schema_extra={"example": []},
         title="Parents",
     )

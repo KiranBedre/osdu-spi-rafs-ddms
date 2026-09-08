@@ -1,48 +1,890 @@
 {
-    "title": "NmrModel100",
-    "type": "object",
+    "$defs": {
+        "CumulativePorosity": {
+            "additionalProperties": false,
+            "properties": {
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The porosity value of the sample.",
+                    "title": "Value"
+                },
+                "PorosityMeasurementTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The type of porosity being measured, e.g. BrineSaturation, HeliumInjection.",
+                    "title": "Porosity Measurement Type ID"
+                }
+            },
+            "title": "CumulativePorosity",
+            "type": "object"
+        },
+        "IncrementalPorosity": {
+            "additionalProperties": false,
+            "properties": {
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The porosity value.",
+                    "title": "Value"
+                },
+                "PorosityMeasurementTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The type of porosity being measured, e.g. BrineSaturation, HeliumInjection.",
+                    "title": "Porosity Measurement Type ID"
+                }
+            },
+            "title": "IncrementalPorosity",
+            "type": "object"
+        },
+        "Meta": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "Unit",
+                    "default": "Unit",
+                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                    "title": "UOM Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The unit symbol or name of the unit.",
+                    "example": "ft[US]",
+                    "title": "UOM Unit Symbol"
+                },
+                "persistableReference": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+                    "title": "UOM Persistable Reference"
+                },
+                "unitOfMeasureID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "SRN to unit of measure reference.",
+                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                    "title": "Unitofmeasureid"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "HorizontalDeflection.EastWest",
+                        "HorizontalDeflection.NorthSouth"
+                    ],
+                    "title": "UOM Property Names"
+                }
+            },
+            "title": "Meta",
+            "type": "object"
+        },
+        "Meta1": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "CRS",
+                    "default": "CRS",
+                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                    "title": "CRS Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the CRS.",
+                    "example": "WGS 84 / UTM zone 15N",
+                    "title": "CRS Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
+                    "title": "CRS Persistable Reference",
+                    "type": "string"
+                },
+                "coordinateReferenceSystemID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "SRN to CRS reference.",
+                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                    "title": "Coordinatereferencesystemid"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "KickOffPosition.X",
+                        "KickOffPosition.Y"
+                    ],
+                    "title": "CRS Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta1",
+            "type": "object"
+        },
+        "Meta2": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "DateTime",
+                    "default": "DateTime",
+                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                    "title": "DateTime Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the DateTime format and reference.",
+                    "example": "UTC",
+                    "title": "DateTime Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
+                    "title": "DateTime Persistable Reference",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Acquisition.StartTime",
+                        "Acquisition.EndTime"
+                    ],
+                    "title": "DateTime Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta2",
+            "type": "object"
+        },
+        "Meta3": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "AzimuthReference",
+                    "default": "AzimuthReference",
+                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                    "title": "AzimuthReference Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the CRS or the symbol/name of the unit.",
+                    "example": "TrueNorth",
+                    "title": "AzimuthReference Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
+                    "title": "AzimuthReference Persistable Reference",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Bearing"
+                    ],
+                    "title": "AzimuthReference Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta3",
+            "type": "object"
+        },
+        "NMRSummaryData": {
+            "additionalProperties": false,
+            "properties": {
+                "BoundFluidBVI": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Bound fluid following sample desaturation, relative to pore volume.",
+                    "title": "Bound Fluid BVI"
+                },
+                "NMRT2BoundFluidRelativetoPoreVolume": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "NMR T2 bound fluid relative to pore volume.",
+                    "title": "NMRT2BoundFluidRelativetoPoreVolume"
+                },
+                "DisplacedFluidID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacedFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The type of fluid displaced during the NMR test, which can influence the interpretation of pore and fluid properties.",
+                    "title": "Displaced Fluid ID"
+                },
+                "EchoSpacing": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The time interval between successive echoes in a sequence of pulse and acquisition events.",
+                    "title": "Echo Spacing"
+                },
+                "FreeFluidFFI": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Free fluid following sample desaturation, relative to pore volume.",
+                    "title": "Free Fluid FFI"
+                },
+                "NMRT2FreeFluid": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The amount of NMR T2 free fluid expressed relative to pore volume.",
+                    "title": "NMR T2 Free Fluid"
+                },
+                "InjectionFluidID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The type of fluid injected into the sample during the NMR test, used to assess how different fluids affect the sample's magnetic resonance properties.",
+                    "title": "Injected Fluid ID"
+                },
+                "Porosity": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/PorosityItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The amount of pore space relative to the volume of a sample.",
+                    "title": "Porosity"
+                },
+                "Permeability": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/PermeabilityItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The permeability of the sample as determined by the NMR test, reflecting the ability of fluids to flow through the rock or material.",
+                    "title": "Permeability"
+                },
+                "Swirr": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The irreducible water saturation relative to pore volume of the sample.",
+                    "title": "Irreducible Water Saturation"
+                },
+                "NMRT2Swirr": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "NMR T2 irreducible water saturation relative to pore volume of the sample.",
+                    "title": "NMR T2 Irreducible Water Saturation"
+                },
+                "T2CutOff": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Cut off of transverse relaxation time (T2).",
+                    "title": "T2 Cut Off"
+                },
+                "T2Mean": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Average of T2 relaxation time.",
+                    "title": "T2 Mean"
+                },
+                "Temperature": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The temperature of the test environment.",
+                    "title": "Temperature"
+                },
+                "PoreVolume": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The pore volume of the sample.",
+                    "title": "Pore Volume"
+                },
+                "NetConfiningStress": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The pressure exerted on a sample from its environment, minus the pore pressure within the sample.",
+                    "title": "Net Confining Stress"
+                }
+            },
+            "title": "NMRSummaryData",
+            "type": "object"
+        },
+        "NMRTestItem": {
+            "additionalProperties": false,
+            "properties": {
+                "TestConditionID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-NMRTestCondition:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The sample condition at which the NMR test was conducted.",
+                    "title": "Test Condition ID"
+                },
+                "NMRTestSteps": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/NMRTestStep"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "An array capturing the individual test steps for this NMR analysis.",
+                    "title": "NMR Test Steps"
+                },
+                "NMRSummaryData": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/NMRSummaryData"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A summary of results from the NMR test, providing key metrics and findings related to the analysis.",
+                    "title": "NMR Summary Data"
+                }
+            },
+            "title": "NMRTestItem",
+            "type": "object"
+        },
+        "NMRTestStep": {
+            "additionalProperties": false,
+            "properties": {
+                "CumulativeWaterSaturation": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Cumulative water saturation",
+                    "title": "Cumulative Water Saturation"
+                },
+                "CumulativeVolume": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Cumulative volume of fluid calculated based on amplitude measurement.",
+                    "title": "Cumulative Volume"
+                },
+                "CumulativePorosity": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CumulativePorosity"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Cumulative porosity of the sample.",
+                    "title": "Cumulative Porosity"
+                },
+                "IncrementalWaterSaturation": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Water saturation increment for this test step.",
+                    "title": "Incremental Water Saturation"
+                },
+                "IncrementalPorosity": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/IncrementalPorosity"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Incremental porosity of the sample.",
+                    "title": "Incremental Porosity"
+                },
+                "IncrementalVolume": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Incremental volume of fluid calculated based on amplitude measurement.",
+                    "title": "Incremental Volume"
+                },
+                "T2FullySaturated": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "T2 (transverse or spin-spin relaxation) when the sample is fully saturated.",
+                    "title": "T2 Fully Saturated"
+                },
+                "T2PartiallySaturated": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "T2 (transverse or spin-spin relaxation) when the sample is partially saturated.",
+                    "title": "T2 Partially Saturated"
+                },
+                "T1CumulativePorosity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Cumulative porosity of the sample based on T1.",
+                    "title": "T1 Cumulative Porosity"
+                },
+                "T1CumulativeWaterSaturation": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Cumulative water saturation of the sample based on T1.",
+                    "title": "T1 Cumulative Water Saturation"
+                },
+                "T1IncrementalPorosity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Incremental porosity of the sample based on T1.",
+                    "title": "T1 Incremental Porosity"
+                },
+                "T1IncrementalWaterSaturation": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Incremental water saturation of the sample based on T1.",
+                    "title": "T1 Incremental Water Saturation"
+                }
+            },
+            "title": "NMRTestStep",
+            "type": "object"
+        },
+        "PermeabilityItem": {
+            "additionalProperties": false,
+            "properties": {
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "title": "Value"
+                },
+                "PermeabilityMeasurementTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+                    "title": "Permeability Measurement Type ID"
+                }
+            },
+            "title": "PermeabilityItem",
+            "type": "object"
+        },
+        "PorosityItem": {
+            "additionalProperties": false,
+            "properties": {
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The porosity value.",
+                    "title": "Value"
+                },
+                "PorosityMeasurementTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The classification of porosity measured in the NMR test, which could be based on the method of measurement or the characteristics of the pore spaces.",
+                    "title": "Porosity Measurement Type ID"
+                }
+            },
+            "title": "PorosityItem",
+            "type": "object"
+        }
+    },
+    "additionalProperties": false,
     "properties": {
         "SamplesAnalysisID": {
-            "title": "Samples Analysis ID",
             "description": "The OSDU Identifier for this SamplesAnalysis.",
             "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "title": "Samples Analysis ID",
             "type": "string"
         },
         "SampleID": {
-            "title": "Sample ID",
             "description": "The OSDU Identifier for the Sample associated with this analysis.",
             "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "title": "Sample ID",
             "type": "string"
         },
         "Meta": {
-            "title": "Meta",
             "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
             "example": "",
-            "type": "array",
             "items": {
                 "anyOf": [
                     {
-                        "$ref": "#/definitions/Meta"
+                        "$ref": "#/$defs/Meta"
                     },
                     {
-                        "$ref": "#/definitions/Meta1"
+                        "$ref": "#/$defs/Meta1"
                     },
                     {
-                        "$ref": "#/definitions/Meta2"
+                        "$ref": "#/$defs/Meta2"
                     },
                     {
-                        "$ref": "#/definitions/Meta3"
+                        "$ref": "#/$defs/Meta3"
                     }
                 ]
-            }
+            },
+            "title": "Meta",
+            "type": "array"
         },
         "NMRTest": {
-            "title": "NMR Test",
+            "anyOf": [
+                {
+                    "items": {
+                        "$ref": "#/$defs/NMRTestItem"
+                    },
+                    "type": "array"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "An analysis of rock or fluid samples using Nuclear Magnetic Resonance to assess various properties, including fluid content and pore structure.",
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/NMRTestItem"
-            }
+            "title": "NMR Test"
         }
     },
     "required": [
@@ -50,452 +892,6 @@
         "SampleID",
         "Meta"
     ],
-    "additionalProperties": false,
-    "definitions": {
-        "Meta": {
-            "title": "Meta",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "UOM Reference Kind",
-                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
-                    "default": "Unit",
-                    "const": "Unit",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "UOM Unit Symbol",
-                    "description": "The unit symbol or name of the unit.",
-                    "example": "ft[US]",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "UOM Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
-                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
-                    "type": "string"
-                },
-                "unitOfMeasureID": {
-                    "title": "Unitofmeasureid",
-                    "description": "SRN to unit of measure reference.",
-                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "UOM Property Names",
-                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "HorizontalDeflection.EastWest",
-                        "HorizontalDeflection.NorthSouth"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "Meta1": {
-            "title": "Meta1",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "CRS Reference Kind",
-                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
-                    "default": "CRS",
-                    "const": "CRS",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "CRS Name",
-                    "description": "The name of the CRS.",
-                    "example": "WGS 84 / UTM zone 15N",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "CRS Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
-                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
-                    "type": "string"
-                },
-                "coordinateReferenceSystemID": {
-                    "title": "Coordinatereferencesystemid",
-                    "description": "SRN to CRS reference.",
-                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "CRS Property Names",
-                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "KickOffPosition.X",
-                        "KickOffPosition.Y"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "Meta2": {
-            "title": "Meta2",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "DateTime Reference Kind",
-                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
-                    "default": "DateTime",
-                    "const": "DateTime",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "DateTime Name",
-                    "description": "The name of the DateTime format and reference.",
-                    "example": "UTC",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "DateTime Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
-                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "DateTime Property Names",
-                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "Acquisition.StartTime",
-                        "Acquisition.EndTime"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "Meta3": {
-            "title": "Meta3",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "AzimuthReference Reference Kind",
-                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
-                    "default": "AzimuthReference",
-                    "const": "AzimuthReference",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "AzimuthReference Name",
-                    "description": "The name of the CRS or the symbol/name of the unit.",
-                    "example": "TrueNorth",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "AzimuthReference Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
-                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "AzimuthReference Property Names",
-                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "Bearing"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "CumulativePorosity": {
-            "title": "CumulativePorosity",
-            "type": "object",
-            "properties": {
-                "Value": {
-                    "title": "Value",
-                    "description": "The porosity value of the sample.",
-                    "type": "number"
-                },
-                "PorosityMeasurementTypeID": {
-                    "title": "Porosity Measurement Type ID",
-                    "description": "The type of porosity being measured, e.g. BrineSaturation, HeliumInjection.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "IncrementalPorosity": {
-            "title": "IncrementalPorosity",
-            "type": "object",
-            "properties": {
-                "Value": {
-                    "title": "Value",
-                    "description": "The porosity value.",
-                    "type": "number"
-                },
-                "PorosityMeasurementTypeID": {
-                    "title": "Porosity Measurement Type ID",
-                    "description": "The type of porosity being measured, e.g. BrineSaturation, HeliumInjection.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "NMRTestStep": {
-            "title": "NMRTestStep",
-            "type": "object",
-            "properties": {
-                "CumulativeWaterSaturation": {
-                    "title": "Cumulative Water Saturation",
-                    "description": "Cumulative water saturation",
-                    "type": "number"
-                },
-                "CumulativeVolume": {
-                    "title": "Cumulative Volume",
-                    "description": "Cumulative volume of fluid calculated based on amplitude measurement.",
-                    "type": "number"
-                },
-                "CumulativePorosity": {
-                    "title": "Cumulative Porosity",
-                    "description": "Cumulative porosity of the sample.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/CumulativePorosity"
-                        }
-                    ]
-                },
-                "IncrementalWaterSaturation": {
-                    "title": "Incremental Water Saturation",
-                    "description": "Water saturation increment for this test step.",
-                    "type": "number"
-                },
-                "IncrementalPorosity": {
-                    "title": "Incremental Porosity",
-                    "description": "Incremental porosity of the sample.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/IncrementalPorosity"
-                        }
-                    ]
-                },
-                "IncrementalVolume": {
-                    "title": "Incremental Volume",
-                    "description": "Incremental volume of fluid calculated based on amplitude measurement.",
-                    "type": "number"
-                },
-                "T2FullySaturated": {
-                    "title": "T2 Fully Saturated",
-                    "description": "T2 (transverse or spin-spin relaxation) when the sample is fully saturated.",
-                    "type": "number"
-                },
-                "T2PartiallySaturated": {
-                    "title": "T2 Partially Saturated",
-                    "description": "T2 (transverse or spin-spin relaxation) when the sample is partially saturated.",
-                    "type": "number"
-                },
-                "T1CumulativePorosity": {
-                    "title": "T1 Cumulative Porosity",
-                    "description": "Cumulative porosity of the sample based on T1.",
-                    "type": "number"
-                },
-                "T1CumulativeWaterSaturation": {
-                    "title": "T1 Cumulative Water Saturation",
-                    "description": "Cumulative water saturation of the sample based on T1.",
-                    "type": "number"
-                },
-                "T1IncrementalPorosity": {
-                    "title": "T1 Incremental Porosity",
-                    "description": "Incremental porosity of the sample based on T1.",
-                    "type": "number"
-                },
-                "T1IncrementalWaterSaturation": {
-                    "title": "T1 Incremental Water Saturation",
-                    "description": "Incremental water saturation of the sample based on T1.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "PorosityItem": {
-            "title": "PorosityItem",
-            "type": "object",
-            "properties": {
-                "Value": {
-                    "title": "Value",
-                    "description": "The porosity value.",
-                    "type": "number"
-                },
-                "PorosityMeasurementTypeID": {
-                    "title": "Porosity Measurement Type ID",
-                    "description": "The classification of porosity measured in the NMR test, which could be based on the method of measurement or the characteristics of the pore spaces.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PorosityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "PermeabilityItem": {
-            "title": "PermeabilityItem",
-            "type": "object",
-            "properties": {
-                "Value": {
-                    "title": "Value",
-                    "type": "number"
-                },
-                "PermeabilityMeasurementTypeID": {
-                    "title": "Permeability Measurement Type ID",
-                    "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "NMRSummaryData": {
-            "title": "NMRSummaryData",
-            "type": "object",
-            "properties": {
-                "BoundFluidBVI": {
-                    "title": "Bound Fluid BVI",
-                    "description": "Bound fluid following sample desaturation, relative to pore volume.",
-                    "type": "number"
-                },
-                "NMRT2BoundFluidRelativetoPoreVolume": {
-                    "title": "NMRT2BoundFluidRelativetoPoreVolume",
-                    "description": "NMR T2 bound fluid relative to pore volume.",
-                    "type": "number"
-                },
-                "DisplacedFluidID": {
-                    "title": "Displaced Fluid ID",
-                    "description": "The type of fluid displaced during the NMR test, which can influence the interpretation of pore and fluid properties.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DisplacedFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "EchoSpacing": {
-                    "title": "Echo Spacing",
-                    "description": "The time interval between successive echoes in a sequence of pulse and acquisition events.",
-                    "type": "number"
-                },
-                "FreeFluidFFI": {
-                    "title": "Free Fluid FFI",
-                    "description": "Free fluid following sample desaturation, relative to pore volume.",
-                    "type": "number"
-                },
-                "NMRT2FreeFluid": {
-                    "title": "NMR T2 Free Fluid",
-                    "description": "The amount of NMR T2 free fluid expressed relative to pore volume.",
-                    "type": "number"
-                },
-                "InjectionFluidID": {
-                    "title": "Injected Fluid ID",
-                    "description": "The type of fluid injected into the sample during the NMR test, used to assess how different fluids affect the sample's magnetic resonance properties.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "Porosity": {
-                    "title": "Porosity",
-                    "description": "The amount of pore space relative to the volume of a sample.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/PorosityItem"
-                    }
-                },
-                "Permeability": {
-                    "title": "Permeability",
-                    "description": "The permeability of the sample as determined by the NMR test, reflecting the ability of fluids to flow through the rock or material.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/PermeabilityItem"
-                    }
-                },
-                "Swirr": {
-                    "title": "Irreducible Water Saturation",
-                    "description": "The irreducible water saturation relative to pore volume of the sample.",
-                    "type": "number"
-                },
-                "NMRT2Swirr": {
-                    "title": "NMR T2 Irreducible Water Saturation",
-                    "description": "NMR T2 irreducible water saturation relative to pore volume of the sample.",
-                    "type": "number"
-                },
-                "T2CutOff": {
-                    "title": "T2 Cut Off",
-                    "description": "Cut off of transverse relaxation time (T2).",
-                    "type": "number"
-                },
-                "T2Mean": {
-                    "title": "T2 Mean",
-                    "description": "Average of T2 relaxation time.",
-                    "type": "number"
-                },
-                "Temperature": {
-                    "title": "Temperature",
-                    "description": "The temperature of the test environment.",
-                    "type": "number"
-                },
-                "PoreVolume": {
-                    "title": "Pore Volume",
-                    "description": "The pore volume of the sample.",
-                    "type": "number"
-                },
-                "NetConfiningStress": {
-                    "title": "Net Confining Stress",
-                    "description": "The pressure exerted on a sample from its environment, minus the pore pressure within the sample.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "NMRTestItem": {
-            "title": "NMRTestItem",
-            "type": "object",
-            "properties": {
-                "TestConditionID": {
-                    "title": "Test Condition ID",
-                    "description": "The sample condition at which the NMR test was conducted.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-NMRTestCondition:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "NMRTestSteps": {
-                    "title": "NMR Test Steps",
-                    "description": "An array capturing the individual test steps for this NMR analysis.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/NMRTestStep"
-                    }
-                },
-                "NMRSummaryData": {
-                    "title": "NMR Summary Data",
-                    "description": "A summary of results from the NMR test, providing key metrics and findings related to the analysis.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/NMRSummaryData"
-                        }
-                    ]
-                }
-            },
-            "additionalProperties": false
-        }
-    }
+    "title": "NmrModel100",
+    "type": "object"
 }

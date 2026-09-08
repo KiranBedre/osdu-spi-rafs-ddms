@@ -13,7 +13,7 @@
 #  limitations under the License.
 
 from fastapi import Depends
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 from app.api.dependencies.auth import require_authorized_user
 from app.api.dependencies.request import (

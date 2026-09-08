@@ -16,19 +16,18 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:master-data--Sample:1.0.0
 #   timestamp: 2023-10-24T20:27:08+00:00
 
-from __future__ import annotations
 
-from typing import Optional
+from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
     PlayID: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-Play:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Play:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(None, description="Reference to the play.")
     GeoTypeID: Optional[
-        constr(regex=r"^[\w\-\.]+:reference-data\-\-PlayType:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-PlayType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The PlayType reference of the Play (via PlayID) for application convenience.",

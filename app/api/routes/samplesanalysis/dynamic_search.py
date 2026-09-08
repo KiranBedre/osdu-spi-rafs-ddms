@@ -155,6 +155,13 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
             search_result = json.loads(body)
             result_data = search_result.get("result", {})
 
+            # Validate wellbore scope upfront — required regardless of whether results are empty.
+            if not search_scope.wellbore_id:
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE,
+                    detail="Depth shift requires a wellbore-scoped search. Please provide wellbore_id parameter.",
+                )
+
             # Convert to DataFrame
             if isinstance(result_data, dict) and orient == "split":
                 base_df = pd.read_json(io.StringIO(json.dumps(result_data)), orient="split")
@@ -162,13 +169,6 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
                 base_df = pd.DataFrame(result_data)
             else:
                 base_df = pd.DataFrame()
-
-            # Validate wellbore scope is provided
-            if not search_scope.wellbore_id:
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE,
-                    detail="Depth shift requires a wellbore-scoped search. Please provide wellbore_id parameter.",
-                )
 
             # Empty results are returned as-is; there is nothing to shift.
             if base_df.empty:
@@ -238,7 +238,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
                     ShiftedSampleBase=row["ShiftedSampleBase"],
                     ShiftedSampleMean=row["ShiftedSampleMean"],
                     DepthShiftWarnings=row["DepthShiftWarnings"] if isinstance(row["DepthShiftWarnings"], list) else [],
-                ).dict()
+                ).model_dump()
                 for _, row in augmented_df[ds_cols].iterrows()
             ]
             clean_df = augmented_df.drop(columns=ds_cols)
@@ -269,7 +269,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
                     definitiveDepthShiftAvailable=definitive_available,
                     usedDefinitive=depth_shift_params.is_definitive,
                     warnings=metadata_warnings,
-                ).dict(),
+                ).model_dump(),
             }
 
             return Response(

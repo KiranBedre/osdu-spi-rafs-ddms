@@ -89,7 +89,7 @@ class TestDatasetService:
 
         # Create a mock parent record
         parent_record = {
-            **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+            **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
             **{
                 "data": {
                     RESOURCE_SECURITY_KEY: TEST_FIELD_VALUE,

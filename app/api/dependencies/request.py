@@ -127,7 +127,7 @@ def get_content_schema_version(
     content_schema_version: Optional[str] = Query(
         None,
         description="Content schema version, e.g. `1.0.0`. Takes precedence over the Accept header.",
-        example="1.0.0",
+        json_schema_extra={"example": "1.0.0"},
     ),
 ) -> str:
     """Get content schema version from query parameter or Accept header.

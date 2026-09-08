@@ -16,12 +16,11 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:master-data--Sample:1.0.0
 #   timestamp: 2023-10-24T20:27:08+00:00
 
-from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 from ..osdu_wks_AbstractAnyCrsFeatureCollection_1 import field_1
 from ..osdu_wks_AbstractFeatureCollection_1 import field_0
@@ -34,17 +33,13 @@ class Field0(BaseModel):
         title="As Ingested Coordinates",
     )
     SpatialParameterTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SpatialParameterType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SpatialParameterType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="A type of spatial representation of an object, often general (e.g. an Outline, which could be applied to Field, Reservoir, Facility, etc.) or sometimes specific (e.g. Onshore Outline, State Offshore Outline, Federal Offshore Outline, 3 spatial representations that may be used by Countries).",
     )
     QuantitativeAccuracyBandID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-QuantitativeAccuracyBand:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-QuantitativeAccuracyBand:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="An approximate quantitative assessment of the quality of a location (accurate to > 500 m (i.e. not very accurate)), to < 1 m, etc.",
@@ -55,16 +50,14 @@ class Field0(BaseModel):
     AppliedOperations: Optional[List[str]] = Field(
         None,
         description="The audit trail of operations applied to the coordinates from the original state to the current state. The list may contain operations applied prior to ingestion as well as the operations applied to produce the Wgs84Coordinates. The text elements refer to ESRI style CRS and Transformation names, which may have to be translated to EPSG standard names.",
-        example=[
+        json_schema_extra={"example": [
             "conversion from ED_1950_UTM_Zone_31N to GCS_European_1950; 1 points converted",
             "transformation GCS_European_1950 to GCS_WGS_1984 using ED_1950_To_WGS_1984_24; 1 points successfully transformed",
-        ],
+        ]},
         title="Operations Applied",
     )
     QualitativeSpatialAccuracyTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-QualitativeSpatialAccuracyType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-QualitativeSpatialAccuracyType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="A qualitative description of the quality of a spatial location, e.g. unverifiable, not verified, basic validation.",
@@ -84,9 +77,7 @@ class Field0(BaseModel):
         title="WGS 84 Coordinates",
     )
     SpatialGeometryTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SpatialGeometryType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SpatialGeometryType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Indicates the expected look of the SpatialParameterType, e.g. Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon. The value constrains the type of geometries in the GeoJSON Wgs84Coordinates and AsIngestedCoordinates.",

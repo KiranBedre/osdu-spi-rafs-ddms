@@ -16,86 +16,75 @@
 #   filename:  vapor_liquid_equilibrium.2.0.0.json
 #   timestamp: 2026-03-25T22:44:56+00:00
 
-from __future__ import annotations
 
 from app.models.config import RafsBaseModel
 
 from datetime import date
-from typing import Literal
+from typing import Annotated, Literal, Optional
 
-from pydantic import Extra, Field, constr
+from pydantic import Field, StringConstraints
 
 
 class Meta(RafsBaseModel):
     kind: Literal["Unit"] = Field(
         "Unit",
-        const=True,
         description="The kind of reference, 'Unit' for FrameOfReferenceUOM.",
         title="UOM Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The unit symbol or name of the unit.",
-        example="ft[US]",
+        json_schema_extra={"example": "ft[US]"},
         title="UOM Unit Symbol",
     )
     persistableReference: str | None = Field(
         None,
         description="The self-contained, persistable reference string uniquely identifying the Unit.",
-        example='{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}',
+        json_schema_extra={"example": '{"abcd":{"a":0.0,"b":1200.0,"c":3937.0,"d":0.0},"symbol":"ft[US]","baseMeasurement":{"ancestry":"L","type":"UM"},"type":"UAD"}'},
         title="UOM Persistable Reference",
     )
-    unitOfMeasureID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    unitOfMeasureID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="SRN to unit of measure reference.",
-        example="namespace:reference-data--UnitOfMeasure:ftUS:",
+        json_schema_extra={"example": "namespace:reference-data--UnitOfMeasure:ftUS:"},
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides Unit context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["HorizontalDeflection.EastWest", "HorizontalDeflection.NorthSouth"],
+        json_schema_extra={"example": ["HorizontalDeflection.EastWest", "HorizontalDeflection.NorthSouth"]},
         title="UOM Property Names",
     )
 
 
+
+_MetaModel = Meta
 class Meta1(RafsBaseModel):
     kind: Literal["CRS"] = Field(
         "CRS",
-        const=True,
         description="The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
         title="CRS Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The name of the CRS.",
-        example="WGS 84 / UTM zone 15N",
+        json_schema_extra={"example": "WGS 84 / UTM zone 15N"},
         title="CRS Name",
     )
     persistableReference: str | None = Field(
         None,
         description="The self-contained, persistable reference string uniquely identifying the CRS.",
-        example='{"authCode":{"auth":"EPSG","code":"32615"},"name":"WGS_1984_UTM_Zone_15N","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"WGS_1984_UTM_Zone_15N\\",GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Transverse_Mercator\\"],PARAMETER[\\"False_Easting\\",500000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-93.0],PARAMETER[\\"Scale_Factor\\",0.9996],PARAMETER[\\"Latitude_Of_Origin\\",0.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",32615]]"}',
+        json_schema_extra={"example": '{"authCode":{"auth":"EPSG","code":"32615"},"name":"WGS_1984_UTM_Zone_15N","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"WGS_1984_UTM_Zone_15N\\",GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Transverse_Mercator\\"],PARAMETER[\\"False_Easting\\",500000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-93.0],PARAMETER[\\"Scale_Factor\\",0.9996],PARAMETER[\\"Latitude_Of_Origin\\",0.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",32615]]"}'},
         title="CRS Persistable Reference",
     )
-    coordinateReferenceSystemID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    coordinateReferenceSystemID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="SRN to CRS reference.",
-        example="namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+        json_schema_extra={"example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:"},
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides CRS context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["KickOffPosition.X", "KickOffPosition.Y"],
+        json_schema_extra={"example": ["KickOffPosition.X", "KickOffPosition.Y"]},
         title="CRS Property Names",
     )
 
@@ -103,26 +92,25 @@ class Meta1(RafsBaseModel):
 class Meta2(RafsBaseModel):
     kind: Literal["DateTime"] = Field(
         "DateTime",
-        const=True,
         description="The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
         title="DateTime Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The name of the DateTime format and reference.",
-        example="UTC",
+        json_schema_extra={"example": "UTC"},
         title="DateTime Name",
     )
     persistableReference: str | None = Field(
         None,
         description="The self-contained, persistable reference string uniquely identifying DateTime reference.",
-        example='{"format":"yyyy-MM-ddTHH:mm:ssZ","timeZone":"UTC","type":"DTM"}',
+        json_schema_extra={"example": '{"format":"yyyy-MM-ddTHH:mm:ssZ","timeZone":"UTC","type":"DTM"}'},
         title="DateTime Persistable Reference",
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides DateTime context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Acquisition.StartTime", "Acquisition.EndTime"],
+        json_schema_extra={"example": ["Acquisition.StartTime", "Acquisition.EndTime"]},
         title="DateTime Property Names",
     )
 
@@ -130,37 +118,31 @@ class Meta2(RafsBaseModel):
 class Meta3(RafsBaseModel):
     kind: Literal["AzimuthReference"] = Field(
         "AzimuthReference",
-        const=True,
         description="The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
         title="AzimuthReference Reference Kind",
     )
     name: str | None = Field(
         None,
         description="The name of the CRS or the symbol/name of the unit.",
-        example="TrueNorth",
+        json_schema_extra={"example": "TrueNorth"},
         title="AzimuthReference Name",
     )
     persistableReference: str | None = Field(
         None,
         description="The self-contained, persistable reference string uniquely identifying AzimuthReference.",
-        example='{"code":"TrueNorth","type":"AZR"}',
+        json_schema_extra={"example": '{"code":"TrueNorth","type":"AZR"}'},
         title="AzimuthReference Persistable Reference",
     )
     propertyNames: list[str] | None = Field(
         None,
         description='The list of property names, to which this meta data item provides AzimuthReference context to. A full path like "StructureA.PropertyB" is required to define a unique context; "data" is omitted since frame-of reference normalization only applies to the data block.',
-        example=["Bearing"],
+        json_schema_extra={"example": ["Bearing"]},
         title="AzimuthReference Property Names",
     )
 
 
 class InjectedGa(RafsBaseModel):
-    ComponentNameID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SampleOrganicCompositionComponent:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    ComponentNameID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SampleOrganicCompositionComponent:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="Name of the component in the injected gas.",
         title="Component Name ID",
@@ -201,7 +183,7 @@ class Remark(RafsBaseModel):
     RemarkSequenceNumber: int | None = Field(
         None,
         description="A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
-        example=1,
+        json_schema_extra={"example": 1},
         title="Remark Sequence Number",
     )
     Remark: str | None = Field(
@@ -218,12 +200,7 @@ class Remark(RafsBaseModel):
 
 
 class VaporCompositionItem(RafsBaseModel):
-    ComponentNameID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SampleOrganicCompositionComponent:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    ComponentNameID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SampleOrganicCompositionComponent:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The specific name of each component in the vapor phase, such as methane or ethane.",
         title="Component Name ID",
@@ -241,18 +218,13 @@ class VaporCompositionItem(RafsBaseModel):
     Remarks: list[Remark] | None = Field(
         None,
         description="Array object capturing remarks or additional information for this test step.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
-        example=[],
+        json_schema_extra={"example": []},
         title="Remarks",
     )
 
 
 class LiquidCompositionItem(RafsBaseModel):
-    ComponentNameID: (
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-SampleOrganicCompositionComponent:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    ComponentNameID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-SampleOrganicCompositionComponent:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="The specific name of each component in the liquid phase, such as methane or ethane.",
         title="Component Name ID",
@@ -270,33 +242,27 @@ class LiquidCompositionItem(RafsBaseModel):
     Remarks: list[Remark] | None = Field(
         None,
         description="Array object capturing remarks or additional information for this test step.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
-        example=[],
+        json_schema_extra={"example": []},
         title="Remarks",
     )
 
 
 class VaporLiquidEquilibriumModel200(RafsBaseModel):
-    class Config:
-        extra = Extra.forbid
 
-    SamplesAnalysisID: constr(
-        regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+    SamplesAnalysisID: Annotated[str, StringConstraints(pattern="^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ...,
         description="The OSDU Identifier for this SamplesAnalysis.",
         title="Samples Analysis ID",
     )
-    SampleID: constr(
-        regex=r"^[\w\-\.]+:master-data\-\-Sample:[\w\-\.\:\%]+:[0-9]*$"
-    ) = Field(
+    SampleID: Annotated[str, StringConstraints(pattern="^[\w\-\.]+:master-data\-\-Sample:[\w\-\.\:\%]+:[0-9]*$")] = Field(
         ...,
         description="The OSDU Identifier for the Sample associated with this analysis.",
         title="Sample ID",
     )
-    Meta: list[Meta | Meta1 | Meta2 | Meta3] = Field(
+    Meta: list[_MetaModel | Meta1 | Meta2 | Meta3] = Field(
         ...,
         description="A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
-        example=[],
+        json_schema_extra={"example": []},
         title="Meta",
     )
     TestNumber: str | None = Field(
@@ -379,22 +345,12 @@ class VaporLiquidEquilibriumModel200(RafsBaseModel):
         description="The overall composition of the vapor phase, detailing the proportion of each component present.",
         title="Vapor Composition",
     )
-    VaporTransportTestReferenceID: (
-        constr(
-            regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    VaporTransportTestReferenceID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="A reference to a test assessing the transport properties of the vapor phase, such as flow rates or permeability.",
         title="Vapor Transport Test Reference ID",
     )
-    VaporPhaseAtmosphericFlashTestReferenceID: (
-        constr(
-            regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    VaporPhaseAtmosphericFlashTestReferenceID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="A reference to the atmospheric flash test, used to describe the behavior of the mixture when brought to atmospheric pressure.",
         title="Atmospheric Flash Test Reference ID",
@@ -414,12 +370,7 @@ class VaporLiquidEquilibriumModel200(RafsBaseModel):
         description="The density of the liquid phase, important for understanding mass, flow properties, and phase behavior.",
         title="Liquid Phase Density",
     )
-    LiquidTransportTestReferenceID: (
-        constr(
-            regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    LiquidTransportTestReferenceID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="A reference to a test assessing the transport properties of the liquid phase, like viscosity or diffusion rates.",
         title="Liquid Transport Test Reference ID",
@@ -429,12 +380,7 @@ class VaporLiquidEquilibriumModel200(RafsBaseModel):
         description="The overall composition of the liquid phase, detailing the proportion of each component present.",
         title="Liquid Composition",
     )
-    LiquidPhaseAtmosphericFlashTestReferenceID: (
-        constr(
-            regex=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$"
-        )
-        | None
-    ) = Field(
+    LiquidPhaseAtmosphericFlashTestReferenceID: Optional[Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:work-product-component\-\-SamplesAnalysis:[\w\-\.\:\%]+:[0-9]*$")]] = Field(
         None,
         description="A reference to the atmospheric flash test, used to describe the behavior of the mixture when brought to atmospheric pressure.",
         title="Atmospheric Flash Test Reference ID",

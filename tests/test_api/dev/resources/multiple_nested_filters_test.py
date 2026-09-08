@@ -49,7 +49,7 @@ class MockModelSameNestedName(BaseModel):
 def test_valid_columns_filter():
     expected_columns_filter = ColumnsFilter(["Field1", "Field2"])
     validator = DFMultipleNestedFilterValidator(
-        MockModel.schema(),
+        MockModel.model_json_schema(),
         raw_columns_filter='["Field1" , "Field2"]',
     )
     assert validator.valid_columns_filter == expected_columns_filter
@@ -57,7 +57,7 @@ def test_valid_columns_filter():
 
 @pytest.mark.parametrize("raw_columns_filter", ['["Field1", "field4"]', '["Field2,"]'])
 def test_valid_columns_filter_invalid_columns(raw_columns_filter):
-    validator = DFMultipleNestedFilterValidator(MockModel.schema(), raw_columns_filter=raw_columns_filter)
+    validator = DFMultipleNestedFilterValidator(MockModel.model_json_schema(), raw_columns_filter=raw_columns_filter)
     with pytest.raises(FilterValidationError) as exc_info:
         validator.valid_columns_filter
     wrong_column = json.loads(raw_columns_filter)[-1]
@@ -75,7 +75,7 @@ def test_valid_columns_filter_invalid_columns(raw_columns_filter):
 def test_valid_rows_filter(operator_name, operator_value):
     expected_rows_filter = RowsFilter("Field1", operator_value, "value1")
     validator = DFMultipleNestedFilterValidator(
-        MockModel.schema(),
+        MockModel.model_json_schema(),
         raw_rows_filter=f'{{"Field1": {{"${operator_name}": "value1"}}}}',
     )
     assert validator.valid_rows_filter == expected_rows_filter
@@ -87,7 +87,7 @@ def test_valid_rows_filter(operator_name, operator_value):
 def test_valid_rows_filter_with_nested_field(operator_name, operator_value):
     expected_rows_filter = RowsFilter("Field3.nested_field", operator_value, "value1")
     nested_validator = DFMultipleNestedFilterValidator(
-        MockModelSameNestedName.schema(),
+        MockModelSameNestedName.model_json_schema(),
         raw_rows_filter=f'{{"Field3.nested_field": {{"${operator_name}": "value1"}}}}',
     )
     assert nested_validator.valid_rows_filter == expected_rows_filter
@@ -99,14 +99,14 @@ def test_valid_rows_filter_with_nested_field(operator_name, operator_value):
 def test_valid_rows_filter_with_nested_field_different_name(operator_name, operator_value):
     expected_rows_filter = RowsFilter("Field3.nested_field", operator_value, "value1")
     nested_validator = DFMultipleNestedFilterValidator(
-        MockModel.schema(),
+        MockModel.model_json_schema(),
         raw_rows_filter=f'{{"Field3.nested_field": {{"${operator_name}": "value1"}}}}',
     )
     assert nested_validator.valid_rows_filter == expected_rows_filter
 
 
 def test_valid_rows_filter_invalid_format():
-    validator = DFMultipleNestedFilterValidator(MockModel.schema(), raw_rows_filter="Field1,eq")
+    validator = DFMultipleNestedFilterValidator(MockModel.model_json_schema(), raw_rows_filter="Field1,eq")
     with pytest.raises(FilterValidationError) as exc_info:
         validator.valid_rows_filter
     expected_error_msg = (
@@ -121,7 +121,7 @@ def test_valid_rows_filter_invalid_format():
 def test_valid_columns_aggregation(aggregation_func):
     expected_columns_aggregation = ColumnsAggregation("Field1", aggregation_func)
     validator = DFMultipleNestedFilterValidator(
-        MockModel.schema(),
+        MockModel.model_json_schema(),
         raw_columns_aggregation=f'["Field1", "{aggregation_func}"]',
     )
     assert validator.valid_columns_aggregation == expected_columns_aggregation
@@ -131,14 +131,14 @@ def test_valid_columns_aggregation(aggregation_func):
 def test_valid_columns_aggregation_with_nested_field(aggregation_func):
     expected_columns_aggregation = ColumnsAggregation("Field3.nested_field", aggregation_func)
     nested_validator = DFMultipleNestedFilterValidator(
-        MockModel.schema(),
+        MockModel.model_json_schema(),
         raw_columns_aggregation=f'["Field3.nested_field", "{aggregation_func}"]',
     )
     assert nested_validator.valid_columns_aggregation == expected_columns_aggregation
 
 
 def test_valid_columns_aggregation_invalid_format():
-    validator = DFMultipleNestedFilterValidator(MockModel.schema(), raw_columns_aggregation="Field1")
+    validator = DFMultipleNestedFilterValidator(MockModel.model_json_schema(), raw_columns_aggregation="Field1")
     with pytest.raises(FilterValidationError) as exc_info:
         validator.valid_columns_aggregation
     expected_error_msg = (
@@ -149,7 +149,9 @@ def test_valid_columns_aggregation_invalid_format():
 
 
 def test_valid_columns_aggregation_invalid_operator():
-    validator = DFMultipleNestedFilterValidator(MockModel.schema(), raw_columns_aggregation='["Field1", "average"]')
+    validator = DFMultipleNestedFilterValidator(
+        MockModel.model_json_schema(), raw_columns_aggregation='["Field1", "average"]'
+    )
     with pytest.raises(FilterValidationError) as exc_info:
         validator.valid_columns_aggregation
     assert re.match(r"Invalid aggregation operator not in: {.+}", str(exc_info.value))
@@ -157,7 +159,7 @@ def test_valid_columns_aggregation_invalid_operator():
 
 def test_invalid_aggregatiom_dotted_colums():
     nested_aggregation_validator = DFMultipleNestedFilterValidator(
-        MockModel.schema(),
+        MockModel.model_json_schema(),
         raw_columns_aggregation='["Field3.", "mean"]',
         raw_rows_filter='{"Field3.": {"$eq": "test"}}',
     )

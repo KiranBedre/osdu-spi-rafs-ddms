@@ -1,165 +1,1457 @@
 {
-    "title": "RelativePermeabilityModel110",
-    "type": "object",
+    "$defs": {
+        "CumulativeProduction": {
+            "additionalProperties": false,
+            "properties": {
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The cumulative production value at this step.",
+                    "title": "Value"
+                },
+                "FluidTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Fluid Type displaced from the sample due to injection",
+                    "title": "Fluid Type ID"
+                }
+            },
+            "title": "CumulativeProduction",
+            "type": "object"
+        },
+        "DifferentialPressureProfile": {
+            "additionalProperties": false,
+            "properties": {
+                "Time": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The time at which the pressure was measured.",
+                    "title": "Time"
+                },
+                "DifferentialPressure": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The differential pressure value.",
+                    "title": "Differential Pressure"
+                }
+            },
+            "title": "DifferentialPressureProfile",
+            "type": "object"
+        },
+        "EffectivePermeability": {
+            "additionalProperties": false,
+            "properties": {
+                "PermeabilityMeasurementMethodID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+                    "title": "Permeability Measurement Method ID"
+                },
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The effective permeability value.",
+                    "title": "Value"
+                },
+                "FluidTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The fluid type used in determining effective permeability.",
+                    "title": "Fluid Type ID"
+                }
+            },
+            "title": "EffectivePermeability",
+            "type": "object"
+        },
+        "EffectivePermeabilityItem": {
+            "additionalProperties": false,
+            "properties": {
+                "PermeabilityMeasurementMethodID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+                    "title": "Permeability Measurement Method ID"
+                },
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The effective permeability value.",
+                    "title": "Value"
+                },
+                "FluidTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The fluid type used in determining effective permeability.",
+                    "title": "Fluid Type ID"
+                }
+            },
+            "title": "EffectivePermeabilityItem",
+            "type": "object"
+        },
+        "InSituSaturationProfile": {
+            "additionalProperties": false,
+            "properties": {
+                "Time": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The time at which the in-situ saturation was measured.",
+                    "title": "Time"
+                },
+                "Position": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The position along the sample.",
+                    "title": "Position"
+                },
+                "InitialSaturation": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The initial saturation value.",
+                    "title": "Initial Saturation"
+                },
+                "EquilibriumSaturation": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The saturation value as measured at this timestamp.",
+                    "title": "Equilibrium Saturation"
+                }
+            },
+            "title": "InSituSaturationProfile",
+            "type": "object"
+        },
+        "InitialConditions": {
+            "additionalProperties": false,
+            "properties": {
+                "EffectivePermeability": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/EffectivePermeability"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A measure of how easily fluids can flow through a porous sample, taking into consideration the saturation, presence of other fluids, and the interactions between those fluids into account.",
+                    "title": "Effective Permeability"
+                },
+                "RelativePermeability": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/RelativePermeability"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
+                    "title": "Relative Permeability"
+                },
+                "Saturation": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Saturation"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "At the start of the experiment, the extent to which pore space within the sample is filled with fluids.",
+                    "title": "Saturation"
+                },
+                "LastFlowRate": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The last recorded flow rate prior to the experiment.",
+                    "title": "Last Flow Rate"
+                },
+                "TestTemperature": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The recorded temperature within the test environment.",
+                    "title": "Test Temperature"
+                },
+                "NetConfiningStress": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The pressure exerted on a sample from its environment, minus the pore pressure within the sample.",
+                    "title": "Net Confining Stress"
+                },
+                "OverburdenPressure": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The pressure exerted by the weight of the overlying rock and soil layers on the rock sample being tested.",
+                    "title": "Overburden Pressure"
+                },
+                "PorePressure": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The pressure exerted by fluids (such as water or oil) within the pores and fractures of a rock sample.",
+                    "title": "Pore Pressure"
+                },
+                "FlowDirection": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Direction of flow for the experiment, e.g. \"Vertical from bottom\".",
+                    "title": "Flow Direction"
+                }
+            },
+            "title": "InitialConditions",
+            "type": "object"
+        },
+        "InjectionRateItem": {
+            "additionalProperties": false,
+            "properties": {
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The flow rate value.",
+                    "title": "Value"
+                },
+                "FluidTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Fluid Type injected into the sample.",
+                    "title": "Fluid Type ID"
+                }
+            },
+            "title": "InjectionRateItem",
+            "type": "object"
+        },
+        "Meta": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "Unit",
+                    "default": "Unit",
+                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                    "title": "UOM Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The unit symbol or name of the unit.",
+                    "title": "UOM Unit Symbol"
+                },
+                "persistableReference": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                    "title": "UOM Persistable Reference"
+                },
+                "unitOfMeasureID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "SRN to unit of measure reference.",
+                    "title": "Unitofmeasureid"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "title": "UOM Property Names"
+                }
+            },
+            "title": "Meta",
+            "type": "object"
+        },
+        "Meta1": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "CRS",
+                    "default": "CRS",
+                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                    "title": "CRS Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the CRS.",
+                    "title": "CRS Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                    "title": "CRS Persistable Reference",
+                    "type": "string"
+                },
+                "coordinateReferenceSystemID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "SRN to CRS reference.",
+                    "title": "Coordinatereferencesystemid"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "title": "CRS Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta1",
+            "type": "object"
+        },
+        "Meta2": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "DateTime",
+                    "default": "DateTime",
+                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                    "title": "DateTime Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the DateTime format and reference.",
+                    "title": "DateTime Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                    "title": "DateTime Persistable Reference",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "title": "DateTime Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta2",
+            "type": "object"
+        },
+        "Meta3": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "AzimuthReference",
+                    "default": "AzimuthReference",
+                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                    "title": "AzimuthReference Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the CRS or the symbol/name of the unit.",
+                    "title": "AzimuthReference Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                    "title": "AzimuthReference Persistable Reference",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "title": "AzimuthReference Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta3",
+            "type": "object"
+        },
+        "PermeabilityTestStep": {
+            "additionalProperties": false,
+            "properties": {
+                "StartTime": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The start time of this test step, typically in minutes.",
+                    "title": "Start Time"
+                },
+                "DifferentialPressure": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The pressure difference or pressure gradient through the sample at equilibrium, also known as Delta P.",
+                    "title": "Differential Pressure"
+                },
+                "InjectionRate": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/InjectionRateItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The rate at which the fluid is injected into the sample.",
+                    "title": "Injection Rate"
+                },
+                "CumulativeProduction": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CumulativeProduction"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The cumulative amount of fluid displaced from the sample",
+                    "title": "Cumulative Production"
+                },
+                "EffectivePermeability": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/EffectivePermeabilityItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A measure of how easily fluids can flow through a porous sample, taking into consideration the saturation, presence of other fluids, and the interactions between those fluids into account.",
+                    "title": "Effective Permeability"
+                },
+                "RelativePermeability": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/RelativePermeabilityItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
+                    "title": "Relative Permeability"
+                },
+                "Saturation": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Saturation"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The extent to which pore space within the sample is filled with fluids.",
+                    "title": "Saturation"
+                },
+                "InSituSaturationProfiles": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/InSituSaturationProfile"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Captures water saturation values along the length of the core sample at time intervals.",
+                    "title": "In Situ Saturation Profiles"
+                },
+                "DifferentialPressureProfiles": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/DifferentialPressureProfile"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Captures the differential pressure measured over time during the experiment.",
+                    "title": "Differential Pressure Profiles"
+                },
+                "ProductionProfiles": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/ProductionProfile"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Stores data on fluid production over time.",
+                    "title": "Production Profiles"
+                },
+                "FractionalFlowRate": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The fractional value of the injected fluid flow rate.",
+                    "title": "Fractional Flow Rate"
+                },
+                "Remarks": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/Remark"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array object capturing remarks or additional information for this test step.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
+                    "title": "Remarks"
+                }
+            },
+            "title": "PermeabilityTestStep",
+            "type": "object"
+        },
+        "ProductionProfile": {
+            "additionalProperties": false,
+            "properties": {
+                "Time": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The time at which the pressure was measured.",
+                    "title": "Time"
+                },
+                "ProductionRate": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The rate of fluid production",
+                    "title": "Production Rate"
+                },
+                "FluidTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The type of fluid.",
+                    "title": "Fluid Type ID"
+                }
+            },
+            "title": "ProductionProfile",
+            "type": "object"
+        },
+        "ReferencePermeabilityItem": {
+            "additionalProperties": false,
+            "properties": {
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The permeability value acting as a reference for this experiment.",
+                    "title": "Value"
+                },
+                "PermeabilityMeasurementMethodID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+                    "title": "Permeability Measurement Method ID"
+                }
+            },
+            "title": "ReferencePermeabilityItem",
+            "type": "object"
+        },
+        "RelativePermeability": {
+            "additionalProperties": false,
+            "properties": {
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The relative permeability value.",
+                    "title": "Value"
+                },
+                "FluidSystemAnalysisTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSystemAnalysisType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "DEPRECATED: Use FluidTypeID. The fluid system used in determining relative permeability.",
+                    "title": "Fluid System Analysis Type ID"
+                },
+                "FluidTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The fluid type for which the relative permeability is reported.",
+                    "title": "Fluid Type ID"
+                }
+            },
+            "title": "RelativePermeability",
+            "type": "object"
+        },
+        "RelativePermeabilityItem": {
+            "additionalProperties": false,
+            "properties": {
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The relative permeability value.",
+                    "title": "Value"
+                },
+                "FluidSystemAnalysisTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSystemAnalysisType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "DEPRECATED: Use FluidTypeID. The fluid system used in determining relative permeability.",
+                    "title": "Fluid System Analysis Type ID"
+                },
+                "FluidTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The fluid type for which the relative permeability is reported.",
+                    "title": "Fluid Type ID"
+                }
+            },
+            "title": "RelativePermeabilityItem",
+            "type": "object"
+        },
+        "Remark": {
+            "additionalProperties": false,
+            "properties": {
+                "RemarkSequenceNumber": {
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                    "title": "Remark Sequence Number"
+                },
+                "Remark": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A descriptive comment for this remark.",
+                    "title": "Remark"
+                },
+                "RemarkSource": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The person, vendor, interpreter or other provider of information.",
+                    "title": "Remark Source"
+                },
+                "RemarkDate": {
+                    "anyOf": [
+                        {
+                            "format": "date",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The date the remark was issued.",
+                    "title": "Remark Date"
+                }
+            },
+            "title": "Remark",
+            "type": "object"
+        },
+        "Saturation": {
+            "additionalProperties": false,
+            "properties": {
+                "Value": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The saturation value.",
+                    "title": "Value"
+                },
+                "FluidTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The fluid type used for this saturation.",
+                    "title": "Fluid Type ID"
+                },
+                "SaturationMeasurementLocationID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationMeasurementLocation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Identifies the area of focus for this saturation measurement, e.g. 'End Face' or 'Average'",
+                    "title": "Saturation Measurement Location ID"
+                }
+            },
+            "title": "Saturation",
+            "type": "object"
+        },
+        "TerminalConditions": {
+            "additionalProperties": false,
+            "properties": {
+                "EffectivePermeability": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/EffectivePermeability"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A measure of how easily fluids can flow through a porous sample, taking into consideration the saturation, presence of other fluids, and the interactions between those fluids into account.",
+                    "title": "Effective Permeability"
+                },
+                "RelativePermeability": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/RelativePermeability"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
+                    "title": "Relative Permeability"
+                },
+                "Saturation": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Saturation"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "At the end of the experiment, the extent to which pore space within the sample is filled with fluids.",
+                    "title": "Saturation"
+                }
+            },
+            "title": "TerminalConditions",
+            "type": "object"
+        }
+    },
+    "additionalProperties": false,
     "properties": {
         "SamplesAnalysisID": {
-            "title": "Samples Analysis ID",
             "description": "OSDU Identifier for this SamplesAnalysis.",
             "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "title": "Samples Analysis ID",
             "type": "string"
         },
         "SampleID": {
-            "title": "Sample ID",
             "description": "OSDU Identifier for this SamplesAnalysis.",
             "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "title": "Sample ID",
             "type": "string"
         },
         "Meta": {
-            "title": "Meta",
             "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
-            "example": "",
-            "type": "array",
             "items": {
                 "anyOf": [
                     {
-                        "$ref": "#/definitions/Meta"
+                        "$ref": "#/$defs/Meta"
                     },
                     {
-                        "$ref": "#/definitions/Meta1"
+                        "$ref": "#/$defs/Meta1"
                     },
                     {
-                        "$ref": "#/definitions/Meta2"
+                        "$ref": "#/$defs/Meta2"
                     },
                     {
-                        "$ref": "#/definitions/Meta3"
+                        "$ref": "#/$defs/Meta3"
                     }
                 ]
-            }
+            },
+            "title": "Meta",
+            "type": "array"
         },
         "DesaturationMethodID": {
-            "title": "Desaturation Method ID",
+            "anyOf": [
+                {
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DesaturationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The identifier for the method by which the sample was desaturated.",
-            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DesaturationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-            "type": "string"
+            "title": "Desaturation Method ID"
         },
         "InitialConditions": {
-            "title": "Initial Conditions",
-            "description": "The initial conditions of permeability, saturation, and flow rate within the sample.",
-            "allOf": [
+            "anyOf": [
                 {
-                    "$ref": "#/definitions/InitialConditions"
+                    "$ref": "#/$defs/InitialConditions"
+                },
+                {
+                    "type": "null"
                 }
-            ]
+            ],
+            "default": null,
+            "description": "The initial conditions of permeability, saturation, and flow rate within the sample.",
+            "title": "Initial Conditions"
         },
         "TerminalConditions": {
-            "title": "Terminal Conditions",
-            "description": "The permeability and saturation conditions of the sample at the end of the experiment.",
-            "allOf": [
+            "anyOf": [
                 {
-                    "$ref": "#/definitions/TerminalConditions"
+                    "$ref": "#/$defs/TerminalConditions"
+                },
+                {
+                    "type": "null"
                 }
-            ]
+            ],
+            "default": null,
+            "description": "The permeability and saturation conditions of the sample at the end of the experiment.",
+            "title": "Terminal Conditions"
         },
         "RelativePermeabilityCrossover": {
-            "title": "Relative Permeability Crossover",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The relative permeability value of a crossover point in a relative permeability x saturation analysis graph.",
-            "type": "number"
+            "title": "Relative Permeability Crossover"
         },
         "EndFaceSaturationCrossover": {
-            "title": "End Face Saturation Crossover",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The saturation value of a crossover point in a relative permeability x saturation analysis graph.",
-            "type": "number"
+            "title": "End Face Saturation Crossover"
         },
         "ReferencePermeability": {
-            "title": "Reference Permeability",
+            "anyOf": [
+                {
+                    "items": {
+                        "$ref": "#/$defs/ReferencePermeabilityItem"
+                    },
+                    "type": "array"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "e.g. gas permeability kg, gas permeability at minimum liquid saturation kg@Slmin, oil permeability ko, water permeability kw, etc",
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/ReferencePermeabilityItem"
-            }
+            "title": "Reference Permeability"
         },
         "SaturationProcessMethodID": {
-            "title": "Saturation Process Method ID",
+            "anyOf": [
+                {
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationProcessMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The method used to saturate the rock sample with a particular fluid in the experiment.",
-            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationProcessMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-            "type": "string"
+            "title": "Saturation Process Method ID"
         },
         "InterfacialTension": {
-            "title": "Interfacial Tension",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The measured tension at the interface between the wetting and non-wetting phases during a test step.",
-            "type": "number"
+            "title": "Interfacial Tension"
         },
         "BrineSalinity": {
-            "title": "Brine Salinity",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The salinity level of the brine used in the test, affecting the rock's electrical resistivity properties.",
-            "type": "number"
+            "title": "Brine Salinity"
         },
         "OilViscosity": {
-            "title": "Oil Viscosity",
-            "description": "A measure of a fluid’s internal resistance to flow.",
-            "type": "number"
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "A measure of a fluid\u2019s internal resistance to flow.",
+            "title": "Oil Viscosity"
         },
         "GasViscosity": {
-            "title": "Gas Viscosity",
-            "description": "A measure of a fluid’s internal resistance to flow.",
-            "type": "number"
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "A measure of a fluid\u2019s internal resistance to flow.",
+            "title": "Gas Viscosity"
         },
         "WaterViscosity": {
-            "title": "Water Viscosity",
-            "description": "A measure of a fluid’s internal resistance to flow.",
-            "type": "number"
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
+            "description": "A measure of a fluid\u2019s internal resistance to flow.",
+            "title": "Water Viscosity"
         },
         "OilDensity": {
-            "title": "Oil Density",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The mass per volume of oil in the sample.",
-            "type": "number"
+            "title": "Oil Density"
         },
         "GasDensity": {
-            "title": "Gas Density",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The mass per volume of gas in the sample.",
-            "type": "number"
+            "title": "Gas Density"
         },
         "WaterDensity": {
-            "title": "Water Density",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The mass per volume of water in the sample.",
-            "type": "number"
+            "title": "Water Density"
         },
         "FluidSystemAnalysisTypeID": {
-            "title": "Fluid System Analysis Type ID",
+            "anyOf": [
+                {
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSystemAnalysisType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The type of fluid system in this analysis, e.g. gasbrine or gasoil.",
-            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSystemAnalysisType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-            "type": "string"
+            "title": "Fluid System Analysis Type ID"
         },
         "PermeabilityTestSteps": {
-            "title": "Permeability Test Steps",
+            "anyOf": [
+                {
+                    "items": {
+                        "$ref": "#/$defs/PermeabilityTestStep"
+                    },
+                    "type": "array"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Permeability Test Steps",
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/PermeabilityTestStep"
-            }
+            "title": "Permeability Test Steps"
         },
         "OilTypeID": {
-            "title": "Oil Type ID",
+            "anyOf": [
+                {
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Identifies the type of oil used in the experiment.",
-            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-            "type": "string"
+            "title": "Oil Type ID"
         },
         "GasTypeID": {
-            "title": "Gas Type ID",
+            "anyOf": [
+                {
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Identifies the type of gas used in the experiment.",
-            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-            "type": "string"
+            "title": "Gas Type ID"
         },
         "WaterTypeID": {
-            "title": "Water Type ID",
+            "anyOf": [
+                {
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Identifies the type of gas used in the experiment.",
-            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-            "type": "string"
+            "title": "Water Type ID"
         },
         "EndTime": {
-            "title": "End Time",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Overall duration of the test.",
-            "type": "number"
+            "title": "End Time"
         }
     },
     "required": [
@@ -167,658 +1459,6 @@
         "SampleID",
         "Meta"
     ],
-    "additionalProperties": false,
-    "definitions": {
-        "Meta": {
-            "title": "Meta",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "UOM Reference Kind",
-                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
-                    "default": "Unit",
-                    "const": "Unit",
-                    "enum": [
-                        "Unit"
-                    ],
-                    "type": "string"
-                },
-                "name": {
-                    "title": "UOM Unit Symbol",
-                    "description": "The unit symbol or name of the unit.",
-                    "example": "ft[US]",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "UOM Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
-                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
-                    "type": "string"
-                },
-                "unitOfMeasureID": {
-                    "title": "Unitofmeasureid",
-                    "description": "SRN to unit of measure reference.",
-                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "UOM Property Names",
-                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "HorizontalDeflection.EastWest",
-                        "HorizontalDeflection.NorthSouth"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "Meta1": {
-            "title": "Meta1",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "CRS Reference Kind",
-                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
-                    "default": "CRS",
-                    "const": "CRS",
-                    "enum": [
-                        "CRS"
-                    ],
-                    "type": "string"
-                },
-                "name": {
-                    "title": "CRS Name",
-                    "description": "The name of the CRS.",
-                    "example": "WGS 84 / UTM zone 15N",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "CRS Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
-                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
-                    "type": "string"
-                },
-                "coordinateReferenceSystemID": {
-                    "title": "Coordinatereferencesystemid",
-                    "description": "SRN to CRS reference.",
-                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "CRS Property Names",
-                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "KickOffPosition.X",
-                        "KickOffPosition.Y"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "Meta2": {
-            "title": "Meta2",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "DateTime Reference Kind",
-                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
-                    "default": "DateTime",
-                    "const": "DateTime",
-                    "enum": [
-                        "DateTime"
-                    ],
-                    "type": "string"
-                },
-                "name": {
-                    "title": "DateTime Name",
-                    "description": "The name of the DateTime format and reference.",
-                    "example": "UTC",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "DateTime Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
-                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "DateTime Property Names",
-                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "Acquisition.StartTime",
-                        "Acquisition.EndTime"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "Meta3": {
-            "title": "Meta3",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "AzimuthReference Reference Kind",
-                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
-                    "default": "AzimuthReference",
-                    "const": "AzimuthReference",
-                    "enum": [
-                        "AzimuthReference"
-                    ],
-                    "type": "string"
-                },
-                "name": {
-                    "title": "AzimuthReference Name",
-                    "description": "The name of the CRS or the symbol/name of the unit.",
-                    "example": "TrueNorth",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "AzimuthReference Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
-                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "AzimuthReference Property Names",
-                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "Bearing"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "EffectivePermeability": {
-            "title": "EffectivePermeability",
-            "type": "object",
-            "properties": {
-                "PermeabilityMeasurementMethodID": {
-                    "title": "Permeability Measurement Method ID",
-                    "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "Value": {
-                    "title": "Value",
-                    "description": "The effective permeability value.",
-                    "type": "number"
-                },
-                "FluidTypeID": {
-                    "title": "Fluid Type ID",
-                    "description": "The fluid type used in determining effective permeability.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "RelativePermeability": {
-            "title": "RelativePermeability",
-            "type": "object",
-            "properties": {
-                "Value": {
-                    "title": "Value",
-                    "description": "The relative permeability value.",
-                    "type": "number"
-                },
-                "FluidSystemAnalysisTypeID": {
-                    "title": "Fluid System Analysis Type ID",
-                    "description": "DEPRECATED: Use FluidTypeID. The fluid system used in determining relative permeability.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSystemAnalysisType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "FluidTypeID": {
-                    "title": "Fluid Type ID",
-                    "description": "The fluid type for which the relative permeability is reported.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "Saturation": {
-            "title": "Saturation",
-            "type": "object",
-            "properties": {
-                "Value": {
-                    "title": "Value",
-                    "description": "The saturation value.",
-                    "type": "number"
-                },
-                "FluidTypeID": {
-                    "title": "Fluid Type ID",
-                    "description": "The fluid type used for this saturation.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "SaturationMeasurementLocationID": {
-                    "title": "Saturation Measurement Location ID",
-                    "description": "Identifies the area of focus for this saturation measurement, e.g. 'End Face' or 'Average'",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationMeasurementLocation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "InitialConditions": {
-            "title": "InitialConditions",
-            "type": "object",
-            "properties": {
-                "EffectivePermeability": {
-                    "title": "Effective Permeability",
-                    "description": "A measure of how easily fluids can flow through a porous sample, taking into consideration the saturation, presence of other fluids, and the interactions between those fluids into account.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/EffectivePermeability"
-                        }
-                    ]
-                },
-                "RelativePermeability": {
-                    "title": "Relative Permeability",
-                    "description": "Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/RelativePermeability"
-                        }
-                    ]
-                },
-                "Saturation": {
-                    "title": "Saturation",
-                    "description": "At the start of the experiment, the extent to which pore space within the sample is filled with fluids.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/Saturation"
-                        }
-                    ]
-                },
-                "LastFlowRate": {
-                    "title": "Last Flow Rate",
-                    "description": "The last recorded flow rate prior to the experiment.",
-                    "type": "number"
-                },
-                "TestTemperature": {
-                    "title": "Test Temperature",
-                    "description": "The recorded temperature within the test environment.",
-                    "type": "number"
-                },
-                "NetConfiningStress": {
-                    "title": "Net Confining Stress",
-                    "description": "The pressure exerted on a sample from its environment, minus the pore pressure within the sample.",
-                    "type": "number"
-                },
-                "OverburdenPressure": {
-                    "title": "Overburden Pressure",
-                    "description": "The pressure exerted by the weight of the overlying rock and soil layers on the rock sample being tested.",
-                    "type": "number"
-                },
-                "PorePressure": {
-                    "title": "Pore Pressure",
-                    "description": "The pressure exerted by fluids (such as water or oil) within the pores and fractures of a rock sample.",
-                    "type": "number"
-                },
-                "FlowDirection": {
-                    "title": "Flow Direction",
-                    "description": "Direction of flow for the experiment, e.g. \"Vertical from bottom\".",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "TerminalConditions": {
-            "title": "TerminalConditions",
-            "type": "object",
-            "properties": {
-                "EffectivePermeability": {
-                    "title": "Effective Permeability",
-                    "description": "A measure of how easily fluids can flow through a porous sample, taking into consideration the saturation, presence of other fluids, and the interactions between those fluids into account.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/EffectivePermeability"
-                        }
-                    ]
-                },
-                "RelativePermeability": {
-                    "title": "Relative Permeability",
-                    "description": "Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/RelativePermeability"
-                        }
-                    ]
-                },
-                "Saturation": {
-                    "title": "Saturation",
-                    "description": "At the end of the experiment, the extent to which pore space within the sample is filled with fluids.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/Saturation"
-                        }
-                    ]
-                }
-            },
-            "additionalProperties": false
-        },
-        "ReferencePermeabilityItem": {
-            "title": "ReferencePermeabilityItem",
-            "type": "object",
-            "properties": {
-                "Value": {
-                    "title": "Value",
-                    "description": "The permeability value acting as a reference for this experiment.",
-                    "type": "number"
-                },
-                "PermeabilityMeasurementMethodID": {
-                    "title": "Permeability Measurement Method ID",
-                    "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "InjectionRateItem": {
-            "title": "InjectionRateItem",
-            "type": "object",
-            "properties": {
-                "Value": {
-                    "title": "Value",
-                    "description": "The flow rate value.",
-                    "type": "number"
-                },
-                "FluidTypeID": {
-                    "title": "Fluid Type ID",
-                    "description": "Fluid Type injected into the sample.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "CumulativeProduction": {
-            "title": "CumulativeProduction",
-            "type": "object",
-            "properties": {
-                "Value": {
-                    "title": "Value",
-                    "description": "The cumulative production value at this step.",
-                    "type": "number"
-                },
-                "FluidTypeID": {
-                    "title": "Fluid Type ID",
-                    "description": "Fluid Type displaced from the sample due to injection",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "EffectivePermeabilityItem": {
-            "title": "EffectivePermeabilityItem",
-            "type": "object",
-            "properties": {
-                "PermeabilityMeasurementMethodID": {
-                    "title": "Permeability Measurement Method ID",
-                    "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "Value": {
-                    "title": "Value",
-                    "description": "The effective permeability value.",
-                    "type": "number"
-                },
-                "FluidTypeID": {
-                    "title": "Fluid Type ID",
-                    "description": "The fluid type used in determining effective permeability.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "RelativePermeabilityItem": {
-            "title": "RelativePermeabilityItem",
-            "type": "object",
-            "properties": {
-                "Value": {
-                    "title": "Value",
-                    "description": "The relative permeability value.",
-                    "type": "number"
-                },
-                "FluidSystemAnalysisTypeID": {
-                    "title": "Fluid System Analysis Type ID",
-                    "description": "DEPRECATED: Use FluidTypeID. The fluid system used in determining relative permeability.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSystemAnalysisType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "FluidTypeID": {
-                    "title": "Fluid Type ID",
-                    "description": "The fluid type for which the relative permeability is reported.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "InSituSaturationProfile": {
-            "title": "InSituSaturationProfile",
-            "type": "object",
-            "properties": {
-                "Time": {
-                    "title": "Time",
-                    "description": "The time at which the in-situ saturation was measured.",
-                    "type": "number"
-                },
-                "Position": {
-                    "title": "Position",
-                    "description": "The position along the sample.",
-                    "type": "number"
-                },
-                "InitialSaturation": {
-                    "title": "Initial Saturation",
-                    "description": "The initial saturation value.",
-                    "type": "number"
-                },
-                "EquilibriumSaturation": {
-                    "title": "Equilibrium Saturation",
-                    "description": "The saturation value as measured at this timestamp.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "DifferentialPressureProfile": {
-            "title": "DifferentialPressureProfile",
-            "type": "object",
-            "properties": {
-                "Time": {
-                    "title": "Time",
-                    "description": "The time at which the pressure was measured.",
-                    "type": "number"
-                },
-                "DifferentialPressure": {
-                    "title": "Differential Pressure",
-                    "description": "The differential pressure value.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "ProductionProfile": {
-            "title": "ProductionProfile",
-            "type": "object",
-            "properties": {
-                "Time": {
-                    "title": "Time",
-                    "description": "The time at which the pressure was measured.",
-                    "type": "number"
-                },
-                "ProductionRate": {
-                    "title": "Production Rate",
-                    "description": "The rate of fluid production",
-                    "type": "number"
-                },
-                "FluidTypeID": {
-                    "title": "Fluid Type ID",
-                    "description": "The type of fluid.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
-        "Remark": {
-            "title": "Remark",
-            "type": "object",
-            "properties": {
-                "RemarkSequenceNumber": {
-                    "title": "Remark Sequence Number",
-                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
-                    "example": 1,
-                    "type": "integer"
-                },
-                "Remark": {
-                    "title": "Remark",
-                    "description": "A descriptive comment for this remark.",
-                    "type": "string"
-                },
-                "RemarkSource": {
-                    "title": "Remark Source",
-                    "description": "The person, vendor, interpreter or other provider of information.",
-                    "type": "string"
-                },
-                "RemarkDate": {
-                    "title": "Remark Date",
-                    "description": "The date the remark was issued.",
-                    "type": "string",
-                    "format": "date"
-                }
-            },
-            "additionalProperties": false
-        },
-        "PermeabilityTestStep": {
-            "title": "PermeabilityTestStep",
-            "type": "object",
-            "properties": {
-                "StartTime": {
-                    "title": "Start Time",
-                    "description": "The start time of this test step, typically in minutes.",
-                    "type": "number"
-                },
-                "DifferentialPressure": {
-                    "title": "Differential Pressure",
-                    "description": "The pressure difference or pressure gradient through the sample at equilibrium, also known as Delta P.",
-                    "type": "number"
-                },
-                "InjectionRate": {
-                    "title": "Injection Rate",
-                    "description": "The rate at which the fluid is injected into the sample.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/InjectionRateItem"
-                    }
-                },
-                "CumulativeProduction": {
-                    "title": "Cumulative Production",
-                    "description": "The cumulative amount of fluid displaced from the sample",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/CumulativeProduction"
-                        }
-                    ]
-                },
-                "EffectivePermeability": {
-                    "title": "Effective Permeability",
-                    "description": "A measure of how easily fluids can flow through a porous sample, taking into consideration the saturation, presence of other fluids, and the interactions between those fluids into account.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/EffectivePermeabilityItem"
-                    }
-                },
-                "RelativePermeability": {
-                    "title": "Relative Permeability",
-                    "description": "Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/RelativePermeabilityItem"
-                    }
-                },
-                "Saturation": {
-                    "title": "Saturation",
-                    "description": "The extent to which pore space within the sample is filled with fluids.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/Saturation"
-                        }
-                    ]
-                },
-                "InSituSaturationProfiles": {
-                    "title": "In Situ Saturation Profiles",
-                    "description": "Captures water saturation values along the length of the core sample at time intervals.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/InSituSaturationProfile"
-                    }
-                },
-                "DifferentialPressureProfiles": {
-                    "title": "Differential Pressure Profiles",
-                    "description": "Captures the differential pressure measured over time during the experiment.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/DifferentialPressureProfile"
-                    }
-                },
-                "ProductionProfiles": {
-                    "title": "Production Profiles",
-                    "description": "Stores data on fluid production over time.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ProductionProfile"
-                    }
-                },
-                "FractionalFlowRate": {
-                    "title": "Fractional Flow Rate",
-                    "description": "The fractional value of the injected fluid flow rate.",
-                    "type": "number"
-                },
-                "Remarks": {
-                    "title": "Remarks",
-                    "description": "Array object capturing remarks or additional information for this test step.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
-                    "example": "",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/Remark"
-                    }
-                }
-            },
-            "additionalProperties": false
-        }
-    }
+    "title": "RelativePermeabilityModel110",
+    "type": "object"
 }

@@ -62,7 +62,8 @@ async def test_samplesanalysis_content_schema_success(analysistype):
     assert response.headers.get("Deprecation") == "true"
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["1.0.0"].schema()
+
+    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["1.0.0"].model_json_schema()
     assert response.json() == expected_schema
 
 
@@ -125,7 +126,8 @@ async def test_samplesanalysis_content_schema_v2_success(analysistype):
     assert response.headers["content-type"] == "application/json"
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["2.0.0"].schema()
+
+    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["2.0.0"].model_json_schema()
     assert response.json() == expected_schema
 
 
@@ -144,7 +146,8 @@ async def test_samplesanalysis_content_schema_via_content_schema_version_param(a
     assert "Deprecation" not in response.headers
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["1.0.0"].schema()
+
+    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["1.0.0"].model_json_schema()
     assert response.json() == expected_schema
 
 
@@ -163,7 +166,8 @@ async def test_samplesanalysis_content_schema_v2_via_content_schema_version_para
     assert "Deprecation" not in response.headers
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["2.0.0"].schema()
+
+    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["2.0.0"].model_json_schema()
     assert response.json() == expected_schema
 
 
@@ -182,7 +186,8 @@ async def test_content_schema_version_param_takes_precedence_over_accept_header(
     assert "Deprecation" not in response.headers
 
     model_key = f"{PREFIX_TO_STRIP}{analysistype}"
-    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["1.0.0"].schema()
+
+    expected_schema = ALL_PATHS_TO_SA_DATA_MODEL[model_key]["1.0.0"].model_json_schema()
     assert response.json() == expected_schema
 
 
@@ -205,7 +210,7 @@ async def test_single_content_type_schema_success(endpoint_path, model_key, _):
     Test for successful retrieval of the schema for single content type endpoints.
     """
     versions_dict = MAPS_TO_DATA_MODEL["v2"][model_key][model_key]
-    expected_schema = versions_dict[TEST_SCHEMA_VERSION].schema()
+    expected_schema = versions_dict[TEST_SCHEMA_VERSION].model_json_schema()
 
     async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
         with services_overrides():

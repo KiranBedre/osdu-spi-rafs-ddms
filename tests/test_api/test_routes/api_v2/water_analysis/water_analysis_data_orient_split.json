@@ -1,5 +1,5 @@
 {
-  "columns":[
+  "columns": [
     "SamplesAnalysisID",
     "SampleID",
     "Meta",
@@ -8,19 +8,19 @@
     "WaterGeneralAnalysis",
     "WaterSampleComponent"
   ],
-  "index":[
+  "index": [
     0
   ],
-  "data":[
+  "data": [
     [
       "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:WaterAnalysis_Sample:",
       [
         {
-          "kind":"Unit",
-          "name":"degree Fahrenheit",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:degF:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "degree Fahrenheit",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:degF:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].Resistivity.Temperature",
             "WaterGeneralAnalysis[*].WaterDensity.Temperature",
             "WaterGeneralAnalysis[*].WaterSpecificHeat.Temperature",
@@ -31,35 +31,35 @@
           ]
         },
         {
-          "kind":"Unit",
-          "name":"part per million",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:ppm:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "part per million",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:ppm:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].DissolvedCO2"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"pound-force per square inch",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:psi:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "pound-force per square inch",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:psi:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].AnalysisPressure",
             "WaterGeneralAnalysis[*].WaterViscousCompressibility"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"reciprocal pressure",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:1%2Fpsi:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "reciprocal pressure",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:1%2Fpsi:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].WaterIsothermalCompressibility"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"percent [mass basis]",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:%25%5Bmass%5D:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "percent [mass basis]",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:%25%5Bmass%5D:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].Salinity",
             "WaterGeneralAnalysis[*].TotalDissolvedSolids",
             "WaterGeneralAnalysis[*].TotalSuspendedSolids",
@@ -68,18 +68,18 @@
           ]
         },
         {
-          "kind":"Unit",
-          "name":"ohm metre",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:ohm.m:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "ohm metre",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:ohm.m:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].Resistivity"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"milligram per litre",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:mg%2FL:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "milligram per litre",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:mg%2FL:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].Resistivity",
             "WaterGeneralAnalysis[*].TotalHardness",
             "WaterGeneralAnalysis[*].TotalAlkalinity",
@@ -90,91 +90,91 @@
           ]
         },
         {
-          "kind":"Unit",
-          "name":"dynamic viscosity",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:cP:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "dynamic viscosity",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:cP:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].Viscosity"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"percent",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:%25:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "percent",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:%25:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].SolutionGasWaterRatio"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"gram per cubic centimetre",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:g%2Fcm3:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "gram per cubic centimetre",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:g%2Fcm3:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].WaterDensity"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"thermal conductivity",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:Btu%5BIT%5D:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "thermal conductivity",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:Btu%5BIT%5D:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].WaterEntropy"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"thermal conductivity",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:1%2Fk:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "thermal conductivity",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:1%2Fk:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].WaterThermalExpansion"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"energy per mass",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:Btu%5BIT%5D%2Flbm:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "energy per mass",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:Btu%5BIT%5D%2Flbm:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].WaterEnthalpy"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"mass per volume",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:ft3%2Flb:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "mass per volume",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:ft3%2Flb:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].WaterSpecificVolume",
             "WaterGeneralAnalysis[*].Salinity"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"electrical conductivity",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:mS%2Fcm:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "electrical conductivity",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:mS%2Fcm:",
+          "propertyNames": [
             "WaterGeneralAnalysis[*].Conductivity"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"volume per volume",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:vol%25%2Fvol:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "volume per volume",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:vol%25%2Fvol:",
+          "propertyNames": [
             "WaterSampleComponent[*].VolumeConcentration"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"mole per liter",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:mol%2FL:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "mole per liter",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:mol%2FL:",
+          "propertyNames": [
             "WaterSampleComponent[*].MolarConcentration"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"amount of substance per amount of substance",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:mol%2Fmol:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "amount of substance per amount of substance",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:mol%2Fmol:",
+          "propertyNames": [
             "WaterSampleComponent[*].ConcentrationRelativeToDetectableLimits"
           ]
         }
@@ -182,129 +182,129 @@
       "17. Water Analysis",
       [
         {
-          "RemarkSequenceNumber":1.23,
-          "Remark":"Remark",
-          "RemarkSource":"Remark Source",
-          "RemarkDate":"2025-01-01"
+          "RemarkSequenceNumber": 1,
+          "Remark": "Remark",
+          "RemarkSource": "Remark Source",
+          "RemarkDate": "2025-01-01"
         }
       ],
       {
-        "AnalysisPressure":1500,
-        "DissolvedCO2":7.3,
-        "DissolvedH2S":243,
-        "DissolvedO2":154,
-        "Resistivity":{
-          "Value":214,
-          "FluidResistivityMeasurementMethodID":"opendes:reference-data--FluidResistivityMeasurementMethod:Linear2Probe:",
-          "Temperature":154
+        "AnalysisPressure": 1500,
+        "DissolvedCO2": 7.3,
+        "DissolvedH2S": 243,
+        "DissolvedO2": 154,
+        "Resistivity": {
+          "Value": 214,
+          "FluidResistivityMeasurementMethodID": "opendes:reference-data--FluidResistivityMeasurementMethod:Linear2Probe:",
+          "Temperature": 154
         },
-        "Viscosity":121,
-        "SolutionGasWaterRatio":15,
-        "WaterViscousCompressibility":211,
-        "WaterDensity":{
-          "Value":143,
-          "Temperature":75
+        "Viscosity": 121,
+        "SolutionGasWaterRatio": 15,
+        "WaterViscousCompressibility": 211,
+        "WaterDensity": {
+          "Value": 143,
+          "Temperature": 75
         },
-        "WaterSpecificHeat":146,
-        "WaterFormationVolumeFactor":45,
-        "WaterHeatCapacity":65,
-        "WaterIsothermalCompressibility":345,
-        "WaterThermalConductivity":123,
-        "WaterThermalExpansion":323,
-        "WaterEnthalpy":222,
-        "WaterEntropy":544,
-        "WaterSpecificVolume":314,
-        "Salinity":{
-          "Value":387,
-          "Temperature":34
+        "WaterSpecificHeat": 146,
+        "WaterFormationVolumeFactor": 45,
+        "WaterHeatCapacity": 65,
+        "WaterIsothermalCompressibility": 345,
+        "WaterThermalConductivity": 123,
+        "WaterThermalExpansion": 323,
+        "WaterEnthalpy": 222,
+        "WaterEntropy": 544,
+        "WaterSpecificVolume": 314,
+        "Salinity": {
+          "Value": 387,
+          "Temperature": 34
         },
-        "TotalDissolvedSolids":{
-          "Value":211,
-          "Type":"N\/A"
+        "TotalDissolvedSolids": {
+          "Value": 211,
+          "Type": "N/A"
         },
-        "TotalSuspendedSolids":{
-          "Value":433,
-          "Type":"N\/A"
+        "TotalSuspendedSolids": {
+          "Value": 433,
+          "Type": "N/A"
         },
-        "TotalHardness":{
-          "Value":233,
-          "Type":"N\/A"
+        "TotalHardness": {
+          "Value": 233,
+          "Type": "N/A"
         },
-        "TotalAlkalinity":{
-          "Value":122,
-          "Type":"N\/A"
+        "TotalAlkalinity": {
+          "Value": 122,
+          "Type": "N/A"
         },
-        "TotalSedimentSolids":{
-          "Value":277,
-          "Type":"N\/A"
+        "TotalSedimentSolids": {
+          "Value": 277,
+          "Type": "N/A"
         },
-        "pH":{
-          "Value":277,
-          "PHMeasurementMethodID":"opendes:reference-data--PHMeasurementMethod:IndicatorPaper:",
-          "Temperature":167
+        "pH": {
+          "Value": 277,
+          "PHMeasurementMethodID": "opendes:reference-data--PHMeasurementMethod:IndicatorPaper:",
+          "Temperature": 167
         },
-        "Conductivity":{
-          "Value":26.95,
-          "ConductivityMeasurementMethodID":"opendes:reference-data--ConductivityMeasurementMethod:ElectromagneticInduction:",
-          "Temperature":188
+        "Conductivity": {
+          "Value": 26.95,
+          "ConductivityMeasurementMethodID": "opendes:reference-data--ConductivityMeasurementMethod:ElectromagneticInduction:",
+          "Temperature": 188
         }
       },
       [
         {
-          "Anions":[
+          "Anions": [
             {
-              "ComponentNameID":"C032-",
-              "Value":11,
-              "ElementalMeasurementMethodID":"opendes:reference-data--ElementalMeasurementMethod:IonChromatography:"
+              "ComponentNameID": "C032-",
+              "Value": 11,
+              "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:IonChromatography:"
             },
             {
-              "ComponentNameID":"HCO3",
-              "Value":427,
-              "ElementalMeasurementMethodID":"opendes:reference-data--ElementalMeasurementMethod:ICP-OES:"
+              "ComponentNameID": "HCO3",
+              "Value": 427,
+              "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-OES:"
             }
           ],
-          "Cations":[
+          "Cations": [
             {
-              "ComponentNameID":"Na+",
-              "Value":89,
-              "ElementalMeasurementMethodID":"opendes:reference-data--ElementalMeasurementMethod:ICP-OES:"
+              "ComponentNameID": "Na+",
+              "Value": 89,
+              "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-OES:"
             },
             {
-              "ComponentNameID":"K+",
-              "Value":112,
-              "ElementalMeasurementMethodID":"opendes:reference-data--ElementalMeasurementMethod:ICP-MS:"
+              "ComponentNameID": "K+",
+              "Value": 112,
+              "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-MS:"
             }
           ],
-          "DissolvedMetals":[
+          "DissolvedMetals": [
             {
-              "ComponentNameID":"Fe",
-              "Value":0.198,
-              "ElementalMeasurementMethodID":"opendes:reference-data--ElementalMeasurementMethod:ICP-MS:"
+              "ComponentNameID": "Fe",
+              "Value": 0.198,
+              "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-MS:"
             },
             {
-              "ComponentNameID":"Sr2+",
-              "Value":18.1,
-              "ElementalMeasurementMethodID":"opendes:reference-data--ElementalMeasurementMethod:IonChromatography:"
+              "ComponentNameID": "Sr2+",
+              "Value": 18.1,
+              "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:IonChromatography:"
             }
           ],
-          "OrganicAcids":[
+          "OrganicAcids": [
             {
-              "ComponentNameID":"Fe",
-              "Value":0.198,
-              "ElementalMeasurementMethodID":"opendes:reference-data--ElementalMeasurementMethod:ICP-OES:"
+              "ComponentNameID": "Fe",
+              "Value": 0.198,
+              "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-OES:"
             },
             {
-              "ComponentNameID":"Sr2+",
-              "Value":18.1,
-              "ElementalMeasurementMethodID":"opendes:reference-data--ElementalMeasurementMethod:ICP-MS:"
+              "ComponentNameID": "Sr2+",
+              "Value": 18.1,
+              "ElementalMeasurementMethodID": "opendes:reference-data--ElementalMeasurementMethod:ICP-MS:"
             }
           ],
-          "IonDifference":0.22,
-          "MolarConcentration":0.1,
-          "VolumeConcentration":0.853,
-          "MassConcentration":0.176,
-          "EquivalentConcentration":0.095,
-          "ConcentrationRelativeToDetectableLimits":0.066
+          "IonDifference": 0.22,
+          "MolarConcentration": 0.1,
+          "VolumeConcentration": 0.853,
+          "MassConcentration": 0.176,
+          "EquivalentConcentration": 0.095,
+          "ConcentrationRelativeToDetectableLimits": 0.066
         }
       ]
     ]

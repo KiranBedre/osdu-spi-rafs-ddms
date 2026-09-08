@@ -1,102 +1,1913 @@
 {
-    "title": "SlimtubeModel200",
-    "type": "object",
+    "$defs": {
+        "CalculatedProperty": {
+            "additionalProperties": false,
+            "properties": {
+                "AvgMoleWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The weighted average mass of the molecules in a sample.",
+                    "title": "Average Mole Weight"
+                },
+                "ResidueDensity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass per unit volume of the residual oil.",
+                    "title": "Residue Density"
+                },
+                "ResidueAPI": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The API gravity of the residual oil, which measures its density relative to water.",
+                    "title": "Residue API"
+                },
+                "ResidueCalculatedProperties": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/ResidueCalculatedProperty"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The set of derived physical and chemical properties of the residual oil, calculated from experimental data or using theoretical models.",
+                    "title": "Residue Calculated Properties"
+                }
+            },
+            "title": "CalculatedProperty",
+            "type": "object"
+        },
+        "CumulativeLiquidCompositionalAnalysi": {
+            "additionalProperties": false,
+            "properties": {
+                "LiquidSpecificGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The specific gravity of the liquid sample.",
+                    "title": "LiquidSpecificGravity"
+                },
+                "LiquidMolecularWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molecular weight of the liquid sample.",
+                    "title": "LiquidMolecularWeight"
+                },
+                "APIGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The API gravity of the liquid sample.",
+                    "title": "API Gravity"
+                },
+                "LiquidComposition": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/LiquidCompositionItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
+                    "title": "LiquidComposition"
+                }
+            },
+            "title": "CumulativeLiquidCompositionalAnalysi",
+            "type": "object"
+        },
+        "CumulativeVaporCompositionalAnalysi": {
+            "additionalProperties": false,
+            "properties": {
+                "VaporSpecificGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The specific gravity of the vapor retrieved from the sample.",
+                    "title": "Vapor Specific Gravity"
+                },
+                "VaporMolecularWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molecular weight of the vapor retrieved from the sample.",
+                    "title": "Vapor Molecular Weight"
+                },
+                "VaporComposition": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/VaporCompositionItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                    "title": "Vapor Composition"
+                }
+            },
+            "title": "CumulativeVaporCompositionalAnalysi",
+            "type": "object"
+        },
+        "IncrementalLiquidCompositionalAnalysi": {
+            "additionalProperties": false,
+            "properties": {
+                "LiquidSpecificGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The specific gravity of the liquid sample.",
+                    "title": "LiquidSpecificGravity"
+                },
+                "LiquidMolecularWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molecular weight of the liquid sample.",
+                    "title": "LiquidMolecularWeight"
+                },
+                "APIGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The API gravity of the liquid sample.",
+                    "title": "API Gravity"
+                },
+                "LiquidComposition": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/LiquidCompositionItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
+                    "title": "LiquidComposition"
+                }
+            },
+            "title": "IncrementalLiquidCompositionalAnalysi",
+            "type": "object"
+        },
+        "IncrementalVaporCompositionalAnalysi": {
+            "additionalProperties": false,
+            "properties": {
+                "VaporSpecificGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The specific gravity of the vapor retrieved from the sample.",
+                    "title": "Vapor Specific Gravity"
+                },
+                "VaporMolecularWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molecular weight of the vapor retrieved from the sample.",
+                    "title": "Vapor Molecular Weight"
+                },
+                "VaporComposition": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/VaporCompositionItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                    "title": "Vapor Composition"
+                }
+            },
+            "title": "IncrementalVaporCompositionalAnalysi",
+            "type": "object"
+        },
+        "InjectedGa": {
+            "additionalProperties": false,
+            "properties": {
+                "VaporSpecificGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The specific gravity of the vapor retrieved from the sample.",
+                    "title": "Vapor Specific Gravity"
+                },
+                "VaporMolecularWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molecular weight of the vapor retrieved from the sample.",
+                    "title": "Vapor Molecular Weight"
+                },
+                "VaporComposition": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/VaporCompositionItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                    "title": "Vapor Composition"
+                }
+            },
+            "title": "InjectedGa",
+            "type": "object"
+        },
+        "InstantaneousLiquidCompositionalAnalysi": {
+            "additionalProperties": false,
+            "properties": {
+                "LiquidSpecificGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The specific gravity of the liquid sample.",
+                    "title": "LiquidSpecificGravity"
+                },
+                "LiquidMolecularWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molecular weight of the liquid sample.",
+                    "title": "LiquidMolecularWeight"
+                },
+                "APIGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The API gravity of the liquid sample.",
+                    "title": "API Gravity"
+                },
+                "LiquidComposition": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/LiquidCompositionItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
+                    "title": "LiquidComposition"
+                }
+            },
+            "title": "InstantaneousLiquidCompositionalAnalysi",
+            "type": "object"
+        },
+        "InstantaneousVaporCompositionalAnalysi": {
+            "additionalProperties": false,
+            "properties": {
+                "VaporSpecificGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The specific gravity of the vapor retrieved from the sample.",
+                    "title": "Vapor Specific Gravity"
+                },
+                "VaporMolecularWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molecular weight of the vapor retrieved from the sample.",
+                    "title": "Vapor Molecular Weight"
+                },
+                "VaporComposition": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/VaporCompositionItem"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
+                    "title": "Vapor Composition"
+                }
+            },
+            "title": "InstantaneousVaporCompositionalAnalysi",
+            "type": "object"
+        },
+        "LiquidCompositionItem": {
+            "additionalProperties": false,
+            "properties": {
+                "ComponentNameID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The chemical formula of each component found in the liquid during analysis.",
+                    "title": "Component Name ID"
+                },
+                "MolecularWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molecular weight of the component.",
+                    "title": "Molecular Weight"
+                },
+                "MolePercent": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molar percentage of the component, if available.",
+                    "title": "Mole Percent"
+                },
+                "MassPercent": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass percentage of the component, if available.",
+                    "title": "Mass Percent"
+                },
+                "VolumePercent": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The volume percentage of the component, if available.",
+                    "title": "Volume Percent"
+                },
+                "SpecificGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The specific gravity of the component.",
+                    "title": "Specific Gravity"
+                },
+                "MoleFraction": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molar fraction of the component.",
+                    "title": "Mole Fraction"
+                },
+                "MassFraction": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass fraction of the component.",
+                    "title": "Mass Fraction"
+                },
+                "VolumeFraction": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The volume fraction of the component.",
+                    "title": "Volume Fraction"
+                }
+            },
+            "title": "LiquidCompositionItem",
+            "type": "object"
+        },
+        "MaterialBalanceDatum": {
+            "additionalProperties": false,
+            "properties": {
+                "MassOfReservoirOilInSlimTube": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass of injected reservoir oil within the slim tube.",
+                    "title": "Mass of Reservoir Oil in Slim Tube"
+                },
+                "MassOfReservoirOilInConnectingLines": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass of injected reservoir oil in the connecting lines.",
+                    "title": "Mass of Reservoir Oil in Connecting Lines"
+                },
+                "MassOfReservoirOil": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The overall mass of injected reservoir oil within the slim tube and connecting lines.",
+                    "title": "Mass of Reservoir Oil"
+                },
+                "MassOfGasSolvent": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass of injected gas solvent.",
+                    "title": "Mass of Gas Solvent"
+                },
+                "MassTotalInjected": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The total mass of reservoir oil and gas solvent injected into the slim tube and connecting lines.",
+                    "title": "Mass Total Injected"
+                },
+                "MassOfEffluentStockTankOilBeforeBlowDown": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass of effluent stock tank oil prior to  depressurization (blow down).",
+                    "title": "Mass Effluent Stock Tank Oil before Blow Down"
+                },
+                "MassOfProducedEffluentGasBeforeBlowDown": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass of produced effluent gas prior to  depressurization (blow down).",
+                    "title": "Mass Produced Effluent Gas before Blow Down"
+                },
+                "MassOfEffluentStockTankOilAfterBlowDown": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass of effluent stock tank oil after  depressurization (blow down).",
+                    "title": "Mass Effluent Stock Tank Oil after Blow Down"
+                },
+                "MassOfProducedEffluentGasAfterBlowDown": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass of produced effluent gas after  depressurization (blow down).",
+                    "title": "Mass Produced Effluent Gas after Blow Down"
+                },
+                "MassOfResidualOil": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass of residual oil remaining in the slim tube and connecting lines after depressurization (blow down).",
+                    "title": "Mass Of Residual Oil"
+                },
+                "MassTotalRecovered": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The total mass at the end of the experiment.",
+                    "title": "Mass Total Recovered"
+                },
+                "WeightPercentRecovered": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The ratio of MassTotalRecovered over MassTotalInjected in weight percent.",
+                    "title": "Weight percent recovered"
+                }
+            },
+            "title": "MaterialBalanceDatum",
+            "type": "object"
+        },
+        "Meta": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "Unit",
+                    "default": "Unit",
+                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                    "title": "UOM Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The unit symbol or name of the unit.",
+                    "example": "ft[US]",
+                    "title": "UOM Unit Symbol"
+                },
+                "persistableReference": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+                    "title": "UOM Persistable Reference"
+                },
+                "unitOfMeasureID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "SRN to unit of measure reference.",
+                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                    "title": "Unitofmeasureid"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "HorizontalDeflection.EastWest",
+                        "HorizontalDeflection.NorthSouth"
+                    ],
+                    "title": "UOM Property Names"
+                }
+            },
+            "title": "Meta",
+            "type": "object"
+        },
+        "Meta1": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "CRS",
+                    "default": "CRS",
+                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                    "title": "CRS Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the CRS.",
+                    "example": "WGS 84 / UTM zone 15N",
+                    "title": "CRS Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
+                    "title": "CRS Persistable Reference",
+                    "type": "string"
+                },
+                "coordinateReferenceSystemID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "SRN to CRS reference.",
+                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                    "title": "Coordinatereferencesystemid"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "KickOffPosition.X",
+                        "KickOffPosition.Y"
+                    ],
+                    "title": "CRS Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta1",
+            "type": "object"
+        },
+        "Meta2": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "DateTime",
+                    "default": "DateTime",
+                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                    "title": "DateTime Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the DateTime format and reference.",
+                    "example": "UTC",
+                    "title": "DateTime Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
+                    "title": "DateTime Persistable Reference",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Acquisition.StartTime",
+                        "Acquisition.EndTime"
+                    ],
+                    "title": "DateTime Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta2",
+            "type": "object"
+        },
+        "Meta3": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "const": "AzimuthReference",
+                    "default": "AzimuthReference",
+                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                    "title": "AzimuthReference Reference Kind",
+                    "type": "string"
+                },
+                "name": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The name of the CRS or the symbol/name of the unit.",
+                    "example": "TrueNorth",
+                    "title": "AzimuthReference Name"
+                },
+                "persistableReference": {
+                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
+                    "title": "AzimuthReference Persistable Reference",
+                    "type": "string"
+                },
+                "propertyNames": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                    "example": [
+                        "Bearing"
+                    ],
+                    "title": "AzimuthReference Property Names"
+                }
+            },
+            "required": [
+                "persistableReference"
+            ],
+            "title": "Meta3",
+            "type": "object"
+        },
+        "Remarks": {
+            "additionalProperties": false,
+            "properties": {
+                "RemarkSequenceNumber": {
+                    "anyOf": [
+                        {
+                            "type": "integer"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                    "example": 1,
+                    "title": "Remark Sequence Number"
+                },
+                "Remark": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "A descriptive comment for this remark.",
+                    "title": "Remark"
+                },
+                "RemarkSource": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The person, vendor, interpreter or other provider of information.",
+                    "title": "Remark Source"
+                },
+                "RemarkDate": {
+                    "anyOf": [
+                        {
+                            "format": "date",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The date the remark was issued.",
+                    "title": "Remark Date"
+                }
+            },
+            "title": "Remarks",
+            "type": "object"
+        },
+        "ResidueCalculatedProperty": {
+            "additionalProperties": false,
+            "properties": {
+                "ComponentNameID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The chemical formula representing the composition of a specific component in terms of the elements and their proportions.",
+                    "title": "Component Name ID"
+                },
+                "ResidueRelativeMolarWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "he ratio of the molar mass of the residual oil component to the molar mass of a reference substance, typically dimensionless.",
+                    "title": "Residue Relative Molar Weight"
+                },
+                "ResidueMolecularWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molecular weight of the residual oil, representing the sum of the atomic weights of its constituent atoms.",
+                    "title": "Residue Molecular Weight"
+                },
+                "ResidueDensity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass per unit volume of the residual oil.",
+                    "title": "Residue Density"
+                }
+            },
+            "title": "ResidueCalculatedProperty",
+            "type": "object"
+        },
+        "SlimTubeSpecificationItem": {
+            "additionalProperties": false,
+            "properties": {
+                "ColumnLength": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Length of the packed column enclosing the sample.",
+                    "title": "Column Length"
+                },
+                "PackingMaterial": {
+                    "anyOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Material used to fill the packed column, e.g. sand, glass beads of different mesh sizes.",
+                    "title": "Packing Material"
+                },
+                "ColumnPorosity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The amount of pore space relative to the volume of the packed column sample.",
+                    "title": "Column Porosity"
+                },
+                "ColumnTotalPoreVolume": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The total volume of pore space within the packed column.",
+                    "title": "Column Total Pore Volume"
+                },
+                "ColumnPermeability": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The permeability of the packed column.",
+                    "title": "Column Permeability"
+                },
+                "ColumnPermeabilityMeasurementMethodID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The method of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+                    "title": "Column Permeability Measurement Method ID"
+                },
+                "ColumnPermeabilityFluidTypeID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The fluid type used in determining the column permeability.",
+                    "title": "Column Fluid Type ID"
+                },
+                "ColumnOuterDiameter": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The outer diameter of the column.",
+                    "title": "Column Outer Diameter"
+                },
+                "ColumnInnerDiameter": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The inner diameter of the column.",
+                    "title": "Column Inner Diameter"
+                },
+                "ColumnFlowCrossSectionalArea": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Available inner cross-sectional area for fluid to flow, calculated by (pi * d^2)/4, where d is the inner diameter of the column.",
+                    "title": "Column Flow Cross Sectional Area"
+                }
+            },
+            "title": "SlimTubeSpecificationItem",
+            "type": "object"
+        },
+        "SlimTubeTestStep": {
+            "additionalProperties": false,
+            "properties": {
+                "StepNumber": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The test step number.",
+                    "title": "Step Number"
+                },
+                "StepAveragePressure": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Average pressure applied in this step of the Slim Tube Test.",
+                    "title": "Step Average Pressure"
+                },
+                "StepAverageTemperature": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Average temperature applied in this step of the Slim Tube Test",
+                    "title": "Step Average Temperature"
+                },
+                "StepBackPressure": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The pressure measured at the back pressure regulator for this test step.",
+                    "title": "StepBackPressure"
+                },
+                "Remarks": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Remarks"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Additional notes or observations regarding the step, includes conditions, or results that may be relevant for interpretation.",
+                    "title": "Remarks"
+                },
+                "SlimTubeTestVolumeSteps": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/SlimTubeTestVolumeStep"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The sequence of changes in volume for the analysis.",
+                    "title": "Slim Tube Test Volume Steps"
+                },
+                "MaterialBalanceData": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/MaterialBalanceDatum"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array that records the type and weight of the material injected into the sample as well as the material recovered.",
+                    "title": "Material Balance Data"
+                }
+            },
+            "title": "SlimTubeTestStep",
+            "type": "object"
+        },
+        "SlimTubeTestVolumeStep": {
+            "additionalProperties": false,
+            "properties": {
+                "StepNumber": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The number used to sequence and identify the changes in volume for this analysis.",
+                    "title": "Step Number"
+                },
+                "DifferentialPressure": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The differential pressure of this test step.",
+                    "title": "Differential Pressure"
+                },
+                "RunTime": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The overall run time of the test at this step.",
+                    "title": "Run Time"
+                },
+                "InjectionVolumeAtTestTemperature": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The volume of injected fluid at test temperature.",
+                    "title": "Injection Volume At Test Temperature"
+                },
+                "InjectionVolumeAtPumpTemperature": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The volume of injected fluid measured at pump temperature.",
+                    "title": "Injection Volume At Pump Temperature"
+                },
+                "InjectedPoreVolumeFraction": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The injected fluid measured as a fraction of pore volume.",
+                    "title": "Injected Pore Volume Fraction"
+                },
+                "DarcyVelocity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The flow velocity of a fluid through a porous medium, as described by Darcy's law.",
+                    "title": "Darcy Velocity"
+                },
+                "CumulativeOilProductionPercOOIP": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Cumulative oil production as a percentage of oil in place.",
+                    "title": "Cumulative Oil Production Percentage of Oil in Place"
+                },
+                "CumulativeOilProductionAtStockTankConditions": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Cumulative oil production at Stock Tank temperature and pressure.",
+                    "title": "Cumulative Oil Production at Stock Tank Conditions"
+                },
+                "CumulativeGasProductionAtStockTankConditions": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Cumulative gas production at Stock Tank temperature and pressure.",
+                    "title": "Cumulative Gas Production at Stock Tank Conditions"
+                },
+                "IncrementalProducedGOR": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Gas oil ratio of the production during this test step.",
+                    "title": "Incremental Produced GOR"
+                },
+                "CumulativeProducedGOR": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Gas Oil ratio of the cumulative production from the sample during slim tube testing.",
+                    "title": "Cumulative Produced GOR"
+                },
+                "Remarks": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Remarks"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Recorded remarks for this step of the slim tube test.",
+                    "title": "Remarks"
+                },
+                "CumulativeVaporCompositionalAnalysis": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/CumulativeVaporCompositionalAnalysi"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the cumulative vapor retrieved from the sample at this test step.",
+                    "title": "Cumulative Vapor Compositional Analysis"
+                },
+                "CumulativeLiquidCompositionalAnalysis": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/CumulativeLiquidCompositionalAnalysi"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the cumulative liquid retrieved from the sample at this test step.",
+                    "title": "Cumulative Liquid Compositional Analysis"
+                },
+                "IncrementalVaporCompositionalAnalysis": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/IncrementalVaporCompositionalAnalysi"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample at this test step.",
+                    "title": "Incremental Vapor Compositional Analysis"
+                },
+                "IncrementalLiquidCompositionalAnalysis": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/IncrementalLiquidCompositionalAnalysi"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the liquid retrieved from the sample at this test step.",
+                    "title": "Incremental Liquid Compositional Analysis"
+                },
+                "InstantaneousVaporCompositionalAnalysis": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/InstantaneousVaporCompositionalAnalysi"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample at this test step.",
+                    "title": "Instantaneous Vapor Compositional Analysis"
+                },
+                "InstantaneousLiquidCompositionalAnalysis": {
+                    "anyOf": [
+                        {
+                            "items": {
+                                "$ref": "#/$defs/InstantaneousLiquidCompositionalAnalysi"
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Array recording the compositional analysis of the liquid retrieved from the sample at this test step.",
+                    "title": "Instantaneous Liquid Compositional Analysis"
+                },
+                "SeparatorTemperature": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Temperature recorded at the separator at this test step.",
+                    "title": "Separator Temperature"
+                },
+                "SeparatorPressure": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Pressure recorded at the separator at this test step.",
+                    "title": "Separator Pressure"
+                }
+            },
+            "title": "SlimTubeTestVolumeStep",
+            "type": "object"
+        },
+        "VaporCompositionItem": {
+            "additionalProperties": false,
+            "properties": {
+                "ComponentNameID": {
+                    "anyOf": [
+                        {
+                            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                            "type": "string"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "Name of the component in the liquid.",
+                    "title": "Component Name ID"
+                },
+                "MolecularWeight": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molecular weight of the component.",
+                    "title": "Molecular Weight"
+                },
+                "RelativeMole": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The molar quantity of the component relative to the total moles of the sample.",
+                    "title": "Relative Mole"
+                },
+                "RelativeMass": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The mass of the component relative to the total mass of the sample.",
+                    "title": "Relative Mass"
+                },
+                "RelativeVolume": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The volume of the component relative to the total volume of the sample.",
+                    "title": "Relative Volume"
+                },
+                "SpecificGravity": {
+                    "anyOf": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ],
+                    "default": null,
+                    "description": "The specific gravity of the component.",
+                    "title": "Specific Gravity"
+                }
+            },
+            "title": "VaporCompositionItem",
+            "type": "object"
+        }
+    },
+    "additionalProperties": false,
     "properties": {
         "SamplesAnalysisID": {
-            "title": "Samples Analysis ID",
             "description": "The OSDU Identifier for this SamplesAnalysis.",
             "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "title": "Samples Analysis ID",
             "type": "string"
         },
         "SampleID": {
-            "title": "Sample ID",
             "description": "The OSDU Identifier for the Sample associated with this analysis.",
             "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "title": "Sample ID",
             "type": "string"
         },
         "Meta": {
-            "title": "Meta",
             "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
             "example": "",
-            "type": "array",
             "items": {
                 "anyOf": [
                     {
-                        "$ref": "#/definitions/Meta"
+                        "$ref": "#/$defs/Meta"
                     },
                     {
-                        "$ref": "#/definitions/Meta1"
+                        "$ref": "#/$defs/Meta1"
                     },
                     {
-                        "$ref": "#/definitions/Meta2"
+                        "$ref": "#/$defs/Meta2"
                     },
                     {
-                        "$ref": "#/definitions/Meta3"
+                        "$ref": "#/$defs/Meta3"
                     }
                 ]
-            }
+            },
+            "title": "Meta",
+            "type": "array"
         },
         "TestNumber": {
-            "title": "Test Number",
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "A number for this test for purposes of e.g., tracking lab sequence.",
-            "type": "string"
+            "title": "Test Number"
         },
         "TestTemperature": {
-            "title": "Test Temperature",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The recorded temperature within the test environment.",
-            "type": "number"
+            "title": "Test Temperature"
         },
         "Remarks": {
-            "title": "Remarks",
-            "description": "Additional notes or observations regarding the test, conditions, or results that may be relevant for interpretation.",
-            "allOf": [
+            "anyOf": [
                 {
-                    "$ref": "#/definitions/Remarks"
+                    "$ref": "#/$defs/Remarks"
+                },
+                {
+                    "type": "null"
                 }
-            ]
+            ],
+            "default": null,
+            "description": "Additional notes or observations regarding the test, conditions, or results that may be relevant for interpretation.",
+            "title": "Remarks"
         },
         "SlimTubeSpecification": {
-            "title": "Slim Tube Specification",
+            "anyOf": [
+                {
+                    "items": {
+                        "$ref": "#/$defs/SlimTubeSpecificationItem"
+                    },
+                    "type": "array"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The physical specifications and configuration of the slim tube, such as the column length, diameters, and packing material.",
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/SlimTubeSpecificationItem"
-            }
+            "title": "Slim Tube Specification"
         },
         "InjectedGasID": {
-            "title": "Injected Gas ID",
+            "anyOf": [
+                {
+                    "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "type": "string"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The OSDU Identifier, if any, for the injected gas used in this analysis.",
-            "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-            "type": "string"
+            "title": "Injected Gas ID"
         },
         "InjectedGas": {
-            "title": "Injected Gas",
+            "anyOf": [
+                {
+                    "items": {
+                        "$ref": "#/$defs/InjectedGa"
+                    },
+                    "type": "array"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "An array object capturing the composition and other properties of the injected gas.",
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/InjectedGa"
-            }
+            "title": "Injected Gas"
         },
         "MinimumMiscibilityPressure": {
-            "title": "Minimum Miscibility Pressure",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "The minimum pressure for miscibility to be achieved.",
-            "type": "number"
+            "title": "Minimum Miscibility Pressure"
         },
         "CalculatedProperties": {
-            "title": "Calculated Properties",
+            "anyOf": [
+                {
+                    "items": {
+                        "$ref": "#/$defs/CalculatedProperty"
+                    },
+                    "type": "array"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Derived attributes and parameters obtained from slim tube tests, which are experimental methods used to evaluate the miscibility and interaction of injected fluids with reservoir hydrocarbons under simulated reservoir conditions.",
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/CalculatedProperty"
-            }
+            "title": "Calculated Properties"
         },
         "SlimTubeTestSteps": {
-            "title": "SlimTubeTest Steps",
+            "anyOf": [
+                {
+                    "items": {
+                        "$ref": "#/$defs/SlimTubeTestStep"
+                    },
+                    "type": "array"
+                },
+                {
+                    "type": "null"
+                }
+            ],
+            "default": null,
             "description": "Array object capturing the slim tube test steps.",
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/SlimTubeTestStep"
-            }
+            "title": "SlimTubeTest Steps"
         }
     },
     "required": [
@@ -104,861 +1915,6 @@
         "SampleID",
         "Meta"
     ],
-    "additionalProperties": false,
-    "definitions": {
-        "Meta": {
-            "title": "Meta",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "UOM Reference Kind",
-                    "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
-                    "default": "Unit",
-                    "const": "Unit",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "UOM Unit Symbol",
-                    "description": "The unit symbol or name of the unit.",
-                    "example": "ft[US]",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "UOM Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
-                    "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}",
-                    "type": "string"
-                },
-                "unitOfMeasureID": {
-                    "title": "Unitofmeasureid",
-                    "description": "SRN to unit of measure reference.",
-                    "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "UOM Property Names",
-                    "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "HorizontalDeflection.EastWest",
-                        "HorizontalDeflection.NorthSouth"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "Meta1": {
-            "title": "Meta1",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "CRS Reference Kind",
-                    "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
-                    "default": "CRS",
-                    "const": "CRS",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "CRS Name",
-                    "description": "The name of the CRS.",
-                    "example": "WGS 84 / UTM zone 15N",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "CRS Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
-                    "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}",
-                    "type": "string"
-                },
-                "coordinateReferenceSystemID": {
-                    "title": "Coordinatereferencesystemid",
-                    "description": "SRN to CRS reference.",
-                    "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "CRS Property Names",
-                    "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "KickOffPosition.X",
-                        "KickOffPosition.Y"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "Meta2": {
-            "title": "Meta2",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "DateTime Reference Kind",
-                    "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
-                    "default": "DateTime",
-                    "const": "DateTime",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "DateTime Name",
-                    "description": "The name of the DateTime format and reference.",
-                    "example": "UTC",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "DateTime Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
-                    "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "DateTime Property Names",
-                    "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "Acquisition.StartTime",
-                        "Acquisition.EndTime"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "Meta3": {
-            "title": "Meta3",
-            "type": "object",
-            "properties": {
-                "kind": {
-                    "title": "AzimuthReference Reference Kind",
-                    "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
-                    "default": "AzimuthReference",
-                    "const": "AzimuthReference",
-                    "type": "string"
-                },
-                "name": {
-                    "title": "AzimuthReference Name",
-                    "description": "The name of the CRS or the symbol/name of the unit.",
-                    "example": "TrueNorth",
-                    "type": "string"
-                },
-                "persistableReference": {
-                    "title": "AzimuthReference Persistable Reference",
-                    "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
-                    "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}",
-                    "type": "string"
-                },
-                "propertyNames": {
-                    "title": "AzimuthReference Property Names",
-                    "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
-                    "example": [
-                        "Bearing"
-                    ],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "persistableReference"
-            ],
-            "additionalProperties": false
-        },
-        "Remarks": {
-            "title": "Remarks",
-            "type": "object",
-            "properties": {
-                "RemarkSequenceNumber": {
-                    "title": "Remark Sequence Number",
-                    "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
-                    "example": 1,
-                    "type": "integer"
-                },
-                "Remark": {
-                    "title": "Remark",
-                    "description": "A descriptive comment for this remark.",
-                    "type": "string"
-                },
-                "RemarkSource": {
-                    "title": "Remark Source",
-                    "description": "The person, vendor, interpreter or other provider of information.",
-                    "type": "string"
-                },
-                "RemarkDate": {
-                    "title": "Remark Date",
-                    "description": "The date the remark was issued.",
-                    "type": "string",
-                    "format": "date"
-                }
-            },
-            "additionalProperties": false
-        },
-        "SlimTubeSpecificationItem": {
-            "title": "SlimTubeSpecificationItem",
-            "type": "object",
-            "properties": {
-                "ColumnLength": {
-                    "title": "Column Length",
-                    "description": "Length of the packed column enclosing the sample.",
-                    "type": "number"
-                },
-                "PackingMaterial": {
-                    "title": "Packing Material",
-                    "description": "Material used to fill the packed column, e.g. sand, glass beads of different mesh sizes.",
-                    "type": "string"
-                },
-                "ColumnPorosity": {
-                    "title": "Column Porosity",
-                    "description": "The amount of pore space relative to the volume of the packed column sample.",
-                    "type": "number"
-                },
-                "ColumnTotalPoreVolume": {
-                    "title": "Column Total Pore Volume",
-                    "description": "The total volume of pore space within the packed column.",
-                    "type": "number"
-                },
-                "ColumnPermeability": {
-                    "title": "Column Permeability",
-                    "description": "The permeability of the packed column.",
-                    "type": "number"
-                },
-                "ColumnPermeabilityMeasurementMethodID": {
-                    "title": "Column Permeability Measurement Method ID",
-                    "description": "The method of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "ColumnPermeabilityFluidTypeID": {
-                    "title": "Column Fluid Type ID",
-                    "description": "The fluid type used in determining the column permeability.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleInjectionFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "ColumnOuterDiameter": {
-                    "title": "Column Outer Diameter",
-                    "description": "The outer diameter of the column.",
-                    "type": "number"
-                },
-                "ColumnInnerDiameter": {
-                    "title": "Column Inner Diameter",
-                    "description": "The inner diameter of the column.",
-                    "type": "number"
-                },
-                "ColumnFlowCrossSectionalArea": {
-                    "title": "Column Flow Cross Sectional Area",
-                    "description": "Available inner cross-sectional area for fluid to flow, calculated by (pi * d^2)/4, where d is the inner diameter of the column.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "VaporCompositionItem": {
-            "title": "VaporCompositionItem",
-            "type": "object",
-            "properties": {
-                "ComponentNameID": {
-                    "title": "Component Name ID",
-                    "description": "Name of the component in the liquid.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "MolecularWeight": {
-                    "title": "Molecular Weight",
-                    "description": "The molecular weight of the component.",
-                    "type": "number"
-                },
-                "RelativeMole": {
-                    "title": "Relative Mole",
-                    "description": "The molar quantity of the component relative to the total moles of the sample.",
-                    "type": "number"
-                },
-                "RelativeMass": {
-                    "title": "Relative Mass",
-                    "description": "The mass of the component relative to the total mass of the sample.",
-                    "type": "number"
-                },
-                "RelativeVolume": {
-                    "title": "Relative Volume",
-                    "description": "The volume of the component relative to the total volume of the sample.",
-                    "type": "number"
-                },
-                "SpecificGravity": {
-                    "title": "Specific Gravity",
-                    "description": "The specific gravity of the component.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "InjectedGa": {
-            "title": "InjectedGa",
-            "type": "object",
-            "properties": {
-                "VaporSpecificGravity": {
-                    "title": "Vapor Specific Gravity",
-                    "description": "The specific gravity of the vapor retrieved from the sample.",
-                    "type": "number"
-                },
-                "VaporMolecularWeight": {
-                    "title": "Vapor Molecular Weight",
-                    "description": "The molecular weight of the vapor retrieved from the sample.",
-                    "type": "number"
-                },
-                "VaporComposition": {
-                    "title": "Vapor Composition",
-                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/VaporCompositionItem"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "ResidueCalculatedProperty": {
-            "title": "ResidueCalculatedProperty",
-            "type": "object",
-            "properties": {
-                "ComponentNameID": {
-                    "title": "Component Name ID",
-                    "description": "The chemical formula representing the composition of a specific component in terms of the elements and their proportions.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "ResidueRelativeMolarWeight": {
-                    "title": "Residue Relative Molar Weight",
-                    "description": "he ratio of the molar mass of the residual oil component to the molar mass of a reference substance, typically dimensionless.",
-                    "type": "number"
-                },
-                "ResidueMolecularWeight": {
-                    "title": "Residue Molecular Weight",
-                    "description": "The molecular weight of the residual oil, representing the sum of the atomic weights of its constituent atoms.",
-                    "type": "number"
-                },
-                "ResidueDensity": {
-                    "title": "Residue Density",
-                    "description": "The mass per unit volume of the residual oil.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "CalculatedProperty": {
-            "title": "CalculatedProperty",
-            "type": "object",
-            "properties": {
-                "AvgMoleWeight": {
-                    "title": "Average Mole Weight",
-                    "description": "The weighted average mass of the molecules in a sample.",
-                    "type": "number"
-                },
-                "ResidueDensity": {
-                    "title": "Residue Density",
-                    "description": "The mass per unit volume of the residual oil.",
-                    "type": "number"
-                },
-                "ResidueAPI": {
-                    "title": "Residue API",
-                    "description": "The API gravity of the residual oil, which measures its density relative to water.",
-                    "type": "number"
-                },
-                "ResidueCalculatedProperties": {
-                    "title": "Residue Calculated Properties",
-                    "description": "The set of derived physical and chemical properties of the residual oil, calculated from experimental data or using theoretical models.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ResidueCalculatedProperty"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "CumulativeVaporCompositionalAnalysi": {
-            "title": "CumulativeVaporCompositionalAnalysi",
-            "type": "object",
-            "properties": {
-                "VaporSpecificGravity": {
-                    "title": "Vapor Specific Gravity",
-                    "description": "The specific gravity of the vapor retrieved from the sample.",
-                    "type": "number"
-                },
-                "VaporMolecularWeight": {
-                    "title": "Vapor Molecular Weight",
-                    "description": "The molecular weight of the vapor retrieved from the sample.",
-                    "type": "number"
-                },
-                "VaporComposition": {
-                    "title": "Vapor Composition",
-                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/VaporCompositionItem"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "LiquidCompositionItem": {
-            "title": "LiquidCompositionItem",
-            "type": "object",
-            "properties": {
-                "ComponentNameID": {
-                    "title": "Component Name ID",
-                    "description": "The chemical formula of each component found in the liquid during analysis.",
-                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleOrganicCompositionComponent:[\\w\\-\\.\\:\\%]+:[0-9]*$",
-                    "type": "string"
-                },
-                "MolecularWeight": {
-                    "title": "Molecular Weight",
-                    "description": "The molecular weight of the component.",
-                    "type": "number"
-                },
-                "MolePercent": {
-                    "title": "Mole Percent",
-                    "description": "The molar percentage of the component, if available.",
-                    "type": "number"
-                },
-                "MassPercent": {
-                    "title": "Mass Percent",
-                    "description": "The mass percentage of the component, if available.",
-                    "type": "number"
-                },
-                "VolumePercent": {
-                    "title": "Volume Percent",
-                    "description": "The volume percentage of the component, if available.",
-                    "type": "number"
-                },
-                "SpecificGravity": {
-                    "title": "Specific Gravity",
-                    "description": "The specific gravity of the component.",
-                    "type": "number"
-                },
-                "MoleFraction": {
-                    "title": "Mole Fraction",
-                    "description": "The molar fraction of the component.",
-                    "type": "number"
-                },
-                "MassFraction": {
-                    "title": "Mass Fraction",
-                    "description": "The mass fraction of the component.",
-                    "type": "number"
-                },
-                "VolumeFraction": {
-                    "title": "Volume Fraction",
-                    "description": "The volume fraction of the component.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "CumulativeLiquidCompositionalAnalysi": {
-            "title": "CumulativeLiquidCompositionalAnalysi",
-            "type": "object",
-            "properties": {
-                "LiquidSpecificGravity": {
-                    "title": "LiquidSpecificGravity",
-                    "description": "The specific gravity of the liquid sample.",
-                    "type": "number"
-                },
-                "LiquidMolecularWeight": {
-                    "title": "LiquidMolecularWeight",
-                    "description": "The molecular weight of the liquid sample.",
-                    "type": "number"
-                },
-                "APIGravity": {
-                    "title": "API Gravity",
-                    "description": "The API gravity of the liquid sample.",
-                    "type": "number"
-                },
-                "LiquidComposition": {
-                    "title": "LiquidComposition",
-                    "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/LiquidCompositionItem"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "IncrementalVaporCompositionalAnalysi": {
-            "title": "IncrementalVaporCompositionalAnalysi",
-            "type": "object",
-            "properties": {
-                "VaporSpecificGravity": {
-                    "title": "Vapor Specific Gravity",
-                    "description": "The specific gravity of the vapor retrieved from the sample.",
-                    "type": "number"
-                },
-                "VaporMolecularWeight": {
-                    "title": "Vapor Molecular Weight",
-                    "description": "The molecular weight of the vapor retrieved from the sample.",
-                    "type": "number"
-                },
-                "VaporComposition": {
-                    "title": "Vapor Composition",
-                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/VaporCompositionItem"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "IncrementalLiquidCompositionalAnalysi": {
-            "title": "IncrementalLiquidCompositionalAnalysi",
-            "type": "object",
-            "properties": {
-                "LiquidSpecificGravity": {
-                    "title": "LiquidSpecificGravity",
-                    "description": "The specific gravity of the liquid sample.",
-                    "type": "number"
-                },
-                "LiquidMolecularWeight": {
-                    "title": "LiquidMolecularWeight",
-                    "description": "The molecular weight of the liquid sample.",
-                    "type": "number"
-                },
-                "APIGravity": {
-                    "title": "API Gravity",
-                    "description": "The API gravity of the liquid sample.",
-                    "type": "number"
-                },
-                "LiquidComposition": {
-                    "title": "LiquidComposition",
-                    "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/LiquidCompositionItem"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "InstantaneousVaporCompositionalAnalysi": {
-            "title": "InstantaneousVaporCompositionalAnalysi",
-            "type": "object",
-            "properties": {
-                "VaporSpecificGravity": {
-                    "title": "Vapor Specific Gravity",
-                    "description": "The specific gravity of the vapor retrieved from the sample.",
-                    "type": "number"
-                },
-                "VaporMolecularWeight": {
-                    "title": "Vapor Molecular Weight",
-                    "description": "The molecular weight of the vapor retrieved from the sample.",
-                    "type": "number"
-                },
-                "VaporComposition": {
-                    "title": "Vapor Composition",
-                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/VaporCompositionItem"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "InstantaneousLiquidCompositionalAnalysi": {
-            "title": "InstantaneousLiquidCompositionalAnalysi",
-            "type": "object",
-            "properties": {
-                "LiquidSpecificGravity": {
-                    "title": "LiquidSpecificGravity",
-                    "description": "The specific gravity of the liquid sample.",
-                    "type": "number"
-                },
-                "LiquidMolecularWeight": {
-                    "title": "LiquidMolecularWeight",
-                    "description": "The molecular weight of the liquid sample.",
-                    "type": "number"
-                },
-                "APIGravity": {
-                    "title": "API Gravity",
-                    "description": "The API gravity of the liquid sample.",
-                    "type": "number"
-                },
-                "LiquidComposition": {
-                    "title": "LiquidComposition",
-                    "description": "Array recording the compositional analysis of the liquid retrieved from the sample.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/LiquidCompositionItem"
-                    }
-                }
-            },
-            "additionalProperties": false
-        },
-        "SlimTubeTestVolumeStep": {
-            "title": "SlimTubeTestVolumeStep",
-            "type": "object",
-            "properties": {
-                "StepNumber": {
-                    "title": "Step Number",
-                    "description": "The number used to sequence and identify the changes in volume for this analysis.",
-                    "type": "number"
-                },
-                "DifferentialPressure": {
-                    "title": "Differential Pressure",
-                    "description": "The differential pressure of this test step.",
-                    "type": "number"
-                },
-                "RunTime": {
-                    "title": "Run Time",
-                    "description": "The overall run time of the test at this step.",
-                    "type": "number"
-                },
-                "InjectionVolumeAtTestTemperature": {
-                    "title": "Injection Volume At Test Temperature",
-                    "description": "The volume of injected fluid at test temperature.",
-                    "type": "number"
-                },
-                "InjectionVolumeAtPumpTemperature": {
-                    "title": "Injection Volume At Pump Temperature",
-                    "description": "The volume of injected fluid measured at pump temperature.",
-                    "type": "number"
-                },
-                "InjectedPoreVolumeFraction": {
-                    "title": "Injected Pore Volume Fraction",
-                    "description": "The injected fluid measured as a fraction of pore volume.",
-                    "type": "number"
-                },
-                "DarcyVelocity": {
-                    "title": "Darcy Velocity",
-                    "description": "The flow velocity of a fluid through a porous medium, as described by Darcy's law.",
-                    "type": "number"
-                },
-                "CumulativeOilProductionPercOOIP": {
-                    "title": "Cumulative Oil Production Percentage of Oil in Place",
-                    "description": "Cumulative oil production as a percentage of oil in place.",
-                    "type": "number"
-                },
-                "CumulativeOilProductionAtStockTankConditions": {
-                    "title": "Cumulative Oil Production at Stock Tank Conditions",
-                    "description": "Cumulative oil production at Stock Tank temperature and pressure.",
-                    "type": "number"
-                },
-                "CumulativeGasProductionAtStockTankConditions": {
-                    "title": "Cumulative Gas Production at Stock Tank Conditions",
-                    "description": "Cumulative gas production at Stock Tank temperature and pressure.",
-                    "type": "number"
-                },
-                "IncrementalProducedGOR": {
-                    "title": "Incremental Produced GOR",
-                    "description": "Gas oil ratio of the production during this test step.",
-                    "type": "number"
-                },
-                "CumulativeProducedGOR": {
-                    "title": "Cumulative Produced GOR",
-                    "description": "Gas Oil ratio of the cumulative production from the sample during slim tube testing.",
-                    "type": "number"
-                },
-                "Remarks": {
-                    "title": "Remarks",
-                    "description": "Recorded remarks for this step of the slim tube test.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/Remarks"
-                        }
-                    ]
-                },
-                "CumulativeVaporCompositionalAnalysis": {
-                    "title": "Cumulative Vapor Compositional Analysis",
-                    "description": "Array recording the compositional analysis of the cumulative vapor retrieved from the sample at this test step.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/CumulativeVaporCompositionalAnalysi"
-                    }
-                },
-                "CumulativeLiquidCompositionalAnalysis": {
-                    "title": "Cumulative Liquid Compositional Analysis",
-                    "description": "Array recording the compositional analysis of the cumulative liquid retrieved from the sample at this test step.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/CumulativeLiquidCompositionalAnalysi"
-                    }
-                },
-                "IncrementalVaporCompositionalAnalysis": {
-                    "title": "Incremental Vapor Compositional Analysis",
-                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample at this test step.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/IncrementalVaporCompositionalAnalysi"
-                    }
-                },
-                "IncrementalLiquidCompositionalAnalysis": {
-                    "title": "Incremental Liquid Compositional Analysis",
-                    "description": "Array recording the compositional analysis of the liquid retrieved from the sample at this test step.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/IncrementalLiquidCompositionalAnalysi"
-                    }
-                },
-                "InstantaneousVaporCompositionalAnalysis": {
-                    "title": "Instantaneous Vapor Compositional Analysis",
-                    "description": "Array recording the compositional analysis of the vapor retrieved from the sample at this test step.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/InstantaneousVaporCompositionalAnalysi"
-                    }
-                },
-                "InstantaneousLiquidCompositionalAnalysis": {
-                    "title": "Instantaneous Liquid Compositional Analysis",
-                    "description": "Array recording the compositional analysis of the liquid retrieved from the sample at this test step.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/InstantaneousLiquidCompositionalAnalysi"
-                    }
-                },
-                "SeparatorTemperature": {
-                    "title": "Separator Temperature",
-                    "description": "Temperature recorded at the separator at this test step.",
-                    "type": "number"
-                },
-                "SeparatorPressure": {
-                    "title": "Separator Pressure",
-                    "description": "Pressure recorded at the separator at this test step.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "MaterialBalanceDatum": {
-            "title": "MaterialBalanceDatum",
-            "type": "object",
-            "properties": {
-                "MassOfReservoirOilInSlimTube": {
-                    "title": "Mass of Reservoir Oil in Slim Tube",
-                    "description": "The mass of injected reservoir oil within the slim tube.",
-                    "type": "number"
-                },
-                "MassOfReservoirOilInConnectingLines": {
-                    "title": "Mass of Reservoir Oil in Connecting Lines",
-                    "description": "The mass of injected reservoir oil in the connecting lines.",
-                    "type": "number"
-                },
-                "MassOfReservoirOil": {
-                    "title": "Mass of Reservoir Oil",
-                    "description": "The overall mass of injected reservoir oil within the slim tube and connecting lines.",
-                    "type": "number"
-                },
-                "MassOfGasSolvent": {
-                    "title": "Mass of Gas Solvent",
-                    "description": "The mass of injected gas solvent.",
-                    "type": "number"
-                },
-                "MassTotalInjected": {
-                    "title": "Mass Total Injected",
-                    "description": "The total mass of reservoir oil and gas solvent injected into the slim tube and connecting lines.",
-                    "type": "number"
-                },
-                "MassOfEffluentStockTankOilBeforeBlowDown": {
-                    "title": "Mass Effluent Stock Tank Oil before Blow Down",
-                    "description": "The mass of effluent stock tank oil prior to  depressurization (blow down).",
-                    "type": "number"
-                },
-                "MassOfProducedEffluentGasBeforeBlowDown": {
-                    "title": "Mass Produced Effluent Gas before Blow Down",
-                    "description": "The mass of produced effluent gas prior to  depressurization (blow down).",
-                    "type": "number"
-                },
-                "MassOfEffluentStockTankOilAfterBlowDown": {
-                    "title": "Mass Effluent Stock Tank Oil after Blow Down",
-                    "description": "The mass of effluent stock tank oil after  depressurization (blow down).",
-                    "type": "number"
-                },
-                "MassOfProducedEffluentGasAfterBlowDown": {
-                    "title": "Mass Produced Effluent Gas after Blow Down",
-                    "description": "The mass of produced effluent gas after  depressurization (blow down).",
-                    "type": "number"
-                },
-                "MassOfResidualOil": {
-                    "title": "Mass Of Residual Oil",
-                    "description": "The mass of residual oil remaining in the slim tube and connecting lines after depressurization (blow down).",
-                    "type": "number"
-                },
-                "MassTotalRecovered": {
-                    "title": "Mass Total Recovered",
-                    "description": "The total mass at the end of the experiment.",
-                    "type": "number"
-                },
-                "WeightPercentRecovered": {
-                    "title": "Weight percent recovered",
-                    "description": "The ratio of MassTotalRecovered over MassTotalInjected in weight percent.",
-                    "type": "number"
-                }
-            },
-            "additionalProperties": false
-        },
-        "SlimTubeTestStep": {
-            "title": "SlimTubeTestStep",
-            "type": "object",
-            "properties": {
-                "StepNumber": {
-                    "title": "Step Number",
-                    "description": "The test step number.",
-                    "type": "number"
-                },
-                "StepAveragePressure": {
-                    "title": "Step Average Pressure",
-                    "description": "Average pressure applied in this step of the Slim Tube Test.",
-                    "type": "number"
-                },
-                "StepAverageTemperature": {
-                    "title": "Step Average Temperature",
-                    "description": "Average temperature applied in this step of the Slim Tube Test",
-                    "type": "number"
-                },
-                "StepBackPressure": {
-                    "title": "StepBackPressure",
-                    "description": "The pressure measured at the back pressure regulator for this test step.",
-                    "type": "number"
-                },
-                "Remarks": {
-                    "title": "Remarks",
-                    "description": "Additional notes or observations regarding the step, includes conditions, or results that may be relevant for interpretation.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/Remarks"
-                        }
-                    ]
-                },
-                "SlimTubeTestVolumeSteps": {
-                    "title": "Slim Tube Test Volume Steps",
-                    "description": "The sequence of changes in volume for the analysis.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/SlimTubeTestVolumeStep"
-                    }
-                },
-                "MaterialBalanceData": {
-                    "title": "Material Balance Data",
-                    "description": "Array that records the type and weight of the material injected into the sample as well as the material recovered.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/MaterialBalanceDatum"
-                    }
-                }
-            },
-            "additionalProperties": false
-        }
-    }
+    "title": "SlimtubeModel200",
+    "type": "object"
 }
