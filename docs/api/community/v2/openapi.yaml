@@ -15,9 +15,9 @@ components:
     HTTPValidationError:
       properties:
         errors:
+          app_name: Errors
           items:
             $ref: '#/components/schemas/ValidationError'
-          title: Errors
           type: array
       title: HTTPValidationError
       type: object
@@ -110,17 +110,17 @@ components:
     ValidationError:
       properties:
         loc:
+          app_name: Location
           items:
             anyOf:
             - type: string
             - type: integer
-          title: Location
           type: array
         msg:
-          title: Message
+          app_name: Message
           type: string
         type:
-          title: Error Type
+          app_name: Error Type
           type: string
       required:
       - loc
@@ -222,7 +222,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -238,9 +238,8 @@ paths:
         schema:
           default: 1000
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 1000
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -397,7 +396,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -413,9 +412,8 @@ paths:
         schema:
           default: 100
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 100
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -576,7 +574,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -642,7 +640,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -797,7 +795,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -892,7 +890,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -908,9 +906,8 @@ paths:
         schema:
           default: 1000
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 1000
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -1072,7 +1069,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -1088,9 +1085,8 @@ paths:
         schema:
           default: 100
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 100
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -1320,7 +1316,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -1437,7 +1433,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -1751,7 +1747,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -1847,7 +1843,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -1863,9 +1859,8 @@ paths:
         schema:
           default: 1000
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 1000
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -2013,7 +2008,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -2029,9 +2024,8 @@ paths:
         schema:
           default: 100
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 100
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -2247,7 +2241,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -2364,7 +2358,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -2846,7 +2840,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -2942,7 +2936,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -2958,9 +2952,8 @@ paths:
         schema:
           default: 1000
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 1000
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -3109,7 +3102,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -3125,9 +3118,8 @@ paths:
         schema:
           default: 100
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 100
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -3345,7 +3337,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -3462,7 +3454,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -4095,7 +4087,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -4111,9 +4103,8 @@ paths:
         schema:
           default: 1000
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 1000
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -4299,7 +4290,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -4315,9 +4306,8 @@ paths:
         schema:
           default: 100
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 100
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -4494,7 +4484,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -4651,7 +4641,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -4774,7 +4764,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -5071,7 +5061,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -5167,7 +5157,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -5183,9 +5173,8 @@ paths:
         schema:
           default: 1000
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 1000
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -5334,7 +5323,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -5350,9 +5339,8 @@ paths:
         schema:
           default: 100
           description: Maximum number of results to return per page
-          exclusiveMinimum: true
+          exclusiveMinimum: 0
           maximum: 100
-          minimum: 0
           title: Page Limit
           type: integer
       - description: Number of results to skip before returning data
@@ -5570,7 +5558,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
@@ -5687,7 +5675,7 @@ paths:
           Accept header.
         in: query
         name: content_schema_version
-        required: true
+        required: false
         schema:
           anyOf:
           - type: string
