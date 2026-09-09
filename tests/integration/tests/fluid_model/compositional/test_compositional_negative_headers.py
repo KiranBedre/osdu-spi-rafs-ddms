@@ -32,7 +32,7 @@ def test_compositional_negative_missing_authorization_header(
     record_id,
     fluid_model_type,
 ):
-    """Reject Compositional data upload without Authorization header with 403 Forbidden."""
+    """Reject Compositional data upload without Authorization header with 401 Unauthorized."""
     data_payload = copy.deepcopy(
         tests_data(DataFiles.COMPOSITIONAL_FLUID_MODEL_DATA_V1)
     )
@@ -44,12 +44,12 @@ def test_compositional_negative_missing_authorization_header(
         fluid_model_type=fluid_model_type,
         schema_version=SchemaVersions.V1_0_0,
         headers={AUTHORIZATION: None},
-        allowed_codes=[status.HTTP_403_FORBIDDEN],
+        allowed_codes=[status.HTTP_401_UNAUTHORIZED],
         raw=True,
     )
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 

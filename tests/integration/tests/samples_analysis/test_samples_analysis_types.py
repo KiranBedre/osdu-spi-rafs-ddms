@@ -84,35 +84,35 @@ def test_samples_analysis_types_rejects_post_method(api):
 
 
 def test_samples_analysis_types_negative_missing_authorization_header(api):
-    """Reject requests missing Authorization header with 403 Forbidden."""
+    """Reject requests missing Authorization header with 401 Unauthorized."""
 
     kwargs = {
         "headers": {AUTHORIZATION: None},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
     response = api.sample_analysis.get_analysis_types(**kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
 
 def test_samples_analysis_types_negative_invalid_authorization_header(api):
-    """Reject malformed Authorization header with 403 Forbidden."""
+    """Reject malformed Authorization header with 401 Unauthorized."""
 
     kwargs = {
         "headers": {AUTHORIZATION: "dummy"},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
     response = api.sample_analysis.get_analysis_types(**kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 

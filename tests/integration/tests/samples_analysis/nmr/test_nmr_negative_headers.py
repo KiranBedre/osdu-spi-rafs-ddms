@@ -28,15 +28,13 @@ from tests.integration.config import (
 def test_nmr_negative_missing_authorization_header(
     api, tests_data, endpoint, args, record_id, version, dataset_id_v1, analysis_type
 ):
-    """Reject requests missing Authorization header with 403 Forbidden (401 for get_schema)."""
+    """Reject requests missing Authorization header with 401 Unauthorized."""
     dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    # get_schema has no record/entitlements dependency ahead of auth, so FastAPI's
-    # own HTTPBearer rejects a missing header with 401 before RAFS's 403 logic runs.
-    expected_code = status.HTTP_401_UNAUTHORIZED if endpoint == "get_schema" else status.HTTP_403_FORBIDDEN
+    expected_code = status.HTTP_401_UNAUTHORIZED
     call_kwargs.update({
         "headers": {AUTHORIZATION: None},
         "allowed_codes": [expected_code],
@@ -62,15 +60,13 @@ def test_nmr_negative_missing_authorization_header(
 def test_nmr_negative_invalid_authorization_header(
     api, tests_data, endpoint, args, record_id, version, dataset_id_v1, analysis_type
 ):
-    """Reject malformed Authorization header with 403 Forbidden (401 for get_schema)."""
+    """Reject malformed Authorization header with 401 Unauthorized."""
     dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    # get_schema has no record/entitlements dependency ahead of auth, so FastAPI's
-    # own HTTPBearer rejects a malformed header with 401 before RAFS's 403 logic runs.
-    expected_code = status.HTTP_401_UNAUTHORIZED if endpoint == "get_schema" else status.HTTP_403_FORBIDDEN
+    expected_code = status.HTTP_401_UNAUTHORIZED
     call_kwargs.update({
         "headers": {AUTHORIZATION: "dummy"},
         "allowed_codes": [expected_code],

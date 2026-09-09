@@ -27,7 +27,7 @@ def test_black_oil_negative_missing_authorization_header(
     record_id,
     fluid_model_type,
 ):
-    """Reject Black Oil data upload without Authorization header with 403 Forbidden."""
+    """Reject Black Oil data upload without Authorization header with 401 Unauthorized."""
     data_payload = copy.deepcopy(tests_data(DataFiles.BLACK_OIL_FLUID_MODEL_DATA_V1))
     data_payload["data"][0][0] = f"{record_id}:"
 
@@ -37,12 +37,12 @@ def test_black_oil_negative_missing_authorization_header(
         fluid_model_type=fluid_model_type,
         schema_version=SchemaVersions.V1_0_0,
         headers={AUTHORIZATION: None},
-        allowed_codes=[status.HTTP_403_FORBIDDEN],
+        allowed_codes=[status.HTTP_401_UNAUTHORIZED],
         raw=True,
     )
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 

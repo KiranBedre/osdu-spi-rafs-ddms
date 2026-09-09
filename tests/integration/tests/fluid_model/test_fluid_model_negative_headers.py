@@ -33,14 +33,14 @@ ALL_ENDPOINTS_ARGS = [
 
 @pytest.mark.parametrize("endpoint,args", ALL_ENDPOINTS_ARGS)
 def test_fluid_negative_missing_authorization_header(api, tests_data, endpoint, args, record_id, version):
-    """Reject requests missing Authorization header with 403 Forbidden."""
+    """Reject requests missing Authorization header with 401 Unauthorized."""
     method = getattr(api.fluid_model, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
 
     kwargs = {
         "headers": {AUTHORIZATION: None},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
@@ -50,21 +50,21 @@ def test_fluid_negative_missing_authorization_header(api, tests_data, endpoint, 
     response = method(*call_args, **kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
 
 @pytest.mark.parametrize("endpoint,args", ALL_ENDPOINTS_ARGS)
 def test_fluid_negative_invalid_authorization_header(api, tests_data, endpoint, args, record_id, version):
-    """Reject malformed Authorization header with 403 Forbidden."""
+    """Reject malformed Authorization header with 401 Unauthorized."""
     method = getattr(api.fluid_model, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
 
     kwargs = {
         "headers": {AUTHORIZATION: "dummy"},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
@@ -74,7 +74,7 @@ def test_fluid_negative_invalid_authorization_header(api, tests_data, endpoint, 
     response = method(*call_args, **kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
