@@ -150,6 +150,7 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
             analysis_type=analysis_type,
             target_schema_version=target_schema_version,
             scope=scope.to_query_dict() if scope else None,
+            query_date_range=query_date_range,
         )
 
     async def _resolve_sample_ids_by_scope(self, scope: SearchScope) -> List[str]:  # noqa: CFQ004

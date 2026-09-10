@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import json
+from datetime import date, datetime, timezone
 from typing import Dict, List, Optional, Tuple
 
 from fastapi_cache import FastAPICache
@@ -26,6 +27,8 @@ from app.core.config import get_app_settings
 
 PENDING_WRITES_TTL = 120  # seconds; comfortably longer than OSDU indexer lag
 _KEY_PREFIX = "rafs:pending_writes"
+
+DateRange = Tuple[Optional[date], Optional[date]]
 
 
 def _pending_key(data_partition_id: str) -> str:
@@ -63,6 +66,22 @@ def _scope_matches(entry_scope: Dict[str, str], requested_scope: Dict[str, str])
         if entry_scope.get(scope_key) != requested_value:
             return False
     return True
+
+
+def _pending_writes_still_possible(query_date_range: Optional[DateRange]) -> bool:
+    """A pending write can only match a query whose indexed-date range covers
+    right now — a record written moments ago cannot be indexed at any other
+    instant. `query_date_range` uses the same inclusive UTC day boundaries as
+    `build_indexed_date_clauses`, where either side may individually be `None`
+    (unbounded on that side). No range at all (`None`) means unfiltered by date.
+    """
+    if query_date_range is None:
+        return True
+    start_date, end_date = query_date_range
+    today = datetime.now(timezone.utc).date()
+    if start_date and today < start_date:
+        return False
+    return not (end_date and today > end_date)
 
 
 def _get_redis() -> Optional[Redis]:
@@ -180,6 +199,7 @@ async def supplement_with_pending_writes(  # noqa: WPS211
     analysis_type: str,
     target_schema_version: str,
     scope: Optional[Dict[str, str]] = None,
+    query_date_range: Optional[DateRange] = None,
 ) -> List[Tuple[str, str]]:
     """Merge pending-write entries into OSDU Search results.
 
@@ -191,7 +211,16 @@ async def supplement_with_pending_writes(  # noqa: WPS211
     `scope` must be the same scope already resolved for the caller's Search query
     (e.g. `SearchScope.to_query_dict()`) so a pending write cannot leak into a search
     scoped to a different Well/Wellbore/Field/Basin.
+
+    `query_date_range` must be the same (indexed_start_date, indexed_end_date) already
+    used to build the caller's Search query. A pending write has no indexed date yet,
+    so it is only added when "now" falls inside that range — otherwise a record written
+    moments ago would leak into a query that explicitly asks for a different date window
+    (e.g. `indexed_start_date` in the future).
     """
+    if not _pending_writes_still_possible(query_date_range):
+        return result_ids  # noqa: ASYNC910
+
     pending = await get_pending_ids(
         data_partition_id=data_partition_id,
         analysis_family=analysis_family,

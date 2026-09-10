@@ -90,6 +90,7 @@ class SearchServiceSaturationFunctionSetIdsFetcher(DDMSDatasetIdsFetcher):
             analysis_type=content_type,
             target_schema_version=target_schema_version,
             scope=scope.to_query_dict() if scope else None,
+            query_date_range=query_date_range,
         )
 
     def _build_query(

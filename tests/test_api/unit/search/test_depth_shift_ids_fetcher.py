@@ -63,6 +63,7 @@ async def test_get_ids_calls_supplement_with_pending_writes_for_unscoped_search(
         analysis_type="coretologdepthshift",
         target_schema_version="1.0.0",
         scope=None,
+        query_date_range=(date(2024, 1, 1), date(2024, 12, 31)),
     )
 
 
@@ -87,6 +88,7 @@ async def test_get_ids_passes_valid_scope_into_supplement(mock_search_service):
         analysis_type="coretologdepthshift",
         target_schema_version="1.0.0",
         scope={"wellbore_id": "partition:master-data--Wellbore:wb-1:"},
+        query_date_range=(date(2024, 1, 1), date(2024, 12, 31)),
     )
 
 

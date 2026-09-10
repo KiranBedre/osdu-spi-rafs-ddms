@@ -61,6 +61,7 @@ async def test_samplesanalysis_fetcher_calls_supplement_with_correct_family_and_
         analysis_type="routinecoreanalysis",
         target_schema_version="1.0.0",
         scope=None,
+        query_date_range=(date(2024, 1, 1), date(2024, 12, 31)),
     )
 
 
@@ -93,6 +94,7 @@ async def test_res_sim_fetcher_passes_resolved_scope_into_supplement(mock_search
         analysis_type="rockphysicsmodel",
         target_schema_version="1.0.0",
         scope={"basin_id": "partition:master-data--Basin:b-1:"},
+        query_date_range=(date(2024, 1, 1), date(2024, 12, 31)),
     )
 
 
@@ -115,6 +117,7 @@ async def test_res_sim_fetcher_passes_none_scope_when_no_wks_parameters(mock_sea
         analysis_type="rockphysicsmodel",
         target_schema_version="1.0.0",
         scope=None,
+        query_date_range=(date(2024, 1, 1), date(2024, 12, 31)),
     )
 
 
@@ -167,6 +170,7 @@ async def test_saturation_function_set_fetcher_passes_resolved_scope_into_supple
         analysis_type="saturationfunctionset",
         target_schema_version="1.0.0",
         scope={"field_id": "partition:master-data--Field:f-1:"},
+        query_date_range=(date(2024, 1, 1), date(2024, 12, 31)),
     )
 
 
@@ -189,4 +193,5 @@ async def test_saturation_function_set_fetcher_passes_none_scope_when_no_wks_par
         analysis_type="saturationfunctionset",
         target_schema_version="1.0.0",
         scope=None,
+        query_date_range=(date(2024, 1, 1), date(2024, 12, 31)),
     )

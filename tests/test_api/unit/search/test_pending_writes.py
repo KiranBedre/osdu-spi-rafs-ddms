@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import json
+from datetime import date, timedelta
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -425,6 +426,82 @@ async def test_supplement_includes_pending_entry_inside_requested_scope():
             analysis_type=ANALYSIS_TYPE,
             target_schema_version=SCHEMA_VERSION,
             scope={"wellbore_id": _WELLBORE_A},
+        )
+    assert len(result) == 1
+
+
+@pytest.mark.asyncio
+async def test_supplement_excludes_pending_entry_when_date_range_excludes_today():
+    """A pending write has no indexed date yet, so it must not leak into a query
+    whose indexed-date range cannot include right now (e.g. entirely in the future),
+    even when it matches on scope/analysis type/version."""
+    redis = _mock_redis()
+    redis.hgetall = AsyncMock(return_value={_DATASET_ID.encode(): _entry().encode()})
+    tomorrow = date.today() + timedelta(days=1)
+    with _patch_redis(redis):
+        result = await supplement_with_pending_writes(
+            result_ids=[],
+            data_partition_id=PARTITION,
+            analysis_family=ANALYSIS_FAMILY,
+            analysis_type=ANALYSIS_TYPE,
+            target_schema_version=SCHEMA_VERSION,
+            query_date_range=(tomorrow, tomorrow),
+        )
+    assert result == []
+    redis.hgetall.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_supplement_excludes_pending_entry_when_date_range_is_in_the_past():
+    redis = _mock_redis()
+    redis.hgetall = AsyncMock(return_value={_DATASET_ID.encode(): _entry().encode()})
+    yesterday = date.today() - timedelta(days=1)
+    with _patch_redis(redis):
+        result = await supplement_with_pending_writes(
+            result_ids=[],
+            data_partition_id=PARTITION,
+            analysis_family=ANALYSIS_FAMILY,
+            analysis_type=ANALYSIS_TYPE,
+            target_schema_version=SCHEMA_VERSION,
+            query_date_range=(yesterday, yesterday),
+        )
+    assert result == []
+    redis.hgetall.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_supplement_includes_pending_entry_when_date_range_covers_today():
+    redis = _mock_redis()
+    redis.hgetall = AsyncMock(return_value={_DATASET_ID.encode(): _entry().encode()})
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+    tomorrow = today + timedelta(days=1)
+    with _patch_redis(redis):
+        result = await supplement_with_pending_writes(
+            result_ids=[],
+            data_partition_id=PARTITION,
+            analysis_family=ANALYSIS_FAMILY,
+            analysis_type=ANALYSIS_TYPE,
+            target_schema_version=SCHEMA_VERSION,
+            query_date_range=(yesterday, tomorrow),
+        )
+    assert len(result) == 1
+
+
+@pytest.mark.asyncio
+async def test_supplement_includes_pending_entry_when_no_date_range_given():
+    """Passing no query_date_range (the default) preserves today's unfiltered-by-date
+    behavior, e.g. for callers that don't filter Search by indexed date at all."""
+    redis = _mock_redis()
+    redis.hgetall = AsyncMock(return_value={_DATASET_ID.encode(): _entry().encode()})
+    with _patch_redis(redis):
+        result = await supplement_with_pending_writes(
+            result_ids=[],
+            data_partition_id=PARTITION,
+            analysis_family=ANALYSIS_FAMILY,
+            analysis_type=ANALYSIS_TYPE,
+            target_schema_version=SCHEMA_VERSION,
+            query_date_range=None,
         )
     assert len(result) == 1
 
