@@ -26,6 +26,7 @@ from app.search.ddms_dataset_ids_fetcher import (
     build_indexed_date_clauses,
     build_result_ids,
 )
+from app.search.pending_writes import supplement_with_pending_writes
 from app.search.scope import (
     SCOPE_PROFILE_DEPTH_SHIFT,
     UnsupportedSearchScopeError,
@@ -49,11 +50,17 @@ class SearchServiceDepthShiftIdsFetcher(DDMSDatasetIdsFetcher):
     ) -> List[Tuple[str, str]]:
         """Performs a query to search service to build a list of tuples
         dataset_id, depth_shift_id."""
+        # scope is built once here and reused for both the strict query-clause
+        # build and the pending-write scope dict below — an invalid scope key
+        # still raises UnprocessableContentException before any pending-write
+        # call, rather than being silently accepted by a second, separately
+        # built (non-strict) scope path.
+        scope = SearchScope(**wks_parameters) if wks_parameters else None
         query = self._build_query(
             data_partition_id,
             query_date_range[0],
             query_date_range[1],
-            wks_parameters,
+            scope,
         )
 
         result_records = []
@@ -80,11 +87,19 @@ class SearchServiceDepthShiftIdsFetcher(DDMSDatasetIdsFetcher):
 
         logger.debug(f"DepthShift result records: {result_records}")
 
-        return build_result_ids(
+        result_ids = build_result_ids(
             result_records,
             target_schema_version,
             DEPTH_SHIFT_STR,
             content_type,
+        )
+        return await supplement_with_pending_writes(
+            result_ids=result_ids,
+            data_partition_id=data_partition_id,
+            analysis_family=DEPTH_SHIFT_STR,
+            analysis_type=content_type,
+            target_schema_version=target_schema_version,
+            scope=scope.to_query_dict() if scope else None,
         )
 
     def _build_query(
@@ -92,17 +107,17 @@ class SearchServiceDepthShiftIdsFetcher(DDMSDatasetIdsFetcher):
         data_partition_id: str,
         indexed_start_date: date,
         indexed_end_date: date,
-        wks_parameters: Optional[dict] = None,
+        scope: Optional[SearchScope] = None,
     ) -> str:
         """Build a query to be used within search service."""
         logger.debug(f"Unused params {data_partition_id}")
 
         query_parts = []
-        if wks_parameters:
+        if scope:
             try:
                 query_parts.extend(
                     build_search_scope_clauses(
-                        SearchScope(**wks_parameters),
+                        scope,
                         scope_profile=SCOPE_PROFILE_DEPTH_SHIFT,
                         strict=True,
                     ),
