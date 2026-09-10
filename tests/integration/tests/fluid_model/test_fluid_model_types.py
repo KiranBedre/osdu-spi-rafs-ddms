@@ -60,7 +60,11 @@ def test_fluid_model_types_response_contract(api):
 
     body = response.json()
     assert isinstance(body, dict)
-    assert set(body) == {"blackoilfluidmodel", "compositionalfluidmodel"}
+    assert set(body) == {
+        "blackoilfluidmodel",
+        "compositionalfluidmodel",
+        "thermalcompositionalfluidmodel",
+    }
 
     for fluid_model_type, versions in body.items():
         assert isinstance(fluid_model_type, str)
