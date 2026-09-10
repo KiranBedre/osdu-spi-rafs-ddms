@@ -33,12 +33,19 @@ def test_info_endpoint_returns_all_fields(api):
         assert info[field], f"Expected non-empty value for {field!r} in /info response"
 
 
-def test_info_endpoint_name_is_rafs(api):
-    """Verify /info returns the correct service name."""
+def test_info_endpoint_name_mentions_service(api):
+    """Verify /info returns the correct service name.
+
+    The configured app_name is "Rock and Fluid Sample DDMS" (app/core/settings/app.py),
+    not a literal "RAFS" acronym, so check for the words it's actually built from.
+    """
     info = api.app_info.get_info()
 
     # Assert
-    assert "rafs" in info["name"].lower()
+    name = info["name"].lower()
+    assert "rock" in name
+    assert "fluid" in name
+    assert "sample" in name
 
 
 def test_info_endpoint_commit_id_is_hex(api):
