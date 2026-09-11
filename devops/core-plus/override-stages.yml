@@ -97,6 +97,11 @@ cimpl-containerize-gitlab:
   variables:
     CIMPL_BUILD_CONTEXT: "."
     CIMPL_BUILD_PATH: "./Dockerfile"
+  rules:
+    - if: "$CIMPL == '1'"
+      when: on_success
+    - if: "$CIMPL_STACK == '1'"
+      when: on_success
   script:
     - !reference [.cimpl_get_version, script]
     - !reference [.cimpl_set_image_name, script]
@@ -131,6 +136,15 @@ cimpl-cronjob-containerize-gitlab:
     CIMPL_IMAGE_NAME: $CIMPL_IMAGE_CRONJOB_NAME
 
 cimpl-helm-charts-gitlab:
+  rules:
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: never
+    - if: "$CI_COMMIT_TAG"
+      when: never
+    - if: '$CIMPL == "1"'
+      when: on_success
+    - if: '$CIMPL_STACK == "1"'
+      when: on_success
   before_script:
     - helm registry login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     # set & substitute service images in helm chart
@@ -205,31 +219,13 @@ cimpl-deploy:
     - !reference [.get_cimpl_access_token, script]
   script:
     - |
-      echo "DEBUG"
-      echo "Verifying required reference data before pytest"
-      for RECORD_ID in \
-        "osdu:reference-data--DepthShiftType:CoreToWellLog" \
-        "osdu:reference-data--WellLogSamplingDomainType:SeismicOneWayTravelTime"
-      do
-        HTTP_CODE="$(curl --silent --show-error --insecure \
-          --output /tmp/reference-data-check.json \
-          --write-out "%{http_code}" \
-          --header "Authorization: Bearer ${ACCESS_TOKEN}" \
-          --header "data-partition-id: ${CIMPL_TENANT}" \
-          "${SERVICE_HOST_STORAGE}/records/${RECORD_ID}")"
-
-        echo "${RECORD_ID}: Storage HTTP ${HTTP_CODE}"
-        cat /tmp/reference-data-check.json
-
-        [ "$HTTP_CODE" = "200" ] || exit 1
-      done
-      echo "Reference data verification completed"
       # Envoy answers 503 "no healthy upstream" until the deployment has ready
       # pods, which otherwise fails the first minutes of tests. Any real HTTP
       # reply (401 included) proves the route is serving.
       HEALTH_URL="${CIMPL_RAFS_BASE_URL%/}/${URL_PREFIX#/}"
       HEALTH_URL="${HEALTH_URL%/}/healthz"
       echo "Waiting for ${HEALTH_URL} to serve"
+      SERVICE_READY=false
       for attempt in $(seq 1 30); do
         HTTP_CODE=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 "$HEALTH_URL") || HTTP_CODE=000
         case "$HTTP_CODE" in
@@ -239,18 +235,22 @@ cimpl-deploy:
             ;;
           *)
             echo "  service responded with ${HTTP_CODE}"
+            SERVICE_READY=true
             break
             ;;
         esac
       done
+
+      if [ "$SERVICE_READY" != "true" ]; then
+        echo "Service did not become available after 30 attempts"
+        exit 1
+      fi
     - |
       echo "Running integration tests against ${CIMPL_RAFS_BASE_URL}"
       mkdir -p tests/cimpl/allure-results
-      time pytest -vv -s \
-        --tb=long \
+      time pytest -v \
         --reruns 1 \
         --reruns-delay 3 \
-        --maxfail=1 \
         --junitxml=integration_tests_report.xml \
         --cov=app \
         --cov-report=xml:coverage.xml \
@@ -270,238 +270,6 @@ cimpl-deploy:
       - allure-report/
     when: always
     expire_in: 1 week
-
-# Seed the complete, deterministic set of reference-data records required by
-# RAFS integration fixtures directly through Storage.
-.rafs_cimpl_reference_bootstrap:
-  extends:
-    - .cimpl-variables
-  stage: integration
-  tags: ["osdu-medium"]
-
-  image:
-    name: node:alpine
-  needs:
-    - job: cimpl-deploy
-  before_script:
-    - apk add --no-cache curl jq
-  script:
-    - |
-      echo "Seeding RAFS integration reference data"
-      sleep 60
-      CATALOG="$CI_PROJECT_DIR/deployments/reference-data/rafs_integration_reference_data.json"
-      RENDERED_CATALOG="/tmp/rafs_integration_reference_data.json"
-      RECORD_IDS="/tmp/rafs-reference-data-ids.txt"
-      RESTORE_RESPONSE="/tmp/reference-data-restore-response.json"
-      VERIFY_RESPONSE="/tmp/reference-data-verify-response.json"
-
-      OIDC_CLIENT_ID="${TEST_OPENID_PROVIDER_CLIENT_ID:-${CIMPL_CLIENT_ID}}"
-      OIDC_CLIENT_SECRET="${TEST_OPENID_PROVIDER_CLIENT_SECRET:-${CIMPL_CLIENT_SECRET}}"
-
-      SEED_HOSTNAME="${CIMPL_SEED_HOSTNAME:-${CIMPL_TENANT}.${CIMPL_DOMAIN}}"
-      OIDC_BASE="${TEST_OPENID_PROVIDER_URL:-${CIMPL_SEED_OIDC_BASE:-https://keycloak.${CIMPL_DOMAIN}/realms/osdu}}"
-      OIDC_BASE="$(echo "$OIDC_BASE" | tr -d '[:space:]')"
-
-      TOKEN_FETCH_URL="${OIDC_BASE%/}/protocol/openid-connect/token"
-      STORAGE_URL="https://${SEED_HOSTNAME}/api/storage/v2"
-      LEGAL_URL="https://${SEED_HOSTNAME}/api/legal/v1"
-      BOOTSTRAP_LEGAL_TAG="${LEGAL_TAG:-osdu-demo-legaltag}"
-
-      ACCESS_TOKEN="$(curl --silent --show-error --insecure \
-        --request POST "$TOKEN_FETCH_URL" \
-        --header "Content-Type: application/x-www-form-urlencoded" \
-        --data-urlencode "grant_type=client_credentials" \
-        --data-urlencode "client_id=${OIDC_CLIENT_ID}" \
-        --data-urlencode "client_secret=${OIDC_CLIENT_SECRET}" \
-        --data-urlencode "scope=openid" |
-        jq -r '.access_token // empty')"
-
-      if [ -z "$ACCESS_TOKEN" ]; then
-        echo "Could not obtain an access token from ${TOKEN_FETCH_URL}"
-        exit 1
-      fi
-
-      echo "Ensuring legal tag ${BOOTSTRAP_LEGAL_TAG} exists"
-
-      jq -n \
-        --arg name "$BOOTSTRAP_LEGAL_TAG" \
-        '{
-          name: $name,
-          description: "Legal Tag added for RAFS DDMS integration tests",
-          properties: {
-            contractId: "123456",
-            countryOfOrigin: ["US", "CA"],
-            dataType: "Public Domain Data",
-            exportClassification: "EAR99",
-            originator: "RAFS DDMS CI",
-            personalData: "No Personal Data",
-            securityClassification: "Private",
-            expirationDate: "2035-12-25"
-          }
-        }' > /tmp/rafs-legal-tag.json
-
-      LEGAL_HTTP_CODE="$(curl --silent --show-error --insecure \
-        --output "$CI_PROJECT_DIR/legal-tag-response.json" \
-        --write-out "%{http_code}" \
-        --request POST "${LEGAL_URL}/legaltags" \
-        --header "Authorization: Bearer ${ACCESS_TOKEN}" \
-        --header "data-partition-id: ${CIMPL_TENANT}" \
-        --header "Content-Type: application/json" \
-        --data-binary @/tmp/rafs-legal-tag.json)"
-
-      if [ "$LEGAL_HTTP_CODE" != "200" ] &&
-         [ "$LEGAL_HTTP_CODE" != "201" ] &&
-         [ "$LEGAL_HTTP_CODE" != "409" ]; then
-        echo "Legal-tag creation failed with HTTP ${LEGAL_HTTP_CODE}"
-        cat "$CI_PROJECT_DIR/legal-tag-response.json"
-        exit 1
-      fi
-
-      jq \
-        --arg namespace "$CIMPL_TENANT" \
-        --arg owners "data.default.owners@${CIMPL_TENANT}.group" \
-        --arg viewers "data.default.viewers@${CIMPL_TENANT}.group" \
-        --arg legalTag "$BOOTSTRAP_LEGAL_TAG" \
-        --arg country "US" \
-        '
-        def substitute($source; $replacement):
-          split($source) | join($replacement);
-
-        walk(
-          if type == "string" then
-            substitute("{{NAMESPACE}}"; $namespace)
-            | substitute("{{data-partition-id}}"; $namespace)
-            | substitute("{{DATA_OWNERS_GROUP}}"; $owners)
-            | substitute("{{DATA_VIEWERS_GROUP}}"; $viewers)
-            | substitute("{{LEGAL_TAG}}"; $legalTag)
-            | substitute("{{ISO_3166_ALPHA_2_CODE}}"; $country)
-            | substitute("{{rafsddms-schema-authority}}"; "osdu")
-          else
-            .
-          end
-        )
-        ' "$CATALOG" > "$RENDERED_CATALOG"
-
-      jq -e '
-        type == "array"
-        and length > 0
-        and all(.[];
-          type == "object"
-          and (.id | type == "string")
-          and (.id | contains(":reference-data--"))
-          and (.kind | type == "string")
-          and (.kind | startswith("osdu:"))
-        )
-        and (
-          (map(.id) | length)
-          ==
-          (map(.id) | unique | length)
-        )
-      ' "$RENDERED_CATALOG" >/dev/null || {
-        echo "Rendered reference-data catalog is invalid, empty, or contains duplicate IDs"
-        exit 1
-      }
-
-      jq -e '
-        [.. | strings | select(test("\\{\\{[^}]+\\}\\}"))]
-        | length == 0
-      ' "$RENDERED_CATALOG" >/dev/null || {
-        echo "Rendered catalog contains unresolved placeholders"
-        exit 1
-      }
-
-      REFERENCE_DATA_COUNT="$(jq 'length' "$RENDERED_CATALOG")"
-
-      echo "Uploading ${REFERENCE_DATA_COUNT} reference-data records to ${STORAGE_URL}/records"
-
-      STORAGE_HTTP_CODE="$(curl --silent --show-error --insecure \
-        --output "$CI_PROJECT_DIR/reference-data-seed-response.json" \
-        --write-out "%{http_code}" \
-        --request PUT "${STORAGE_URL}/records" \
-        --header "Authorization: Bearer ${ACCESS_TOKEN}" \
-        --header "data-partition-id: ${CIMPL_TENANT}" \
-        --header "Content-Type: application/json" \
-        --data-binary @"$RENDERED_CATALOG")"
-
-      if [ "$STORAGE_HTTP_CODE" != "200" ] &&
-         [ "$STORAGE_HTTP_CODE" != "201" ]; then
-        echo "Reference-data seeding failed with HTTP ${STORAGE_HTTP_CODE}"
-        cat "$CI_PROJECT_DIR/reference-data-seed-response.json"
-        exit 1
-      fi
-
-      echo "Ensuring seeded reference-data records are active"
-
-      jq -r '.[].id' "$RENDERED_CATALOG" > "$RECORD_IDS"
-
-      while IFS= read -r RECORD_ID; do
-        ENCODED_RECORD_ID="$(jq -rn \
-          --arg record_id "$RECORD_ID" \
-          '$record_id | @uri')"
-
-        RESTORE_HTTP_CODE="$(curl --silent --show-error --insecure \
-          --output "$RESTORE_RESPONSE" \
-          --write-out "%{http_code}" \
-          --request PATCH "${STORAGE_URL}/records/${ENCODED_RECORD_ID}" \
-          --header "Authorization: Bearer ${ACCESS_TOKEN}" \
-          --header "data-partition-id: ${CIMPL_TENANT}" \
-          --header "Content-Type: application/merge-patch+json" \
-          --data-binary '{"deleted":false}')"
-
-        RESTORE_ACCEPTED=false
-
-        if [ "$RESTORE_HTTP_CODE" = "200" ] ||
-           [ "$RESTORE_HTTP_CODE" = "204" ]; then
-          RESTORE_ACCEPTED=true
-        elif [ "$RESTORE_HTTP_CODE" = "400" ] &&
-             jq -e '.message == "Record State already updated"' \
-               "$RESTORE_RESPONSE" >/dev/null; then
-          RESTORE_ACCEPTED=true
-        fi
-
-        if [ "$RESTORE_ACCEPTED" != "true" ]; then
-          echo "Failed to reactivate ${RECORD_ID}: HTTP ${RESTORE_HTTP_CODE}"
-          cat "$RESTORE_RESPONSE"
-          exit 1
-        fi
-
-        VERIFY_HTTP_CODE="$(curl --silent --show-error --insecure \
-          --output "$VERIFY_RESPONSE" \
-          --write-out "%{http_code}" \
-          --request GET "${STORAGE_URL}/records/${ENCODED_RECORD_ID}" \
-          --header "Authorization: Bearer ${ACCESS_TOKEN}" \
-          --header "data-partition-id: ${CIMPL_TENANT}")"
-
-        if [ "$VERIFY_HTTP_CODE" != "200" ]; then
-          echo "Record remains inactive after PATCH: ${RECORD_ID}"
-          echo "PATCH response:"
-          cat "$RESTORE_RESPONSE"
-          echo
-          echo "GET response:"
-          cat "$VERIFY_RESPONSE"
-          echo
-          exit 1
-        fi
-      done < "$RECORD_IDS"
-
-      echo "Successfully seeded, activated, and verified ${REFERENCE_DATA_COUNT} RAFS integration reference-data records"
-
-  artifacts:
-    when: always
-    paths:
-      - legal-tag-response.json
-      - reference-data-seed-response.json
-    expire_in: 1 week
-
-cimpl-seed-reference-data:
-  extends:
-    - .rafs_cimpl_reference_bootstrap
-  rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^trusted-/ && $CIMPL == "1"
-      when: on_success
-    - if: $CI_COMMIT_REF_NAME == "main"
-      when: on_success
-    - when: never
 
 cimpl-test-python:
   extends:
@@ -528,10 +296,77 @@ cimpl-test-python:
   needs:
     - job: build_rafs_tests
     - job: cimpl-deploy
-    - job: cimpl-seed-reference-data
+
+# Ensure the CIMPL-STACK deployment waits for both RAFS service images.
+cimpl-dev-deploy:
+  needs:
+    - job: cimpl-containerize-gitlab
+    - job: cimpl-cronjob-containerize-gitlab
+    - job: cimpl-helm-charts-gitlab
+    - job: cimpl-helm-charts-release-gitlab
       optional: true
 
+# Override the central bare-metal Python job with the RAFS pytest suite.
+cimpl-dev-test-python:
+  extends:
+    - .cimpl-dev-variables
+    - .rafs_cimpl_pytest_integration
+  image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
+  stage: integration
+  tags: ["osdu-medium"]
+  variables:
+    CIMPL_RAFS_BASE_URL: "https://${CIMPL_DOMAIN}"
+    SERVICE_HOST_STORAGE: "${CIMPL_RAFS_BASE_URL}/api/storage/v2"
+    SERVICE_HOST_LEGAL: "${CIMPL_RAFS_BASE_URL}/api/legal/v1"
+    SERVICE_HOST_SEARCH: "${CIMPL_RAFS_BASE_URL}/api/search/v2"
+  before_script:
+    - !reference [.rafs_cimpl_pytest_integration, before_script]
+  script:
+    - !reference [.rafs_cimpl_pytest_integration, script]
+  after_script:
+    - !reference [.rafs_cimpl_pytest_integration, after_script]
+  artifacts:
+    paths:
+      - tests/cimpl/allure-results/
+      - allure-report/
+    reports:
+      junit: integration_tests_report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    when: always
+    expire_in: 1 week
+  needs:
+    - job: build_rafs_tests
+    - job: cimpl-dev-deploy
+  rules:
+    - if: '$DISABLE_INTEGRATION_TEST == "true"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /^release/'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CIMPL_STACK == "1" && $CIMPL_INT_TEST_TYPE == "python" && $DEV == "1"'
+      when: on_success
+    - when: never
+
+# RAFS does not validate against the legacy CIMPL DEV2 environment.
+# Override the centrally imported executable jobs so they are not created.
+cimpl-dev2-test:
+  rules:
+    - when: never
+
+cimpl-dev2-acceptance-test:
+  rules:
+    - when: never
+
+cimpl-dev2-acceptance-test-python:
+  rules:
+    - when: never
+
 cimpl-dev2-deploy:
+  rules:
+    - when: never
   needs:
     - "cimpl-containerize-gitlab"
     - "cimpl-cronjob-containerize-gitlab"
@@ -567,6 +402,8 @@ cimpl-dev2-deploy:
     - !reference [.cimpl_verify_deploy, script]
 
 cimpl-dev2-test-python:
+  rules:
+    - when: never
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
   variables:
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
@@ -627,24 +464,6 @@ cimpl-helm-charts-release-gitlab:
 #   API: https://$CIMPL_DOMAIN (no tenant subdomain)
 #   Keycloak: https://keycloak-$CIMPL_DOMAIN (hyphen), via TEST_OPENID_PROVIDER_URL
 
-cimpl-prod-seed-reference-data:
-  extends:
-    - .rafs_cimpl_reference_bootstrap
-    - .cimpl-prod-variables
-  needs:
-    - job: cimpl-prod-deploy
-  variables:
-    CIMPL_RAFS_BASE_URL: "https://${CIMPL_DOMAIN}"
-    CIMPL_SEED_HOSTNAME: "${CIMPL_DOMAIN}"
-    CIMPL_SEED_OIDC_BASE: "https://keycloak-${CIMPL_DOMAIN}/realms/osdu"
-
-  rules:
-    - if: '$CIMPL == "1" && $CI_COMMIT_BRANCH =~ /^release/'
-      when: on_success
-    - if: '$CIMPL == "1" && $CI_COMMIT_TAG'
-      when: on_success
-    - when: never
-
 cimpl-prod-test-python:
   extends:
     - .rafs_cimpl_pytest_integration
@@ -676,9 +495,14 @@ cimpl-prod-test-python:
   needs:
     - job: build_rafs_tests
     - job: cimpl-prod-deploy
-    - job: cimpl-prod-seed-reference-data
-      optional: true
-  # Wait for reference-data seeding when the job is present in this pipeline.
+  rules:
+    - if: '$DISABLE_INTEGRATION_TEST == "true"'
+      when: never
+    - if: '$CIMPL == "1" && $CIMPL_INT_TEST_TYPE == "python" && $CI_COMMIT_BRANCH =~ /^release/'
+      when: on_success
+    - if: '$CIMPL == "1" && $CIMPL_INT_TEST_TYPE == "python" && $CI_COMMIT_TAG'
+      when: on_success
+    - when: never
 
 .rafs_cimpl_newman_prod_acceptance:
   stage: acceptance
@@ -704,6 +528,7 @@ cimpl-prod-test-python:
           --env-var "CLIENT_ID=${CIMPL_CLIENT_ID}" \
           --env-var "CLIENT_SECRET=${CIMPL_CLIENT_SECRET}" \
           --env-var "HOSTNAME=${CIMPL_DOMAIN}" \
+          --env-var "Token_Fetch_URL=${CIMPL_TOKEN_URI}" \
           --reporters cli,allure \
           --insecure; echo $? > /tmp/newman_exit; } 2>&1 | tee "$CI_PROJECT_DIR/newman.log"
       NEWMAN_EXIT_CODE=$(cat /tmp/newman_exit)
@@ -736,4 +561,13 @@ cimpl-prod-acceptance-test-python:
       - newman.log
     expire_in: 1 week
   needs:
-    - job: cimpl-prod-deploy
+    - job: cimpl-prod-test-python
+  allow_failure: true
+  rules:
+    - if: '$DISABLE_INTEGRATION_TEST == "true"'
+      when: never
+    - if: '$CIMPL == "1" && $CIMPL_INT_TEST_TYPE == "python" && $CI_COMMIT_BRANCH =~ /^release/'
+      when: on_success
+    - if: '$CIMPL == "1" && $CIMPL_INT_TEST_TYPE == "python" && $CI_COMMIT_TAG'
+      when: on_success
+    - when: never

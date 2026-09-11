@@ -106,3 +106,17 @@ def spec_char_record_id(data_partition_id):
     base_id = f"{data_partition_id}:work-product-component--SaturationFunctionSet:7%2F12-A-7%20D_"
     unique_suffix = str(uuid.uuid4().int)[:8]
     return f"{base_id}{unique_suffix}"
+
+
+@pytest.fixture
+def pagination_case(create_isolated_pagination_case):
+    """Create two SFS records isolated by a unique field."""
+    return create_isolated_pagination_case(
+        api_path=DataTypes.SATURATION_FUNCTION_SET,
+        record_file=DataFiles.SATURATION_FUNCTION_SET,
+        data_file=DataFiles.SATURATION_FUNCTION_SET_DATA_V1,
+        id_template=DataTemplates.ID_SATURATION_FUNCTION_SET.format(
+            partition=CONFIG["DATA_PARTITION"],
+        ),
+        scope_kind="Field",
+    )
