@@ -12,20 +12,31 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from typing import Optional
+
 from fastapi import Depends
 from pydantic import BaseSettings
 
 from app.api.dependencies.auth import require_authorized_user
 from app.api.dependencies.request import (
     get_correlation_id,
+    get_x_collaboration_header,
     require_data_partition_id,
 )
 from app.core.config import get_app_settings, get_provider_config
 from app.core.settings.app import AppSettings
 from app.models.schemas.user import User
 from app.providers.dependencies.blob_storage import get_blob_storage
-from app.resources.common_headers import CORRELATION_ID
+from app.resources.common_headers import CORRELATION_ID, X_COLLABORATION
 from app.services import dataset, entitlements, schema, search, storage
+
+
+def _build_extra_headers(correlation_id: str, x_collaboration: Optional[str]) -> dict:
+    extra_headers = {CORRELATION_ID: correlation_id}
+    if x_collaboration:
+        extra_headers[X_COLLABORATION] = x_collaboration
+
+    return extra_headers
 
 
 def get_async_dataset_service(
@@ -33,12 +44,13 @@ def get_async_dataset_service(
     settings: AppSettings = Depends(get_app_settings),
     user: User = Depends(require_authorized_user),
     correlation_id: str = Depends(get_correlation_id),
+    x_collaboration: Optional[str] = Depends(get_x_collaboration_header),
 ):
     return dataset.DatasetService(
         data_partition_id=data_partition_id,
         settings=settings,
         user=user,
-        extra_headers={CORRELATION_ID: correlation_id},
+        extra_headers=_build_extra_headers(correlation_id, x_collaboration),
     )
 
 
@@ -47,12 +59,13 @@ def get_async_storage_service(
     settings: AppSettings = Depends(get_app_settings),
     user: User = Depends(require_authorized_user),
     correlation_id: str = Depends(get_correlation_id),
+    x_collaboration: Optional[str] = Depends(get_x_collaboration_header),
 ):
     return storage.StorageService(
         data_partition_id=data_partition_id,
         settings=settings,
         user=user,
-        extra_headers={CORRELATION_ID: correlation_id},
+        extra_headers=_build_extra_headers(correlation_id, x_collaboration),
     )
 
 
@@ -61,12 +74,13 @@ def get_async_search_service(
     settings: AppSettings = Depends(get_app_settings),
     user: User = Depends(require_authorized_user),
     correlation_id: str = Depends(get_correlation_id),
+    x_collaboration: Optional[str] = Depends(get_x_collaboration_header),
 ):
     return search.SearchService(
         data_partition_id=data_partition_id,
         settings=settings,
         user=user,
-        extra_headers={CORRELATION_ID: correlation_id},
+        extra_headers=_build_extra_headers(correlation_id, x_collaboration),
     )
 
 
@@ -75,12 +89,13 @@ def get_async_schema_service(
     settings: AppSettings = Depends(get_app_settings),
     user: User = Depends(require_authorized_user),
     correlation_id: str = Depends(get_correlation_id),
+    x_collaboration: Optional[str] = Depends(get_x_collaboration_header),
 ):
     return schema.SchemaService(
         data_partition_id=data_partition_id,
         settings=settings,
         user=user,
-        extra_headers={CORRELATION_ID: correlation_id},
+        extra_headers=_build_extra_headers(correlation_id, x_collaboration),
     )
 
 
@@ -102,10 +117,11 @@ def get_async_entitlements_service(
     settings: AppSettings = Depends(get_app_settings),
     user: User = Depends(require_authorized_user),
     correlation_id: str = Depends(get_correlation_id),
+    x_collaboration: Optional[str] = Depends(get_x_collaboration_header),
 ):
     return entitlements.EntitlementsService(
         data_partition_id=data_partition_id,
         settings=settings,
         user=user,
-        extra_headers={CORRELATION_ID: correlation_id},
+        extra_headers=_build_extra_headers(correlation_id, x_collaboration),
     )

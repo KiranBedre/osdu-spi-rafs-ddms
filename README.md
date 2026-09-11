@@ -563,6 +563,21 @@ This setup provides flexibility for development and testing environments where C
 
 * [Blob Storage Docs](./docs/providers/az/readme.md)
 
+
+## Namespace Isolation (`x-collaboration`)
+
+RAFS DDMS supports data namespace isolation through the OSDU `x-collaboration` header.  
+When the header is provided, it is validated and propagated to downstream OSDU services (Storage, Search, Dataset, Schema, Entitlements), which handle the actual data isolation.
+The `x-collaboration` header is optional. If it is not provided, RAFS DDMS behaves as before.
+
+### Supported header formats
+
+```text
+- x-collaboration: <uuid>
+
+- x-collaboration: id=<uuid>,application=<application_name>
+```
+
 ## License
 
 Licensed under Apache License Version 2.0; details can be found in [LICENSE](./LICENSE).
