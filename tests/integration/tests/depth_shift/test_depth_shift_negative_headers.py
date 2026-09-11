@@ -13,8 +13,8 @@
 #  limitations under the License.
 
 import copy
-import pytest
 
+import pytest
 from starlette import status
 
 from app.resources.common_headers import ACCEPT, AUTHORIZATION, CONTENT_TYPE, DATA_PARTITION_ID
@@ -124,9 +124,17 @@ def test_depth_shift_negative_invalid_access_token_authorization_header(
 
     # Assert
     assert response.status_code == 401
-    body = response.json()
-    assert "Access denied" in body["reason"]
-    assert "The user is not authorized to perform this action" in body["message"]
+
+    content_type = response.headers.get("content-type", "").lower()
+
+    if "json" in content_type:
+        body = response.json()
+        assert "Access denied" in body["reason"]
+        assert "The user is not authorized to perform this action" in body["message"]
+    else:
+        www_authenticate = response.headers.get("www-authenticate")
+        assert www_authenticate is not None
+        assert 'error="invalid_token"' in www_authenticate
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.ALL_ENDPOINTS_ARGS)

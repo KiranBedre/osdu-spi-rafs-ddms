@@ -19713,7 +19713,7 @@
                       }
                     ],
                     "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{v2_slim_tube_record_id}}/versions/{{v2_slim_tube_record_version}}",
+                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{v2_extraction_record_id}}/versions/{{v2_extraction_record_version}}",
                       "protocol": "https",
                       "host": [
                         "{{RAFS_DDMS_HOST}}"
@@ -19721,9 +19721,9 @@
                       "path": [
                         "v2",
                         "samplesanalysis",
-                        "{{v2_slim_tube_record_id}}",
+                        "{{v2_extraction_record_id}}",
                         "versions",
-                        "{{v2_slim_tube_record_version}}"
+                        "{{v2_extraction_record_version}}"
                       ]
                     }
                   },
@@ -27605,11 +27605,11 @@
                       "",
                       "pm.test(\"ReservoirSimulationRockPhysicsID not visible under search results'\", function () {",
                       "    var data = pm.response.json().result.data;",
-                      "    let saturation_record_id = pm.variables.get(\"saturation_record_id\")",
-                      "    let saturation_set_id = saturation_record_id + \":\";",
+                      "    let rsrp_record_id = pm.variables.get(\"rsrp_record_id\")",
+                      "    let rsrp_set_id = rsrp_record_id + \":\";",
                       "",
                       "    for (let i = 0; i < data.length; i++) {",
-                      "        pm.expect(data[i][0]).not.eql(saturation_set_id, `Element at index ${i} has forbidden id`);",
+                      "        pm.expect(data[i][0]).not.eql(rsrp_set_id, `Element at index ${i} has forbidden id`);",
                       "    }",
                       "    ",
                       "});",
@@ -34662,7 +34662,7 @@
                   "",
                   "cleanup.forEach(function(record_id) {",
                   "    pm.sendRequest({",
-                  "        url: 'https://' + pm.variables.replaceIn(pm.environment.get('STORAGE_HOST')) + '/records/' + record_id,",
+                  "        url: 'https://' + pm.variables.replaceIn(pm.environment.get('STORAGE_HOST')) + '/records/' + encodeURIComponent(record_id),",
                   "        method: 'DELETE',",
                   "        header: {",
                   "            'Authorization': 'Bearer ' + pm.environment.get('access_token'),",

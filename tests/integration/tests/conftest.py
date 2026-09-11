@@ -25,6 +25,7 @@ from tests.integration.config import (
     DataTemplates,
     DataTypes,
     SamplesAnalysisTypes,
+    SchemaVersions,
 )
 from tests.integration.helpers.parallel_execution import begin_cross_worker_session, end_cross_worker_session
 
@@ -106,7 +107,10 @@ def create_referenced_records(api, helper, tests_data, tmp_path_factory, create_
         name="create_referenced_records",
         state=state,
         teardown=lambda s: helper.purge_reference_records(
-            api, state, storage_dependencies, record_to_create,
+            api,
+            state,
+            storage_dependencies,
+            record_to_create,
         ),
     )
 
@@ -182,3 +186,92 @@ def delete_record(api):
 def data_partition_id():
     """Return the data partition ID from the session configuration."""
     return CONFIG["DATA_PARTITION"]
+
+
+@pytest.fixture
+def create_isolated_pagination_case(api, delete_record, helper, request, tests_data):
+    """Create two records and datasets isolated by a unique search scope."""
+
+    def _create_case(
+        api_path: DataTypes,
+        record_file: str,
+        data_file: str,
+        id_template: str,
+        schema_version: str = SchemaVersions.DEFAULT,
+        analysis_type: Optional[SamplesAnalysisTypes] = None,
+        scope_kind: str = "Wellbore",
+    ) -> dict:
+        resource = getattr(api, api_path)
+        scope_param = "wellbore_id" if scope_kind == "Wellbore" else "field_id"
+        worker_id = getattr(request.config, "workerinput", {}).get(
+            "workerid",
+            "master",
+        )
+        invocation_id = f"{worker_id}_{helper.generate_random_record_id()}"
+        scope_id = f"{CONFIG['DATA_PARTITION']}:master-data--{scope_kind}:" f"{invocation_id}"
+        scope_value = f"{scope_id}:"
+
+        scope_record = copy.deepcopy(tests_data(DataFiles.OSDU_GENERIC_RECORD))
+        scope_record["id"] = scope_id
+        scope_record["kind"] = f"{CONFIG['DATA_PARTITION']}:wks:master-data--{scope_kind}:1.0.0"
+        api.storage.create_or_update_records([scope_record])
+        delete_record(scope_id)
+
+        resource_kwargs = {"schema_version": schema_version}
+        if analysis_type:
+            resource_kwargs["analysis_type"] = analysis_type
+
+        record_ids = []
+        id_column = None
+        for _ in range(2):
+            record = copy.deepcopy(tests_data(record_file, analysis_type))
+            record["id"] = f"{id_template}{invocation_id}_{helper.generate_random_record_id()}"
+
+            if scope_kind == "Wellbore":
+                record["data"]["WellboreID"] = scope_value
+            else:
+                field_context = next(context for context in record["data"]["GeoContexts"] if "FieldID" in context)
+                field_context["FieldID"] = scope_value
+
+            resource.post_record([record])
+            delete_record(record["id"])
+            record_ids.append(record["id"])
+
+            data_payload = copy.deepcopy(tests_data(data_file))
+            id_column = data_payload["columns"][0]  # convention: first column is always the record ID
+            data_payload["data"][0][0] = f"{record['id']}:"
+            post_response = resource.post_data(
+                record_id=record["id"],
+                body=data_payload,
+                **resource_kwargs,
+            )
+            dataset_id = helper.get_content_id_from_ddms_urn(
+                post_response["ddms_urn"],
+            )
+            delete_record(dataset_id)
+
+        scope_params = {scope_param: scope_value}
+        expected_record_ids = set(record_ids)
+        helper.wait_for_exact_search_records(
+            lambda: resource.search_records(
+                params={**scope_params, "page_limit": 2},
+                **resource_kwargs,
+            ),
+            expected_record_ids,
+        )
+        helper.wait_for_exact_search_data(
+            lambda: resource.search_data(
+                params={**scope_params, "page_limit": 2},
+                **resource_kwargs,
+            ),
+            expected_record_ids,
+            id_column=id_column,
+        )
+
+        return {
+            "params": scope_params,
+            "record_ids": expected_record_ids,
+            "id_column": id_column,
+        }
+
+    return _create_case

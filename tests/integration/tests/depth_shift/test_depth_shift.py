@@ -229,13 +229,12 @@ def test_depth_shift_search_record_filtered_out_by_end_date(api, record_id, data
     assert record_id not in response["result"]
 
 
-def test_depth_shift_search_record_filtered_out_by_page_limit(api, record_id, dataset_id, search_available):
+def test_depth_shift_search_record_filtered_out_by_page_limit(api, helper, pagination_case):
     """Verify records are filtered out by the specified page limit filter in the search results"""
-    params = {"page_limit": 2}
-    response = api.depth_shift.search_records(params=params)
-
-    # Assert
-    assert len(response["result"]) <= 2
+    helper.verify_record_pagination(
+        lambda params: api.depth_shift.search_records(params=params),
+        pagination_case,
+    )
 
 
 def test_depth_shift_search_data_filtered_by_columns(api, helper, tests_data, record_id, dataset_id, search_available):
@@ -332,16 +331,12 @@ def test_depth_shift_search_data_filtered_out_by_end_date(api, tests_data, recor
     assert not any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-def test_depth_shift_search_data_filtered_out_by_page_limit(api, tests_data, record_id, dataset_id, search_available):
+def test_depth_shift_search_data_filtered_out_by_page_limit(api, helper, pagination_case):
     """Verify bulk data is filtered out by the specified page limit filter in the search results"""
-    params = {"page_limit": 2}
-    response = api.depth_shift.search_data(params=params)
-
-    # Assert
-    baseline = copy.deepcopy(tests_data(DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA))
-
-    assert set(response["result"]["columns"]).issubset(baseline["columns"])
-    assert len({row[0] for row in response["result"]["data"]}) <= 2
+    helper.verify_data_pagination(
+        lambda params: api.depth_shift.search_data(params=params),
+        pagination_case,
+    )
 
 
 def test_depth_shift_add_data_records_format(api, helper, tests_data, record_id):

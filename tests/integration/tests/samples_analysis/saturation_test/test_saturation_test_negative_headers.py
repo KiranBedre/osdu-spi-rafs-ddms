@@ -41,11 +41,13 @@ def test_saturation_test_negative_missing_authorization_header(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "headers": {AUTHORIZATION: None},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "headers": {AUTHORIZATION: None},
+            "allowed_codes": [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_record":
         call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
@@ -79,11 +81,13 @@ def test_saturation_test_negative_invalid_authorization_header(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "headers": {AUTHORIZATION: "dummy"},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "headers": {AUTHORIZATION: "dummy"},
+            "allowed_codes": [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_record":
         call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
@@ -110,11 +114,13 @@ def test_saturation_test_negative_invalid_access_token_authorization_header(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "headers": {AUTHORIZATION: "Bearer dummy"},
-        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "headers": {AUTHORIZATION: "Bearer dummy"},
+            "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_record":
         call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
@@ -127,9 +133,17 @@ def test_saturation_test_negative_invalid_access_token_authorization_header(
 
     # Assert
     assert response.status_code == 401
-    body = response.json()
-    assert "Access denied" in body["reason"]
-    assert "The user is not authorized to perform this action" in body["message"]
+
+    content_type = response.headers.get("content-type", "").lower()
+
+    if "json" in content_type:
+        body = response.json()
+        assert "Access denied" in body["reason"]
+        assert "The user is not authorized to perform this action" in body["message"]
+    else:
+        www_authenticate = response.headers.get("www-authenticate")
+        assert www_authenticate is not None
+        assert 'error="invalid_token"' in www_authenticate
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.ALL_ENDPOINTS_ARGS)
@@ -148,11 +162,13 @@ def test_saturation_test_negative_missing_data_partition_id_header(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "headers": {DATA_PARTITION_ID: None},
-        "allowed_codes": [status.HTTP_400_BAD_REQUEST],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "headers": {DATA_PARTITION_ID: None},
+            "allowed_codes": [status.HTTP_400_BAD_REQUEST],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_record":
         call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
@@ -186,11 +202,13 @@ def test_saturation_test_negative_missing_content_type_header(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "headers": {CONTENT_TYPE: None},
-        "allowed_codes": [status.HTTP_400_BAD_REQUEST],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "headers": {CONTENT_TYPE: None},
+            "allowed_codes": [status.HTTP_400_BAD_REQUEST],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_record":
         call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
@@ -217,11 +235,13 @@ def test_saturation_test_negative_unsupported_content_type_header(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "headers": {CONTENT_TYPE: "application/xml"},
-        "allowed_codes": [status.HTTP_415_UNSUPPORTED_MEDIA_TYPE],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "headers": {CONTENT_TYPE: "application/xml"},
+            "allowed_codes": [status.HTTP_415_UNSUPPORTED_MEDIA_TYPE],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_record":
         call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
@@ -251,11 +271,13 @@ def test_saturation_test_negative_unsupported_application_accept_header(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "allowed_codes": [status.HTTP_406_NOT_ACCEPTABLE],
-        "raw": True,
-        "headers": {ACCEPT: "application/xml"},
-    })
+    call_kwargs.update(
+        {
+            "allowed_codes": [status.HTTP_406_NOT_ACCEPTABLE],
+            "raw": True,
+            "headers": {ACCEPT: "application/xml"},
+        }
+    )
 
     response = method(**call_kwargs)
 

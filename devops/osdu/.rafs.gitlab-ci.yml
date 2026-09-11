@@ -53,6 +53,8 @@ cimpl-check-openapi-spec:
   stage: acceptance
   image: alpine:3.23
   extends: .cimpl-variables
+  variables:
+    CIMPL_API_BASE_URL: "https://osdu.${CIMPL_DOMAIN}"
   needs: ["cimpl-deploy"]
   tags: ["osdu-small"]
   before_script:
@@ -81,7 +83,7 @@ cimpl-check-openapi-spec:
         URLS="/api/${CIMPL_SERVICE}/openapi.json"
         LIVE_SPEC_EXT=".json"
       else
-        CONFIG_URL="https://osdu.${CIMPL_DOMAIN}${CIMPL_OPENAPI_CONFIG_ROUTE}"
+        CONFIG_URL="${CIMPL_API_BASE_URL}${CIMPL_OPENAPI_CONFIG_ROUTE}"
         echo "Fetching swagger config from ${CONFIG_URL}"
         if wget -t 3 -T 30 --waitretry 30 -qO swagger-config.json "${CONFIG_URL}"; then
           URLS=$(jq -r '.url // .urls[].url' swagger-config.json | sed 's/api-docs/api-docs\.yaml/g')
@@ -130,9 +132,9 @@ cimpl-check-openapi-spec:
           CURRENT_SPEC_PATH="docs/api/community/${VERSION}/openapi${COMMITTED_SPEC_EXT}"
         fi
 
-        echo "Checking OpenAPI spec for version ${VERSION} (URL: https://osdu.${CIMPL_DOMAIN}${URL}, Local: ${CURRENT_SPEC_PATH})"
+        echo "Checking OpenAPI spec for version ${VERSION} (URL: ${CIMPL_API_BASE_URL}${URL}, Local: ${CURRENT_SPEC_PATH})"
 
-        FETCH_URL="https://osdu.${CIMPL_DOMAIN}${URL}"
+        FETCH_URL="${CIMPL_API_BASE_URL}${URL}"
         if ! wget -t 3 -T 30 --waitretry 30 -qO "${LIVE_SPEC}" "${FETCH_URL}"; then
           echo "Failed to fetch OpenAPI spec from ${FETCH_URL}"
           EXIT_CODE=1
@@ -229,3 +231,21 @@ cimpl-check-openapi-spec:
       when: never
     - if: '$CIMPL == "1"'
       when: on_success
+
+# Validate the deployed OpenAPI document on the CIMPL-STACK DEV environment.
+cimpl-dev-check-openapi-spec:
+  extends:
+    - cimpl-check-openapi-spec
+    - .cimpl-dev-variables
+  variables:
+    CIMPL_API_BASE_URL: "https://${CIMPL_DOMAIN}"
+  needs:
+    - job: cimpl-dev-deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^release/'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CIMPL_STACK == "1" && $DEV == "1"'
+      when: on_success
+    - when: never

@@ -106,3 +106,16 @@ def spec_char_record_id(data_partition_id):
     base_id = f"{data_partition_id}:work-product-component--DepthShift:7%2F12-A-7%20D_"
     unique_suffix = str(uuid.uuid4().int)[:8]
     return f"{base_id}{unique_suffix}"
+
+
+@pytest.fixture
+def pagination_case(create_isolated_pagination_case):
+    """Create two Depth Shift records isolated by a unique wellbore."""
+    return create_isolated_pagination_case(
+        api_path=DataTypes.DEPTH_SHIFT,
+        record_file=DataFiles.DEPTH_SHIFT,
+        data_file=DataFiles.CORE_TO_LOG_DEPTH_SHIFT_DATA,
+        id_template=DataTemplates.ID_DEPTH_SHIFT.format(
+            partition=CONFIG["DATA_PARTITION"],
+        ),
+    )

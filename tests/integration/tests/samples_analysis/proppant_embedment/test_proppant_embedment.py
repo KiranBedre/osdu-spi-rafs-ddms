@@ -295,19 +295,16 @@ def test_proppant_embedment_search_record_filtered_out_by_end_date(api, record_i
     assert record_id not in response["result"]
 
 
-def test_proppant_embedment_search_record_filtered_out_by_page_limit(
-    api, record_id, dataset_id_v1, search_available_v1
-):
+def test_proppant_embedment_search_record_filtered_out_by_page_limit(api, helper, pagination_case_v1):
     """Verify records are filtered out by the specified page limit filter in the search results"""
-    params = {"page_limit": 2}
-    response = api.sample_analysis.search_records(
-        analysis_type=SamplesAnalysisTypes.PROPPANT_EMBEDMENT,
-        schema_version=SchemaVersions.V1_0_0,
-        params=params,
+    helper.verify_record_pagination(
+        lambda params: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.PROPPANT_EMBEDMENT,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        pagination_case_v1,
     )
-
-    # Assert
-    assert len(response["result"]) == 2
 
 
 def test_proppant_embedment_search_data_filtered_by_columns(
@@ -444,19 +441,13 @@ def test_proppant_embedment_search_data_filtered_out_by_end_date(
     assert not any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-def test_proppant_embedment_search_data_filtered_out_by_page_limit(
-    api, tests_data, record_id, dataset_id_v1, search_available_v1
-):
+def test_proppant_embedment_search_data_filtered_out_by_page_limit(api, helper, pagination_case_v1):
     """Verify bulk data is filtered out by the specified page limit filter in the search results"""
-    params = {"page_limit": 2}
-    response = api.sample_analysis.search_data(
-        analysis_type=SamplesAnalysisTypes.PROPPANT_EMBEDMENT,
-        schema_version=SchemaVersions.V1_0_0,
-        params=params,
+    helper.verify_data_pagination(
+        lambda params: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.PROPPANT_EMBEDMENT,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        pagination_case_v1,
     )
-
-    # Assert
-    baseline = copy.deepcopy(tests_data(DataFiles.PROPPANT_EMBEDMENT_DATA_V1))
-
-    assert set(response["result"]["columns"]).issubset(baseline["columns"])
-    assert len({row[0] for row in response["result"]["data"]}) <= 2
