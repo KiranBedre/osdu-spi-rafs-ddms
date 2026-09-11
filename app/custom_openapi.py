@@ -310,6 +310,42 @@ def _ensure_operation_data_partition_header(operation: dict) -> None:
     )
 
 
+def _ensure_operation_x_collaboration_header(operation: dict) -> None:
+    """Ensure operation declares optional x-collaboration header parameter."""
+    operation_params = operation.setdefault("parameters", [])
+    has_x_collaboration_header = any(
+        openapi_parameter.get("in") == "header" and openapi_parameter.get("name") == "x-collaboration"
+        for openapi_parameter in operation_params
+        if isinstance(openapi_parameter, dict)
+    )
+    if has_x_collaboration_header:
+        return
+
+    operation_params.append(
+        {
+            "in": "header",
+            "name": "x-collaboration",
+            "required": False,
+            "description": (
+                "Optional namespace isolation header. " "Supports '<uuid>' or 'id=<uuid>,application=<app-name>'."
+            ),
+            "schema": {
+                "title": "x-collaboration",
+                "type": "string",
+                "description": "Optional namespace isolation header.",
+            },
+            "examples": {
+                "uuid": {
+                    "value": "123e4567-e89b-12d3-a456-426614174051",
+                },
+                "id_with_application": {
+                    "value": "id=123e4567-e89b-12d3-a456-426614174051,application=rafsddms",
+                },
+            },
+        },
+    )
+
+
 def _apply_swagger_auth_partition_reqs(openapi_schema: dict) -> None:
     """Ensure protected endpoints expose auth and partition header in Swagger UI."""
     _ensure_http_bearer_scheme(openapi_schema)
@@ -321,6 +357,7 @@ def _apply_swagger_auth_partition_reqs(openapi_schema: dict) -> None:
                 continue
             _ensure_operation_security(operation)
             _ensure_operation_data_partition_header(operation)
+            _ensure_operation_x_collaboration_header(operation)
 
 
 def _sort_and_annotate_parameters(openapi_schema: dict) -> None:  # noqa: WPS231

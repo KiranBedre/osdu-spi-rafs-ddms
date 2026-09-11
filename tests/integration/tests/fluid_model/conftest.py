@@ -100,3 +100,10 @@ def spec_char_record_id(data_partition_id):
     base_id = f"{data_partition_id}:work-product-component--FluidModel:7%2F12-A-7%20D_"
     unique_suffix = str(uuid.uuid4().int)[:8]
     return f"{base_id}{unique_suffix}"
+
+
+@pytest.fixture(scope="module")
+def x_collaboration_header():
+    """Generate a unique namespace."""
+    namespace = str(uuid.uuid4())
+    return f"id={namespace},application=rafddms"

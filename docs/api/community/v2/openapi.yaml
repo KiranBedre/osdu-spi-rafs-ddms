@@ -300,6 +300,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -475,6 +483,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -596,6 +612,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -662,6 +686,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -721,6 +753,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       requestBody:
         content:
           application/json:
@@ -817,6 +857,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -1002,6 +1050,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -1196,6 +1252,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -1238,6 +1302,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '204':
           description: Successful Response
@@ -1276,6 +1348,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -1340,6 +1420,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -1471,6 +1559,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -1513,6 +1609,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -1567,6 +1671,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -1607,6 +1719,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       requestBody:
         content:
           application/json:
@@ -1714,6 +1834,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -1771,6 +1899,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -1943,6 +2079,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -2123,6 +2267,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -2165,6 +2317,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '204':
           description: Successful Response
@@ -2203,6 +2363,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -2267,6 +2435,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -2398,6 +2574,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -2440,6 +2624,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -2494,6 +2686,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -2534,6 +2734,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       requestBody:
         content:
           application/json:
@@ -2588,6 +2796,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '204':
           description: Successful Response
@@ -2627,6 +2843,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -2673,6 +2897,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -2728,6 +2960,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -2768,6 +3008,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       requestBody:
         content:
           application/json:
@@ -2866,6 +3114,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3038,6 +3294,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3219,6 +3483,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3261,6 +3533,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '204':
           description: Successful Response
@@ -3300,6 +3580,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3365,6 +3653,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3496,6 +3792,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3539,6 +3843,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3594,6 +3906,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3634,6 +3954,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       requestBody:
         content:
           application/json:
@@ -3732,6 +4060,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '204':
           description: Successful Response
@@ -3771,6 +4107,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3830,6 +4174,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3873,6 +4225,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3927,6 +4287,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -3967,6 +4335,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       requestBody:
         content:
           application/json:
@@ -4013,6 +4389,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -4223,6 +4607,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -4463,6 +4855,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -4514,6 +4914,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -4562,6 +4970,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '204':
           description: Successful Response
@@ -4600,6 +5016,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -4671,6 +5095,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -4830,6 +5262,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -4872,6 +5312,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -4926,6 +5374,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -4966,6 +5422,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       requestBody:
         content:
           application/json:
@@ -5091,6 +5555,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -5263,6 +5735,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -5444,6 +5924,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -5486,6 +5974,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '204':
           description: Successful Response
@@ -5525,6 +6021,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -5590,6 +6094,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -5721,6 +6233,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -5764,6 +6284,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
@@ -5818,6 +6346,14 @@ paths:
           description: Specifies the proper data partition id
           title: data-partition-id
           type: string
+      - in: header
+        name: x-collaboration
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Collaboration
       responses:
         '200':
           content:
