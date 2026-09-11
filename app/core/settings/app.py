@@ -13,7 +13,7 @@
 #  limitations under the License.
 
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from loguru import logger
 
@@ -43,19 +43,19 @@ class AppSettings(BaseAppSettings):
         "uvicorn.error",
     )
 
-    service_host_search: str = None
+    service_host_search: Optional[str] = None
 
-    service_host_storage: str = None
+    service_host_storage: Optional[str] = None
 
-    service_host_entitlements: str = None
+    service_host_entitlements: Optional[str] = None
 
-    service_host_dataset: str = None
+    service_host_dataset: Optional[str] = None
 
-    service_host_schema: str = None
+    service_host_schema: Optional[str] = None
 
-    service_host_partition: str = None
+    service_host_partition: Optional[str] = None
 
-    user_token: str = None
+    user_token: Optional[str] = None
 
     cache_enable: bool = False
 
@@ -63,7 +63,7 @@ class AppSettings(BaseAppSettings):
 
     storage_query_limit: int = 100
 
-    service_readiness_urls: str = None
+    service_readiness_urls: Optional[str] = None
 
     redis_index_enable: bool = False
 
