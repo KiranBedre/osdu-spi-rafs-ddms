@@ -531,7 +531,97 @@ cimpl-test-python:
     - job: cimpl-seed-reference-data
       optional: true
 
+# Ensure CIMPL-STACK DEV waits for both RAFS service images.
+cimpl-dev-deploy:
+  needs:
+    - job: cimpl-containerize-gitlab
+    - job: cimpl-cronjob-containerize-gitlab
+    - job: cimpl-helm-charts-gitlab
+    - job: cimpl-helm-charts-release-gitlab
+      optional: true
+
+# Seed the reference and master-data records required by RAFS tests.
+cimpl-dev-seed-reference-data:
+  extends:
+    - .rafs_cimpl_reference_bootstrap
+    - .cimpl-dev-variables
+  variables:
+    CIMPL_SEED_HOSTNAME: "${CIMPL_DOMAIN}"
+  needs:
+    - job: cimpl-dev-deploy
+  rules:
+    - if: '$DISABLE_INTEGRATION_TEST == "true"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /^release/'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CIMPL_STACK == "1" && $DEV == "1"'
+      when: on_success
+    - when: never
+
+# Run the RAFS pytest suite against CIMPL-STACK DEV.
+cimpl-dev-test-python:
+  extends:
+    - .cimpl-dev-variables
+    - .rafs_cimpl_pytest_integration
+  image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
+  stage: integration
+  tags: ["osdu-medium"]
+  variables:
+    CIMPL_RAFS_BASE_URL: "https://${CIMPL_DOMAIN}"
+    SERVICE_HOST_STORAGE: "${CIMPL_RAFS_BASE_URL}/api/storage/v2"
+    SERVICE_HOST_LEGAL: "${CIMPL_RAFS_BASE_URL}/api/legal/v1"
+    SERVICE_HOST_SEARCH: "${CIMPL_RAFS_BASE_URL}/api/search/v2"
+  before_script:
+    - !reference [.rafs_cimpl_pytest_integration, before_script]
+  script:
+    - !reference [.rafs_cimpl_pytest_integration, script]
+  after_script:
+    - !reference [.rafs_cimpl_pytest_integration, after_script]
+  artifacts:
+    paths:
+      - tests/cimpl/allure-results/
+      - allure-report/
+    reports:
+      junit: integration_tests_report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    when: always
+    expire_in: 1 week
+  needs:
+    - job: build_rafs_tests
+    - job: cimpl-dev-deploy
+    - job: cimpl-dev-seed-reference-data
+  rules:
+    - if: '$DISABLE_INTEGRATION_TEST == "true"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /^release/'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CIMPL_STACK == "1" && $CIMPL_INT_TEST_TYPE == "python" && $DEV == "1"'
+      when: on_success
+    - when: never
+
+# RAFS does not validate against the legacy CIMPL DEV2 environment.
+# Override the centrally imported executable jobs so they are not created.
+cimpl-dev2-test:
+  rules:
+    - when: never
+
+cimpl-dev2-acceptance-test:
+  rules:
+    - when: never
+
+cimpl-dev2-acceptance-test-python:
+  rules:
+    - when: never
+
 cimpl-dev2-deploy:
+  rules:
+    - when: never
   needs:
     - "cimpl-containerize-gitlab"
     - "cimpl-cronjob-containerize-gitlab"
@@ -567,6 +657,8 @@ cimpl-dev2-deploy:
     - !reference [.cimpl_verify_deploy, script]
 
 cimpl-dev2-test-python:
+  rules:
+    - when: never
   image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
   variables:
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
@@ -639,9 +731,9 @@ cimpl-prod-seed-reference-data:
     CIMPL_SEED_OIDC_BASE: "https://keycloak-${CIMPL_DOMAIN}/realms/osdu"
 
   rules:
-    - if: '$CIMPL == "1" && $CI_COMMIT_BRANCH =~ /^release/'
+    - if: '$CIMPL_STACK == "1" && $CI_COMMIT_BRANCH =~ /^release/'
       when: on_success
-    - if: '$CIMPL == "1" && $CI_COMMIT_TAG'
+    - if: '$CIMPL_STACK == "1" && $CI_COMMIT_TAG'
       when: on_success
     - when: never
 
@@ -703,7 +795,8 @@ cimpl-prod-test-python:
           --env-var "TENANT_ID=${CIMPL_TENANT}" \
           --env-var "CLIENT_ID=${CIMPL_CLIENT_ID}" \
           --env-var "CLIENT_SECRET=${CIMPL_CLIENT_SECRET}" \
-          --env-var "HOSTNAME=${CIMPL_DOMAIN}" \
+          --env-var "HOSTNAME=${CIMPL_DNS_NAME}" \
+          --env-var "Token_Fetch_URL=${CIMPL_TOKEN_URI}" \
           --reporters cli,allure \
           --insecure; echo $? > /tmp/newman_exit; } 2>&1 | tee "$CI_PROJECT_DIR/newman.log"
       NEWMAN_EXIT_CODE=$(cat /tmp/newman_exit)
@@ -736,4 +829,12 @@ cimpl-prod-acceptance-test-python:
       - newman.log
     expire_in: 1 week
   needs:
-    - job: cimpl-prod-deploy
+    - job: cimpl-prod-test-python
+  rules:
+    - if: '$DISABLE_INTEGRATION_TEST == "true"'
+      when: never
+    - if: '$CIMPL_STACK == "1" && $CIMPL_INT_TEST_TYPE == "python" && $CI_COMMIT_BRANCH =~ /^release/'
+      when: on_success
+    - if: '$CIMPL_STACK == "1" && $CIMPL_INT_TEST_TYPE == "python" && $CI_COMMIT_TAG'
+      when: on_success
+    - when: never
