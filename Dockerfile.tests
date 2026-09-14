@@ -10,10 +10,9 @@ ENV PYTHONUNBUFFERED 1
 ENV PYTHONPATH=./
 
 COPY requirements-tests.in ./
-COPY requirements.in ./
-RUN pip install --upgrade pip==${pip_version} && pip install pip-tools && \
-      pip-compile requirements.in requirements-tests.in -o requirements-tests.txt -v && \
-      pip install -r requirements-tests.txt
+RUN pip install --no-cache-dir \
+      -c /app/requirements.txt \
+      -r requirements-tests.in
 
 COPY ./app /app
 COPY ./tests /tests
