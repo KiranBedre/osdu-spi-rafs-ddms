@@ -14,6 +14,7 @@
 import copy
 import json
 import time
+from pathlib import Path
 from typing import Optional
 
 import pytest
@@ -32,6 +33,55 @@ from tests.integration.helpers.parallel_execution import (
     begin_cross_worker_session,
     end_cross_worker_session,
 )
+from tests.integration.helpers.reference_data import (
+    SUPPLEMENTAL_REFERENCE_IDS,
+    discover_reference_ids,
+    ensure_legal_tag,
+    load_available_records,
+    seed_required_reference_data,
+)
+
+REFERENCE_DATA_CATALOG = Path(
+    "deployments/reference-data/rafs_integration_reference_data.json"
+)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def required_reference_data(api, tests_data, tmp_path_factory):
+    """Provision static reference-data prerequisites once; deliberately never delete them."""
+    partition = CONFIG["DATA_PARTITION"]
+    base_record = tests_data(DataFiles.OSDU_GENERIC_RECORD)
+    required_ids = discover_reference_ids(
+        Path("tests/integration/data"),
+        partition,
+        SUPPLEMENTAL_REFERENCE_IDS,
+    )
+    records, missing_definitions = load_available_records(
+        REFERENCE_DATA_CATALOG,
+        required_ids,
+        partition,
+        base_record["acl"]["owners"][0],
+        base_record["acl"]["viewers"][0],
+    )
+    shared_dir = tmp_path_factory.getbasetemp().parent
+    state = begin_cross_worker_session(
+        shared_dir,
+        name="required_reference_data",
+        setup=lambda: seed_required_reference_data(
+            api,
+            records,
+            before_seed=lambda: ensure_legal_tag(api),
+            missing_definitions=missing_definitions,
+        ),
+    )
+    logger.info("Reference-data preflight completed: {}", state)
+    yield state
+    end_cross_worker_session(
+        shared_dir,
+        name="required_reference_data",
+        state=state,
+        teardown=lambda _state: None,
+    )
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -58,7 +108,7 @@ def create_legal_tag(api, tmp_path_factory):
 
 @pytest.fixture(scope="session", autouse=True)
 def create_referenced_records(
-    api, helper, tests_data, tmp_path_factory, create_legal_tag
+    api, helper, tests_data, tmp_path_factory, create_legal_tag, required_reference_data
 ):
     """Fixture to create referenced records and delete them after a test."""
     partition = CONFIG["DATA_PARTITION"]

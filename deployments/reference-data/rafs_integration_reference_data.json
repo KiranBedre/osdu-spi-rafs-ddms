@@ -1394,6 +1394,114 @@
     }
   },
   {
+    "id": "{{NAMESPACE}}:reference-data--FluidModelPropertyFormulationMethod:Compositional.PengRobinson",
+    "kind": "osdu:wks:reference-data--FluidModelPropertyFormulationMethod:1.0.0",
+    "acl": {
+      "owners": [
+        "{{DATA_OWNERS_GROUP}}"
+      ],
+      "viewers": [
+        "{{DATA_VIEWERS_GROUP}}"
+      ]
+    },
+    "legal": {
+      "legaltags": [
+        "{{LEGAL_TAG}}"
+      ],
+      "otherRelevantDataCountries": [
+        "{{ISO_3166_ALPHA_2_CODE}}"
+      ]
+    },
+    "data": {
+      "Name": "Compositional.PengRobinson",
+      "ID": "Compositional.PengRobinson",
+      "Description": "Using the Peng-Robinson (original 1976) equation of state to determine phase equilibria and physical properties of phases.",
+      "Code": "Compositional.PengRobinson",
+      "AttributionAuthority": "OSDU",
+      "AttributionRevision": "evergreen",
+      "Source": "Workbook ReferenceValues/Published/FluidModelPropertyFormulationMethod.1.xlsx; commit SHA 5c693079.",
+      "CommitDate": "2025-11-11T04:54:42+00:00"
+    }
+  },
+  {
+    "id": "{{NAMESPACE}}:reference-data--FluidModelType:ThermalCompositional",
+    "kind": "osdu:wks:reference-data--FluidModelType:1.0.0",
+    "acl": {
+      "owners": ["{{DATA_OWNERS_GROUP}}"],
+      "viewers": ["{{DATA_VIEWERS_GROUP}}"]
+    },
+    "legal": {
+      "legaltags": ["{{LEGAL_TAG}}"],
+      "otherRelevantDataCountries": ["{{ISO_3166_ALPHA_2_CODE}}"]
+    },
+    "data": {
+      "Name": "Thermal Compositional",
+      "ID": "ThermalCompositional",
+      "Description": "The Thermal Compositional Fluid Model accounts for temperature effects on fluid properties and phase equilibria.",
+      "Code": "ThermalCompositional",
+      "AttributionAuthority": "OSDU",
+      "AttributionRevision": "evergreen",
+      "Source": "Workbook ReferenceValues/Published/FluidModelType.1.xlsx; commit SHA 5c693079.",
+      "CommitDate": "2025-11-11T04:54:42+00:00"
+    }
+  },
+  {
+    "id": "{{NAMESPACE}}:reference-data--ReservoirComponentCompositionType:Solid",
+    "kind": "osdu:wks:reference-data--ReservoirComponentCompositionType:1.0.0",
+    "acl": {
+      "owners": [
+        "{{DATA_OWNERS_GROUP}}"
+      ],
+      "viewers": [
+        "{{DATA_VIEWERS_GROUP}}"
+      ]
+    },
+    "legal": {
+      "legaltags": [
+        "{{LEGAL_TAG}}"
+      ],
+      "otherRelevantDataCountries": [
+        "{{ISO_3166_ALPHA_2_CODE}}"
+      ]
+    },
+    "data": {
+      "Name": "Solid",
+      "ID": "Solid",
+      "Description": "Solid phase composition in a reservoir component model.",
+      "Code": "Solid",
+      "AttributionAuthority": "OSDU",
+      "AttributionRevision": "evergreen"
+    }
+  },
+  {
+    "id": "{{NAMESPACE}}:reference-data--ViscosityModelType:FrictionTheory",
+    "kind": "osdu:wks:reference-data--ViscosityModelType:1.0.0",
+    "acl": {
+      "owners": [
+        "{{DATA_OWNERS_GROUP}}"
+      ],
+      "viewers": [
+        "{{DATA_VIEWERS_GROUP}}"
+      ]
+    },
+    "legal": {
+      "legaltags": [
+        "{{LEGAL_TAG}}"
+      ],
+      "otherRelevantDataCountries": [
+        "{{ISO_3166_ALPHA_2_CODE}}"
+      ]
+    },
+    "data": {
+      "Name": "Friction Theory",
+      "ID": "FrictionTheory",
+      "Description": "Friction Theory viscosity model.",
+      "Code": "FrictionTheory",
+      "AttributionAuthority": "OSDU",
+      "AttributionRevision": "evergreen"
+    }
+  },
+  {
     "id": "{{NAMESPACE}}:reference-data--FluidModelPropertyPhase:Oil",
     "kind": "osdu:wks:reference-data--FluidModelPropertyPhase:1.0.0",
     "acl": {
