@@ -12,9 +12,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import copy
+import json
 import uuid
 
 import pytest
+from loguru import logger
 
 from tests.integration.config import (
     CONFIG,
@@ -107,3 +110,44 @@ def x_collaboration_header():
     """Generate a unique namespace."""
     namespace = str(uuid.uuid4())
     return f"id={namespace},application=rafddms"
+
+
+@pytest.fixture(scope="function")
+def fluid_model_collaboration_dependencies(api, helper, tests_data, x_collaboration_header):
+    """Clone FluidModel dependencies into the test collaboration namespace."""
+    fluid_model = tests_data(DataFiles.FLUID_MODEL)
+    dependency_ids = sorted(helper.find_ids_from_string(json.dumps(fluid_model)))
+    headers = {"x-collaboration": x_collaboration_header}
+    cloned_ids = []
+
+    def _purge_cloned_records():
+        cleanup_errors = []
+        for record_id in reversed(cloned_ids):
+            try:
+                api.storage.purge_record(record_id, headers=headers)
+            except Exception as exception:
+                logger.exception(f"Failed to purge collaboration dependency {record_id}")
+                cleanup_errors.append((record_id, exception))
+
+        if cleanup_errors:
+            details = "\n".join(f"- {record_id}: {exception}" for record_id, exception in cleanup_errors)
+            raise RuntimeError(f"Failed to purge collaboration dependencies:\n{details}")
+
+    try:
+        for record_id in dependency_ids:
+            record = copy.deepcopy(api.storage.get(path=f"/records/{record_id}").json())
+            for field in ("version", "createTime", "createUser", "modifyTime", "modifyUser"):
+                record.pop(field, None)
+            api.storage.create_or_update_records([record], headers=headers)
+            cloned_ids.append(record_id)
+    except Exception:
+        try:
+            _purge_cloned_records()
+        except Exception:
+            logger.exception("Failed to clean up collaboration dependencies after fixture setup failure")
+        raise
+
+    try:
+        yield tuple(cloned_ids)
+    finally:
+        _purge_cloned_records()
