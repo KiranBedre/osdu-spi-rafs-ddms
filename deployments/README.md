@@ -48,7 +48,7 @@ The list of values can be found in [The Reference Values Postman Collection](./r
 
 #### CIMPL dev1 CI bootstrap
 
-Integration pytest jobs on CIMPL do **not** create `reference-data--*` records (see `create_reference_records` in `tests/integration/helpers/common.py`, which skips those IDs). Reference-data is shared environment data with per-type mandatory fields, so fabricating it from tests would overwrite correct values and let tests pass on data that does not resemble production. It is seeded by the CI bootstrap jobs instead. Missing platform reference values cause 422 failures during fixture setup or acceptance Newman runs.
+Integration pytest discovers `reference-data--*` prerequisites from its positive JSON payloads and documented supplemental dependencies, checks their availability in Storage, and creates only missing records that have canonical definitions in the shared catalog. Existing records are preserved and never overwritten by the pytest preflight; prerequisite records and their persistent legal tag are not deleted during teardown. CI bootstrap jobs seed the same catalog ahead of CIMPL tests. Any dependencies that remain unavailable after bootstrap are reported together in a single preflight error instead of causing cascading 422 fixture failures.
 
 On trusted/main CIMPL pipelines the job `cimpl-seed-reference-data` runs after `cimpl-deploy` and before `cimpl-test-python`. On `release/*` / tag prod pipelines: upstream `cimpl-prod-reset` → `cimpl-prod-deploy` → `cimpl-prod-seed-reference-data` → `cimpl-prod-test-python` / `cimpl-prod-acceptance-test-python`.
 
