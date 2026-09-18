@@ -246,11 +246,14 @@ cimpl-deploy:
     - |
       echo "Running integration tests against ${CIMPL_RAFS_BASE_URL}"
       mkdir -p tests/cimpl/allure-results
-      time pytest -vv -s \
+      time pytest \
         --tb=long \
         --reruns 1 \
         --reruns-delay 3 \
         --maxfail=0 \
+        -n 2 \
+        --dist=loadscope \
+        --durations=50 \
         --junitxml=integration_tests_report.xml \
         --cov=app \
         --cov-report=xml:coverage.xml \
