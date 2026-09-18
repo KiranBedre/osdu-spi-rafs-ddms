@@ -13,6 +13,7 @@
 #  limitations under the License.
 
 import io
+import json
 import types
 import uuid
 from typing import List, Optional, Union, get_args, get_origin
@@ -93,6 +94,32 @@ def _str_field_names(model: type) -> List[str]:
         for field_name, field_info in model.model_fields.items()
         if _unwrap_optional(field_info.annotation) is str
     ]
+
+
+def _json_str_dtype_map(validated_json: str, orient: str, model: type) -> dict:
+    """Build string dtype hints without coercing structured JSON values.
+
+    Numeric-looking strings need an explicit dtype hint so values such as
+    "001" retain their exact representation. Lists and dictionaries must
+    remain unchanged so schema validation can reject them for string fields.
+    """
+    payload = json.loads(validated_json)
+
+    if orient == "split":
+        columns = payload["columns"]
+        rows = [dict(zip(columns, row)) for row in payload["data"]]
+    else:
+        rows = payload
+
+    string_fields = _str_field_names(model)
+    complex_fields = {
+        field_name
+        for field_name in string_fields
+        if any(isinstance(row.get(field_name), (list, dict)) for row in rows if isinstance(row, dict))
+    }
+
+    safe_fields = [field_name for field_name in string_fields if field_name not in complex_fields]
+    return dict.fromkeys(safe_fields, "string")
 
 
 def _cast_float_columns(df: pd.DataFrame, model: type) -> None:
@@ -401,7 +428,7 @@ class BaseDataView(object):
             validated_json, orient = await get_validated_bulk_data_json(request)
             # pandas nullable "string" (not plain str): plain str would render a
             # missing value as the literal text "None" instead of a real null.
-            str_dtype_map = dict.fromkeys(_str_field_names(model), "string")
+            str_dtype_map = _json_str_dtype_map(validated_json, orient, model)
             df = pd.read_json(io.StringIO(validated_json), orient=orient, dtype=str_dtype_map)
             _normalize_nan_to_none(df)
             return df, None

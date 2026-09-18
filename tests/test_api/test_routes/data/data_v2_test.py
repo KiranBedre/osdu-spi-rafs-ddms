@@ -40,6 +40,9 @@ from tests.test_api.test_routes.api_v2.atm_flash_compositional_analysis import (
     atmospheric_flash_mock_objects,
     compositional_analysis_mock_objects,
 )
+from tests.test_api.test_routes.api_v2.black_oil_fluid_model import (
+    black_oil_fluid_model_mock_objects,
+)
 from tests.test_api.test_routes.api_v2.bulk_pyrolysis import (
     bulk_pyrolysis_mock_objects,
 )
@@ -52,6 +55,9 @@ from tests.test_api.test_routes.api_v2.cappressure import (
 from tests.test_api.test_routes.api_v2.cce import cce_mock_objects
 from tests.test_api.test_routes.api_v2.cec_content import (
     cec_content_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.compositional_fluid_model import (
+    compositional_fluid_model_mock_objects,
 )
 from tests.test_api.test_routes.api_v2.constantvolumedepletion import (
     cvd_mock_objects,
@@ -137,6 +143,9 @@ from tests.test_api.test_routes.api_v2.tec import tec_data_mock_objects
 from tests.test_api.test_routes.api_v2.tensile_strength import (
     tensile_strength_mock_objects,
 )
+from tests.test_api.test_routes.api_v2.thermal_compositional_fluid_model import (
+    thermal_compositional_fluid_model_mock_objects,
+)
 from tests.test_api.test_routes.api_v2.transport import (
     transport_test_mock_objects,
 )
@@ -153,15 +162,6 @@ from tests.test_api.test_routes.api_v2.water_analysis import (
 )
 from tests.test_api.test_routes.api_v2.wettability_index import (
     wettability_index_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.black_oil_fluid_model import (
-    black_oil_fluid_model_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.compositional_fluid_model import (
-    compositional_fluid_model_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.thermal_compositional_fluid_model import (
-    thermal_compositional_fluid_model_mock_objects,
 )
 from tests.test_api.test_routes.api_v2.xrd import xrd_mock_objects
 from tests.test_api.test_routes.api_v2.xrf import xrf_mock_objects
@@ -494,7 +494,7 @@ async def test_post_data_no_content_header(data_endpoint_path):
         TestContentPathsApiV2.SATURATION_TEST,
         TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
         TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
-        TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL
+        TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
     ],
 )
 @pytest.mark.asyncio
@@ -529,17 +529,14 @@ async def test_post_data_wrong_content_header(data_endpoint_path):
             TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
             coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
         ),
+        (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID),
         (
-            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, 
-            black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
-        ),
-        (
-            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL, 
-            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
             TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
-            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
         ),
     ],
 )
@@ -575,17 +572,14 @@ async def test_get_data_no_content_type_does_not_return_400(data_endpoint_path, 
     [
         (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID),
         (
-            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, 
-            black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
-        ),
-        (
-            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL, 
-            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
             TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
-            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
         ),
     ],
 )
@@ -1323,18 +1317,15 @@ async def test_get_data_accept_negotiation_returns_parquet(
     [
         (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
-        (   
-            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, 
-            black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
-        ),
-        (   
-            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL, 
-            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
+        (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
             TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
-            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID
-        )
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -8182,6 +8173,7 @@ async def test_get_data_definitive_flat_path_recognized():
 # Issue #678 FluidModelID mismatch validation
 _MISMATCHED_FM_ID = "partition:work-product-component--FluidModel:wrong-record:"
 
+
 def _blfm_data_with_id(value):
     data = _copy.deepcopy(black_oil_fluid_model_mock_objects.TEST_DATA)
     col_idx = data["columns"].index("FluidModelID")
@@ -8204,7 +8196,6 @@ def _tcfm_data_with_id(value):
     for row in data["data"]:
         row[col_idx] = value
     return data
-
 
 
 @pytest.mark.asyncio
@@ -8293,8 +8284,7 @@ async def test_post_tcfm_data_malformed_record_id_returns_422(record_id):
     )
 
     data_endpoint_path = (
-        f"{FLUID_MODEL_ENDPOINT_PATH}/{record_id}"
-        f"{fluid_model_relative_paths_v2.THERMAL_COMPOSITIONAL_FLUID_MODEL}"
+        f"{FLUID_MODEL_ENDPOINT_PATH}/{record_id}" f"{fluid_model_relative_paths_v2.THERMAL_COMPOSITIONAL_FLUID_MODEL}"
     )
     with post_overrides():
         async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
@@ -8570,10 +8560,35 @@ def test_get_tcfm_data_cache_key_is_stable_for_identical_requests():
     assert build_key(token="Bearer other-token") != baseline
     assert build_key(partition="other-partition") != baseline
     assert build_key(query="content_schema_version=1.0.0&columns_filter=FluidModelID") != baseline
+
+
 # ---------------------------------------------------------------------------
 # Issue #768 — lead review feedback: str-column corruption and general
 # (non-depth-shift) parquet path coverage
 # ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_post_data_json_rejects_complex_value_for_str_field():
+    """A list must not be coerced to text for a str-typed field."""
+    columns = transport_test_mock_objects.TEST_DATA["columns"]
+    payload = json.loads(json.dumps(transport_test_mock_objects.TEST_DATA))
+    test_number_idx = columns.index("TestNumber")
+    payload["data"][0][test_number_idx] = ["invalid"]
+
+    with post_overrides(
+        transport_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        transport_test_mock_objects.TEST_DATASET_RECORD_ID,
+        payload,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.TRANSPORT_TEST,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
 @pytest.mark.asyncio
@@ -8627,7 +8642,7 @@ async def test_post_data_json_preserves_str_field_exact_value():
                     content=json.dumps(payload),
                 )
 
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK, response.text
     assert len(uploaded_blobs) == 1
 
     uploaded_df = pd.read_parquet(io.BytesIO(uploaded_blobs[0]))

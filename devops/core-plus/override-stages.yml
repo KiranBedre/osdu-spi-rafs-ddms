@@ -250,7 +250,7 @@ cimpl-deploy:
         --tb=long \
         --reruns 1 \
         --reruns-delay 3 \
-        --maxfail=1 \
+        --maxfail=0 \
         --junitxml=integration_tests_report.xml \
         --cov=app \
         --cov-report=xml:coverage.xml \
