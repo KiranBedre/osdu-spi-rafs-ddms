@@ -15,11 +15,6 @@
 from typing import Union
 
 from fastapi.exceptions import RequestValidationError
-from fastapi.openapi.constants import REF_PREFIX
-from fastapi.openapi.utils import (
-    validation_error_definition,
-    validation_error_response_definition,
-)
 from pydantic import ValidationError
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -88,41 +83,3 @@ async def http422_error_handler(  # noqa: ASYNC910, ASYNC124
         ).model_dump(),
         status_code=HTTP_422_UNPROCESSABLE,
     )
-
-
-# TODO remove this once this fastapi issue is closed https://github.com/tiangolo/fastapi/issues/3790
-# or when FastAPI version >= 0.75.2
-validation_error_definition["properties"] = {
-    "loc": {
-        "app_name": "Location",
-        "type": "array",
-        "items": {
-            "anyOf": [
-                {
-                    "type": "string",
-                },
-                {
-                    "type": "integer",
-                },
-            ],
-        },
-    },
-    "msg": {
-        "app_name": "Message",
-        "type": "string",
-    },
-    "type": {
-        "app_name": "Error Type",
-        "type": "string",
-    },
-}
-
-validation_error_response_definition["properties"] = {
-    "errors": {
-        "app_name": "Errors",
-        "type": "array",
-        "items": {
-            "$ref": "{0}ValidationError".format(REF_PREFIX),
-        },
-    },
-}

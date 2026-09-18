@@ -12,6 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from functools import partial
+
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from httpx import HTTPStatusError
@@ -93,7 +95,12 @@ def get_application() -> FastAPI:
     for exception, error_handler in EXCEPTIONS_AND_HANDLERS:
         application.add_exception_handler(exception, error_handler)
 
-    application.openapi_schema = get_custom_openapi_schema(application, settings)
+    application.openapi_schema = None
+    application.openapi = partial(
+        get_custom_openapi_schema,
+        application,
+        settings,
+    )
     return application
 
 
