@@ -458,6 +458,33 @@ class DataValidator(object):  # noqa: WPS214
             received_repr = f"{truncated}...[truncated]"
         return received_repr
 
+    @staticmethod
+    def _parse_pandera_failure_repr(raw_failure: str):
+        """Parse a pandera failure_case repr string, handling numpy NaN/inf tokens.
+
+        Pandera's failure_case is a Python repr of a dict, but when it contains
+        numpy NaN/inf values, the repr uses bare tokens like ``nan`` and ``inf``
+        which are not valid Python literals. This method replaces those bare tokens
+        with Python literals (None for nan, inf for inf) so ast.literal_eval can parse.
+
+        For re-validation purposes, NaN (float column alignment artifact) is treated
+        as None (absent value), since both represent a missing/nullable field.
+
+        :param raw_failure: Python-repr dict string (may contain nan/inf tokens)
+        :return: parsed dict, or None if parsing fails
+        """
+        if not isinstance(raw_failure, str):
+            return None
+
+        try:
+            sanitized = raw_failure
+            sanitized = re.sub(r'\bnan\b', 'None', sanitized)
+            sanitized = re.sub(r'\binf\b', "'inf'", sanitized)
+            sanitized = re.sub(r'\b-inf\b', "'-inf'", sanitized)
+            return ast.literal_eval(sanitized)
+        except (ValueError, SyntaxError):
+            return None
+
     def _enrich_pydantic_error(self, raw_failure: str, index=None, df: pd.DataFrame = None) -> list:
         """Parse a PydanticModel failure_case string into field-level error dicts.
 
@@ -476,10 +503,7 @@ class DataValidator(object):  # noqa: WPS214
         :return: list of enriched error dicts with field, received, expected keys
         :rtype: list
         """
-        try:
-            parsed_failure = ast.literal_eval(raw_failure)
-        except (ValueError, SyntaxError):
-            parsed_failure = None
+        parsed_failure = self._parse_pandera_failure_repr(raw_failure)
 
         if not isinstance(parsed_failure, dict):
             return [{"field": "DataSchema", "received": raw_failure, "expected": "unknown"}]
