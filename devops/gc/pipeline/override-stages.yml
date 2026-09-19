@@ -3,6 +3,9 @@ variables:
   GC_INT_TEST_TYPE: python
   GC_SUPPORTED_PLATFORM: "linux/amd64"
 
+gc-deploy:
+  allow_failure: true  # TODO: Remove when issue #723 is resolved.
+
 gc-containerize-gitlab:
   variables:
     BUILD_PATH: "./devops/gc/Dockerfile"

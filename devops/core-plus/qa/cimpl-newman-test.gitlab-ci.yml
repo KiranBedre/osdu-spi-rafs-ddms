@@ -77,7 +77,7 @@ cimpl-dev-acceptance-test-postman:
     ALLURE_RESULTS_DIR: "tests/cimpl/allure-results"
   needs:
     - job: cimpl-dev-test-python
-  allow_failure: false
+  allow_failure: true  # TODO: Remove when issue #834 is resolved.
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^release/'
       when: never

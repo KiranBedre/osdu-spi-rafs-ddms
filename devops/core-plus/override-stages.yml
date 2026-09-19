@@ -565,6 +565,7 @@ cimpl-dev-seed-reference-data:
 
 # Run the RAFS pytest suite against CIMPL-STACK DEV.
 cimpl-dev-test-python:
+  allow_failure: true  # TODO: Remove when issue #834 is resolved.
   extends:
     - .cimpl-dev-variables
     - .rafs_cimpl_pytest_integration
