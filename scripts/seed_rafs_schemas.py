@@ -19,13 +19,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import ssl
 import sys
 import time
-import urllib.error
-import urllib.request
+import urllib.parse
 from pathlib import Path
 from typing import Any
+
+import requests
 
 PUBLISHED_MESSAGES = {
     "Only schema in development stage can be updated",
@@ -45,9 +45,29 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--report", type=Path, default=Path("schema-seed-report.json"))
     parser.add_argument("--retries", type=int, default=3)
     parser.add_argument("--retry-delay", type=float, default=5.0)
-    parser.add_argument("--insecure", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
+
+
+def validate_service_url(url: str) -> None:
+    """Reject URL schemes that could access local files or expose credentials."""
+    parsed = urllib.parse.urlsplit(url)
+    hostname = parsed.hostname
+
+    if not hostname:
+        raise ValueError("Schema Service URL must include a hostname")
+
+    if parsed.username is not None or parsed.password is not None:
+        raise ValueError("Schema Service URL must not include credentials")
+
+    if parsed.scheme == "https":
+        return
+
+    local_hosts = {"localhost", "127.0.0.1", "::1"}
+    if parsed.scheme == "http" and hostname.lower() in local_hosts:
+        return
+
+    raise ValueError("Schema Service URL must use HTTPS; " "HTTP is allowed only for localhost")
 
 
 def response_message(body: str) -> str:
@@ -88,14 +108,15 @@ def put_schema(
     url: str,
     payload: bytes,
     headers: dict[str, str],
-    context: ssl.SSLContext | None,
 ) -> tuple[int, str]:
-    request = urllib.request.Request(url, data=payload, headers=headers, method="PUT")
-    try:
-        with urllib.request.urlopen(request, context=context, timeout=120) as response:
-            return response.status, response.read().decode(errors="replace")
-    except urllib.error.HTTPError as exc:
-        return exc.code, exc.read().decode(errors="replace")
+    response = requests.put(
+        url,
+        data=payload,
+        headers=headers,
+        timeout=120,
+        verify=True,
+    )
+    return response.status_code, response.text
 
 
 def write_report(path: Path, results: list[dict[str, Any]]) -> None:
@@ -120,6 +141,12 @@ def main() -> int:
         print(f"ERROR: manifest not found: {manifest_file}", file=sys.stderr)
         return 2
 
+    try:
+        validate_service_url(args.url)
+    except ValueError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+
     token = os.environ.get(args.token_env, "")
     if not args.dry_run and not token:
         print(f"ERROR: {args.token_env} is not set", file=sys.stderr)
@@ -139,7 +166,6 @@ def main() -> int:
     if args.partition:
         headers["data-partition-id"] = args.partition
 
-    context = ssl._create_unverified_context() if args.insecure else None
     results: list[dict[str, Any]] = []
     failed = False
 
@@ -168,9 +194,8 @@ def main() -> int:
                     url=args.url,
                     payload=rendered.encode(),
                     headers=headers,
-                    context=context,
                 )
-            except (OSError, urllib.error.URLError) as exc:
+            except requests.RequestException as exc:
                 body = str(exc)
                 status = 0
 

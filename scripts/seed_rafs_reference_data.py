@@ -20,14 +20,13 @@ import argparse
 import json
 import os
 import re
-import ssl
 import sys
 import time
-import urllib.error
 import urllib.parse
-import urllib.request
 from pathlib import Path
 from typing import Any
+
+import requests
 
 RETRYABLE_CODES = {429, 500, 502, 503, 504}
 ALREADY_ACTIVE_MESSAGE = "Record State already updated"
@@ -75,9 +74,32 @@ def parse_args() -> argparse.Namespace:
         action=argparse.BooleanOptionalAction,
         default=True,
     )
-    parser.add_argument("--insecure", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
+
+
+def validate_service_url(url: str, name: str) -> None:
+    """Reject URL schemes that could access local files or expose credentials."""
+    try:
+        parsed = urllib.parse.urlsplit(url)
+        hostname = parsed.hostname
+    except ValueError as exc:
+        raise SeedError(f"{name} is invalid: {exc}") from exc
+
+    if not hostname:
+        raise SeedError(f"{name} must include a hostname")
+
+    if parsed.username is not None or parsed.password is not None:
+        raise SeedError(f"{name} must not include credentials")
+
+    if parsed.scheme == "https":
+        return
+
+    local_hosts = {"localhost", "127.0.0.1", "::1"}
+    if parsed.scheme == "http" and hostname.lower() in local_hosts:
+        return
+
+    raise SeedError(f"{name} must use HTTPS; HTTP is allowed only for localhost")
 
 
 def response_message(body: str) -> str:
@@ -165,38 +187,26 @@ def request(
     url: str,
     headers: dict[str, str],
     payload: Any | None,
-    context: ssl.SSLContext | None,
     retries: int,
     retry_delay: float,
     timeout: float,
 ) -> tuple[int, str]:
-    data = None
-    if payload is not None:
-        data = json.dumps(payload).encode()
-
     status = 0
     body = ""
 
     for attempt in range(1, retries + 1):
-        http_request = urllib.request.Request(
-            url,
-            data=data,
-            headers=headers,
-            method=method,
-        )
-
         try:
-            with urllib.request.urlopen(
-                http_request,
-                context=context,
+            response = requests.request(
+                method,
+                url,
+                headers=headers,
+                json=payload,
                 timeout=timeout,
-            ) as response:
-                status = response.status
-                body = response.read().decode(errors="replace")
-        except urllib.error.HTTPError as exc:
-            status = exc.code
-            body = exc.read().decode(errors="replace")
-        except (OSError, urllib.error.URLError) as exc:
+                verify=True,
+            )
+            status = response.status_code
+            body = response.text
+        except requests.RequestException as exc:
             status = 0
             body = str(exc)
 
@@ -216,7 +226,6 @@ def ensure_legal_tag(
     legal_tag: str,
     country: str,
     headers: dict[str, str],
-    context: ssl.SSLContext | None,
     args: argparse.Namespace,
 ) -> int:
     payload = {
@@ -239,7 +248,6 @@ def ensure_legal_tag(
         url=f"{legal_url.rstrip('/')}/legaltags",
         headers=headers,
         payload=payload,
-        context=context,
         retries=args.retries,
         retry_delay=args.retry_delay,
         timeout=args.timeout,
@@ -256,7 +264,6 @@ def seed_records(
     records: list[dict[str, Any]],
     storage_url: str,
     headers: dict[str, str],
-    context: ssl.SSLContext | None,
     args: argparse.Namespace,
     report: dict[str, Any],
 ) -> None:
@@ -267,7 +274,6 @@ def seed_records(
         url=records_url,
         headers=headers,
         payload=records,
-        context=context,
         retries=args.retries,
         retry_delay=args.retry_delay,
         timeout=args.timeout,
@@ -292,7 +298,6 @@ def seed_records(
                     "Content-Type": "application/merge-patch+json",
                 },
                 payload={"deleted": False},
-                context=context,
                 retries=args.retries,
                 retry_delay=args.retry_delay,
                 timeout=args.timeout,
@@ -312,7 +317,6 @@ def seed_records(
                     url=record_url,
                     headers=headers,
                     payload=None,
-                    context=context,
                     retries=args.retries,
                     retry_delay=args.retry_delay,
                     timeout=args.timeout,
@@ -375,6 +379,10 @@ def main() -> int:
             print(f"Validated {len(records)} reference-data records")
             return 0
 
+        validate_service_url(args.storage_url, "Storage Service URL")
+        if args.legal_url:
+            validate_service_url(args.legal_url, "Legal Service URL")
+
         token = os.environ.get(args.token_env, "")
         if not token:
             raise SeedError(f"{args.token_env} is not set")
@@ -384,8 +392,6 @@ def main() -> int:
             "Content-Type": "application/json",
             "data-partition-id": args.partition,
         }
-        context = ssl._create_unverified_context() if args.insecure else None
-
         if args.legal_url:
             print(f"Ensuring legal tag {args.legal_tag} exists")
             report["legal_tag_http_status"] = ensure_legal_tag(
@@ -393,7 +399,6 @@ def main() -> int:
                 legal_tag=args.legal_tag,
                 country=args.country,
                 headers=headers,
-                context=context,
                 args=args,
             )
 
@@ -402,7 +407,6 @@ def main() -> int:
             records=records,
             storage_url=args.storage_url,
             headers=headers,
-            context=context,
             args=args,
             report=report,
         )
