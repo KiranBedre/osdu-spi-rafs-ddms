@@ -30,7 +30,7 @@ TEST_DDMS_URN_WITH_VERSION = (
     f"urn://rafs-v2/rolleroventestdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
 )
 RECORD_DATA = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
     **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN],
@@ -38,7 +38,7 @@ RECORD_DATA = {
     },
 }
 RECORD_DATA_WITH_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
     **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION],
@@ -46,7 +46,7 @@ RECORD_DATA_WITH_SCHEMA_VERSION = {
     },
 }
 RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
     **{
         "data": {
             "DDMSDatasets": [f"{TEST_DDMS_URN}/2.0.0"],

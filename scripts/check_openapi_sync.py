@@ -7,10 +7,9 @@ import yaml
 
 from scripts.generate_openapi import (
     DEFAULT_OUTPUT_PATH,
+    canonicalize_openapi_schema,
     configure_environment,
     load_openapi_schema,
-    mark_content_schema_version_required,
-    canonicalize_openapi_schema,
 )
 
 
@@ -88,7 +87,6 @@ def main() -> int:
         return 1
 
     generated_schema = load_openapi_schema()
-    generated_schema = mark_content_schema_version_required(generated_schema)
     generated_schema = canonicalize_openapi_schema(generated_schema)
 
     if committed_schema == generated_schema:

@@ -24,6 +24,7 @@ from app.api.routes.utils.search import get_valid_ids_from_ddms_datasets
 from app.models.domain.osdu.base import SAMPLE_KIND_BASE, SAMPLESANALYSIS_KIND_BASE, WELLBORE_KIND_BASE
 from app.models.schemas.search_scope import SearchScope
 from app.resources.paths import SAMPLESANALYSIS_TYPE_MAPPING
+from app.search.pending_writes import supplement_with_pending_writes
 from app.search.scope import (
     SAMPLE_HOP_SCOPE_KEYS,
     SCOPE_PROFILE_SAMPLE,
@@ -90,7 +91,7 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
     def __init__(self, search_service: search.SearchService):
         self._search_service = search_service
 
-    async def get_ids(
+    async def get_ids(  # noqa: CCR001
         self,
         data_partition_id: str,
         analysis_type: str,
@@ -136,11 +137,20 @@ class SearchServiceSamplesAnalysisTypeIdsFetcher(DDMSDatasetIdsFetcher):
                 break
             result_records.extend(records)
 
-        return build_result_ids(
+        result_ids = build_result_ids(
             result_records,
             target_schema_version,
             "samplesanalysis",
             analysis_type,
+        )
+        return await supplement_with_pending_writes(
+            result_ids=result_ids,
+            data_partition_id=data_partition_id,
+            analysis_family="samplesanalysis",
+            analysis_type=analysis_type,
+            target_schema_version=target_schema_version,
+            scope=scope.to_query_dict() if scope else None,
+            query_date_range=query_date_range,
         )
 
     async def _resolve_sample_ids_by_scope(self, scope: SearchScope) -> List[str]:  # noqa: CFQ004

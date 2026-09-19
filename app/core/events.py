@@ -12,7 +12,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from typing import Callable
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 
 from fastapi import FastAPI
 from loguru import logger
@@ -23,34 +24,33 @@ from app.core.settings.app import AppSettings
 from app.providers.helpers.tracing import initialize_tracer, restart_otel_span_processors
 
 
-def create_start_app_handler(
-    app: FastAPI,
-    settings: AppSettings,
-) -> Callable:  # type: ignore
-
-    async def start_app() -> None:
-        for setting in settings:
-            logger.debug(f"App setting: {setting}")
-        # Each uvicorn worker must own a fresh TracerProvider and OTLPSpanExporter so
-        # that the HTTP connection pool is not shared across forked processes.
-        # restart_otel_span_processors() handles the case where a provider is already
-        # present with a live export thread (no-op).  When it returns False — either
-        # no provider yet or the agent's post-fork thread is running — initialize_tracer()
-        # creates a fresh per-worker provider regardless of what the master had.
-        if not restart_otel_span_processors():
-            initialize_tracer(settings)
-        await init_cache(settings)
-        init_pandas()
-
-    return start_app
+async def _startup(settings: AppSettings) -> None:
+    for setting in settings:
+        logger.debug(f"App setting: {setting}")
+    # Each uvicorn worker must own a fresh TracerProvider and OTLPSpanExporter so
+    # that the HTTP connection pool is not shared across forked processes.
+    if not restart_otel_span_processors():
+        initialize_tracer(settings)
+    await init_cache(settings)
+    init_pandas()
 
 
-def create_stop_app_handler(
-    app: FastAPI,
-    settings: AppSettings,
-) -> Callable:  # type: ignore
-    @logger.catch
-    async def stop_app() -> None:
+def build_lifespan(settings: AppSettings):
+    """Return an asynccontextmanager lifespan for the FastAPI app."""
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncGenerator:  # noqa: WPS430
+        await _startup(settings)
+        yield
         await clear_cache(settings)
 
-    return stop_app
+    return lifespan
+
+
+def create_start_app_handler(app: FastAPI, settings: AppSettings):  # noqa: WPS110
+    """Compatibility shim — delegates to _startup."""
+
+    async def start_app() -> None:  # noqa: WPS430
+        await _startup(settings)
+
+    return start_app

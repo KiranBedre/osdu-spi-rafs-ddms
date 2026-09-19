@@ -24,6 +24,6 @@ async def invalid_body_error_handler(  # noqa: ASYNC910, ASYNC124
     exc: InvalidBodyException,
 ) -> JSONResponse:
     return JSONResponse(  # noqa: ASYNC910
-        BadRequestResponse.construct(reason=exc.detail).dict(),
+        BadRequestResponse.model_construct(reason=exc.detail).model_dump(),
         status_code=exc.status_code,
     )

@@ -19,56 +19,20 @@
         "GasDensity",
         "WaterDensity",
         "FluidSystemAnalysisTypeID",
+        "PermeabilityTestSteps",
         "OilTypeID",
         "GasTypeID",
         "WaterTypeID",
-        "EndTime",
-        "PermeabilityTestSteps"
+        "EndTime"
     ],
     "index": [
         0
     ],
     "data": [
         [
-            "{data_partition_id}:work-product-component--SamplesAnalysis:RelPermWPC_110:",
+            "{data_partition_id}:work-product-component--SamplesAnalysis:{record_id}:",
             "{data_partition_id}:master-data--Sample:Master_Sample:",
             [
-                {
-                    "kind": "Unit",
-                    "name": "millidarcy",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:mD:",
-                    "propertyNames": [
-                        "InitialConditions.EffectivePermeability.Value",
-                        "TerminalConditions.EffectivePermeability.Value",
-                        "RelativePermeabilityCrossover",
-                        "ReferencePermeability[*].Value",
-                        "PermeabilityTestSteps[*].EffectivePermeability[*].Value"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "dimensionless",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:Euc:",
-                    "propertyNames": [
-                        "InitialConditions.RelativePermeability.Value",
-                        "TerminalConditions.RelativePermeability.Value",
-                        "PermeabilityTestSteps[*].RelativePermeability[*].Value",
-                        "PermeabilityTestSteps[*].FractionalFlowRate"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "cubic metre per cubic metre",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:m3%2Fm3:",
-                    "propertyNames": [
-                        "InitialConditions.Saturation.Value",
-                        "TerminalConditions.Saturation.Value",
-                        "EndFaceSaturationCrossover",
-                        "PermeabilityTestSteps[*].Saturation.Value",
-                        "PermeabilityTestSteps[*].InSituSaturationProfiles[*].InitialSaturation",
-                        "PermeabilityTestSteps[*].InSituSaturationProfiles[*].EquilibriumSaturation"
-                    ]
-                },
                 {
                     "kind": "Unit",
                     "name": "degree Fahrenheit",
@@ -79,14 +43,20 @@
                 },
                 {
                     "kind": "Unit",
-                    "name": "pound-force per square inch",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:psi:",
+                    "name": "feet",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:ft:",
                     "propertyNames": [
-                        "InitialConditions.NetConfiningStress",
-                        "InitialConditions.OverburdenPressure",
-                        "InitialConditions.PorePressure",
-                        "PermeabilityTestSteps[*].DifferentialPressure",
-                        "PermeabilityTestSteps[*].DifferentialPressureProfiles[*].DifferentialPressure"
+                        "PermeabilityTestSteps.InSituSaturationProfiles.Position"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "centiPoise",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:cP:",
+                    "propertyNames": [
+                        "OilViscosity",
+                        "GasViscosity",
+                        "WaterViscosity"
                     ]
                 },
                 {
@@ -95,44 +65,60 @@
                     "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:min:",
                     "propertyNames": [
                         "EndTime",
-                        "PermeabilityTestSteps[*].StartTime",
-                        "PermeabilityTestSteps[*].InSituSaturationProfiles[*].Time",
-                        "PermeabilityTestSteps[*].DifferentialPressureProfiles[*].Time",
-                        "PermeabilityTestSteps[*].ProductionProfiles[*].Time"
+                        "PermeabilityTestSteps.StartTime",
+                        "PermeabilityTestSteps.InSituSaturationProfiles.Time",
+                        "PermeabilityTestSteps.DifferentialPressureProfiles.Time",
+                        "PermeabilityTestSteps.ProductionProfiles.Time"
                     ]
                 },
                 {
                     "kind": "Unit",
-                    "name": "centimetre",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:cm:",
+                    "name": "percent",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:%25:",
                     "propertyNames": [
-                        "PermeabilityTestSteps[*].InSituSaturationProfiles[*].Position"
+                        "InitialConditions.RelativePermeability",
+                        "InitialConditions.Saturation.Value",
+                        "TerminalConditions.RelativePermeability",
+                        "TerminalConditions.Saturation.Value",
+                        "RelativePermeabilityCrossover",
+                        "EndFaceSaturationCrossover",
+                        "PermeabilityTestSteps.RelativePermeability",
+                        "PermeabilityTestSteps.InSituSaturationProfiles.InitialSaturation",
+                        "PermeabilityTestSteps.InSituSaturationProfiles.EquilibriumSaturation"
                     ]
                 },
                 {
                     "kind": "Unit",
-                    "name": "cubic centimetre",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:cm3:",
+                    "name": "millidarcys",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:mD:",
                     "propertyNames": [
-                        "PermeabilityTestSteps[*].CumulativeProduction.Value"
+                        "InitialConditions.EffectivePermeability.Value",
+                        "TerminalConditions.EffectivePermeability.Value",
+                        "PermeabilityTestSteps.EffectivePermeability.Value",
+                        "ReferencePermeability.Value"
                     ]
                 },
                 {
                     "kind": "Unit",
-                    "name": "cubic centimetre per minute",
+                    "name": "pounds per square inch",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:psi:",
+                    "propertyNames": [
+                        "InitialConditions.NetConfiningStress",
+                        "InitialConditions.OverburdenPressure",
+                        "InitialConditions.PorePressure",
+                        "PermeabilityTestSteps.DifferentialPressure",
+                        "PermeabilityTestSteps.DifferentialPressureProfiles.DifferentialPressure"
+                    ]
+                },
+                {
+                    "kind": "Unit",
+                    "name": "Flow Rate",
                     "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:cm3%2Fmin:",
                     "propertyNames": [
                         "InitialConditions.LastFlowRate",
-                        "PermeabilityTestSteps[*].InjectionRate[*].Value",
-                        "PermeabilityTestSteps[*].ProductionProfiles[*].ProductionRate"
-                    ]
-                },
-                {
-                    "kind": "Unit",
-                    "name": "dyne per centimetre",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:dyne%2Fcm:",
-                    "propertyNames": [
-                        "InterfacialTension"
+                        "PermeabilityTestSteps.FractionalFlowRate",
+                        "PermeabilityTestSteps.InjectionRate.Value",
+                        "ProductionProfiles.ProductionRate"
                     ]
                 },
                 {
@@ -140,215 +126,155 @@
                     "name": "gram per cubic centimetre",
                     "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:g%2Fcm3:",
                     "propertyNames": [
-                        "BrineSalinity",
-                        "OilDensity",
                         "GasDensity",
-                        "WaterDensity"
+                        "OilDensity",
+                        "WaterDensity",
+                        "BrineSalinity"
                     ]
                 },
                 {
                     "kind": "Unit",
-                    "name": "centipoise",
-                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:cP:",
+                    "name": "cubic centimetres",
+                    "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:cm3:",
                     "propertyNames": [
-                        "OilViscosity",
-                        "GasViscosity",
-                        "WaterViscosity"
+                        "PermeabilityTestSteps.CumulativeProduction",
+                        "CumulativeProduction.Value"
                     ]
                 }
             ],
-            "{data_partition_id}:reference-data--DesaturationMethod:PorousPlateOilWater:",
+            "{data_partition_id}:reference-data--DesaturationMethod:CentrifugeGasWater:",
             {
-                "TestTemperature": 130,
-                "NetConfiningStress": 207,
-                "OverburdenPressure": 509,
-                "PorePressure": 302,
-                "FlowDirection": "Vertical from Top",
-                "LastFlowRate": 0,
+                "TestTemperature": 70,
                 "EffectivePermeability": {
                     "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:",
-                    "Value": 43.7,
+                    "Value": 5915,
                     "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
                 },
                 "RelativePermeability": {
                     "Value": 1.0,
-                    "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasOil:",
+                    "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:",
                     "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
                 },
                 "Saturation": {
-                    "Value": 1.0,
-                    "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Water:",
+                    "Value": 0.073,
+                    "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Brine:",
                     "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
                 }
             },
             {
                 "EffectivePermeability": {
                     "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:",
-                    "Value": 29.78,
+                    "Value": 1687,
                     "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
                 },
                 "RelativePermeability": {
-                    "Value": 0.682,
-                    "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasOil:",
+                    "Value": 0.285,
+                    "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:",
                     "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
                 },
                 "Saturation": {
-                    "Value": 0.132,
-                    "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:",
-                    "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:EndFace:"
+                    "Value": 0.819,
+                    "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Brine:",
+                    "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
                 }
             },
-            29.78,
-            0.5,
+            15.0,
+            20.5,
             [
                 {
-                    "Value": 43.7,
+                    "Value": 6690,
                     "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:"
                 }
             ],
             "{data_partition_id}:reference-data--SaturationProcessMethod:Imbibition:",
-            35.5,
-            1.05,
-            0.246,
-            0.033,
-            1.002,
-            0.6,
-            0.287,
-            1.025,
+            10.0,
+            23.0,
+            34.0,
+            56.0,
+            67.0,
+            34.5,
+            33.0,
+            654.0,
             "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasOil:",
-            "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:",
-            "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:",
-            "{data_partition_id}:reference-data--CoreAnalysisFluidType:Water:",
-            8968,
             [
                 {
-                    "StartTime": 0,
-                    "InjectionRate": [
-                        {
-                            "Value": 0,
-                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:"
-                        },
-                        {
-                            "Value": 0,
-                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
-                        }
-                    ],
-                    "FractionalFlowRate": 0,
-                    "DifferentialPressure": 0,
-                    "CumulativeProduction": {
-                        "Value": 0,
-                        "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:"
-                    },
                     "EffectivePermeability": [
                         {
                             "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:",
-                            "Value": 43.7,
+                            "Value": 250,
                             "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
                         }
                     ],
                     "RelativePermeability": [
                         {
-                            "Value": 1.0,
-                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasOil:",
+                            "Value": 1.00,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:",
                             "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
                         }
                     ],
                     "Saturation": {
-                        "Value": 1.0,
-                        "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Water:",
+                        "Value": 0.073,
+                        "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Brine:",
                         "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
-                    },
-                    "InSituSaturationProfiles": [
-                        {
-                            "Time": 0,
-                            "Position": 5.0,
-                            "InitialSaturation": 1.0,
-                            "EquilibriumSaturation": 1.0
-                        }
-                    ],
-                    "DifferentialPressureProfiles": [
-                        {
-                            "Time": 0,
-                            "DifferentialPressure": 0
-                        }
-                    ],
-                    "ProductionProfiles": [
-                        {
-                            "Time": 0,
-                            "ProductionRate": 0,
-                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:"
-                        }
-                    ]
+                    }
                 },
                 {
-                    "StartTime": 8346,
-                    "InjectionRate": [
-                        {
-                            "Value": 0,
-                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:"
-                        },
-                        {
-                            "Value": 6,
-                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
-                        }
-                    ],
-                    "FractionalFlowRate": 1,
-                    "DifferentialPressure": 126,
-                    "CumulativeProduction": {
-                        "Value": 15.8,
-                        "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:"
-                    },
                     "EffectivePermeability": [
                         {
                             "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:",
-                            "Value": 29.78,
+                            "Value": 250,
                             "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
                         }
                     ],
                     "RelativePermeability": [
                         {
-                            "Value": 0.682,
-                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasOil:",
+                            "Value": 0.001,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:",
                             "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
+                        },
+                        {
+                            "Value": 0.057,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:",
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Brine:"
                         }
                     ],
                     "Saturation": {
-                        "Value": 0.717,
-                        "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Water:",
+                        "Value": 0.698,
+                        "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Brine:",
                         "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
-                    },
-                    "InSituSaturationProfiles": [
+                    }
+                },
+                {
+                    "EffectivePermeability": [
                         {
-                            "Time": 8346,
-                            "Position": 5.0,
-                            "InitialSaturation": 1.0,
-                            "EquilibriumSaturation": 0.717
+                            "Value": 250,
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:",
+                            "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:"
                         }
                     ],
-                    "DifferentialPressureProfiles": [
+                    "RelativePermeability": [
                         {
-                            "Time": 8350,
-                            "DifferentialPressure": 141.035
+                            "Value": 0.003,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:",
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
                         },
                         {
-                            "Time": 8965,
-                            "DifferentialPressure": 130.254
+                            "Value": 0.049,
+                            "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:",
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Brine:"
                         }
                     ],
-                    "ProductionProfiles": [
-                        {
-                            "Time": 8355,
-                            "ProductionRate": 15.472,
-                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:"
-                        },
-                        {
-                            "Time": 8965,
-                            "ProductionRate": 15.653,
-                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:"
-                        }
-                    ]
+                    "Saturation": {
+                        "Value": 0.715,
+                        "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Brine:",
+                        "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
+                    }
                 }
-            ]
+            ],
+            "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:",
+            "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:",
+            "{data_partition_id}:reference-data--CoreAnalysisFluidType:Brine:",
+            24.0
         ]
     ]
 }

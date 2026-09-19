@@ -12,11 +12,9 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel, ConfigDict
 
 
 class RafsBaseModel(BaseModel):
 
-    class Config:
-        extra = Extra.forbid
-        validate_all = True
+    model_config = ConfigDict(extra="forbid", validate_default=True)

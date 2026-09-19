@@ -40,12 +40,12 @@ def _build_model_for_rafs(model_path):
 
     with open(model_path, "r") as fpr:
         model = fpr.read()
-        # use RafsBaseModel instead of pydantic.BaseModel
+        # Replace pydantic BaseModel with RafsBaseModel
         model = model.replace("from pydantic import BaseModel,", "from pydantic import")
         model = model.replace("BaseModel", "RafsBaseModel")
-        rafs_base_model_import = "from app.models.config import RafsBaseModel"
-        annotations_import = "from __future__ import annotations"
-        model = model.replace(annotations_import, f"{annotations_import}\n\n{rafs_base_model_import}")
+        # Inject RafsBaseModel import after the pydantic import block
+        rafs_import = "from app.models.config import RafsBaseModel"
+        model = model.replace("from pydantic import", f"{rafs_import}\n\nfrom pydantic import", 1)
 
     with open(model_path, "w") as fpw:
         fpw.write(f"{COPYRIGHT}{model}")
@@ -92,6 +92,10 @@ def run_datamodel_codegen(source_directory: str, target_directory: str, end_filt
                 output_path,
                 "--class-name",
                 model_class_name,
+                "--output-model-type",
+                "pydantic_v2.BaseModel",
+                "--use-annotated",
+                "--disable-future-imports",
                 "--use-double-quotes",
             ]
 

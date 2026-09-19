@@ -15,8 +15,6 @@
 import copy
 import datetime
 
-import pytest
-
 from app.resources.common_headers import ACCEPT
 from tests.integration.config import (
     DataFiles,
@@ -487,12 +485,21 @@ def test_relative_permeability_add_data_v1_1(api, helper, tests_data, record_id)
     helper.compare_responses(gotten_data, parquet_response)
 
 
-def test_relative_permeability_get_schema_v1_1(api, helper, tests_data):
-    """Verify schema endpoint matches expected schema model in version 1.1.0."""
-    schema = api.sample_analysis.get_schema(SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_1_0)
-    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_SCHEMA_V1_1))
+def test_relative_permeability_get_data_v1_1_filtered_by_column(api, helper, tests_data, record_id, dataset_id_v1_1):
+    """Verify v1.1.0 bulk data retrieval filtered by column."""
+    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
+    baseline["columns"] = baseline["columns"][4:6]
+    baseline["data"][0] = baseline["data"][0][4:6]
 
-    helper.compare_responses(schema, baseline, response_type="json")
+    params = {"columns_filter": "InitialConditions,TerminalConditions"}
+    gotten_data = api.sample_analysis.get_data(
+        record_id,
+        dataset_id=dataset_id_v1_1,
+        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        schema_version=SchemaVersions.V1_1_0,
+        params=params,
+    )
+    helper.compare_responses(gotten_data, baseline, response_type="json")
 
 
 def test_relative_permeability_get_data_v1_1_filtered_in_by_row(api, helper, tests_data, record_id, dataset_id_v1_1):
@@ -511,6 +518,97 @@ def test_relative_permeability_get_data_v1_1_filtered_in_by_row(api, helper, tes
         params=params,
     )
     helper.compare_responses(gotten_data, baseline, response_type="json")
+
+
+def test_relative_permeability_get_data_v1_1_filtered_out_by_row(api, tests_data, record_id, dataset_id_v1_1):
+    """Verify v1.1.0 bulk data retrieval filtered out by row."""
+    params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
+    response = api.sample_analysis.get_data(
+        record_id,
+        dataset_id=dataset_id_v1_1,
+        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        schema_version=SchemaVersions.V1_1_0,
+        params=params,
+    )
+
+    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
+
+    assert response["columns"] == baseline["columns"]
+    assert response["index"] == []
+    assert response["data"] == []
+
+
+def test_relative_permeability_get_data_v1_1_aggregated(api, record_id, dataset_id_v1_1):
+    """Verify v1.1.0 bulk data retrieval aggregated."""
+    params = {"columns_aggregation": "SamplesAnalysisID,describe"}
+    response = api.sample_analysis.get_data(
+        record_id,
+        dataset_id=dataset_id_v1_1,
+        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        schema_version=SchemaVersions.V1_1_0,
+        params=params,
+    )
+
+    assert response["columns"] == ["describe"]
+    assert set(response["index"]) == {"count", "unique", "top", "freq"}
+    assert f"{record_id}:" in (row[0] for row in response["data"])
+
+
+def test_relative_permeability_get_schema_v1_1(api, helper, tests_data):
+    """Verify schema endpoint matches expected schema model in version 1.1.0."""
+    schema = api.sample_analysis.get_schema(SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_1_0)
+    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_SCHEMA_V1_1))
+
+    helper.compare_responses(schema, baseline, response_type="json")
+
+
+def test_relative_permeability_search_record_filtered_in_by_row_v1_1(api, helper, record_id, dataset_id_v1_1):
+    """Verify v1.1.0 record appears in search results after indexing completes."""
+    params = {"rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
+
+    response = helper.wait_for_search_record(
+        lambda: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
+    )
+    assert record_id in response["result"]
+
+
+def test_relative_permeability_search_data_filtered_in_by_row_v1_1(api, helper, tests_data, record_id, dataset_id_v1_1):
+    """Verify v1.1.0 bulk data appears in search results matching baseline."""
+    params = {"rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
+
+    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
+    baseline["data"][0][0] = f"{record_id}:"
+
+    search_response = helper.wait_for_search_data(
+        lambda: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
+    )
+
+    result_data = search_response.get("result", {})
+    helper.compare_responses(result_data, baseline, response_type="json")
+
+
+def test_relative_permeability_search_record_filtered_out_by_row_v1_1(
+    api, record_id, dataset_id_v1_1, search_available_v1_1
+):
+    """Verify v1.1.0 record is filtered out by the specified row filter in the search results."""
+    params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
+    response = api.sample_analysis.search_records(
+        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        schema_version=SchemaVersions.V1_1_0,
+        params=params,
+    )
+
+    assert record_id not in response["result"]
 
 
 def test_relative_permeability_v1_1_search_record_filtered_in_by_end_date(

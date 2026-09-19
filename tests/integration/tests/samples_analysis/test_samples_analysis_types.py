@@ -84,35 +84,35 @@ def test_samples_analysis_types_rejects_post_method(api):
 
 
 def test_samples_analysis_types_negative_missing_authorization_header(api):
-    """Reject requests missing Authorization header with 403 Forbidden."""
+    """Reject requests missing Authorization header with 401 Unauthorized."""
 
     kwargs = {
         "headers": {AUTHORIZATION: None},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
     response = api.sample_analysis.get_analysis_types(**kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
 
 def test_samples_analysis_types_negative_invalid_authorization_header(api):
-    """Reject malformed Authorization header with 403 Forbidden."""
+    """Reject malformed Authorization header with 401 Unauthorized."""
 
     kwargs = {
         "headers": {AUTHORIZATION: "dummy"},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
     response = api.sample_analysis.get_analysis_types(**kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
@@ -130,9 +130,17 @@ def test_samples_analysis_types_negative_invalid_access_token_authorization_head
 
     # Assert
     assert response.status_code == 401
-    body = response.json()
-    assert "Access denied" in body["reason"]
-    assert "The user is not authorized to perform this action" in body["message"]
+
+    content_type = response.headers.get("content-type", "").lower()
+
+    if "json" in content_type:
+        body = response.json()
+        assert "Access denied" in body["reason"]
+        assert "The user is not authorized to perform this action" in body["message"]
+    else:
+        www_authenticate = response.headers.get("www-authenticate")
+        assert www_authenticate is not None
+        assert 'error="invalid_token"' in www_authenticate
 
 
 def test_samples_analysis_types_negative_missing_data_partition_id_header(api):

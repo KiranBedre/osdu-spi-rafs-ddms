@@ -16,58 +16,49 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:work-product-component--MultiStageSeparatorTest:1.0.0
 #   timestamp: 2023-04-11T05:01:11+00:00
 
-from __future__ import annotations
 
 from datetime import date
-from typing import List, Optional
+from typing import Annotated, List, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 from ..osdu_wks_AbstractContact_1 import field_0
 
 
 class UnacceptableUsageItem(BaseModel):
     WorkflowUsage: Optional[
-        constr(
-            regex=r'^[\w\-\.]+:reference-data\-\-WorkflowUsageType:[\w\-\.\:\%]+:[0-9]*$'
-        )
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:reference-data\-\-WorkflowUsageType:[\w\-\.\:\%]+:[0-9]*$')]
     ] = Field(
         None,
         description='Name of the business activities, processes, and/or workflows that the record is technical assurance value is not valid for.',
-        example='namespace:reference-data--WorkflowUsageType:SeismicInterpretation:',
+        json_schema_extra={"example": 'namespace:reference-data--WorkflowUsageType:SeismicInterpretation:'},
         title='Workflow Usage',
     )
     WorkflowPersona: Optional[
-        constr(
-            regex=r'^[\w\-\.]+:reference-data\-\-WorkflowPersonaType:[\w\-\.\:\%]+:[0-9]*$'
-        )
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:reference-data\-\-WorkflowPersonaType:[\w\-\.\:\%]+:[0-9]*$')]
     ] = Field(
         None,
         description='Name of the role or personas that the record is technical assurance value is not valid for.',
-        example='namespace:reference-data--WorkflowPersonaType:SeismicInterpreter:',
+        json_schema_extra={"example": 'namespace:reference-data--WorkflowPersonaType:SeismicInterpreter:'},
         title='Workflow Persona',
     )
 
 
 class AcceptableUsageItem(BaseModel):
     WorkflowUsage: Optional[
-        constr(
-            regex=r'^[\w\-\.]+:reference-data\-\-WorkflowUsageType:[\w\-\.\:\%]+:[0-9]*$'
-        )
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:reference-data\-\-WorkflowUsageType:[\w\-\.\:\%]+:[0-9]*$')]
     ] = Field(
         None,
         description='Name of the business activities, processes, and/or workflows that the record is technical assurance value is valid for.',
-        example='namespace:reference-data--WorkflowUsageType:SeismicProcessing:',
+        json_schema_extra={"example": 'namespace:reference-data--WorkflowUsageType:SeismicProcessing:'},
         title='Workflow Usage',
     )
     WorkflowPersona: Optional[
-        constr(
-            regex=r'^[\w\-\.]+:reference-data\-\-WorkflowPersonaType:[\w\-\.\:\%]+:[0-9]*$'
-        )
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:reference-data\-\-WorkflowPersonaType:[\w\-\.\:\%]+:[0-9]*$')]
     ] = Field(
         None,
         description='Name of the role or personas that the record is technical assurance value is valid for.',
-        example='namespace:reference-data--WorkflowPersonaType:SeismicProcessor:',
+        json_schema_extra={"example": 'namespace:reference-data--WorkflowPersonaType:SeismicProcessor:'},
         title='Workflow Persona',
     )
 
@@ -76,54 +67,52 @@ class Field0(BaseModel):
     Comment: Optional[str] = Field(
         None,
         description='Any additional context to support the determination of technical assurance',
-        example='This is free form text from reviewer, e.g. restrictions on use',
+        json_schema_extra={"example": 'This is free form text from reviewer, e.g. restrictions on use'},
         title='Comment',
     )
     Reviewers: Optional[List[field_0.Field0]] = Field(
         None,
         description='The individuals, or roles, that reviewed and determined the technical assurance value',
-        example=[
+        json_schema_extra={"example": [
             {
                 'RoleTypeID': 'namespace:reference-data--ContactRoleType:AccountOwner:',
                 'OrganisationID': 'namespace:master-data--Organisation:SomeUniqueOrganisationID:',
                 'Name': 'Example Name',
             }
-        ],
+        ]},
         title='Reviewers',
     )
     UnacceptableUsage: Optional[List[UnacceptableUsageItem]] = Field(
         None,
         description='List of workflows and/or personas that the technical assurance value is not valid for (e.g., This data is not trusted for seismic interpretation)',
-        example=[
+        json_schema_extra={"example": [
             {
                 'WorkflowUsage': 'namespace:reference-data--WorkflowUsageType:SeismicInterpretation:',
                 'WorkflowPersona': 'namespace:reference-data--WorkflowPersonaType:SeismicInterpreter:',
             }
-        ],
+        ]},
         title='Unacceptable Usage',
     )
     AcceptableUsage: Optional[List[AcceptableUsageItem]] = Field(
         None,
         description='List of workflows and/or personas that the technical assurance value is valid for (e.g., This data is trusted for Seismic Processing)',
-        example=[
+        json_schema_extra={"example": [
             {
                 'WorkflowUsage': 'namespace:reference-data--WorkflowUsageType:SeismicProcessing:',
                 'WorkflowPersona': 'namespace:reference-data--WorkflowPersonaType:SeismicProcessor:',
             }
-        ],
+        ]},
         title='Acceptable Usage',
     )
-    TechnicalAssuranceTypeID: constr(
-        regex=r'^[\w\-\.]+:reference-data\-\-TechnicalAssuranceType:[\w\-\.\:\%]+:[0-9]*$'
-    ) = Field(
+    TechnicalAssuranceTypeID: Annotated[str, StringConstraints(pattern='^[\w\-\.]+:reference-data\-\-TechnicalAssuranceType:[\w\-\.\:\%]+:[0-9]*$')] = Field(
         ...,
         description='Describes a record\'s overall suitability for general business consumption based on data quality. Clarifications: Since Certified is the highest classification of suitable quality, any further change or versioning of a Certified record should be carefully considered and justified. If a Technical Assurance value is not populated then one can assume the data has not been evaluated or its quality is unknown (=Unevaluated). Technical Assurance values are not intended to be used for the identification of a single "preferred" or "definitive" record by comparison with other records.',
-        example='namespace:reference-data--TechnicalAssuranceType:Trusted:',
+        json_schema_extra={"example": 'namespace:reference-data--TechnicalAssuranceType:Trusted:'},
         title='Technical Assurance Type ID',
     )
     EffectiveDate: Optional[date] = Field(
         None,
         description='Date when the technical assurance determination for this record has taken place',
-        example='2020-02-13',
+        json_schema_extra={"example": '2020-02-13'},
         title='Effective Date',
     )

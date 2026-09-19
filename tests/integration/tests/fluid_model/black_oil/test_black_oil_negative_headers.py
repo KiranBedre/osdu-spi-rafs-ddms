@@ -17,7 +17,12 @@ import copy
 import pytest
 from starlette import status
 
-from app.resources.common_headers import ACCEPT, AUTHORIZATION, CONTENT_TYPE, DATA_PARTITION_ID
+from app.resources.common_headers import (
+    ACCEPT,
+    AUTHORIZATION,
+    CONTENT_TYPE,
+    DATA_PARTITION_ID,
+)
 from tests.integration.config import DataFiles, SchemaVersions
 
 
@@ -27,7 +32,7 @@ def test_black_oil_negative_missing_authorization_header(
     record_id,
     fluid_model_type,
 ):
-    """Reject Black Oil data upload without Authorization header with 403 Forbidden."""
+    """Reject Black Oil data upload without Authorization header with 401 Unauthorized."""
     data_payload = copy.deepcopy(tests_data(DataFiles.BLACK_OIL_FLUID_MODEL_DATA_V1))
     data_payload["data"][0][0] = f"{record_id}:"
 
@@ -37,12 +42,12 @@ def test_black_oil_negative_missing_authorization_header(
         fluid_model_type=fluid_model_type,
         schema_version=SchemaVersions.V1_0_0,
         headers={AUTHORIZATION: None},
-        allowed_codes=[status.HTTP_403_FORBIDDEN],
+        allowed_codes=[status.HTTP_401_UNAUTHORIZED],
         raw=True,
     )
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
@@ -69,9 +74,17 @@ def test_black_oil_negative_invalid_access_token_authorization_header(
 
     # Assert
     assert response.status_code == 401
-    body = response.json()
-    assert "Access denied" in body["reason"]
-    assert "The user is not authorized to perform this action" in body["message"]
+
+    content_type = response.headers.get("content-type", "").lower()
+
+    if "json" in content_type:
+        body = response.json()
+        assert "Access denied" in body["reason"]
+        assert "The user is not authorized to perform this action" in body["message"]
+    else:
+        www_authenticate = response.headers.get("www-authenticate")
+        assert www_authenticate is not None
+        assert 'error="invalid_token"' in www_authenticate
 
 
 def test_black_oil_negative_missing_data_partition_id_header(

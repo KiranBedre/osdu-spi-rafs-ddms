@@ -30,7 +30,7 @@ TEST_SCHEMA_VERSION = "1.0.0"
 TEST_DDMS_URN = f"urn://rafs-v1/routinecoreanalysisdata/partition:work-product-component--RockSampleAnalysis:rocksampleanalysis_test/{TEST_DATASET_RECORD_ID}"
 TEST_DDMS_URN_WITH_VERSION = f"urn://rafs-v1/routinecoreanalysisdata/partition:work-product-component--RockSampleAnalysis:rocksampleanalysis_test/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
 RECORD_DATA = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
     **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN],
@@ -38,7 +38,7 @@ RECORD_DATA = {
     },
 }
 RECORD_DATA_WITH_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
     **{
         "data": {
             "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION],
@@ -46,7 +46,7 @@ RECORD_DATA_WITH_SCHEMA_VERSION = {
     },
 }
 RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION = {
-    **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+    **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
     **{
         "data": {
             "DDMSDatasets": [f"{TEST_DDMS_URN}/2.0.0"],
@@ -290,31 +290,31 @@ TEST_WRONG_AGGREGATION_REASONS = [
 
 MULTIPLE_DATASETS_STORAGE_SIDE_EFFECT = [
     {
-        **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+        **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
         **{"data": {"Datasets": ["partition:entity-type:d1:", "partition:entity-type:d2:"]}},
     },
     {
-        **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+        **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
         **{"data": {"EncodingFormatTypeID": "partition:entity-type:application/pdf:"}},
     },
     {
-        **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+        **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
         **{"data": {"EncodingFormatTypeID": "partition:entity-type:application/xlsx:"}},
     },
 ]
 SINGLE_DATASET_STORAGE_SIDE_EFFECT = [
     {
-        **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+        **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
         **{"data": {"Datasets": ["partition:entity-type:d1:"]}},
     },
     {
-        **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+        **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
         **{"data": {"EncodingFormatTypeID": "partition:entity-type:application/pdf:"}},
     },
 ]
 NO_DATASETS_STORAGE_SIDE_EFFECT = [
     {
-        **OSDU_GENERIC_RECORD.dict(exclude_none=True),
+        **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
         **{"data": {"Datasets": []}},
     },
 ]

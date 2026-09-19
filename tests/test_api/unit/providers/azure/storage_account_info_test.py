@@ -15,7 +15,7 @@
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 from app.core.config import AppSettings
 from app.providers.dependencies.az.storage_account_info import (

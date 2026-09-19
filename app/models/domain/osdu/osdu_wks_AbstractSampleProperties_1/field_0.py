@@ -16,7 +16,6 @@
 #   filename:  api/schema-service/v1/schema/osdu:wks:master-data--Sample:2.0.0
 #   timestamp: 2023-12-12T17:04:26+00:00
 
-from __future__ import annotations
 
 from pydantic import BaseModel
 

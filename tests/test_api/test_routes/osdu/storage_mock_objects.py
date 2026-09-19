@@ -406,10 +406,10 @@ STORAGE_SERVICE_200_RESPONSE = {
 }
 
 EXPECTED_404_RESPONSE = {"code": 404, "reason": "Not Found", "message": "test content"}
-EXPECTED_422_NO_KIND_RESPONSE = {"code": 422, "reason": "Unprocessable entity.", "errors": ["kind field required"]}
+EXPECTED_422_NO_KIND_RESPONSE = {"code": 422, "reason": "Unprocessable entity.", "errors": ["kind Field required"]}
 EXPECTED_422_INVALID_KIND_REASON = "Kind `{}` not supported in RAFS-DDMS."
 EXPECTED_422_WRONG_PATTERN = ["ValidationError", "string does not match regex"]
-EXPECTED_422_TYPER_ERROR_LIST = "body value is not a valid list"
+EXPECTED_422_TYPER_ERROR_LIST = "body Input should be a valid list"
 EXPECTED_200_CREATED_RESPONSE = {
     "recordCount": 1,
     "recordIdVersions": ["partition:type:test:1"],
@@ -510,6 +510,7 @@ class TestContentPathsApiV2:
     SATURATION_TEST = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.SATURATION_TEST}"
     BLACK_OIL_FLUID_MODEL = f"{FLUID_MODEL_DATA_V2_PATH}{fluid_model_relative_paths_v2.BLACK_OIL_FLUID_MODEL}"
     COMPOSITIONAL_FLUID_MODEL = f"{FLUID_MODEL_DATA_V2_PATH}{fluid_model_relative_paths_v2.COMPOSITIONAL_FLUID_MODEL}"
+    THERMAL_COMPOSITIONAL_FLUID_MODEL = f"{FLUID_MODEL_DATA_V2_PATH}{fluid_model_relative_paths_v2.THERMAL_COMPOSITIONAL_FLUID_MODEL}"
 
 
 class BulkDatasetIdV2(NamedTuple):
@@ -569,6 +570,7 @@ class BulkDatasetIdV2(NamedTuple):
     SATURATION_TEST = f"{PARTITION}:{FILE_GENERIC_TYPE}:saturationtest-{TEST_DATASET_UID}"
     BLACK_OIL_FLUID_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:blackoil{FLUID_MODEL_STR}-{TEST_DATASET_UID}"
     COMPOSITIONAL_FLUID_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:compositional{FLUID_MODEL_STR}-{TEST_DATASET_UID}"
+    THERMAL_COMPOSITIONAL_FLUID_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:thermalcompositional{FLUID_MODEL_STR}-{TEST_DATASET_UID}"
 
 
 with open(f"{dir_path}/schemas/wpc_definitions.json") as fp:

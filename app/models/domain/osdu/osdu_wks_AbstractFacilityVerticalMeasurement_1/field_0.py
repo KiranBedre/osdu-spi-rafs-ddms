@@ -16,35 +16,28 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:master-data--Coring:1.1.0
 #   timestamp: 2023-10-24T20:24:16+00:00
 
-from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
     WellboreTVDTrajectoryID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:work-product-component\-\-WellboreTrajectory:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:work-product-component\-\-WellboreTrajectory:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Specifies what directional survey or wellpath was used to calculate the TVD.",
     )
     VerticalCRSID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="A vertical coordinate reference system defines the origin for height or depth values. It is expected that either VerticalCRSID or VerticalReferenceID reference is provided in a given vertical measurement array object, but not both.",
     )
     VerticalMeasurementSourceID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-VerticalMeasurementSource:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-VerticalMeasurementSource:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(None, description="Specifies Driller vs Logger.")
     VerticalReferenceID: Optional[str] = Field(
         None,
@@ -55,9 +48,7 @@ class Field0(BaseModel):
         description="The date and time at which a vertical measurement instance is no longer in effect.",
     )
     VerticalMeasurementPathID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-VerticalMeasurementPath:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-VerticalMeasurementPath:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None, description="Specifies Measured Depth, True Vertical Depth, or Elevation."
     )
@@ -70,9 +61,7 @@ class Field0(BaseModel):
         description="The value of the elevation or depth. Depth is positive downwards from a vertical reference or geodetic datum along a path, which can be vertical; elevation is positive upwards from a geodetic datum along a vertical path. Either can be negative.",
     )
     VerticalMeasurementTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-VerticalMeasurementType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-VerticalMeasurementType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="Specifies the type of vertical measurement (TD, Plugback, Kickoff, Drill Floor, Rotary Table...).",
@@ -81,17 +70,13 @@ class Field0(BaseModel):
         None, description="Text which describes a vertical measurement in detail."
     )
     VerticalMeasurementUnitOfMeasureID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The unit of measure for the vertical measurement. If a unit of measure and a vertical CRS are provided, the unit of measure provided is taken over the unit of measure from the CRS.",
     )
     VerticalReferenceEntityID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:(master-data\-\-Wellbore|master-data\-\-Well|master-data\-\-Rig):[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:(master-data\-\-Wellbore|master-data\-\-Well|master-data\-\-Rig):[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="This relationship identifies the entity (aka record) in which the VerticalReferenceID is found; It could be a different OSDU entity or a self-reference. For example, a Wellbore VerticalMeasurement may reference a member of a VerticalMeasurements[] array in its parent Well record. Alternatively, VerticalReferenceEntityID may be populated with the ID of its own Wellbore record to make explicit that VerticalReferenceID is intended to be found in this record, not another.",

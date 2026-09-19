@@ -136,6 +136,10 @@ def test_proppant_embedment_negative_add_data_v1_invalid_type_specific_field(
 ):
     """Reject data upload with wrong type for specific field with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.PROPPANT_EMBEDMENT_DATA_V1))
+
+    samples_analysis_id_index = data_payload["columns"].index("SamplesAnalysisID")
+    for row in data_payload["data"]:
+        row[samples_analysis_id_index] = f"{record_id}:"
     helper.set_by_path(data_payload, field_path, value)
 
     response = api.sample_analysis.post_data(

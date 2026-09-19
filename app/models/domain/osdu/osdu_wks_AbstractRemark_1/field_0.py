@@ -16,7 +16,6 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:work-product-component--SamplesAnalysis:1.0.0
 #   timestamp: 2023-10-19T20:18:16+00:00
 
-from __future__ import annotations
 
 from datetime import date
 from typing import Optional
@@ -36,7 +35,7 @@ class Field0(BaseModel):
     RemarkSequenceNumber: Optional[int] = Field(
         None,
         description="A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
-        example=1,
+        json_schema_extra={"example": 1},
         title="Remark Sequence Number",
     )
     Remark: Optional[str] = Field(

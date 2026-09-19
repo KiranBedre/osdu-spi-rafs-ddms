@@ -26,6 +26,7 @@ spec:
             app: {{ printf "%s-cronjob" .Values.conf.appName | quote }}
           annotations:
             checksum/indexer-image: "{{ .Values.data.cronJobImage | sha256sum }}"
+            sidecar.istio.io/inject: "false"
         spec:
           restartPolicy: Never
           {{- if .Values.rosa }}

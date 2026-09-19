@@ -16,12 +16,11 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:work-product-component--MultiStageSeparatorTest:1.0.0
 #   timestamp: 2023-04-11T05:01:11+00:00
 
-from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Annotated, Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, RootModel, StringConstraints
 
 
 class Type(Enum):
@@ -34,8 +33,8 @@ class GeometryItem(BaseModel):
     bbox: Optional[List[float]] = Field(None, min_items=4)
 
 
-class Coordinate(BaseModel):
-    __root__: List[Any]
+class Coordinate(RootModel[List[Any]]):
+    pass
 
 
 class TypeModel(Enum):
@@ -158,43 +157,39 @@ class TypeModel13(Enum):
 
 class Field0(BaseModel):
     CoordinateReferenceSystemID: Optional[
-        constr(
-            regex=r'^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$'
-        )
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$')]
     ] = Field(
         None,
         description='The CRS reference into the CoordinateReferenceSystem catalog.',
-        example='namespace:reference-data--CoordinateReferenceSystem:BoundProjected:EPSG::32021_EPSG::15851:',
+        json_schema_extra={"example": 'namespace:reference-data--CoordinateReferenceSystem:BoundProjected:EPSG::32021_EPSG::15851:'},
         title='Coordinate Reference System ID',
     )
     persistableReferenceCrs: str = Field(
         ...,
         description='The CRS reference as persistableReference string. If populated, the CoordinateReferenceSystemID takes precedence.',
-        example='{"authCode":{"auth":"OSDU","code":"32021079"},"lateBoundCRS":{"authCode":{"auth":"EPSG","code":"32021"},"name":"NAD_1927_StatePlane_North_Dakota_South_FIPS_3302","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"NAD_1927_StatePlane_North_Dakota_South_FIPS_3302\\",GEOGCS[\\"GCS_North_American_1927\\",DATUM[\\"D_North_American_1927\\",SPHEROID[\\"Clarke_1866\\",6378206.4,294.9786982]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Lambert_Conformal_Conic\\"],PARAMETER[\\"False_Easting\\",2000000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-100.5],PARAMETER[\\"Standard_Parallel_1\\",46.18333333333333],PARAMETER[\\"Standard_Parallel_2\\",47.48333333333333],PARAMETER[\\"Latitude_Of_Origin\\",45.66666666666666],UNIT[\\"Foot_US\\",0.3048006096012192],AUTHORITY[\\"EPSG\\",32021]]"},"name":"NAD27 * OGP-Usa Conus / North Dakota CS27 South zone [32021,15851]","singleCT":{"authCode":{"auth":"EPSG","code":"15851"},"name":"NAD_1927_To_WGS_1984_79_CONUS","type":"ST","ver":"PE_10_9_1","wkt":"GEOGTRAN[\\"NAD_1927_To_WGS_1984_79_CONUS\\",GEOGCS[\\"GCS_North_American_1927\\",DATUM[\\"D_North_American_1927\\",SPHEROID[\\"Clarke_1866\\",6378206.4,294.9786982]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],METHOD[\\"NADCON\\"],PARAMETER[\\"Dataset_conus\\",0.0],OPERATIONACCURACY[5.0],AUTHORITY[\\"EPSG\\",15851]]"},"type":"EBC","ver":"PE_10_9_1"}',
+        json_schema_extra={"example": '{"authCode":{"auth":"OSDU","code":"32021079"},"lateBoundCRS":{"authCode":{"auth":"EPSG","code":"32021"},"name":"NAD_1927_StatePlane_North_Dakota_South_FIPS_3302","type":"LBC","ver":"PE_10_9_1","wkt":"PROJCS[\\"NAD_1927_StatePlane_North_Dakota_South_FIPS_3302\\",GEOGCS[\\"GCS_North_American_1927\\",DATUM[\\"D_North_American_1927\\",SPHEROID[\\"Clarke_1866\\",6378206.4,294.9786982]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],PROJECTION[\\"Lambert_Conformal_Conic\\"],PARAMETER[\\"False_Easting\\",2000000.0],PARAMETER[\\"False_Northing\\",0.0],PARAMETER[\\"Central_Meridian\\",-100.5],PARAMETER[\\"Standard_Parallel_1\\",46.18333333333333],PARAMETER[\\"Standard_Parallel_2\\",47.48333333333333],PARAMETER[\\"Latitude_Of_Origin\\",45.66666666666666],UNIT[\\"Foot_US\\",0.3048006096012192],AUTHORITY[\\"EPSG\\",32021]]"},"name":"NAD27 * OGP-Usa Conus / North Dakota CS27 South zone [32021,15851]","singleCT":{"authCode":{"auth":"EPSG","code":"15851"},"name":"NAD_1927_To_WGS_1984_79_CONUS","type":"ST","ver":"PE_10_9_1","wkt":"GEOGTRAN[\\"NAD_1927_To_WGS_1984_79_CONUS\\",GEOGCS[\\"GCS_North_American_1927\\",DATUM[\\"D_North_American_1927\\",SPHEROID[\\"Clarke_1866\\",6378206.4,294.9786982]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],GEOGCS[\\"GCS_WGS_1984\\",DATUM[\\"D_WGS_1984\\",SPHEROID[\\"WGS_1984\\",6378137.0,298.257223563]],PRIMEM[\\"Greenwich\\",0.0],UNIT[\\"Degree\\",0.0174532925199433]],METHOD[\\"NADCON\\"],PARAMETER[\\"Dataset_conus\\",0.0],OPERATIONACCURACY[5.0],AUTHORITY[\\"EPSG\\",15851]]"},"type":"EBC","ver":"PE_10_9_1"}'},
         title='CRS Reference',
     )
     features: List[Feature]
     persistableReferenceUnitZ: Optional[str] = Field(
         None,
         description='The unit of measure for the Z-axis (only for 3-dimensional coordinates, where the CRS does not describe the vertical unit). Note that the direction is upwards positive, i.e. Z means height.',
-        example='{"scaleOffset":{"scale":1.0,"offset":0.0},"symbol":"m","baseMeasurement":{"ancestry":"Length","type":"UM"},"type":"USO"}',
+        json_schema_extra={"example": '{"scaleOffset":{"scale":1.0,"offset":0.0},"symbol":"m","baseMeasurement":{"ancestry":"Length","type":"UM"},"type":"USO"}'},
         title='Z-Unit Reference',
     )
     bbox: Optional[List[float]] = Field(None, min_items=4)
     persistableReferenceVerticalCrs: Optional[str] = Field(
         None,
         description="The VerticalCRS reference as persistableReference string. If populated, the VerticalCoordinateReferenceSystemID takes precedence. The property is null or empty for 2D geometries. For 3D geometries and absent or null persistableReferenceVerticalCrs the vertical CRS is either provided via persistableReferenceCrs's CompoundCRS or it is implicitly defined as EPSG:5714 MSL height.",
-        example='{"authCode":{"auth":"EPSG","code":"5714"},"name":"MSL_Height","type":"LBC","ver":"PE_10_9_1","wkt":"VERTCS[\\"MSL_Height\\",VDATUM[\\"Mean_Sea_Level\\"],PARAMETER[\\"Vertical_Shift\\",0.0],PARAMETER[\\"Direction\\",1.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",5714]]"}',
+        json_schema_extra={"example": '{"authCode":{"auth":"EPSG","code":"5714"},"name":"MSL_Height","type":"LBC","ver":"PE_10_9_1","wkt":"VERTCS[\\"MSL_Height\\",VDATUM[\\"Mean_Sea_Level\\"],PARAMETER[\\"Vertical_Shift\\",0.0],PARAMETER[\\"Direction\\",1.0],UNIT[\\"Meter\\",1.0],AUTHORITY[\\"EPSG\\",5714]]"}'},
         title='Vertical CRS Reference',
     )
     type: TypeModel13
     VerticalCoordinateReferenceSystemID: Optional[
-        constr(
-            regex=r'^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$'
-        )
+        Annotated[str, StringConstraints(pattern=r'^[\w\-\.]+:reference-data\-\-CoordinateReferenceSystem:[\w\-\.\:\%]+:[0-9]*$')]
     ] = Field(
         None,
         description="The explicit VerticalCRS reference into the CoordinateReferenceSystem catalog. This property stays empty for 2D geometries. Absent or empty values for 3D geometries mean the context may be provided by a CompoundCRS in 'CoordinateReferenceSystemID' or implicitly EPSG:5714 MSL height",
-        example='namespace:reference-data--CoordinateReferenceSystem:Vertical:EPSG::5714:',
+        json_schema_extra={"example": 'namespace:reference-data--CoordinateReferenceSystem:Vertical:EPSG::5714:'},
         title='Vertical Coordinate Reference System ID',
     )

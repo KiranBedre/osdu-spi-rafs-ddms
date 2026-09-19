@@ -14,6 +14,7 @@
 
 import datetime
 import re
+import warnings
 from typing import Any, Optional
 
 import jsonschema
@@ -73,6 +74,13 @@ def validate_time(str_value: str) -> bool:
         return True
     except (TypeError, ValueError):
         return False
+
+
+warnings.filterwarnings(  # noqa: WPS421
+    "ignore",
+    message="jsonschema.RefResolver is deprecated",
+    category=DeprecationWarning,
+)
 
 
 class OSDURefResolver(jsonschema.RefResolver):

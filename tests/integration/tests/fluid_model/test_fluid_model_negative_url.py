@@ -130,7 +130,7 @@ def test_fluid_negative_edge_max_version_in_url(api, tests_data, record_id):
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "version ensure this value is less than or equal to 9223372036854775807" in body["errors"]
+    assert "version Input should be less than or equal to 9223372036854775807" in body["errors"]
 
 
 def test_fluid_negative_edge_min_version_in_url(api, tests_data, record_id):
@@ -147,4 +147,4 @@ def test_fluid_negative_edge_min_version_in_url(api, tests_data, record_id):
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "version ensure this value is greater than or equal to 1" in body["errors"]
+    assert "version Input should be greater than or equal to 1" in body["errors"]

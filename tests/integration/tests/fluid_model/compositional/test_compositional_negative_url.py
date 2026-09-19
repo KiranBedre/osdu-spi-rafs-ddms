@@ -16,7 +16,9 @@ import copy
 
 from starlette import status
 
-from tests.integration.config import DataFiles, SchemaVersions
+from tests.integration.config import CONFIG, DataFiles, SchemaVersions
+
+DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
 
 def test_compositional_negative_invalid_regex_record_id_in_url(
@@ -75,6 +77,95 @@ def test_compositional_negative_get_data_invalid_regex_record_id_in_url(
         "work-product-component--FluidModel ID is not provided in expected OSDU pattern"
         in error
         for error in body["errors"]
+    )
+
+
+def test_compositional_negative_invalid_data_partition_id_record_id_in_url(
+    api,
+    tests_data,
+    fluid_model_type,
+):
+    """Reject a FluidModel record ID from another partition with 400."""
+    record_id = "WrongID:work-product-component--FluidModel:Test123"
+    data_payload = copy.deepcopy(
+        tests_data(DataFiles.COMPOSITIONAL_FLUID_MODEL_DATA_V1)
+    )
+    data_payload["data"][0][0] = f"{record_id}:"
+
+    response = api.fluid_model.post_data(
+        record_id=record_id,
+        body=data_payload,
+        fluid_model_type=fluid_model_type,
+        schema_version=SchemaVersions.V1_0_0,
+        allowed_codes=[status.HTTP_400_BAD_REQUEST],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 400
+    body = response.json()
+    assert "Invalid record ID" in body["reason"]
+    assert (
+        f"The record '{record_id}' does not belong to account '{DATA_PARTITION_ID}'"
+        in body["message"]
+    )
+
+
+def test_compositional_negative_non_existing_record_id_in_url(
+    api,
+    tests_data,
+    fluid_model_type,
+):
+    """Reject Compositional content upload for a non-existent FluidModel record with 404."""
+    record_id = f"{DATA_PARTITION_ID}:work-product-component--FluidModel:NonExistingID"
+    data_payload = copy.deepcopy(
+        tests_data(DataFiles.COMPOSITIONAL_FLUID_MODEL_DATA_V1)
+    )
+    data_payload["data"][0][0] = f"{record_id}:"
+
+    response = api.fluid_model.post_data(
+        record_id=record_id,
+        body=data_payload,
+        fluid_model_type=fluid_model_type,
+        schema_version=SchemaVersions.V1_0_0,
+        allowed_codes=[status.HTTP_404_NOT_FOUND],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 404
+    body = response.json()
+    assert "Record not found" in body["reason"]
+    assert (
+        f"The record '{record_id}' was not found" in body["message"]
+        or f"Record with id '{record_id}' does not exist" in body["message"]
+    )
+
+
+def test_compositional_negative_get_data_non_existing_record_id_in_url(
+    api,
+    dataset_id,
+    fluid_model_type,
+):
+    """Reject Compositional data retrieval for a non-existent FluidModel record with 404."""
+    record_id = f"{DATA_PARTITION_ID}:work-product-component--FluidModel:NonExistingID"
+
+    response = api.fluid_model.get_data(
+        record_id=record_id,
+        dataset_id=dataset_id,
+        fluid_model_type=fluid_model_type,
+        schema_version=SchemaVersions.V1_0_0,
+        allowed_codes=[status.HTTP_404_NOT_FOUND],
+        raw=True,
+    )
+
+    # Assert
+    assert response.status_code == 404
+    body = response.json()
+    assert "Record not found" in body["reason"]
+    assert (
+        f"The record '{record_id}' was not found" in body["message"]
+        or f"Record with id '{record_id}' does not exist" in body["message"]
     )
 
 

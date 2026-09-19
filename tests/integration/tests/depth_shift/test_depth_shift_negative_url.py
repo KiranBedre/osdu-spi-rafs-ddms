@@ -151,7 +151,7 @@ def test_depth_shift_negative_edge_max_version_in_url(api, tests_data, record_id
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "version ensure this value is less than or equal to 9223372036854775807" in body["errors"]
+    assert "version Input should be less than or equal to 9223372036854775807" in body["errors"]
 
 
 def test_depth_shift_negative_edge_min_version_in_url(api, tests_data, record_id):
@@ -168,7 +168,7 @@ def test_depth_shift_negative_edge_min_version_in_url(api, tests_data, record_id
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "version ensure this value is greater than or equal to 1" in body["errors"]
+    assert "version Input should be greater than or equal to 1" in body["errors"]
 
 
 def test_depth_shift_negative_invalid_regex_dataset_id_in_url(api, tests_data, record_id):
@@ -463,7 +463,7 @@ def test_depth_shift_negative_invalid_orient_param(api, tests_data, endpoint, ar
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "orient unexpected value; permitted: 'split', 'records'" in body["errors"]
+    assert "orient Input should be 'split' or 'records'" in body["errors"]
 
 
 @pytest.mark.parametrize("endpoint", Endpoints.SEARCH_ENDPOINTS)
@@ -543,7 +543,7 @@ def test_depth_shift_negative_invalid_format_page_limit_param(api, tests_data, e
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "page_limit value is not a valid integer" in body["errors"]
+    assert "page_limit Input should be a valid integer, unable to parse string as an integer" in body["errors"]
 
 
 @pytest.mark.parametrize(("endpoint", "max_limit"), SEARCH_PAGE_LIMITS.items())
@@ -563,7 +563,7 @@ def test_depth_shift_negative_boundary_value_page_limit_param(api, tests_data, e
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert f"page_limit ensure this value is less than or equal to {max_limit}" in body["errors"]
+    assert f"page_limit Input should be less than or equal to {max_limit}" in body["errors"]
 
 
 @pytest.mark.parametrize("endpoint", Endpoints.SEARCH_ENDPOINTS)
@@ -583,7 +583,7 @@ def test_depth_shift_negative_invalid_format_offset_param(api, tests_data, endpo
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "offset value is not a valid integer" in body["errors"]
+    assert "offset Input should be a valid integer, unable to parse string as an integer" in body["errors"]
 
 
 @pytest.mark.parametrize("endpoint", Endpoints.SEARCH_ENDPOINTS)
@@ -603,7 +603,7 @@ def test_depth_shift_negative_boundary_value_offset_param(api, tests_data, endpo
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "offset ensure this value is greater than or equal to 0" in body["errors"]
+    assert "offset Input should be greater than or equal to 0" in body["errors"]
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.SCHEMA_VERSION_ENDPOINTS_ARGS)

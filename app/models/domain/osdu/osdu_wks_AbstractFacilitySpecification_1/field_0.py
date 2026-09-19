@@ -16,12 +16,11 @@
 #   filename:  api/schema-service/v1/schema/osdu:wks:master-data--GenericFacility:1.0.0
 #   timestamp: 2023-12-12T16:50:26+00:00
 
-from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
@@ -43,9 +42,7 @@ class Field0(BaseModel):
         description="The date and time at which the facility specification instance becomes effective.",
     )
     UnitOfMeasureID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-UnitOfMeasure:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None,
         description="The unit for the quantity parameter, like metre (m in SI units system) for quantity Length.",
@@ -54,7 +51,5 @@ class Field0(BaseModel):
         None, description="The value for the specified parameter type."
     )
     ParameterTypeID: Optional[
-        constr(
-            regex=r"^[\w\-\.]+:reference-data\-\-ParameterType:[\w\-\.\:\%]+:[0-9]*$"
-        )
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:reference-data\-\-ParameterType:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(None, description="Parameter type of property or characteristic.")

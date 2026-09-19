@@ -35,19 +35,19 @@ GENERIC_MANDATORY_FIELDS = [
 ]
 
 GENERIC_INVALID_TYPE_FIELDS = [
-    ("/id", ["id"], "id str type expected"),
-    ("/kind", ["kind"], "kind str type expected"),
-    ("/legal", ["legal"], "legal value is not a valid dict"),
-    ("/acl", ["acl"], "acl value is not a valid dict"),
-    ("/legal/legaltags", "legaltags", "legaltags value is not a valid list"),
+    ("/id", ["id"], "id Input should be a valid string"),
+    ("/kind", ["kind"], "kind Input should be a valid string"),
+    ("/legal", ["legal"], "legal Input should be a valid dictionary or object to extract fields from"),
+    ("/acl", ["acl"], "acl Input should be a valid dictionary or object to extract fields from"),
+    ("/legal/legaltags", "legaltags", "legaltags Input should be a valid list"),
     (
         "/legal/otherRelevantDataCountries",
         "otherRelevantDataCountries",
-        "otherRelevantDataCountries value is not a valid list",
+        "otherRelevantDataCountries Input should be a valid list",
     ),
-    ("/acl/owners", "owners", "owners value is not a valid list"),
-    ("/acl/viewers", "viewers", "viewers value is not a valid list"),
-    ("/data", "data", "data value is not a valid dict"),
+    ("/acl/owners", "owners", "owners Input should be a valid list"),
+    ("/acl/viewers", "viewers", "viewers Input should be a valid list"),
+    ("/data", "data", "data Input should be a valid dictionary"),
 ]
 
 SPECIFIC_INVALID_TYPE_FIELDS = [
@@ -258,7 +258,7 @@ def test_depth_shift_negative_create_record_missing_mandatory_generic_field(api,
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert f"{field_name} field required" in body["errors"]
+    assert f"{field_name} Field required" in body["errors"]
     assert len(body["errors"]) == 1, f"Expected errors list length 1, got {len(body['errors'])}"
 
 
@@ -364,7 +364,7 @@ def test_depth_shift_negative_create_record_extra_field_generic(api, tests_data,
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert f"{field_name} extra fields not permitted" in body["errors"]
+    assert f"{field_name} Extra inputs are not permitted" in body["errors"]
     assert len(body["errors"]) == 1
 
 
@@ -448,7 +448,7 @@ def test_depth_shift_negative_create_record_invalid_payload_format(api, tests_da
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    assert "body value is not a valid list" in body["errors"]
+    assert "body Input should be a valid list" in body["errors"]
 
 
 @pytest.mark.parametrize("field_path", GENERIC_MANDATORY_DATA_FIELDS)

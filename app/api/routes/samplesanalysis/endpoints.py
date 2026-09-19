@@ -374,7 +374,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
                 ShiftedSampleBase=row["ShiftedSampleBase"],
                 ShiftedSampleMean=row["ShiftedSampleMean"],
                 DepthShiftWarnings=row["DepthShiftWarnings"] if isinstance(row["DepthShiftWarnings"], list) else [],
-            ).dict()
+            ).model_dump()
             for _, row in augmented_df[_ds_cols].iterrows()
         ]
         clean_df = augmented_df.drop(columns=_ds_cols)
@@ -391,7 +391,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             definitiveDepthShiftAvailable=definitive_available,
             usedDefinitive=used_definitive,
             warnings=extra_warnings,
-        ).dict()
+        ).model_dump()
         return Response(
             content=json.dumps(result),
             media_type="application/json",
@@ -415,7 +415,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
 
         if missing:
             raise HTTPException(
-                status_code=HTTP_422_UNPROCESSABLE,
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=(
                     "Depth shift requires every sample record to resolve to a WellboreID. "
                     f"Missing WellboreID for sample ids: {sorted(str(s) for s in missing)}."

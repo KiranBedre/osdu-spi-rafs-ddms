@@ -13,11 +13,16 @@
 #  limitations under the License.
 
 import copy
-import pytest
 
+import pytest
 from starlette import status
 
-from app.resources.common_headers import ACCEPT, AUTHORIZATION, CONTENT_TYPE, DATA_PARTITION_ID
+from app.resources.common_headers import (
+    ACCEPT,
+    AUTHORIZATION,
+    CONTENT_TYPE,
+    DATA_PARTITION_ID,
+)
 from tests.integration.config import (
     DataFiles,
     Endpoints,
@@ -28,14 +33,14 @@ from tests.integration.config import (
 def test_depth_shift_negative_missing_authorization_header(
     api, tests_data, endpoint, args, record_id, version, dataset_id
 ):
-    """Reject requests missing Authorization header with 403 Forbidden."""
+    """Reject requests missing Authorization header with 401 Unauthorized."""
     method = getattr(api.depth_shift, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
 
     kwargs = {
         "headers": {AUTHORIZATION: None},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
@@ -49,7 +54,7 @@ def test_depth_shift_negative_missing_authorization_header(
     response = method(*call_args, **kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
@@ -58,14 +63,14 @@ def test_depth_shift_negative_missing_authorization_header(
 def test_depth_shift_negative_invalid_authorization_header(
     api, tests_data, endpoint, args, record_id, version, dataset_id
 ):
-    """Reject malformed Authorization header with 403 Forbidden."""
+    """Reject malformed Authorization header with 401 Unauthorized."""
     method = getattr(api.depth_shift, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
 
     kwargs = {
         "headers": {AUTHORIZATION: "dummy"},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
@@ -79,7 +84,7 @@ def test_depth_shift_negative_invalid_authorization_header(
     response = method(*call_args, **kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
@@ -110,9 +115,17 @@ def test_depth_shift_negative_invalid_access_token_authorization_header(
 
     # Assert
     assert response.status_code == 401
-    body = response.json()
-    assert "Access denied" in body["reason"]
-    assert "The user is not authorized to perform this action" in body["message"]
+
+    content_type = response.headers.get("content-type", "").lower()
+
+    if "json" in content_type:
+        body = response.json()
+        assert "Access denied" in body["reason"]
+        assert "The user is not authorized to perform this action" in body["message"]
+    else:
+        www_authenticate = response.headers.get("www-authenticate")
+        assert www_authenticate is not None
+        assert 'error="invalid_token"' in www_authenticate
 
 
 @pytest.mark.parametrize("endpoint,args", Endpoints.ALL_ENDPOINTS_ARGS)

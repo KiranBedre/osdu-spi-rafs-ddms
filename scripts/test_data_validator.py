@@ -18,7 +18,7 @@ import os
 import sys
 
 import pandas as pd
-from pydantic.error_wrappers import ValidationError
+from pydantic import ValidationError
 
 app_dir = os.path.join(os.path.dirname(__file__), "..")  # noqa # isort: skip
 sys.path.append(app_dir)  # noqa # isort: skip

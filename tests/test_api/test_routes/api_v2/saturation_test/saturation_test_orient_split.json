@@ -1,5 +1,5 @@
 {
-  "columns":[
+  "columns": [
     "SamplesAnalysisID",
     "SampleID",
     "Meta",
@@ -10,44 +10,44 @@
     "SourceAnalysisID",
     "Remarks"
   ],
-  "index":[
+  "index": [
     0
   ],
-  "data":[
+  "data": [
     [
       "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       "opendes:master-data--Sample:Example_Sample:",
       [
         {
-          "kind":"Unit",
-          "name":"degree Fahrenheit",
-          "persistableReference":"{\"abcd\":{\"a\":0.0,\"b\":255.3722222222222,\"c\":1.0,\"d\":273.15},\"symbol\":\"degF\",\"baseMeasurement\":{\"ancestry\":\"K\",\"type\":\"UM\"},\"type\":\"UAD\"}",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:degF:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "degree Fahrenheit",
+          "persistableReference": "{\"abcd\":{\"a\":0.0,\"b\":255.3722222222222,\"c\":1.0,\"d\":273.15},\"symbol\":\"degF\",\"baseMeasurement\":{\"ancestry\":\"K\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:degF:",
+          "propertyNames": [
             "Temperature"
           ]
         },
         {
-          "kind":"Unit",
-          "name":"pound-force per square inch",
-          "persistableReference":"{\"abcd\":{\"a\":0.0,\"b\":6894.757293168,\"c\":1.0,\"d\":0.0},\"symbol\":\"psi\",\"baseMeasurement\":{\"ancestry\":\"M/(L*T2)\",\"type\":\"UM\"},\"type\":\"UAD\"}",
-          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:psi:",
-          "propertyNames":[
+          "kind": "Unit",
+          "name": "pound-force per square inch",
+          "persistableReference": "{\"abcd\":{\"a\":0.0,\"b\":6894.757293168,\"c\":1.0,\"d\":0.0},\"symbol\":\"psi\",\"baseMeasurement\":{\"ancestry\":\"M/(L*T2)\",\"type\":\"UM\"},\"type\":\"UAD\"}",
+          "unitOfMeasureID": "opendes:reference-data--UnitOfMeasure:psi:",
+          "propertyNames": [
             "SaturationPressure"
           ]
         }
       ],
-      "1",
+      "SAT-1",
       250.0,
       3500.0,
       "opendes:reference-data--SaturationPressureType:BubblePoint:",
       "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
       [
         {
-          "RemarkSequenceNumber":1,
-          "Remark":"Bubble point determined from constant composition expansion test.",
-          "RemarkSource":"Laboratory Analyst",
-          "RemarkDate":"2025-01-15"
+          "RemarkSequenceNumber": 1,
+          "Remark": "Bubble point determined from constant composition expansion test.",
+          "RemarkSource": "Laboratory Analyst",
+          "RemarkDate": "2025-01-15"
         }
       ]
     ]

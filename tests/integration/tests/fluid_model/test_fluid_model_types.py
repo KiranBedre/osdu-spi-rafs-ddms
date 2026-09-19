@@ -60,7 +60,11 @@ def test_fluid_model_types_response_contract(api):
 
     body = response.json()
     assert isinstance(body, dict)
-    assert set(body) == {"blackoilfluidmodel", "compositionalfluidmodel"}
+    assert set(body) == {
+        "blackoilfluidmodel",
+        "compositionalfluidmodel",
+        "thermalcompositionalfluidmodel",
+    }
 
     for fluid_model_type, versions in body.items():
         assert isinstance(fluid_model_type, str)
@@ -77,34 +81,34 @@ def test_fluid_model_types_response_contract(api):
 
 
 def test_fluid_model_types_negative_missing_authorization_header(api):
-    """Reject requests missing Authorization header with 403 Forbidden."""
+    """Reject requests missing Authorization header with 401 Unauthorized."""
 
     kwargs = {
         "headers": {AUTHORIZATION: None},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
     response = api.fluid_model.get_fluid_model_types(**kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
 
 def test_fluid_model_types_negative_invalid_authorization_header(api):
-    """Reject malformed Authorization header with 403 Forbidden."""
+    """Reject malformed Authorization header with 401 Unauthorized."""
 
     kwargs = {
         "headers": {AUTHORIZATION: "dummy"},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
     response = api.fluid_model.get_fluid_model_types(**kwargs)
 
     # Assert
-    assert response.status_code == 403
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]

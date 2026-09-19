@@ -4,5 +4,8 @@
   ],
   "compositionalfluidmodel": [
     "1.0.0"
+  ],
+  "thermalcompositionalfluidmodel": [
+    "1.0.0"
   ]
 }

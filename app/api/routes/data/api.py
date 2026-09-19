@@ -13,8 +13,10 @@
 #  limitations under the License.
 
 import io
+import json
+import types
 import uuid
-from typing import List, Optional
+from typing import List, Optional, Union, get_args, get_origin
 
 import pandas as pd
 import pyarrow
@@ -61,6 +63,8 @@ from app.exceptions import exceptions
 from app.models.data_schemas.data_schema import build_data_schema
 from app.resources.filters import DataFrameFilterValidator
 from app.resources.mime_types import SupportedMimeTypes
+from app.search.pending_writes import record_pending_write  # noqa: WPS201
+from app.search.scope import enrich_scope_from_samples, extract_record_scope
 from app.services import dataset, storage
 
 
@@ -75,6 +79,49 @@ def _normalize_nan_to_none(df: pd.DataFrame) -> None:
     df[obj_cols] = df[obj_cols].where(df[obj_cols].notna(), None)
 
 
+def _unwrap_optional(annotation):
+    """Return the inner type of Optional[T] (Union[T, None] or T | None), or annotation unchanged."""
+    if get_origin(annotation) is Union or isinstance(annotation, types.UnionType):
+        non_none = [arg for arg in get_args(annotation) if arg is not type(None)]  # noqa: WPS516, E721
+        return non_none[0] if non_none else annotation
+    return annotation
+
+
+def _str_field_names(model: type) -> List[str]:
+    """Return model field names annotated as str (including Optional[str])."""
+    return [
+        field_name
+        for field_name, field_info in model.model_fields.items()
+        if _unwrap_optional(field_info.annotation) is str
+    ]
+
+
+def _json_str_dtype_map(validated_json: str, orient: str, model: type) -> dict:
+    """Build string dtype hints without coercing structured JSON values.
+
+    Numeric-looking strings need an explicit dtype hint so values such as
+    "001" retain their exact representation. Lists and dictionaries must
+    remain unchanged so schema validation can reject them for string fields.
+    """
+    payload = json.loads(validated_json)
+
+    if orient == "split":
+        columns = payload["columns"]
+        rows = [dict(zip(columns, row)) for row in payload["data"]]
+    else:
+        rows = payload
+
+    string_fields = _str_field_names(model)
+    complex_fields = {
+        field_name
+        for field_name in string_fields
+        if any(isinstance(row.get(field_name), (list, dict)) for row in rows if isinstance(row, dict))
+    }
+
+    safe_fields = [field_name for field_name in string_fields if field_name not in complex_fields]
+    return dict.fromkeys(safe_fields, "string")
+
+
 def _cast_float_columns(df: pd.DataFrame, model: type) -> None:
     """Cast DataFrame columns to float64 for fields annotated as float in the model.
 
@@ -82,9 +129,34 @@ def _cast_float_columns(df: pd.DataFrame, model: type) -> None:
     so float fields sent as 2.0 are stored as integers in parquet and returned
     as 2 on GET. This corrects the dtype before parquet storage.
     """
-    for field_name, field in model.__fields__.items():
-        if field.type_ is float and field_name in df.columns:
+    for field_name, field_info in model.model_fields.items():
+        annotation = _unwrap_optional(field_info.annotation)
+        if annotation is float and field_name in df.columns:
             df[field_name] = df[field_name].astype(float)
+
+
+def _format_numeric_as_str(numeric_value):
+    """Render a numeric scalar as str without forcing whole numbers into '<n>.0' form."""
+    if pd.isna(numeric_value):
+        return numeric_value
+    return str(int(numeric_value)) if float(numeric_value).is_integer() else str(numeric_value)
+
+
+def _cast_str_columns(df: pd.DataFrame, model: type) -> None:
+    """Cast numeric DataFrame columns back to str for fields annotated as str.
+
+    Backstop for input that bypasses the `pd.read_json` dtype hint in
+    `_read_dataframe` (e.g. a parquet upload with a numeric-typed column for
+    a str field). Pydantic v2 rejects integers for str fields (unlike v1,
+    which coerced silently), and a naive `astype(str)` would render a
+    whole-number float like 1.0 as "1.0" instead of "1".
+    """
+    for field_name in _str_field_names(model):
+        if field_name not in df.columns:
+            continue
+        col = df[field_name]
+        if pd.api.types.is_numeric_dtype(col):
+            df[field_name] = col.map(_format_numeric_as_str)
 
 
 class BaseDataView(object):
@@ -302,7 +374,7 @@ class BaseDataView(object):
 
         if "validation error" in error_msg and "OrientSplit" in error_msg:
             required_keys = ["columns", "index", "data"]
-            missing_fields = [f"'{key}'" for key in required_keys if f"{key}\n  field required" in error_msg]
+            missing_fields = [f"'{key}'" for key in required_keys if f"{key}\n  field required" in error_msg.lower()]
 
             if missing_fields:
                 fields_str = ", ".join(missing_fields)
@@ -328,17 +400,22 @@ class BaseDataView(object):
         self,
         request: Request,
         mime_type: SupportedMimeTypes,
+        model: type,
     ):
         """Read request body into a DataFrame and return (df, raw_parquet_bytes).
 
         For JSON input, raw_parquet_bytes is None and the caller must convert df
         to parquet. For parquet input, raw_parquet_bytes holds the original bytes
-        and df is a JSON-round-tripped copy used only for validation.
+        and df is read directly; pydantic v2 validates raw parquet cell types
+        (numpy arrays for list fields, datetime.date) without the JSON
+        round-trip that pydantic v1 required.
 
         :param request: request object
         :type request: Request
         :param mime_type: detected content mime type
         :type mime_type: SupportedMimeTypes
+        :param model: pydantic model used to build str-column dtype hints for JSON input
+        :type model: type
         :return: (dataframe, raw_parquet_bytes or None)
         :rtype: tuple
         """
@@ -347,12 +424,12 @@ class BaseDataView(object):
                 raw_parquet = await request.body()
                 logger.debug(pd.get_option("io.parquet.engine"))
                 df = pd.read_parquet(io.BytesIO(raw_parquet))
-                # workaround to pass pandera validation
-                # TODO remove when migration to pyarrow validation is done
-                df = pd.read_json(io.StringIO(df.to_json(orient="split")), orient="split")
                 return df, raw_parquet
             validated_json, orient = await get_validated_bulk_data_json(request)
-            df = pd.read_json(io.StringIO(validated_json), orient=orient)
+            # pandas nullable "string" (not plain str): plain str would render a
+            # missing value as the literal text "None" instead of a real null.
+            str_dtype_map = _json_str_dtype_map(validated_json, orient, model)
+            df = pd.read_json(io.StringIO(validated_json), orient=orient, dtype=str_dtype_map)
             _normalize_nan_to_none(df)
             return df, None
         except (ValueError, OSError, pyarrow.lib.ArrowException) as v_exc:
@@ -416,8 +493,12 @@ class BaseDataView(object):
         data_schema = build_data_schema(model)
         data_validator = DataValidator(data_schema, storage_service, api_version)
 
-        df, parquet_file = await self._read_dataframe(request, mime_type)
+        df, parquet_file = await self._read_dataframe(request, mime_type, model)
         logger.info(f"Data has been read from {mime_type} format")
+
+        # Cast numeric-looking str columns before validation: pydantic v2 rejects
+        # integers for str fields; pd.read_json converts "1" → int64.
+        _cast_str_columns(df, model)
 
         # Use bulk_mode for relaxed validation: allows NaN in optional object fields
         # This handles DataFrame column alignment constraint in bulk ingestion
@@ -431,6 +512,7 @@ class BaseDataView(object):
         if not parquet_file:
             try:
                 _cast_float_columns(df, model)
+                _cast_str_columns(df, model)
                 logger.debug(f"Dataset info: {df.size} elements; {df.columns}")
                 parquet_file = df.to_parquet(index=False)
             except Exception as exc:  # noqa: B902
@@ -520,6 +602,15 @@ class BaseDataView(object):
         logger.debug(f"Dataset Id: {dataset_record_id}")
         storage_response = await storage_service.upsert_records([record])
         logger.info(f"Updated record: {storage_response}")
+
+        # SamplesAnalysis records carry no GeoContexts; scope will be empty and these
+        # pending entries will only supplement unscoped searches. See extract_record_scope.
+        scope = await enrich_scope_from_samples(
+            extract_record_scope(record_data),
+            record_data.get("SampleIDs") or [],
+            storage_service,
+        )
+        await record_pending_write(data_partition_id, ddms_urn, scope=scope)
 
         return {"ddms_urn": ddms_urn}
 

@@ -542,8 +542,8 @@ def test_nmr_search_record_filtered_in_by_field(api, record_id, dataset_id_v1, s
     assert record_id in response["result"]
 
 
-def test_nmr_search_record_filtered_out_by_basin(api, record_id, dataset_id_v1, search_available_v1):
-    """Verify record is filtered out by the specified BasinID filter in the search results"""
+def test_nmr_search_record_filtered_out_by_field(api, record_id, dataset_id_v1, search_available_v1):
+    """Verify record is filtered out by the specified FieldID filter in the search results"""
     params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeOtherFieldID:"}
     response = api.sample_analysis.search_records(
         SamplesAnalysisTypes.NMR,
@@ -557,7 +557,7 @@ def test_nmr_search_record_filtered_out_by_basin(api, record_id, dataset_id_v1, 
 
 def test_nmr_search_record_filtered_out_by_wellbore(api, record_id, dataset_id_v1, search_available_v1):
     """Verify record is filtered out by the WellboreID filter in the search results"""
-    params = {"wellbore_id": f"{DATA_PARTITION_ID}:master-data--Wellbore:TectonicDrift:"}
+    params = {"wellbore_id": f"{DATA_PARTITION_ID}:master-data--Wellbore:SomeOtherWellboreID:"}
     response = api.sample_analysis.search_records(
         SamplesAnalysisTypes.NMR,
         SchemaVersions.V1_0_0,

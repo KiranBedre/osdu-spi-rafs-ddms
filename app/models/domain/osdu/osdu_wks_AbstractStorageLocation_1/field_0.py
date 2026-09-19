@@ -16,17 +16,16 @@
 #   filename:  /api/schema-service/v1/schema/osdu:wks:master-data--RockSample:1.0.0
 #   timestamp: 2023-02-10T14:53:56+00:00
 
-from __future__ import annotations
 
 from datetime import date
-from typing import Optional
+from typing import Annotated, Optional
 
-from pydantic import BaseModel, Field, constr
+from pydantic import BaseModel, Field, StringConstraints
 
 
 class Field0(BaseModel):
     StorageFacilityID: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-StorageFacility:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-StorageFacility:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(None, description="Identifies the warehouse in which the item is stored.")
     StorageLocationDescription: Optional[str] = Field(
         None,
@@ -44,7 +43,7 @@ class Field0(BaseModel):
         None, description="The date the item arrived at the storage location."
     )
     StorageOrganisationID: Optional[
-        constr(regex=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")
+        Annotated[str, StringConstraints(pattern=r"^[\w\-\.]+:master-data\-\-Organisation:[\w\-\.\:\%]+:[0-9]*$")]
     ] = Field(
         None, description="Identifies the organisation with which the item is stored."
     )

@@ -14,16 +14,9 @@
 
 """Compatibility wrappers for HTTP status constants across Starlette versions."""
 
-from http import HTTPStatus
-
 from starlette import status
 
-# Starlette renamed HTTP_422_UNPROCESSABLE_ENTITY to HTTP_422_UNPROCESSABLE_CONTENT
-# (RFC 9110) and deprecated the old name. The fallback comes from the stdlib rather
-# than from Starlette's deprecated constant: getattr() evaluates its default eagerly,
-# so naming that constant here would emit a DeprecationWarning on every import.
-HTTP_422_UNPROCESSABLE = getattr(
-    status,
-    "HTTP_422_UNPROCESSABLE_CONTENT",
-    HTTPStatus.UNPROCESSABLE_ENTITY.value,
-)
+if hasattr(status, "HTTP_422_UNPROCESSABLE_CONTENT"):
+    HTTP_422_UNPROCESSABLE = status.HTTP_422_UNPROCESSABLE_CONTENT
+else:
+    HTTP_422_UNPROCESSABLE = status.HTTP_422_UNPROCESSABLE_ENTITY
