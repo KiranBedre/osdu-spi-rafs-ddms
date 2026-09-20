@@ -53,6 +53,8 @@ cimpl-check-openapi-spec:
   stage: acceptance
   image: alpine:3.23
   extends: .cimpl-variables
+  variables:
+    CIMPL_API_BASE_URL: "https://${CIMPL_DNS_NAME}"
   needs: ["cimpl-deploy"]
   tags: ["osdu-small"]
   before_script:
@@ -81,7 +83,7 @@ cimpl-check-openapi-spec:
         URLS="/api/${CIMPL_SERVICE}/openapi.json"
         LIVE_SPEC_EXT=".json"
       else
-        CONFIG_URL="https://osdu.${CIMPL_DOMAIN}${CIMPL_OPENAPI_CONFIG_ROUTE}"
+        CONFIG_URL="${CIMPL_API_BASE_URL}${CIMPL_OPENAPI_CONFIG_ROUTE}"
         echo "Fetching swagger config from ${CONFIG_URL}"
         if wget -t 3 -T 30 --waitretry 30 -qO swagger-config.json "${CONFIG_URL}"; then
           URLS=$(jq -r '.url // .urls[].url' swagger-config.json | sed 's/api-docs/api-docs\.yaml/g')
@@ -130,9 +132,9 @@ cimpl-check-openapi-spec:
           CURRENT_SPEC_PATH="docs/api/community/${VERSION}/openapi${COMMITTED_SPEC_EXT}"
         fi
 
-        echo "Checking OpenAPI spec for version ${VERSION} (URL: https://osdu.${CIMPL_DOMAIN}${URL}, Local: ${CURRENT_SPEC_PATH})"
+        echo "Checking OpenAPI spec for version ${VERSION} (URL: ${CIMPL_API_BASE_URL}${URL}, Local: ${CURRENT_SPEC_PATH})"
 
-        FETCH_URL="https://osdu.${CIMPL_DOMAIN}${URL}"
+        FETCH_URL="${CIMPL_API_BASE_URL}${URL}"
         if ! wget -t 3 -T 30 --waitretry 30 -qO "${LIVE_SPEC}" "${FETCH_URL}"; then
           echo "Failed to fetch OpenAPI spec from ${FETCH_URL}"
           EXIT_CODE=1
@@ -165,17 +167,6 @@ cimpl-check-openapi-spec:
         SORTED_CURRENT="sorted-current-${VERSION}.json"
         SORTED_LIVE="sorted-live-${VERSION}.json"
         NUMERIC_NORMALIZE_FILTER='walk(if type == "number" then ((. * 1.0) | tostring) else . end)'
-        # content_schema_version is optional in code (deprecated Accept-header fallback) but is
-        # deliberately documented as required to steer clients to the preferred usage -- see
-        # mark_content_schema_version_required() in scripts/generate_openapi.py. The committed
-        # spec already reflects that; apply the same normalization to the live spec so this
-        # intentional documentation choice doesn't show up as a spurious diff.
-        REQUIRE_CONTENT_SCHEMA_VERSION_FILTER='(.. | objects | select(.name? == "content_schema_version" and .in? == "query") | .required) |= true'
-        # Some generated nodes carry `app_name` where `title` is expected; the committed spec
-        # renames those via normalize_openapi_schema() in scripts/generate_openapi.py. Apply the
-        # same rename to the live spec.
-        RENAME_APP_NAME_FILTER='walk(if type == "object" then with_entries(if .key == "app_name" then .key = "title" else . end) else . end)'
-        LIVE_NORMALIZE_FILTER="${REQUIRE_CONTENT_SCHEMA_VERSION_FILTER} | ${RENAME_APP_NAME_FILTER} | ${NUMERIC_NORMALIZE_FILTER}"
 
         if [[ "${COMMITTED_SPEC_EXT}" == ".json" ]]; then
           jq -S "${NUMERIC_NORMALIZE_FILTER}" "${CURRENT_SPEC_PATH}" > "${SORTED_CURRENT}"
@@ -184,9 +175,9 @@ cimpl-check-openapi-spec:
         fi
 
         if [[ "${LIVE_SPEC_EXT}" == ".json" ]]; then
-          jq -S "${LIVE_NORMALIZE_FILTER}" "${LIVE_SPEC}" > "${SORTED_LIVE}"
+          jq -S "${NUMERIC_NORMALIZE_FILTER}" "${LIVE_SPEC}" > "${SORTED_LIVE}"
         else
-          yq -o=json '.' "${LIVE_SPEC}" | jq -S "${LIVE_NORMALIZE_FILTER}" > "${SORTED_LIVE}"
+          yq -o=json '.' "${LIVE_SPEC}" | jq -S "${NUMERIC_NORMALIZE_FILTER}" > "${SORTED_LIVE}"
         fi
 
         if ! diff -u "${SORTED_CURRENT}" "${SORTED_LIVE}"; then
@@ -229,3 +220,19 @@ cimpl-check-openapi-spec:
       when: never
     - if: '$CIMPL == "1"'
       when: on_success
+
+# Validate the deployed OpenAPI document on the CIMPL-STACK DEV environment.
+cimpl-dev-check-openapi-spec:
+  extends:
+    - cimpl-check-openapi-spec
+    - .cimpl-dev-variables
+  needs:
+    - job: cimpl-dev-deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^release/'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CIMPL_STACK == "1" && $DEV == "1"'
+      when: on_success
+    - when: never

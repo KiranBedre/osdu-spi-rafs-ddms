@@ -292,18 +292,16 @@ def test_nmr_search_record_filtered_out_by_end_date(api, record_id, dataset_id_v
     assert record_id not in response["result"]
 
 
-@pytest.mark.skip(reason="Pagination test depends on assumed searchable data; tracked in issue #805")
-def test_nmr_search_record_filtered_out_by_page_limit(api, record_id, dataset_id_v1, search_available_v1):
+def test_nmr_search_record_filtered_out_by_page_limit(api, helper, pagination_case_v1):
     """Verify records are filtered out by the specified page limit filter in the search results"""
-    params = {"page_limit": 2}
-    response = api.sample_analysis.search_records(
-        analysis_type=SamplesAnalysisTypes.NMR,
-        schema_version=SchemaVersions.V1_0_0,
-        params=params,
+    helper.verify_record_pagination(
+        lambda params: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.NMR,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        pagination_case_v1,
     )
-
-    # Assert
-    assert len(response["result"]) == 2
 
 
 def test_nmr_search_data_filtered_by_columns(api, helper, tests_data, record_id, dataset_id_v1, search_available_v1):
@@ -433,20 +431,16 @@ def test_nmr_search_data_filtered_out_by_end_date(api, tests_data, record_id, da
     assert not any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-def test_nmr_search_data_filtered_out_by_page_limit(api, tests_data, record_id, dataset_id_v1, search_available_v1):
+def test_nmr_search_data_filtered_out_by_page_limit(api, helper, pagination_case_v1):
     """Verify bulk data is filtered out by the specified page limit filter in the search results"""
-    params = {"page_limit": 2}
-    response = api.sample_analysis.search_data(
-        analysis_type=SamplesAnalysisTypes.NMR,
-        schema_version=SchemaVersions.V1_0_0,
-        params=params,
+    helper.verify_data_pagination(
+        lambda params: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.NMR,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        pagination_case_v1,
     )
-
-    # Assert
-    baseline = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
-
-    assert set(response["result"]["columns"]).issubset(baseline["columns"])
-    assert len({row[0] for row in response["result"]["data"]}) <= 2
 
 
 def test_nmr_add_data_records_format(api, helper, tests_data, record_id):
@@ -548,8 +542,8 @@ def test_nmr_search_record_filtered_in_by_field(api, record_id, dataset_id_v1, s
     assert record_id in response["result"]
 
 
-def test_nmr_search_record_filtered_out_by_basin(api, record_id, dataset_id_v1, search_available_v1):
-    """Verify record is filtered out by the specified BasinID filter in the search results"""
+def test_nmr_search_record_filtered_out_by_field(api, record_id, dataset_id_v1, search_available_v1):
+    """Verify record is filtered out by the specified FieldID filter in the search results"""
     params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeOtherFieldID:"}
     response = api.sample_analysis.search_records(
         SamplesAnalysisTypes.NMR,
@@ -563,7 +557,7 @@ def test_nmr_search_record_filtered_out_by_basin(api, record_id, dataset_id_v1, 
 
 def test_nmr_search_record_filtered_out_by_wellbore(api, record_id, dataset_id_v1, search_available_v1):
     """Verify record is filtered out by the WellboreID filter in the search results"""
-    params = {"wellbore_id": f"{DATA_PARTITION_ID}:master-data--Wellbore:TectonicDrift:"}
+    params = {"wellbore_id": f"{DATA_PARTITION_ID}:master-data--Wellbore:SomeOtherWellboreID:"}
     response = api.sample_analysis.search_records(
         SamplesAnalysisTypes.NMR,
         SchemaVersions.V1_0_0,

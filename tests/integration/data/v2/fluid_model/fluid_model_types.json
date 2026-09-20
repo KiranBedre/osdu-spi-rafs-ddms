@@ -1,0 +1,11 @@
+{
+  "blackoilfluidmodel": [
+    "1.0.0"
+  ],
+  "compositionalfluidmodel": [
+    "1.0.0"
+  ],
+  "thermalcompositionalfluidmodel": [
+    "1.0.0"
+  ]
+}

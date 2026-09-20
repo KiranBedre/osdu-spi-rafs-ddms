@@ -334,6 +334,25 @@ class DataValidator(object):  # noqa: WPS214
 
         return getattr(dtype, "type", None)
 
+    # -------------------------------------------------------------------------
+    # Pydantic v2 enrichment methods
+    #
+    # Migrated from Pydantic v1 (Issue-768). Key mapping differences:
+    #   - ModelField.type_ / .outer_type_  -> FieldInfo.annotation (NOT pre-unwrapped
+    #     of List/Optional/Union - callers must unwrap it themselves; see
+    #     _unwrap_annotation and _extract_submodel_candidates below).
+    #   - "__fields__"                     -> "model_fields"
+    #   - field_info.required              -> field_info.is_required()
+    #   - field_info.const / .default      -> v2 dropped `const`; discriminator
+    #     fields (e.g. `kind`) are generated as Literal["value"] annotations
+    #     instead, so discriminator matching now inspects Literal args
+    #     (see _literal_values / _discriminator_fields_match).
+    #   - ValidationError.errors()[i]["type"] strings changed (e.g.
+    #     "value_error.missing" -> "missing", "value_error.extra" ->
+    #     "extra_forbidden") but the substring checks below ("missing" in
+    #     err_type, "extra" in err_type) already match both.
+    # -------------------------------------------------------------------------
+
     @staticmethod
     def _unwrap_pydantic_error(column, raw_failure):
         """Unwrap pandera PydanticModel dtype errors.
@@ -352,29 +371,26 @@ class DataValidator(object):  # noqa: WPS214
         return column, raw_failure
 
     @staticmethod
-    def _build_expected_desc(field_info) -> str:  # noqa: CFQ004, CCR001, WPS231
-        """Build a human-readable expected-type description from a Pydantic FieldInfo."""
-        if field_info is None:
-            return "unknown"
-        pattern = DataValidator._find_constraint_pattern(field_info)  # noqa: WPS437
-        if pattern:
-            return f"pattern: {pattern}"
-        annotation = DataValidator._unwrap_annotation(field_info.annotation)  # noqa: WPS437
-        type_name = getattr(annotation, "__name__", None)
-        if type_name in {"float", "int", "str", "bool", "date", "datetime"}:
-            return type_name
-        # Collapse fully-qualified names (e.g. 'typing.List', 'app.models....Meta')
-        # down to their bare name for readability.
-        return _QUALNAME_PATTERN.sub(r"\1", str(annotation))
+    def _find_constraint_pattern(field_info) -> str:  # noqa: CCR001, WPS231
+        """Return the first StringConstraints pattern found in field metadata, or "".
 
-    @staticmethod
-    def _find_constraint_pattern(field_info) -> str:  # noqa: CCR001
-        """Return first StringConstraints pattern found in field metadata, or empty str."""
+        :param field_info: Pydantic v2 FieldInfo object
+        :return: regex pattern string, or "" if none found
+        :rtype: str
+        """
         for meta in getattr(field_info, "metadata", []):
             pattern = getattr(meta, "pattern", None)
             if pattern:
                 return pattern
-        annotation = DataValidator._strip_optional(field_info.annotation)  # noqa: WPS437
+        # Optional[Annotated[str, StringConstraints(...)]] is a Union whose
+        # constrained member is one level deeper than a bare Annotated[...]
+        # annotation. Unwrap only the Union/None layer here - unlike
+        # _unwrap_annotation, the Annotated wrapper itself must survive so
+        # its __metadata__ (the constraint) can still be inspected below.
+        annotation = field_info.annotation
+        if get_origin(annotation) is Union or isinstance(annotation, types.UnionType):
+            non_none = [arg for arg in get_args(annotation) if arg is not type(None)]  # noqa: WPS516, E721
+            annotation = non_none[0] if non_none else annotation
         if hasattr(annotation, "__metadata__"):  # noqa: WPS421
             for constraint in annotation.__metadata__:
                 pattern = getattr(constraint, "pattern", None)
@@ -384,7 +400,16 @@ class DataValidator(object):  # noqa: WPS214
 
     @staticmethod
     def _unwrap_annotation(annotation):
-        """Unwrap Optional[T], T | None, and Annotated[T, ...] to the inner base type."""
+        """Unwrap Optional[T], T | None, and Annotated[T, ...] to the inner base type.
+
+        For display/description purposes only: a multi-member Union collapses
+        to its first non-None member, which is fine for describing "expected
+        type" but not precise enough for submodel candidate resolution (see
+        _extract_submodel_candidates, which keeps every member).
+
+        :param annotation: a Pydantic v2 FieldInfo's ``annotation``
+        :return: the unwrapped inner type
+        """
         if get_origin(annotation) is Union or isinstance(annotation, types.UnionType):
             non_none = [arg for arg in get_args(annotation) if arg is not type(None)]  # noqa: WPS516, E721
             annotation = non_none[0] if non_none else annotation
@@ -394,68 +419,30 @@ class DataValidator(object):  # noqa: WPS214
         return annotation
 
     @staticmethod
-    def _strip_optional(annotation):
-        """Strip Optional[T]/T | None down to T, preserving genuine multi-member unions.
+    def _build_expected_desc(field_info) -> str:  # noqa: CFQ004, CCR001, WPS231
+        """Build a human-readable expected-type description from a Pydantic FieldInfo.
 
-        Unlike ``_unwrap_annotation`` (which always collapses a Union to its
-        first non-None member), this keeps ``Union[A, B]`` intact when there
-        is no ``NoneType`` member, so callers that need to enumerate all
-        union members (e.g. submodel-candidate extraction) don't silently
-        lose members.
+        Extracts type constraints (regex patterns, simple type names) and formats
+        complex types by collapsing fully-qualified names down to their bare name
+        for readability (e.g. 'app.models....Meta' -> 'Meta').
 
-        :param annotation: a type annotation
-        :return: the annotation with any Optional wrapper removed
+        :param field_info: Pydantic v2 FieldInfo object
+        :return: expected type description string
+        :rtype: str
         """
-        is_union = get_origin(annotation) is Union or isinstance(annotation, types.UnionType)
-        if not is_union:
-            return annotation
-        args = get_args(annotation)
-        if type(None) not in args:  # noqa: WPS516, E721
-            return annotation
-        non_none = [arg for arg in args if arg is not type(None)]  # noqa: WPS516, E721
-        return non_none[0] if len(non_none) == 1 else Union[tuple(non_none)]  # noqa: WPS465
+        if field_info is None:
+            return "unknown"
 
-    @staticmethod
-    def _innermost_type(annotation):  # noqa: CCR001
-        """Unwrap Optional/Annotated/List wrappers to the innermost type or Union.
+        pattern = DataValidator._find_constraint_pattern(field_info)  # noqa: WPS437
+        if pattern:
+            return f"pattern: {pattern}"
 
-        Pydantic v2 equivalent of pydantic v1's ``ModelField.type_``, which
-        stripped ``List`` and ``Optional`` automatically:
-        ``List[Union[A, B]]`` resolves to ``Union[A, B]``; ``Optional[A]``
-        resolves to ``A``.
+        annotation = DataValidator._unwrap_annotation(field_info.annotation)  # noqa: WPS437
+        type_name = getattr(annotation, "__name__", None)
+        if type_name in {"float", "int", "str", "bool", "date", "datetime"}:
+            return type_name
 
-        :param annotation: a type annotation
-        :return: the innermost type or Union, after stripping wrappers
-        """
-        previous, current = None, annotation
-        while current != previous:
-            previous = current
-            if hasattr(current, "__metadata__"):  # noqa: WPS421
-                args = get_args(current)
-                current = args[0] if args else current
-            current = DataValidator._strip_optional(current)  # noqa: WPS437
-            if get_origin(current) is list:
-                args = get_args(current)
-                current = args[0] if args else current
-        return current
-
-    @staticmethod
-    def _literal_value(annotation):
-        """Return the single value of a ``Literal[...]``-typed annotation, or None.
-
-        Pydantic v2 equivalent of pydantic v1's const-discriminator fields
-        (``field_info.const`` / ``ModelField.default``): v2 models express a
-        discriminator as ``kind: Literal["Unit"]`` instead.
-
-        :param annotation: a type annotation
-        :return: the literal's single value, or None if not a single-value Literal
-        """
-        unwrapped = DataValidator._unwrap_annotation(annotation)  # noqa: WPS437
-        if get_origin(unwrapped) is Literal:
-            args = get_args(unwrapped)
-            if len(args) == 1:
-                return args[0]
-        return None
+        return _QUALNAME_PATTERN.sub(r"\1", str(annotation))
 
     @staticmethod
     def _truncated_repr(received_val) -> str:
@@ -470,6 +457,33 @@ class DataValidator(object):  # noqa: WPS214
             truncated = received_repr[:_MAX_RECEIVED_REPR_LEN]
             received_repr = f"{truncated}...[truncated]"
         return received_repr
+
+    @staticmethod
+    def _parse_pandera_failure_repr(raw_failure: str):
+        """Parse a pandera failure_case repr string, handling numpy NaN/inf tokens.
+
+        Pandera's failure_case is a Python repr of a dict, but when it contains
+        numpy NaN/inf values, the repr uses bare tokens like ``nan`` and ``inf``
+        which are not valid Python literals. This method replaces those bare tokens
+        with Python literals (None for nan, inf for inf) so ast.literal_eval can parse.
+
+        For re-validation purposes, NaN (float column alignment artifact) is treated
+        as None (absent value), since both represent a missing/nullable field.
+
+        :param raw_failure: Python-repr dict string (may contain nan/inf tokens)
+        :return: parsed dict, or None if parsing fails
+        """
+        if not isinstance(raw_failure, str):
+            return None
+
+        try:
+            sanitized = raw_failure
+            sanitized = re.sub(r"\bnan\b", "None", sanitized)
+            sanitized = re.sub(r"\binf\b", "'inf'", sanitized)
+            sanitized = re.sub(r"\b-inf\b", "'-inf'", sanitized)
+            return ast.literal_eval(sanitized)
+        except (ValueError, SyntaxError):
+            return None
 
     def _enrich_pydantic_error(self, raw_failure: str, index=None, df: pd.DataFrame = None) -> list:
         """Parse a PydanticModel failure_case string into field-level error dicts.
@@ -489,10 +503,7 @@ class DataValidator(object):  # noqa: WPS214
         :return: list of enriched error dicts with field, received, expected keys
         :rtype: list
         """
-        try:
-            parsed_failure = ast.literal_eval(raw_failure)
-        except (ValueError, SyntaxError):
-            parsed_failure = None
+        parsed_failure = self._parse_pandera_failure_repr(raw_failure)
 
         if not isinstance(parsed_failure, dict):
             return [{"field": "DataSchema", "received": raw_failure, "expected": "unknown"}]
@@ -583,6 +594,22 @@ class DataValidator(object):  # noqa: WPS214
         except (TypeError, ValueError):
             candidate = None
         return candidate if candidate in df.index else None
+
+    @staticmethod
+    def _is_nan(cell_value) -> bool:
+        """Safely check whether a dataframe cell value is NaN.
+
+        :param cell_value: the cell value; may be a scalar, list, or dict
+        :return: True if the value is NaN, False otherwise (never raises on
+            non-scalar values, unlike a bare ``pd.isna()`` check)
+        :rtype: bool
+        """
+        if isinstance(cell_value, (list, dict)):
+            return False
+        try:
+            return bool(pd.isna(cell_value))
+        except (TypeError, ValueError):
+            return False
 
     @staticmethod
     def _is_float_nan(cell_value) -> bool:
@@ -730,7 +757,7 @@ class DataValidator(object):  # noqa: WPS214
         :return: list of enriched error dicts with field, received, expected keys
         :rtype: list
         """
-        candidates = self._extract_submodel_candidates(self._innermost_type(field_info.annotation))
+        candidates = self._extract_submodel_candidates(field_info.annotation)
         fallback = [
             {
                 "field": field_name,
@@ -829,38 +856,81 @@ class DataValidator(object):  # noqa: WPS214
         return None
 
     @staticmethod
-    def _nested_model_fields(field_info) -> dict:
+    def _nested_model_fields(field_info) -> dict:  # noqa: CFQ004, CCR001
         """Get the ``model_fields`` of a field's submodel type, if it has one.
 
-        :param field_info: a Pydantic FieldInfo, or None
-        :return: the submodel's fields dict, empty if the field isn't a submodel
+        Only unwraps a plain Optional[T] to T; a genuine multi-member Union
+        (e.g. Union[A, B]) is ambiguous at this point (the caller hasn't
+        picked a matching candidate yet) so it returns an empty dictionary rather than
+        guessing, mirroring the v1 behavior of only recursing through
+        single-model fields.
+
+        :param field_info: a Pydantic v2 FieldInfo, or None
+        :return: the submodel's fields dict, empty if the field isn't a
+            single resolvable submodel
         :rtype: dict
         """
-        nested_type = DataValidator._innermost_type(field_info.annotation) if field_info else None  # noqa: WPS437
-        if isinstance(nested_type, type) and issubclass(nested_type, BaseModel):
-            return nested_type.model_fields
+        if field_info is None:
+            return {}
+        annotation = field_info.annotation
+        if hasattr(annotation, "__metadata__"):  # noqa: WPS421
+            args = get_args(annotation)
+            annotation = args[0] if args else annotation
+        if get_origin(annotation) is Union or isinstance(annotation, types.UnionType):
+            non_none = [arg for arg in get_args(annotation) if arg is not type(None)]  # noqa: WPS516, E721
+            if len(non_none) != 1:
+                return {}
+            annotation = non_none[0]
+        if isinstance(annotation, type) and issubclass(annotation, BaseModel):
+            return annotation.model_fields
         return {}
 
     @staticmethod
-    def _extract_submodel_candidates(field_type) -> list:
-        """Extract candidate BaseModel subclasses from a (possibly Union) field type.
+    def _extract_submodel_candidates(annotation) -> list:
+        """Extract candidate BaseModel subclasses from a field's declared annotation.
 
-        ``field_type`` is expected to already be reduced via ``_innermost_type``
-        to the innermost type after stripping ``List``/``Optional`` wrappers —
-        the v2 equivalent of pydantic v1's ``ModelField.type_``. For
-        ``List[Union[A, B]]`` this is ``Union[A, B]``; for ``Optional[A]`` it is
-        ``A`` directly.
+        **Pydantic v2 note:** unlike v1's ``ModelField.type_`` (which pydantic
+        pre-stripped of List/Optional wrappers), a v2 FieldInfo's
+        ``annotation`` is the full declared type as-is - e.g.
+        ``List[Union[A, B]]`` or ``Optional[Union[A, B]]`` stay wrapped. This
+        recursively unwraps List/Optional/Union/Annotated layers, in any
+        order or nesting, down to the leaf type(s) before checking for
+        BaseModel subclasses - covering the same Union/List-of-submodel
+        patterns the v1 implementation handled.
 
-        :param field_type: an already-unwrapped annotation (see ``_innermost_type``)
+        :param annotation: a Pydantic v2 FieldInfo's ``annotation``
         :return: list of BaseModel subclasses to try, empty if none apply
         :rtype: list
         """
-        args = get_args(field_type)
-        if args:
-            return [arg for arg in args if isinstance(arg, type) and issubclass(arg, BaseModel)]
-        if isinstance(field_type, type) and issubclass(field_type, BaseModel):
-            return [field_type]
-        return []
+        leaves = DataValidator._collect_leaf_annotations(annotation)  # noqa: WPS437
+        return [leaf for leaf in leaves if isinstance(leaf, type) and issubclass(leaf, BaseModel)]
+
+    @staticmethod
+    def _collect_leaf_annotations(annotation) -> list:  # noqa: CFQ004, CCR001, WPS231
+        """Recursively unwrap Annotated/Union/List layers down to leaf type args.
+
+        :param annotation: a (possibly wrapped) type annotation
+        :return: list of leaf type annotations
+        :rtype: list
+        """
+        if hasattr(annotation, "__metadata__"):  # noqa: WPS421
+            args = get_args(annotation)
+            return DataValidator._collect_leaf_annotations(args[0]) if args else []  # noqa: WPS437
+
+        origin = get_origin(annotation)
+        if origin is Union or isinstance(annotation, types.UnionType):
+            leaves = []
+            for arg in get_args(annotation):
+                if arg is type(None):  # noqa: WPS516, E721
+                    continue
+                leaves.extend(DataValidator._collect_leaf_annotations(arg))  # noqa: WPS437
+            return leaves
+
+        if origin is list:
+            args = get_args(annotation)
+            return DataValidator._collect_leaf_annotations(args[0]) if args else []  # noqa: WPS437
+
+        return [annotation]
 
     @staticmethod
     def _try_candidate(candidate, candidate_item: dict):
@@ -882,37 +952,58 @@ class DataValidator(object):  # noqa: WPS214
 
     @classmethod
     def _narrow_candidates_by_discriminator(cls, candidates: list, candidate_item: dict) -> list:
-        """Keep only union members whose Literal-discriminator fields match the item's values.
+        """Keep only union members whose Literal-typed fields match the item's values.
 
-        Union submodels are typically discriminated by a ``Literal`` field such
-        as ``kind``. When the item provides that field, candidates declaring a
-        different literal value cannot be the intended model, even if they
-        happen to produce fewer validation errors. Falls back to the full
-        candidate list when nothing matches (e.g. the discriminator value
-        itself is invalid).
+        Union submodels are typically discriminated by a Literal-typed field
+        such as ``kind`` (pydantic v2's generated equivalent of v1's
+        ``const`` fields). When the item provides that field, candidates
+        declaring a different literal value cannot be the intended model,
+        even if they happen to produce fewer validation errors. Falls back
+        to the full candidate list when nothing matches (e.g. the
+        discriminator value itself is invalid).
 
         :param candidates: list of BaseModel subclasses to narrow
         :param candidate_item: the raw nested dict to validate
         :return: the matching candidates, or all of them if none match
         :rtype: list
         """
-        matched = [candidate for candidate in candidates if cls._const_fields_match(candidate, candidate_item)]
+        matched = [candidate for candidate in candidates if cls._discriminator_fields_match(candidate, candidate_item)]
         return matched or candidates
 
     @staticmethod
-    def _const_fields_match(candidate, candidate_item: dict) -> bool:
-        """Check the item's values against the candidate's Literal-discriminator fields.
+    def _literal_values(annotation) -> tuple:
+        """Return the allowed values of a Literal-typed annotation, or () if not Literal.
+
+        Pydantic v1's "const" fields (``Field(..., const=True)``) are
+        generated in v2 schemas as ``Literal["value"]`` annotations instead
+        (e.g. discriminator fields like ``kind``). This is the v2 lookup
+        equivalent of checking a v1 ``field_info.const``/``ModelField.default``.
+
+        :param annotation: a Pydantic v2 FieldInfo's ``annotation``
+        :return: tuple of allowed literal values, empty if not a Literal type
+        :rtype: tuple
+        """
+        if hasattr(annotation, "__metadata__"):  # noqa: WPS421
+            args = get_args(annotation)
+            annotation = args[0] if args else annotation
+        if get_origin(annotation) is Literal:
+            return get_args(annotation)
+        return ()
+
+    @staticmethod
+    def _discriminator_fields_match(candidate, candidate_item: dict) -> bool:
+        """Check the item's values against the candidate's Literal-typed fields.
 
         :param candidate: BaseModel subclass to check
         :param candidate_item: the raw nested dict to validate
-        :return: False if the item contradicts any single-value Literal field, True otherwise
+        :return: False if the item contradicts any Literal-typed field, True otherwise
         :rtype: bool
         """
         for field_name, field_info in getattr(candidate, "model_fields", {}).items():
-            literal_value = DataValidator._literal_value(field_info.annotation)  # noqa: WPS437
-            if literal_value is None or field_name not in candidate_item:
+            literal_values = DataValidator._literal_values(field_info.annotation)  # noqa: WPS437
+            if not literal_values or field_name not in candidate_item:
                 continue
-            if candidate_item[field_name] != literal_value:
+            if candidate_item[field_name] not in literal_values:
                 return False
         return True
 
@@ -920,8 +1011,8 @@ class DataValidator(object):  # noqa: WPS214
     def _best_matching_candidate_errors(cls, candidates: list, candidate_item: dict) -> tuple:
         """Try each candidate model against ``candidate_item`` and return the closest match's errors.
 
-        Candidates are first narrowed by their Literal discriminator fields
-        (e.g. ``kind``), so the error-count heuristic only breaks ties between
+        Candidates are first narrowed by discriminator fields (e.g.
+        ``kind``), so the error-count heuristic only breaks ties between
         candidates the item could actually be.
 
         :param candidates: list of BaseModel subclasses to try

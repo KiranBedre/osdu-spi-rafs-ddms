@@ -13,8 +13,8 @@
 #  limitations under the License.
 
 import copy
-import pytest
 
+import pytest
 from starlette import status
 
 from app.resources.common_headers import AUTHORIZATION, CONTENT_TYPE, DATA_PARTITION_ID
@@ -23,31 +23,24 @@ from tests.integration.config import (
 )
 
 ALL_ENDPOINTS_ARGS = [
-        ("post_record", ()),
-        ("get_record", ("record_id",)),
-        ("get_record_versions", ("record_id",)),
-        ("get_record_version", ("record_id", "version")),
-        ("soft_delete_record", ("record_id",)),
-    ]
+    ("post_record", ()),
+    ("get_record", ("record_id",)),
+    ("get_record_versions", ("record_id",)),
+    ("get_record_version", ("record_id", "version")),
+    ("soft_delete_record", ("record_id",)),
+]
 
 
 @pytest.mark.parametrize("endpoint,args", ALL_ENDPOINTS_ARGS)
 def test_fluid_negative_missing_authorization_header(api, tests_data, endpoint, args, record_id, version):
-    """Reject requests missing Authorization header with 401 or 403.
-
-    Accepts either code: which one a given deployment returns depends on
-    which layer enforces authentication there (app vs. gateway), and that
-    has not been isolated per environment. The observed 401 body
-    ({"code": 401, "reason": "Not authenticated"}) matches FastAPI's own
-    app-level behavior for a missing bearer token.
-    """
+    """Reject requests missing Authorization header with 401 Unauthorized."""
     method = getattr(api.fluid_model, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
 
     kwargs = {
         "headers": {AUTHORIZATION: None},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
@@ -57,28 +50,21 @@ def test_fluid_negative_missing_authorization_header(api, tests_data, endpoint, 
     response = method(*call_args, **kwargs)
 
     # Assert
-    assert response.status_code in (403, 401)
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
 
 @pytest.mark.parametrize("endpoint,args", ALL_ENDPOINTS_ARGS)
 def test_fluid_negative_invalid_authorization_header(api, tests_data, endpoint, args, record_id, version):
-    """Reject malformed Authorization header with 401 or 403.
-
-    Accepts either code: which one a given deployment returns depends on
-    which layer enforces authentication there (app vs. gateway), and that
-    has not been isolated per environment. The observed 401 body
-    ({"code": 401, "reason": "Not authenticated"}) matches FastAPI's own
-    app-level behavior for a malformed bearer token.
-    """
+    """Reject malformed Authorization header with 401 Unauthorized."""
     method = getattr(api.fluid_model, endpoint)
     local_vars = locals().copy()
     call_args = [local_vars[name] for name in args]
 
     kwargs = {
         "headers": {AUTHORIZATION: "dummy"},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED],
+        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
     }
 
@@ -88,7 +74,7 @@ def test_fluid_negative_invalid_authorization_header(api, tests_data, endpoint, 
     response = method(*call_args, **kwargs)
 
     # Assert
-    assert response.status_code in (403, 401)
+    assert response.status_code == 401
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
@@ -113,9 +99,17 @@ def test_fluid_negative_invalid_access_token_authorization_header(api, tests_dat
 
     # Assert
     assert response.status_code == 401
-    body = response.json()
-    assert "Access denied" in body["reason"]
-    assert "The user is not authorized to perform this action" in body["message"]
+
+    content_type = response.headers.get("content-type", "").lower()
+
+    if "json" in content_type:
+        body = response.json()
+        assert "Access denied" in body["reason"]
+        assert "The user is not authorized to perform this action" in body["message"]
+    else:
+        www_authenticate = response.headers.get("www-authenticate")
+        assert www_authenticate is not None
+        assert 'error="invalid_token"' in www_authenticate
 
 
 @pytest.mark.parametrize("endpoint,args", ALL_ENDPOINTS_ARGS)

@@ -94,66 +94,9 @@ def load_openapi_schema() -> dict:
     return app.openapi()
 
 
-def mark_content_schema_version_required(schema: dict) -> dict:
-    """Mark content_schema_version query parameter as required in all endpoints.
-
-    The parameter is optional in code to support the deprecated Accept header
-    versioning fallback, but it should be shown as required in the spec to
-    guide clients towards the preferred usage.
-    """
-    for path_item in schema.get("paths", {}).values():
-        for operation in path_item.values():
-            if not isinstance(operation, dict):
-                continue
-            for param in operation.get("parameters", []):
-                if param.get("name") == "content_schema_version" and param.get("in") == "query":
-                    param["required"] = True
-    return schema
-
-
-def normalize_openapi_schema(schema: dict) -> dict:
-    """Normalize schema keys for deterministic and spec-compliant output.
-
-    Some generated nodes may contain `app_name` where `title` is expected.
-    This pass rewrites those keys recursively.
-    """
-
-    components = schema.setdefault("components", {}) if isinstance(schema, dict) else {}
-    component_schemas = components.setdefault("schemas", {}) if isinstance(components, dict) else {}
-
-    def _normalize(value: object) -> object:
-        if isinstance(value, dict):
-            normalized: dict = {}
-            for key, item in value.items():
-                if key == "definitions" and isinstance(item, dict):
-                    # OpenAPI 3 does not allow `definitions`; move entries to components/schemas.
-                    for schema_name, schema_value in item.items():
-                        component_schemas.setdefault(schema_name, _normalize(schema_value))
-                    continue
-
-                target_key = "title" if key == "app_name" else key
-
-                # Under OpenAPI 3.1 (JSON Schema 2020-12), exclusiveMinimum/exclusiveMaximum
-                # must be numbers, not booleans -- pydantic v2 already emits the numeric form
-                # natively, so it's passed through unchanged here.
-
-                normalized[target_key] = _normalize(item)
-
-            ref_value = normalized.get("$ref")
-            if isinstance(ref_value, str) and ref_value.startswith("#/definitions/"):
-                normalized["$ref"] = ref_value.replace("#/definitions/", "#/components/schemas/", 1)
-            return normalized
-        if isinstance(value, list):
-            return [_normalize(item) for item in value]
-        return value
-
-    return _normalize(schema)
-
-
 def canonicalize_openapi_schema(schema: dict) -> dict:
     """Convert generated schema to a deterministic, plain-data representation."""
-    clean_schema = json.loads(json.dumps(schema, default=str))
-    return normalize_openapi_schema(clean_schema)
+    return json.loads(json.dumps(schema, default=str))
 
 
 def write_openapi_schema(schema: dict, output_path: Path) -> None:
@@ -169,7 +112,6 @@ def main() -> int:
     args = parse_args()
     configure_environment(args)
     schema = load_openapi_schema()
-    schema = mark_content_schema_version_required(schema)
     output_path = Path(args.output).resolve()
     write_openapi_schema(schema, output_path)
     print(f"Generated OpenAPI spec: {output_path}")

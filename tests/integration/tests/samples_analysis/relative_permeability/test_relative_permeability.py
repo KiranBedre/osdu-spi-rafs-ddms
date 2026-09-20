@@ -15,8 +15,6 @@
 import copy
 import datetime
 
-import pytest
-
 from app.resources.common_headers import ACCEPT
 from tests.integration.config import (
     DataFiles,
@@ -36,9 +34,9 @@ def test_relative_permeability_create_record(api, samples_analysis_create_record
     helper.compare_responses(gotten_record, posted_record, response_type="json")
 
 
-def test_relative_permeability_versions(api, helper, record_id):
+def test_relative_permeability_versions(api, helper, fresh_record_id):
     """Verify record versioning: create v2, list versions, compare v1 and v2, confirm latest version."""
-    version_1 = api.sample_analysis.get_record(record_id)
+    version_1 = api.sample_analysis.get_record(fresh_record_id)
 
     # Create a second version by modifying the Name field
     version_2 = copy.deepcopy(version_1)
@@ -46,22 +44,22 @@ def test_relative_permeability_versions(api, helper, record_id):
     api.sample_analysis.post_record([version_2])
 
     # List versions and ensure two versions exist
-    versions_payload = api.sample_analysis.get_record_versions(record_id)
+    versions_payload = api.sample_analysis.get_record_versions(fresh_record_id)
     assert "versions" in versions_payload
     assert len(versions_payload["versions"]) == 2
 
     v1_version, v2_version = sorted(versions_payload["versions"])
 
     # Fetch concrete versions and compare with expected payloads
-    rec_v1 = api.sample_analysis.get_record_version(record_id, v1_version)
-    rec_v2 = api.sample_analysis.get_record_version(record_id, v2_version)
+    rec_v1 = api.sample_analysis.get_record_version(fresh_record_id, v1_version)
+    rec_v2 = api.sample_analysis.get_record_version(fresh_record_id, v2_version)
 
     helper.compare_responses(rec_v1, version_1, response_type="json")
     helper.compare_responses(rec_v2, version_2, response_type="json")
     assert rec_v2["data"]["Name"].endswith(" - new version")
 
     # Plain GET should return the latest version
-    latest = api.sample_analysis.get_record(record_id)
+    latest = api.sample_analysis.get_record(fresh_record_id)
     helper.compare_responses(latest, version_2, response_type="json")
 
 
@@ -299,20 +297,16 @@ def test_relative_permeability_search_record_filtered_out_by_end_date(
     assert record_id not in response["result"]
 
 
-@pytest.mark.skip(reason="Pagination test depends on assumed searchable data; tracked in issue #805")
-def test_relative_permeability_search_record_filtered_out_by_page_limit(
-    api, record_id, dataset_id_v1, search_available_v1
-):
+def test_relative_permeability_search_record_filtered_out_by_page_limit(api, helper, pagination_case_v1):
     """Verify records are filtered out by the specified page limit filter in the search results"""
-    params = {"page_limit": 2}
-    response = api.sample_analysis.search_records(
-        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
-        schema_version=SchemaVersions.V1_0_0,
-        params=params,
+    helper.verify_record_pagination(
+        lambda params: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        pagination_case_v1,
     )
-
-    # Assert
-    assert len(response["result"]) == 2
 
 
 def test_relative_permeability_search_data_filtered_by_columns(
@@ -451,26 +445,21 @@ def test_relative_permeability_search_data_filtered_out_by_end_date(
     assert not any(row[0] == f"{record_id}:" for row in response["result"]["data"])
 
 
-def test_relative_permeability_search_data_filtered_out_by_page_limit(
-    api, tests_data, record_id, dataset_id_v1, search_available_v1
-):
+def test_relative_permeability_search_data_filtered_out_by_page_limit(api, helper, pagination_case_v1):
     """Verify bulk data is filtered out by the specified page limit filter in the search results"""
-    params = {"page_limit": 2}
-    response = api.sample_analysis.search_data(
-        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
-        schema_version=SchemaVersions.V1_0_0,
-        params=params,
+    helper.verify_data_pagination(
+        lambda params: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+            schema_version=SchemaVersions.V1_0_0,
+            params=params,
+        ),
+        pagination_case_v1,
     )
-
-    # Assert
-    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1))
-
-    assert set(response["result"]["columns"]).issubset(baseline["columns"])
-    assert len({row[0] for row in response["result"]["data"]}) <= 2
 
 
 def test_relative_permeability_add_data_v1_1(api, helper, tests_data, record_id):
-    """Upload v1.1.0 bulk data and verify retrieval in JSON and Parquet formats are equivalent."""
+    """Upload bulk data in version 1.1.0 and verify retrieval in JSON and Parquet formats are equivalent."""
+    # Prepare and upload dataset payload
     data_payload = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
     data_payload["data"][0][0] = f"{record_id}:"
     post_response = api.sample_analysis.post_data(
@@ -478,11 +467,13 @@ def test_relative_permeability_add_data_v1_1(api, helper, tests_data, record_id)
     )
     dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
 
+    # GET data as JSON and compare with original payload
     gotten_data = api.sample_analysis.get_data(
         record_id, dataset_id, SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_1_0
     )
     helper.compare_responses(gotten_data, data_payload, response_type="json")
 
+    # Verify JSON and Parquet responses are equivalent
     parquet_response = api.sample_analysis.get_data(
         record_id,
         dataset_id,
@@ -512,10 +503,12 @@ def test_relative_permeability_get_data_v1_1_filtered_by_column(api, helper, tes
 
 
 def test_relative_permeability_get_data_v1_1_filtered_in_by_row(api, helper, tests_data, record_id, dataset_id_v1_1):
-    """Verify v1.1.0 bulk data retrieval filtered in by row."""
+    """Verify bulk data retrieval filtered in by row."""
+    # Prepare baseline
     baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
     baseline["data"][0][0] = f"{record_id}:"
 
+    # GET data as JSON and compare with modified payload
     params = {"rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
     gotten_data = api.sample_analysis.get_data(
         record_id,
@@ -525,6 +518,97 @@ def test_relative_permeability_get_data_v1_1_filtered_in_by_row(api, helper, tes
         params=params,
     )
     helper.compare_responses(gotten_data, baseline, response_type="json")
+
+
+def test_relative_permeability_get_data_v1_1_filtered_out_by_row(api, tests_data, record_id, dataset_id_v1_1):
+    """Verify v1.1.0 bulk data retrieval filtered out by row."""
+    params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
+    response = api.sample_analysis.get_data(
+        record_id,
+        dataset_id=dataset_id_v1_1,
+        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        schema_version=SchemaVersions.V1_1_0,
+        params=params,
+    )
+
+    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
+
+    assert response["columns"] == baseline["columns"]
+    assert response["index"] == []
+    assert response["data"] == []
+
+
+def test_relative_permeability_get_data_v1_1_aggregated(api, record_id, dataset_id_v1_1):
+    """Verify v1.1.0 bulk data retrieval aggregated."""
+    params = {"columns_aggregation": "SamplesAnalysisID,describe"}
+    response = api.sample_analysis.get_data(
+        record_id,
+        dataset_id=dataset_id_v1_1,
+        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        schema_version=SchemaVersions.V1_1_0,
+        params=params,
+    )
+
+    assert response["columns"] == ["describe"]
+    assert set(response["index"]) == {"count", "unique", "top", "freq"}
+    assert f"{record_id}:" in (row[0] for row in response["data"])
+
+
+def test_relative_permeability_get_schema_v1_1(api, helper, tests_data):
+    """Verify schema endpoint matches expected schema model in version 1.1.0."""
+    schema = api.sample_analysis.get_schema(SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_1_0)
+    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_SCHEMA_V1_1))
+
+    helper.compare_responses(schema, baseline, response_type="json")
+
+
+def test_relative_permeability_search_record_filtered_in_by_row_v1_1(api, helper, record_id, dataset_id_v1_1):
+    """Verify v1.1.0 record appears in search results after indexing completes."""
+    params = {"rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
+
+    response = helper.wait_for_search_record(
+        lambda: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
+    )
+    assert record_id in response["result"]
+
+
+def test_relative_permeability_search_data_filtered_in_by_row_v1_1(api, helper, tests_data, record_id, dataset_id_v1_1):
+    """Verify v1.1.0 bulk data appears in search results matching baseline."""
+    params = {"rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
+
+    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
+    baseline["data"][0][0] = f"{record_id}:"
+
+    search_response = helper.wait_for_search_data(
+        lambda: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+            schema_version=SchemaVersions.V1_1_0,
+            params=params,
+        ),
+        record_id,
+    )
+
+    result_data = search_response.get("result", {})
+    helper.compare_responses(result_data, baseline, response_type="json")
+
+
+def test_relative_permeability_search_record_filtered_out_by_row_v1_1(
+    api, record_id, dataset_id_v1_1, search_available_v1_1
+):
+    """Verify v1.1.0 record is filtered out by the specified row filter in the search results."""
+    params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
+    response = api.sample_analysis.search_records(
+        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        schema_version=SchemaVersions.V1_1_0,
+        params=params,
+    )
+
+    assert record_id not in response["result"]
 
 
 def test_relative_permeability_v1_1_search_record_filtered_in_by_end_date(
@@ -563,100 +647,3 @@ def test_relative_permeability_search_data_v1_1_filtered_in_by_start_date(
 
     assert set(response["result"]["columns"]).issubset(baseline["columns"])
     assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
-
-
-def test_relative_permeability_get_data_v1_1_filtered_out_by_row(api, tests_data, record_id, dataset_id_v1_1):
-    """Verify v1.1.0 bulk data retrieval filtered out by row."""
-    params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
-    response = api.sample_analysis.get_data(
-        record_id,
-        dataset_id=dataset_id_v1_1,
-        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
-    )
-
-    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
-
-    assert response["columns"] == baseline["columns"]
-    assert response["index"] == []
-    assert response["data"] == []
-
-
-def test_relative_permeability_get_data_v1_1_aggregated(api, record_id, dataset_id_v1_1):
-    """Verify v1.1.0 bulk data retrieval aggregated."""
-    params = {"columns_aggregation": "SamplesAnalysisID,describe"}
-    response = api.sample_analysis.get_data(
-        record_id,
-        dataset_id=dataset_id_v1_1,
-        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
-    )
-
-    assert response["columns"] == ["describe"]
-    assert set(response["index"]) == {"count", "unique", "top", "freq"}
-    assert f"{record_id}:" in (row[0] for row in response["data"])
-
-
-def test_relative_permeability_get_schema_v1_1(api, helper, tests_data):
-    """Verify v1.1.0 schema endpoint matches expected schema model."""
-    schema = api.sample_analysis.get_schema(SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_1_0)
-    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_SCHEMA_V1_1))
-
-    helper.compare_responses(schema, baseline, response_type="json")
-
-
-def test_relative_permeability_search_record_filtered_in_by_row_v1_1(api, helper, record_id, dataset_id_v1_1):
-    """Verify v1.1.0 record appears in search results after indexing completes."""
-    params = {"rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
-
-    response = helper.wait_for_search_record(
-        lambda: api.sample_analysis.search_records(
-            analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
-            schema_version=SchemaVersions.V1_1_0,
-            params=params,
-        ),
-        record_id,
-    )
-    assert record_id in response["result"]
-
-
-@pytest.mark.skip(
-    reason="Flaky: search result intermittently includes stale v1.0.0 dataset content "
-    "(old SampleInjectionFluidType/DisplacedFluidType reference IDs) alongside the fresh "
-    "v1.1.0 row for the same SamplesAnalysisID, likely search-index eventual consistency "
-    "on the WPC record's DDMSDatasets list. See tmp/issue_draft_relative_permeability_search_flake.md.",
-)
-def test_relative_permeability_search_data_filtered_in_by_row_v1_1(api, helper, tests_data, record_id, dataset_id_v1_1):
-    """Verify v1.1.0 bulk data appears in search results matching baseline."""
-    params = {"rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
-
-    baseline = copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1))
-    baseline["data"][0][0] = f"{record_id}:"
-
-    search_response = helper.wait_for_search_data(
-        lambda: api.sample_analysis.search_data(
-            analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
-            schema_version=SchemaVersions.V1_1_0,
-            params=params,
-        ),
-        record_id,
-    )
-
-    result_data = search_response.get("result", {})
-    helper.compare_responses(result_data, baseline, response_type="json")
-
-
-def test_relative_permeability_search_record_filtered_out_by_row_v1_1(
-    api, record_id, dataset_id_v1_1, search_available_v1_1
-):
-    """Verify v1.1.0 record is filtered out by the specified row filter in the search results."""
-    params = {"rows_filter": f"SamplesAnalysisID,neq,{record_id}:"}
-    response = api.sample_analysis.search_records(
-        analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
-        schema_version=SchemaVersions.V1_1_0,
-        params=params,
-    )
-
-    assert record_id not in response["result"]

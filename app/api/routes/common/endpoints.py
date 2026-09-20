@@ -12,9 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+from collections.abc import Mapping
 from typing import Any, Callable, Dict, Optional
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, Request, Response, status
 from fastapi.responses import JSONResponse
 
 from app.api.dependencies.request import get_content_schema_version, get_response_mime_type
@@ -23,18 +24,25 @@ from app.api.dependencies.validation import raise_model_not_found
 from app.api.routes.utils.api_description_helper import APIDescriptionHelper
 from app.api.routes.utils.api_version import get_domain_from_url
 from app.models.data_schemas.base import (
-    ALL_PATHS_TO_DATA_MODEL,
     CONTENT_PATTERNS,
 )
 from app.services import entitlements
 
 
-class GenericTypesView(object):
+class GenericTypesView:
     def __init__(
         self,
         router: APIRouter,
+        endpoint_path: str,
+        paths_to_data_model: Mapping[str, Mapping[str, Any]],
     ) -> None:
+        if not endpoint_path:
+            raise ValueError("endpoint_path must not be empty")
+        if not endpoint_path.startswith("/"):
+            raise ValueError("endpoint_path must start with '/'")
         self._router = router
+        self._endpoint_path = endpoint_path
+        self._paths_to_data_model = paths_to_data_model
         self._prepare_types_route()
 
     async def get_types(
@@ -43,16 +51,16 @@ class GenericTypesView(object):
     ) -> JSONResponse:
         await entitlements_service.get_groups()
 
-        analysis_types_versions_map = {}
-        for path, versions in ALL_PATHS_TO_DATA_MODEL.items():
-            analysis_type = path.strip("/").split("/")[-1]
-            analysis_types_versions_map[analysis_type] = list(versions.keys())
-        return JSONResponse(content=analysis_types_versions_map)
+        types_versions_map = {}
+        for path, versions in self._paths_to_data_model.items():
+            type_name = path.strip("/").split("/")[-1]
+            types_versions_map[type_name] = list(versions.keys())
+        return JSONResponse(content=types_versions_map)
 
     def _prepare_types_route(self) -> None:
         """Add API route for getting available data types and versions."""
         self._router.add_api_route(
-            path="/analysistypes",
+            path=self._endpoint_path,
             endpoint=self.get_types,
             methods=["GET"],
             status_code=status.HTTP_200_OK,
@@ -70,6 +78,7 @@ class GenericSchemasView(object):
     async def generic_handler(
         self,
         request: Request,
+        response: Response,
         mapping: Dict[str, Any],
         content_type_extractor: Callable[[Request], Dict[str, str]],
         content_schema_version: str = Depends(get_content_schema_version),
@@ -102,7 +111,10 @@ class GenericSchemasView(object):
             if model_versions:
                 break
         if model_versions and (model := model_versions.get(content_schema_version)):  # noqa: WPS332
-            return JSONResponse(content=model.model_json_schema())
+            return JSONResponse(
+                content=model.model_json_schema(),
+                headers=dict(response.headers),
+            )
 
         available_versions = set(model_versions.keys()) if model_versions else set()
         raise_model_not_found(content_type, content_schema_version, available_versions)
@@ -123,11 +135,13 @@ class GenericSchemasView(object):
         # Closure to bind mapping and param_extractor for each endpoint
         async def get_content_schema(  # noqa: WPS430
             request: Request,
+            response: Response,
             content_schema_version: Optional[str] = Depends(get_content_schema_version),
             entitlements_service: entitlements.EntitlementsService = Depends(get_async_entitlements_service),
         ):
             return await self.generic_handler(
                 request,
+                response,
                 config["mapping"],
                 config["param_extractor"],
                 content_schema_version,

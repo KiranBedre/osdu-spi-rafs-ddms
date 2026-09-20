@@ -17,15 +17,17 @@ import os
 from typing import NamedTuple
 
 from app.models.data_schemas.base import (
-    ALL_PATHS_TO_DATA_MODEL,
+    ALL_PATHS_TO_SA_DATA_MODEL,
     SAMPLES_ANALYSIS,
 )
 from app.models.schemas.osdu_storage import Acl, Legal, OsduStorageRecord
 from app.resources.paths import (
     DEPTH_SHIFT_STR,
+    FLUID_MODEL_STR,
     RESERVOIR_SIMULATION_ROCK_PHYSICS_MODEL_STR,
     SATURATION_FUNCTION_SET_STR,
     CommonRelativePathsV2,
+    FluidModelRelativePathsV2,
 )
 from tests.test_api.api_version import API_VERSION_V2
 
@@ -332,7 +334,7 @@ FLUID_MODEL_RECORD = OsduStorageRecord(
             "ModelPropertyFormulationMethods": [
                 {
                     "ModelPropertyTypeID": "namespace:reference-data--FluidModelPropertyType:Density:",
-                    "ModelPropertyFormulationMethodID": "namespace:reference-data--FluidModelPropertyFormulationMethod:PengRobinson:",
+                    "ModelPropertyFormulationMethodID": "namespace:reference-data--FluidModelPropertyFormulationMethod:Compositional.PengRobinson:",
                 },
             ],
             "ModellingApplicationsUsed": [
@@ -446,7 +448,11 @@ SATURATION_FUNCTION_SET_DATA_PATH = f"{SATURATION_FUNCTION_SET_ENDPOINT_PATH}/{T
 DEPTH_SHIFT_ENDPOINT_PATH = f"{BASE_V2_PATH}/{DEPTH_SHIFT_STR}"
 DEPTH_SHIFT_DATA_PATH = f"{DEPTH_SHIFT_ENDPOINT_PATH}/{TEST_DEPTH_SHIFT_ID}/data"
 
+FLUID_MODEL_ENDPOINT_PATH = f"{BASE_V2_PATH}/{FLUID_MODEL_STR}"
+FLUID_MODEL_DATA_V2_PATH = f"{FLUID_MODEL_ENDPOINT_PATH}/{TEST_FLUID_MODEL_ID}"
+
 common_relative_paths_v2 = CommonRelativePathsV2()
+fluid_model_relative_paths_v2 = FluidModelRelativePathsV2()
 
 
 class TestContentPathsApiV2:
@@ -502,6 +508,9 @@ class TestContentPathsApiV2:
     DEPTH_SHIFT_MODEL = DEPTH_SHIFT_DATA_PATH
     ROLLER_OVEN_TEST = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.ROLLER_OVEN_TEST}"
     SATURATION_TEST = f"{BASE_DATA_V2_PATH}{common_relative_paths_v2.SATURATION_TEST}"
+    BLACK_OIL_FLUID_MODEL = f"{FLUID_MODEL_DATA_V2_PATH}{fluid_model_relative_paths_v2.BLACK_OIL_FLUID_MODEL}"
+    COMPOSITIONAL_FLUID_MODEL = f"{FLUID_MODEL_DATA_V2_PATH}{fluid_model_relative_paths_v2.COMPOSITIONAL_FLUID_MODEL}"
+    THERMAL_COMPOSITIONAL_FLUID_MODEL = f"{FLUID_MODEL_DATA_V2_PATH}{fluid_model_relative_paths_v2.THERMAL_COMPOSITIONAL_FLUID_MODEL}"
 
 
 class BulkDatasetIdV2(NamedTuple):
@@ -559,6 +568,9 @@ class BulkDatasetIdV2(NamedTuple):
     DEPTH_SHIFT_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:{DEPTH_SHIFT_STR}-{TEST_DATASET_UID}"
     ROLLER_OVEN_TEST = f"{PARTITION}:{FILE_GENERIC_TYPE}:rolleroventest-{TEST_DATASET_UID}"
     SATURATION_TEST = f"{PARTITION}:{FILE_GENERIC_TYPE}:saturationtest-{TEST_DATASET_UID}"
+    BLACK_OIL_FLUID_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:blackoil{FLUID_MODEL_STR}-{TEST_DATASET_UID}"
+    COMPOSITIONAL_FLUID_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:compositional{FLUID_MODEL_STR}-{TEST_DATASET_UID}"
+    THERMAL_COMPOSITIONAL_FLUID_MODEL = f"{PARTITION}:{FILE_GENERIC_TYPE}:thermalcompositional{FLUID_MODEL_STR}-{TEST_DATASET_UID}"
 
 
 with open(f"{dir_path}/schemas/wpc_definitions.json") as fp:
@@ -607,10 +619,10 @@ with open(f"{dir_path}/schemas/sample_container.json") as fp:
     SAMPLE_CONTAINER_SCHEMA = json.load(fp)
     SAMPLE_CONTAINER_SCHEMA["definitions"] = MD_DEFINITIONS
 
-PREFIX_TO_STRIP = f"v2/{SAMPLES_ANALYSIS}/"
+PREFIX_TO_STRIP = "/data/"
 
 VALID_ANALYSIS_TYPES_V1_0_0 = [
     path.replace(PREFIX_TO_STRIP, "")
-    for path, versions in ALL_PATHS_TO_DATA_MODEL.items()
+    for path, versions in ALL_PATHS_TO_SA_DATA_MODEL.items()
     if path.startswith(PREFIX_TO_STRIP) and "1.0.0" in versions
 ]

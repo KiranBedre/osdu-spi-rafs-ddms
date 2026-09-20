@@ -64,3 +64,35 @@ def dataset_id_v1(api, helper, record_id, tests_data, analysis_type, cce_record_
         schema_version=SchemaVersions.V1_0_0,
     )
     return helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
+
+
+@pytest.fixture
+def pagination_case_v1(
+    api,
+    create_isolated_samples_analysis_pagination_case,
+    delete_record,
+    helper,
+    tests_data,
+    analysis_type,
+):
+    """Create isolated Saturation Test pagination data and its CCE dependency."""
+    cce_record = copy.deepcopy(
+        tests_data(DataFiles.SAMPLE_ANALYSIS, SamplesAnalysisTypes.CCE),
+    )
+    cce_record["id"] = (
+        f"{DataTemplates.ID_SAMPLE_ANALYSIS.format(partition=CONFIG['DATA_PARTITION'])}"
+        f"{helper.generate_random_record_id()}"
+    )
+    api.sample_analysis.post_record([cce_record])
+    delete_record(cce_record["id"])
+
+    def _prepare_data(data_payload):
+        source_analysis_index = data_payload["columns"].index("SourceAnalysisID")
+        for row in data_payload["data"]:
+            row[source_analysis_index] = f"{cce_record['id']}:"
+
+    return create_isolated_samples_analysis_pagination_case(
+        analysis_type,
+        SchemaVersions.V1_0_0,
+        prepare_data=_prepare_data,
+    )

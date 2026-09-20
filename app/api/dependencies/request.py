@@ -11,7 +11,6 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-
 import re
 from types import MappingProxyType
 from typing import Final, List, Optional
@@ -29,7 +28,7 @@ from app.api.routes.utils.records import get_id
 from app.exceptions import exceptions
 from app.middleware.correlation_id_middleware import set_correlation_id
 from app.models.schemas.depth_shift_query import DepthShiftPolicy, DepthShiftQueryParams
-from app.resources.common_headers import ACCEPT, CONTENT_TYPE, CORRELATION_ID
+from app.resources.common_headers import ACCEPT, CONTENT_TYPE, CORRELATION_ID, X_COLLABORATION
 from app.resources.mime_types import SupportedMimeTypes
 
 ACCEPT_HEADER: Final = "accept"
@@ -313,6 +312,12 @@ def get_correlation_id(request: Request):
         )
     set_correlation_id(correlation_id)
     return correlation_id
+
+
+def get_x_collaboration_header(
+    x_collaboration: Optional[str] = Header(None, alias=X_COLLABORATION),
+) -> Optional[str]:
+    return x_collaboration
 
 
 def validate_scope_parameter(param_name: str, param_value: Optional[str]) -> None:

@@ -1,0 +1,33 @@
+{
+  "columns": [
+    "FluidModelID",
+    "Meta",
+    "Name",
+    "SequencedComponentList",
+    "SequencedSolubleInWaterComponentList",
+    "BinaryInteractionCoefficient",
+    "ComponentProperties"
+  ],
+  "index": [
+    0
+  ],
+  "data": [
+    [
+      "{data_partition_id}:work-product-component--FluidModel:placeholder:",
+      [],
+      "Minimal Thermal Compositional Fluid Model",
+      [],
+      [],
+      {
+        "SequencedComponentList": [],
+        "Elements": []
+      },
+      {
+        "MolecularWeight": [],
+        "CriticalTemperature": [],
+        "CriticalPressure": [],
+        "AcentricFactor": []
+      }
+    ]
+  ]
+}

@@ -17,7 +17,12 @@ import copy
 import pytest
 from starlette import status
 
-from app.resources.common_headers import ACCEPT, AUTHORIZATION, CONTENT_TYPE, DATA_PARTITION_ID
+from app.resources.common_headers import (
+    ACCEPT,
+    AUTHORIZATION,
+    CONTENT_TYPE,
+    DATA_PARTITION_ID,
+)
 from tests.integration.config import (
     DataFiles,
     SamplesAnalysisEndpoints,
@@ -28,36 +33,31 @@ from tests.integration.config import (
 def test_saturation_test_negative_missing_authorization_header(
     api, tests_data, endpoint, args, record_id, version, dataset_id_v1, analysis_type
 ):
-    """Reject requests missing Authorization header with 401 or 403.
-
-    Accepts either code: which one a given deployment returns depends on
-    which layer enforces authentication there (app vs. gateway), and that
-    has not been isolated per environment. The observed 401 body
-    ({"code": 401, "reason": "Not authenticated"}) matches FastAPI's own
-    app-level behavior for a missing bearer token.
-    """
-    dataset_id = dataset_id_v1
+    """Reject requests missing Authorization header with 401 Unauthorized."""
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
-    call_kwargs = {name: local_vars[name] for name in args}
+    local_vars["dataset_id"] = local_vars["dataset_id_v1"]
+    call_args = [local_vars[name] for name in args]
 
-    call_kwargs.update({
+    expected_code = status.HTTP_401_UNAUTHORIZED
+    kwargs = {
         "headers": {AUTHORIZATION: None},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED],
+        "allowed_codes": [expected_code],
         "raw": True,
-    })
+    }
 
     if endpoint == "post_record":
-        call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
+        kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
     elif endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_TEST_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
-        call_kwargs["body"] = data_payload
+        # post_data(record_id, body, analysis_type) — body is positional index 1
+        call_args = [local_vars["record_id"], data_payload, local_vars["analysis_type"]]
 
-    response = method(**call_kwargs)
+    response = method(*call_args, **kwargs)
 
     # Assert
-    assert response.status_code in (403, 401)
+    assert response.status_code == expected_code
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
@@ -66,36 +66,31 @@ def test_saturation_test_negative_missing_authorization_header(
 def test_saturation_test_negative_invalid_authorization_header(
     api, tests_data, endpoint, args, record_id, version, dataset_id_v1, analysis_type
 ):
-    """Reject malformed Authorization header with 401 or 403.
-
-    Accepts either code: which one a given deployment returns depends on
-    which layer enforces authentication there (app vs. gateway), and that
-    has not been isolated per environment. The observed 401 body
-    ({"code": 401, "reason": "Not authenticated"}) matches FastAPI's own
-    app-level behavior for a malformed bearer token.
-    """
-    dataset_id = dataset_id_v1
+    """Reject malformed Authorization header with 401 Unauthorized."""
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
-    call_kwargs = {name: local_vars[name] for name in args}
+    local_vars["dataset_id"] = local_vars["dataset_id_v1"]
+    call_args = [local_vars[name] for name in args]
 
-    call_kwargs.update({
+    expected_code = status.HTTP_401_UNAUTHORIZED
+    kwargs = {
         "headers": {AUTHORIZATION: "dummy"},
-        "allowed_codes": [status.HTTP_403_FORBIDDEN, status.HTTP_401_UNAUTHORIZED],
+        "allowed_codes": [expected_code],
         "raw": True,
-    })
+    }
 
     if endpoint == "post_record":
-        call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
+        kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
     elif endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_TEST_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
-        call_kwargs["body"] = data_payload
+        # post_data(record_id, body, analysis_type) — body is positional index 1
+        call_args = [local_vars["record_id"], data_payload, local_vars["analysis_type"]]
 
-    response = method(**call_kwargs)
+    response = method(*call_args, **kwargs)
 
     # Assert
-    assert response.status_code in (403, 401)
+    assert response.status_code == expected_code
     body = response.json()
     assert "Not authenticated" in body["reason"]
 
@@ -105,31 +100,40 @@ def test_saturation_test_negative_invalid_access_token_authorization_header(
     api, tests_data, endpoint, args, record_id, version, dataset_id_v1, analysis_type
 ):
     """Reject invalid Bearer token with 401 Unauthorized."""
-    dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
-    call_kwargs = {name: local_vars[name] for name in args}
+    local_vars["dataset_id"] = local_vars["dataset_id_v1"]
+    call_args = [local_vars[name] for name in args]
 
-    call_kwargs.update({
+    kwargs = {
         "headers": {AUTHORIZATION: "Bearer dummy"},
         "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
         "raw": True,
-    })
+    }
 
     if endpoint == "post_record":
-        call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
+        kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
     elif endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_TEST_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
-        call_kwargs["body"] = data_payload
+        # post_data(record_id, body, analysis_type) — body is positional index 1
+        call_args = [local_vars["record_id"], data_payload, local_vars["analysis_type"]]
 
-    response = method(**call_kwargs)
+    response = method(*call_args, **kwargs)
 
     # Assert
     assert response.status_code == 401
-    body = response.json()
-    assert "Access denied" in body["reason"]
-    assert "The user is not authorized to perform this action" in body["message"]
+
+    content_type = response.headers.get("content-type", "").lower()
+
+    if "json" in content_type:
+        body = response.json()
+        assert "Access denied" in body["reason"]
+        assert "The user is not authorized to perform this action" in body["message"]
+    else:
+        www_authenticate = response.headers.get("www-authenticate")
+        assert www_authenticate is not None
+        assert 'error="invalid_token"' in www_authenticate
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.ALL_ENDPOINTS_ARGS)
@@ -143,25 +147,26 @@ def test_saturation_test_negative_missing_data_partition_id_header(
     pydantic v2 migration: if format_errors() stops normalising RequestValidationError
     dicts the 'errors' list would contain dicts instead of strings.
     """
-    dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
-    call_kwargs = {name: local_vars[name] for name in args}
+    local_vars["dataset_id"] = local_vars["dataset_id_v1"]
+    call_args = [local_vars[name] for name in args]
 
-    call_kwargs.update({
+    kwargs = {
         "headers": {DATA_PARTITION_ID: None},
         "allowed_codes": [status.HTTP_400_BAD_REQUEST],
         "raw": True,
-    })
+    }
 
     if endpoint == "post_record":
-        call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
+        kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
     elif endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_TEST_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
-        call_kwargs["body"] = data_payload
+        # post_data(record_id, body, analysis_type) — body is positional index 1
+        call_args = [local_vars["record_id"], data_payload, local_vars["analysis_type"]]
 
-    response = method(**call_kwargs)
+    response = method(*call_args, **kwargs)
 
     # Assert
     assert response.status_code == 400
@@ -181,25 +186,26 @@ def test_saturation_test_negative_missing_content_type_header(
     api, tests_data, endpoint, args, record_id, dataset_id_v1, analysis_type
 ):
     """Reject requests missing Content-Type header with 400 Bad Request."""
-    dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
-    call_kwargs = {name: local_vars[name] for name in args}
+    local_vars["dataset_id"] = local_vars["dataset_id_v1"]
+    call_args = [local_vars[name] for name in args]
 
-    call_kwargs.update({
+    kwargs = {
         "headers": {CONTENT_TYPE: None},
         "allowed_codes": [status.HTTP_400_BAD_REQUEST],
         "raw": True,
-    })
+    }
 
     if endpoint == "post_record":
-        call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
+        kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
     elif endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_TEST_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
-        call_kwargs["body"] = data_payload
+        # post_data(record_id, body, analysis_type) — body is positional index 1
+        call_args = [local_vars["record_id"], data_payload, local_vars["analysis_type"]]
 
-    response = method(**call_kwargs)
+    response = method(*call_args, **kwargs)
 
     # Assert
     assert response.status_code == 400
@@ -212,25 +218,26 @@ def test_saturation_test_negative_unsupported_content_type_header(
     api, tests_data, endpoint, args, record_id, dataset_id_v1, analysis_type
 ):
     """Reject unsupported content types with 415 Unsupported Media Type."""
-    dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
-    call_kwargs = {name: local_vars[name] for name in args}
+    local_vars["dataset_id"] = local_vars["dataset_id_v1"]
+    call_args = [local_vars[name] for name in args]
 
-    call_kwargs.update({
+    kwargs = {
         "headers": {CONTENT_TYPE: "application/xml"},
         "allowed_codes": [status.HTTP_415_UNSUPPORTED_MEDIA_TYPE],
         "raw": True,
-    })
+    }
 
     if endpoint == "post_record":
-        call_kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
+        kwargs["body"] = [copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS, analysis_type))]
     elif endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_TEST_DATA_V1))
         data_payload["data"][0][0] = f"{record_id}:"
-        call_kwargs["body"] = data_payload
+        # post_data(record_id, body, analysis_type) — body is positional index 1
+        call_args = [local_vars["record_id"], data_payload, local_vars["analysis_type"]]
 
-    response = method(**call_kwargs)
+    response = method(*call_args, **kwargs)
 
     # Assert
     assert response.status_code == 415
@@ -246,18 +253,18 @@ def test_saturation_test_negative_unsupported_application_accept_header(
     api, tests_data, endpoint, args, record_id, dataset_id_v1, analysis_type
 ):
     """Reject unsupported media types in Accept header with 406 Not Acceptable."""
-    dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
-    call_kwargs = {name: local_vars[name] for name in args}
+    local_vars["dataset_id"] = local_vars["dataset_id_v1"]
+    call_args = [local_vars[name] for name in args]
 
-    call_kwargs.update({
+    kwargs = {
         "allowed_codes": [status.HTTP_406_NOT_ACCEPTABLE],
         "raw": True,
         "headers": {ACCEPT: "application/xml"},
-    })
+    }
 
-    response = method(**call_kwargs)
+    response = method(*call_args, **kwargs)
 
     # Assert
     assert response.status_code == 406

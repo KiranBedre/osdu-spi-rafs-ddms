@@ -16,14 +16,10 @@ from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
 from app.core.settings.app import AppSettings
+from app.models.schemas.errors import ValidationErrorResponse
 from app.models.schemas.osdu_storage import OsduStorageRecord
 from app.models.schemas.pandas_dataframe import OrientSplit
 from app.resources.load_model_example import load_data_example
-
-
-def _is_non_boolean_number(raw_value: object) -> bool:
-    """Check if a value is numeric while excluding booleans."""
-    return isinstance(raw_value, (int, float)) and not isinstance(raw_value, bool)
 
 
 def _normalize_ref_path(normalized_mapping: dict) -> None:
@@ -59,7 +55,7 @@ def _normalize_openapi_mapping(
     raw_mapping: dict,
     component_schemas: dict,
 ) -> dict:
-    """Normalize mapping nodes and promote OpenAPI 2 fields to OpenAPI 3 fields."""
+    """Normalize legacy references and schema metadata for OpenAPI 3.1."""
     normalized_mapping = {}
 
     for field_name, field_value in raw_mapping.items():
@@ -70,16 +66,6 @@ def _normalize_openapi_mapping(
                         schema_value,
                         component_schemas,
                     )
-            continue
-
-        if field_name == "exclusiveMinimum" and _is_non_boolean_number(field_value):
-            normalized_mapping["minimum"] = field_value
-            normalized_mapping["exclusiveMinimum"] = True
-            continue
-
-        if field_name == "exclusiveMaximum" and _is_non_boolean_number(field_value):
-            normalized_mapping["maximum"] = field_value
-            normalized_mapping["exclusiveMaximum"] = True
             continue
 
         normalized_key = "title" if field_name == "app_name" else field_name
@@ -93,7 +79,7 @@ def _normalize_openapi_mapping(
 
 
 def _normalize_openapi_schema(schema: dict) -> dict:
-    """Normalize schema to the OpenAPI 3 structure used by the committed spec."""
+    """Normalize legacy references and schema metadata for OpenAPI 3.1."""
     components = schema.setdefault("components", {}) if isinstance(schema, dict) else {}
     component_schemas = components.setdefault("schemas", {}) if isinstance(components, dict) else {}
 
@@ -310,6 +296,42 @@ def _ensure_operation_data_partition_header(operation: dict) -> None:
     )
 
 
+def _ensure_operation_x_collaboration_header(operation: dict) -> None:
+    """Ensure operation declares optional x-collaboration header parameter."""
+    operation_params = operation.setdefault("parameters", [])
+    has_x_collaboration_header = any(
+        openapi_parameter.get("in") == "header" and openapi_parameter.get("name") == "x-collaboration"
+        for openapi_parameter in operation_params
+        if isinstance(openapi_parameter, dict)
+    )
+    if has_x_collaboration_header:
+        return
+
+    operation_params.append(
+        {
+            "in": "header",
+            "name": "x-collaboration",
+            "required": False,
+            "description": (
+                "Optional namespace isolation header. " "Supports '<uuid>' or 'id=<uuid>,application=<app-name>'."
+            ),
+            "schema": {
+                "title": "x-collaboration",
+                "type": "string",
+                "description": "Optional namespace isolation header.",
+            },
+            "examples": {
+                "uuid": {
+                    "value": "123e4567-e89b-12d3-a456-426614174051",
+                },
+                "id_with_application": {
+                    "value": "id=123e4567-e89b-12d3-a456-426614174051,application=rafsddms",
+                },
+            },
+        },
+    )
+
+
 def _apply_swagger_auth_partition_reqs(openapi_schema: dict) -> None:
     """Ensure protected endpoints expose auth and partition header in Swagger UI."""
     _ensure_http_bearer_scheme(openapi_schema)
@@ -321,6 +343,7 @@ def _apply_swagger_auth_partition_reqs(openapi_schema: dict) -> None:
                 continue
             _ensure_operation_security(operation)
             _ensure_operation_data_partition_header(operation)
+            _ensure_operation_x_collaboration_header(operation)
 
 
 def _sort_and_annotate_parameters(openapi_schema: dict) -> None:  # noqa: WPS231
@@ -665,9 +688,12 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
     :param AppSettings settings: App settings
     :return dict: Modified and normalized OpenAPI schema
     """
+    if app.openapi_schema is not None:
+        return app.openapi_schema
+
     custom_openapi_schema = get_openapi(
         title=settings.app_name,
-        openapi_version="3.0.3",
+        openapi_version="3.1.0",
         version=settings.app_version,
         routes=app.routes,
         description="OSDU Rock and Fluid Sample DDMS",
@@ -676,6 +702,10 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
             "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
         },
     )
+
+    validation_error_schema = ValidationErrorResponse.model_json_schema()
+    validation_error_schema["title"] = "HTTPValidationError"
+    custom_openapi_schema["components"]["schemas"]["HTTPValidationError"] = validation_error_schema
 
     _apply_request_body_overrides(custom_openapi_schema, settings)
     _apply_swagger_auth_partition_reqs(custom_openapi_schema)
@@ -686,7 +716,8 @@ def get_custom_openapi_schema(app: FastAPI, settings: AppSettings) -> dict:
     _enrich_depth_shift_descriptions(custom_openapi_schema)
     _sort_and_annotate_parameters(custom_openapi_schema)
 
-    return _normalize_openapi_schema(custom_openapi_schema)
+    app.openapi_schema = _normalize_openapi_schema(custom_openapi_schema)
+    return app.openapi_schema
 
 
 def _apply_request_body_overrides(openapi_schema: dict, settings: AppSettings) -> None:

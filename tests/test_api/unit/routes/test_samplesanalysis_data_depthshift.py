@@ -21,9 +21,6 @@ import pytest
 from fastapi import HTTPException, Response
 from starlette import status
 
-if not hasattr(status, "HTTP_422_UNPROCESSABLE_CONTENT"):
-    status.HTTP_422_UNPROCESSABLE_CONTENT = status.HTTP_422_UNPROCESSABLE_ENTITY
-
 from app.api.routes.samplesanalysis.endpoints import SamplesAnalysisDataView
 from app.models.schemas.depth_shift_query import DepthShiftQueryParams
 
@@ -60,7 +57,7 @@ async def test_run_depth_shift_pipeline_missing_sampleid_returns_422(data_view):
             ),
         )
 
-    assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert exc_info.value.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert "SampleID" in str(exc_info.value.detail)
 
 

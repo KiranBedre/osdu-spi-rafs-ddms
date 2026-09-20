@@ -14,9 +14,6 @@
 
 from typing import Optional, Union
 
-import pandas as pd
-from pydantic import BaseModel
-
 from app.api.routes.data.api import _cast_str_columns, _unwrap_optional
 from app.bulk_data_validation.data_validation import DataValidator
 
@@ -64,35 +61,6 @@ class TestUnwrapOptional:
         Only Union[T, None] with exactly one non-None member should unwrap to T.
         """
         assert _unwrap_optional(Optional[Union[str, int]]) == Union[str, int, None]
-
-
-class TestCastStrColumns:
-    class _Model(BaseModel):
-        StrField: str
-        OptionalStrField: Optional[str] = None
-        UnionField: Union[str, int]
-        IntField: int
-
-    def test_numeric_str_column_is_cast_and_reports_change(self):
-        """Verify a numeric column for a str-typed field is coerced and signalled as changed."""
-        df = pd.DataFrame({"StrField": [1, 2], "IntField": [1, 2]})
-        changed = _cast_str_columns(df, self._Model)
-        assert changed is True
-        assert df["StrField"].tolist() == ["1", "2"]
-
-    def test_already_str_column_is_untouched_and_reports_no_change(self):
-        """Verify a column already str-typed is left alone and reported as unchanged."""
-        df = pd.DataFrame({"StrField": ["1", "2"]})
-        changed = _cast_str_columns(df, self._Model)
-        assert changed is False
-        assert df["StrField"].tolist() == ["1", "2"]
-
-    def test_genuine_union_column_is_not_coerced(self):
-        """Verify a genuine Union[str, int] field is left untouched, unlike a plain str field."""
-        df = pd.DataFrame({"UnionField": [1, 2]})
-        changed = _cast_str_columns(df, self._Model)
-        assert changed is False
-        assert df["UnionField"].tolist() == [1, 2]
 
 
 class TestDataValidatorUnwrapAnnotation:

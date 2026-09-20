@@ -42,30 +42,20 @@ SPECIFIC_MANDATORY_FIELDS = [
 ]
 
 GENERIC_INVALID_TYPE_FIELDS = [
-    ("/id", ["id"], "id str type expected"),
-    ("/kind", ["kind"], "kind str type expected"),
-    ("/legal", ["legal"], "legal value is not a valid dict"),
-    ("/acl", ["acl"], "acl value is not a valid dict"),
-    ("/legal/legaltags", "legaltags", "legaltags value is not a valid list"),
+    ("/id", ["id"], "id Input should be a valid string"),
+    ("/kind", ["kind"], "kind Input should be a valid string"),
+    ("/legal", ["legal"], "legal Input should be a valid dictionary or object to extract fields from"),
+    ("/acl", ["acl"], "acl Input should be a valid dictionary or object to extract fields from"),
+    ("/legal/legaltags", "legaltags", "legaltags Input should be a valid list"),
     (
         "/legal/otherRelevantDataCountries",
         "otherRelevantDataCountries",
-        "otherRelevantDataCountries value is not a valid list",
+        "otherRelevantDataCountries Input should be a valid list",
     ),
-    ("/acl/owners", "owners", "owners value is not a valid list"),
-    ("/acl/viewers", "viewers", "viewers value is not a valid list"),
-    ("/data", "data", "data value is not a valid dict"),
+    ("/acl/owners", "owners", "owners Input should be a valid list"),
+    ("/acl/viewers", "viewers", "viewers Input should be a valid list"),
+    ("/data", "data", "data Input should be a valid dictionary"),
 ]
-
-# pydantic v1 produces e.g. "str type expected"; pydantic v2 produces "Input should be
-# a valid string" (and, for BaseModel fields like legal/acl, appends "or instance of X").
-# Match on this stable v2 prefix rather than the full message so the model class name
-# suffix doesn't need to be hardcoded per field.
-_V1_TO_V2_TYPE_MSG_PREFIX = {
-    "str type expected": "Input should be a valid string",
-    "value is not a valid dict": "Input should be a valid dictionary",
-    "value is not a valid list": "Input should be a valid list",
-}
 
 SPECIFIC_INVALID_TYPE_FIELDS = [
     ("/data/Name", ["Name"], "['Name'] is not of type 'string'"),
@@ -411,8 +401,7 @@ def test_sfs_negative_create_record_missing_mandatory_generic_field(api, tests_d
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    # pydantic v1 produces "field required"; pydantic v2 produces "Field required" (case-insensitive check).
-    assert any(f"{field_name} field required".lower() == err.lower() for err in body["errors"])
+    assert f"{field_name} Field required" in body["errors"]
     assert len(body["errors"]) == 1, f"Expected errors list length 1, got {len(body['errors'])}"
 
 
@@ -456,9 +445,7 @@ def test_sfs_negative_create_record_invalid_type_generic_field(
     # Assert
     assert response.status_code == 422
     body = response.json()
-    field_name, v1_suffix = error_message.split(" ", 1)
-    v2_prefix = f"{field_name} {_V1_TO_V2_TYPE_MSG_PREFIX[v1_suffix]}"
-    assert any(err == error_message or err.startswith(v2_prefix) for err in body["errors"])
+    assert error_message in body["errors"]
     assert len(body["errors"]) == 1
 
 
@@ -541,12 +528,7 @@ def test_sfs_negative_create_record_extra_field_generic(api, tests_data, helper,
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    # pydantic v1 produces "extra fields not permitted"; pydantic v2 produces
-    # "Extra inputs are not permitted".
-    assert any(
-        err in (f"{field_name} extra fields not permitted", f"{field_name} Extra inputs are not permitted")
-        for err in body["errors"]
-    )
+    assert f"{field_name} Extra inputs are not permitted" in body["errors"]
     assert len(body["errors"]) == 1
 
 
@@ -811,10 +793,7 @@ def test_sfs_negative_create_record_invalid_payload_format(api, tests_data):
     assert response.status_code == 422
     body = response.json()
     assert "Unprocessable entity." in body["reason"]
-    v1_message = "body value is not a valid list"
-    field_name, v1_suffix = v1_message.split(" ", 1)
-    v2_prefix = f"{field_name} {_V1_TO_V2_TYPE_MSG_PREFIX[v1_suffix]}"
-    assert any(err == v1_message or err.startswith(v2_prefix) for err in body["errors"])
+    assert "body Input should be a valid list" in body["errors"]
 
 
 def test_sfs_negative_add_data_invalid_payload_format(api, tests_data, record_id):

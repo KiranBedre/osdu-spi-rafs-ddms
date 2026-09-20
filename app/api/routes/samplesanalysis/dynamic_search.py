@@ -23,8 +23,6 @@ from fastapi_cache.decorator import cache
 from loguru import logger
 from starlette import status
 
-from app.core.http_status import HTTP_422_UNPROCESSABLE
-
 from app.api.dependencies.request import get_content_schema_version, get_depth_shift_params
 from app.api.dependencies.services import (
     get_async_dataset_service,
@@ -43,6 +41,7 @@ from app.api.routes.utils.records import get_id
 from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
+from app.core.http_status import HTTP_422_UNPROCESSABLE
 from app.depth_shift.augmenter import augment_dataframe
 from app.depth_shift.extractor import extract_sample_wellbore_id
 from app.depth_shift.metadata import get_definitive_wpc_id, resolve_metadata_warning_state
@@ -156,6 +155,13 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
             search_result = json.loads(body)
             result_data = search_result.get("result", {})
 
+            # Validate wellbore scope upfront — required regardless of whether results are empty.
+            if not search_scope.wellbore_id:
+                raise HTTPException(
+                    status_code=HTTP_422_UNPROCESSABLE,
+                    detail="Depth shift requires a wellbore-scoped search. Please provide wellbore_id parameter.",
+                )
+
             # Convert to DataFrame
             if isinstance(result_data, dict) and orient == "split":
                 base_df = pd.read_json(io.StringIO(json.dumps(result_data)), orient="split")
@@ -163,13 +169,6 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
                 base_df = pd.DataFrame(result_data)
             else:
                 base_df = pd.DataFrame()
-
-            # Validate wellbore scope is provided
-            if not search_scope.wellbore_id:
-                raise HTTPException(
-                    status_code=HTTP_422_UNPROCESSABLE,
-                    detail="Depth shift requires a wellbore-scoped search. Please provide wellbore_id parameter.",
-                )
 
             # Empty results are returned as-is; there is nothing to shift.
             if base_df.empty:

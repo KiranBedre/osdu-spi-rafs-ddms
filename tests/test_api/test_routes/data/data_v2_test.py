@@ -40,6 +40,9 @@ from tests.test_api.test_routes.api_v2.atm_flash_compositional_analysis import (
     atmospheric_flash_mock_objects,
     compositional_analysis_mock_objects,
 )
+from tests.test_api.test_routes.api_v2.black_oil_fluid_model import (
+    black_oil_fluid_model_mock_objects,
+)
 from tests.test_api.test_routes.api_v2.bulk_pyrolysis import (
     bulk_pyrolysis_mock_objects,
 )
@@ -52,6 +55,9 @@ from tests.test_api.test_routes.api_v2.cappressure import (
 from tests.test_api.test_routes.api_v2.cce import cce_mock_objects
 from tests.test_api.test_routes.api_v2.cec_content import (
     cec_content_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.compositional_fluid_model import (
+    compositional_fluid_model_mock_objects,
 )
 from tests.test_api.test_routes.api_v2.constantvolumedepletion import (
     cvd_mock_objects,
@@ -136,6 +142,9 @@ from tests.test_api.test_routes.api_v2.swelling import swelling_mock_objects
 from tests.test_api.test_routes.api_v2.tec import tec_data_mock_objects
 from tests.test_api.test_routes.api_v2.tensile_strength import (
     tensile_strength_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.thermal_compositional_fluid_model import (
+    thermal_compositional_fluid_model_mock_objects,
 )
 from tests.test_api.test_routes.api_v2.transport import (
     transport_test_mock_objects,
@@ -336,6 +345,9 @@ def _headers_parquet_accept_only(version="1.0.0"):
         (TestContentPathsApiV2.DEPTH_SHIFT_MODEL, BulkDatasetIdV2.DEPTH_SHIFT_MODEL),
         (TestContentPathsApiV2.ROLLER_OVEN_TEST, BulkDatasetIdV2.ROLLER_OVEN_TEST),
         (TestContentPathsApiV2.SATURATION_TEST, BulkDatasetIdV2.SATURATION_TEST),
+        (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, BulkDatasetIdV2.BLACK_OIL_FLUID_MODEL),
+        (TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL, BulkDatasetIdV2.COMPOSITIONAL_FLUID_MODEL),
+        (TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL, BulkDatasetIdV2.THERMAL_COMPOSITIONAL_FLUID_MODEL),
     ],
 )
 @pytest.mark.asyncio
@@ -406,6 +418,9 @@ async def test_get_content_data_no_data(data_endpoint_path, dataset_id):
         TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
         TestContentPathsApiV2.SATURATION_TEST,
+        TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+        TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+        TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
     ],
 )
 @pytest.mark.asyncio
@@ -477,6 +492,9 @@ async def test_post_data_no_content_header(data_endpoint_path):
         TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
         TestContentPathsApiV2.SATURATION_TEST,
+        TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+        TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+        TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
     ],
 )
 @pytest.mark.asyncio
@@ -510,6 +528,15 @@ async def test_post_data_wrong_content_header(data_endpoint_path):
         (
             TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
             coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
         ),
     ],
 )
@@ -545,6 +572,15 @@ async def test_get_data_no_content_type_does_not_return_400(data_endpoint_path, 
     [
         (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -1146,6 +1182,36 @@ async def test_get_data_accept_parquet_does_not_return_content_type_error(data_e
             "download_file",
             [build_get_test_data("x-parquet", saturation_test_mock_objects.TEST_DATA)],
         ),
+        (
+            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+            black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", thermal_compositional_fluid_model_mock_objects.TEST_DATA)],
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -1190,6 +1256,30 @@ async def test_get_content_parquet_data(
             "download_file",
             [build_get_test_data("x-parquet", cce_mock_objects.TEST_DATA)],
         ),
+        (
+            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+            black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", thermal_compositional_fluid_model_mock_objects.TEST_DATA)],
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -1227,6 +1317,15 @@ async def test_get_data_accept_negotiation_returns_parquet(
     [
         (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -2814,6 +2913,87 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             [build_get_test_data("x-parquet", saturation_test_mock_objects.TEST_DATA)],
             saturation_test_mock_objects.TEST_FILTERED_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL}/{black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TRIMMED_TEST_DATA)],
+            black_oil_fluid_model_mock_objects.TRIMMED_TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TRIMMED_TEST_DATA)],
+            compositional_fluid_model_mock_objects.TRIMMED_TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL}/{thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", thermal_compositional_fluid_model_mock_objects.TRIMMED_TEST_DATA)],
+            thermal_compositional_fluid_model_mock_objects.TRIMMED_TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL}/{black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            black_oil_fluid_model_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
+            black_oil_fluid_model_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            compositional_fluid_model_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+            compositional_fluid_model_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL}/{thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            thermal_compositional_fluid_model_mock_objects.TEST_PARAMS_FILTERS,
+            "get_record",
+            [thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", thermal_compositional_fluid_model_mock_objects.TEST_DATA)],
+            thermal_compositional_fluid_model_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL}/{black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            black_oil_fluid_model_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
+            black_oil_fluid_model_mock_objects.TEST_AGGREGATED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            compositional_fluid_model_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+            compositional_fluid_model_mock_objects.TEST_AGGREGATED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL}/{thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            thermal_compositional_fluid_model_mock_objects.TEST_PARAMS_AGGREGATION,
+            "get_record",
+            [thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", thermal_compositional_fluid_model_mock_objects.TEST_DATA)],
+            thermal_compositional_fluid_model_mock_objects.TEST_AGGREGATED_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -3244,6 +3424,30 @@ async def test_get_data_json_data(
             "download_file",
             [build_get_test_data("x-parquet", saturation_test_mock_objects.TEST_DATA)],
             saturation_test_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL}/{black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
+            black_oil_fluid_model_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+            compositional_fluid_model_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL}/{thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", thermal_compositional_fluid_model_mock_objects.TEST_DATA)],
+            thermal_compositional_fluid_model_mock_objects.TEST_DATA,
         ),
     ],
 )
@@ -3680,6 +3884,30 @@ async def test_get_data_json_data_no_content_schema_version(
             [build_get_test_data("x-parquet", roller_oven_test_mock_objects.TEST_DATA)],
             roller_oven_test_mock_objects.TEST_DATA,
         ),
+        (
+            f"{TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL}/{black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
+            black_oil_fluid_model_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+            compositional_fluid_model_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL}/{thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", thermal_compositional_fluid_model_mock_objects.TEST_DATA)],
+            thermal_compositional_fluid_model_mock_objects.TEST_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -4114,6 +4342,30 @@ async def test_get_data_json_data_improper_schema_version(
             "download_file",
             [build_get_test_data("x-parquet", saturation_test_mock_objects.TEST_DATA)],
             saturation_test_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL}/{black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", black_oil_fluid_model_mock_objects.TEST_DATA)],
+            black_oil_fluid_model_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [compositional_fluid_model_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", compositional_fluid_model_mock_objects.TEST_DATA)],
+            compositional_fluid_model_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL}/{thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_IMPROPER_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", thermal_compositional_fluid_model_mock_objects.TEST_DATA)],
+            thermal_compositional_fluid_model_mock_objects.TEST_DATA,
         ),
     ],
 )
@@ -4561,6 +4813,27 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             saturation_test_mock_objects.TEST_DATASET_RECORD_ID,
             saturation_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+            black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            black_oil_fluid_model_mock_objects.TEST_DATA,
+            black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            black_oil_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            compositional_fluid_model_mock_objects.TEST_DATA,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATA,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            thermal_compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -4996,6 +5269,27 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             saturation_test_mock_objects.TEST_DATASET_RECORD_ID,
             saturation_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+            black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            black_oil_fluid_model_mock_objects.TEST_DATA,
+            black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            black_oil_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            compositional_fluid_model_mock_objects.TEST_DATA,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATA,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            thermal_compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -5310,6 +5604,21 @@ async def test_post_data_json_no_ddmsdatasets_field(
             saturation_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
             saturation_test_mock_objects.TEST_DATASET_RECORD_ID,
         ),
+        (
+            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+            black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -5323,7 +5632,7 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
                 content=b"",
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 @pytest.mark.parametrize(
@@ -5741,6 +6050,27 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             saturation_test_mock_objects.TEST_DATA,
             saturation_test_mock_objects.TEST_DATASET_RECORD_ID,
             saturation_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+            black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            black_oil_fluid_model_mock_objects.TRIMMED_TEST_DATA,
+            black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            black_oil_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            compositional_fluid_model_mock_objects.TRIMMED_TEST_DATA,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            thermal_compositional_fluid_model_mock_objects.TRIMMED_TEST_DATA,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            thermal_compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
     ],
 )
@@ -6179,6 +6509,27 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             saturation_test_mock_objects.TEST_DATASET_RECORD_ID,
             saturation_test_mock_objects.TEST_DDMS_URN_WITH_VERSION,
         ),
+        (
+            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+            black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            black_oil_fluid_model_mock_objects.TEST_DATA,
+            black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            black_oil_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            compositional_fluid_model_mock_objects.TEST_DATA,
+            compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATA,
+            thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+            thermal_compositional_fluid_model_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -6259,6 +6610,18 @@ async def test_post_data_new_dataset(data_endpoint_path, record_data, test_data,
         ),
         (TestContentPathsApiV2.ROLLER_OVEN_TEST, roller_oven_test_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
         (TestContentPathsApiV2.SATURATION_TEST, saturation_test_mock_objects.INCORRECT_SCHEMA_TEST_DATA),
+        (
+            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+            black_oil_fluid_model_mock_objects.INCORRECT_SCHEMA_TEST_DATA,
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.INCORRECT_SCHEMA_TEST_DATA,
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.INCORRECT_SCHEMA_TEST_DATA,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -6543,6 +6906,21 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             saturation_test_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             saturation_test_mock_objects.EXPECTED_ERROR_REASON,
         ),
+        (
+            TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+            black_oil_fluid_model_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
+            black_oil_fluid_model_mock_objects.EXPECTED_ERROR_REASON,
+        ),
+        (
+            TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+            compositional_fluid_model_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
+            compositional_fluid_model_mock_objects.EXPECTED_ERROR_REASON,
+        ),
+        (
+            TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+            thermal_compositional_fluid_model_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
+            thermal_compositional_fluid_model_mock_objects.EXPECTED_ERROR_REASON,
+        ),
     ],
 )
 @pytest.mark.asyncio
@@ -6614,6 +6992,9 @@ async def test_post_invalid_df_error(data_endpoint_path, incorrect_dataframe_dat
         f"{TestContentPathsApiV2.DEPTH_SHIFT_MODEL}/{coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.ROLLER_OVEN_TEST}/{roller_oven_test_mock_objects.TEST_DATASET_RECORD_ID}",
         f"{TestContentPathsApiV2.SATURATION_TEST}/{saturation_test_mock_objects.TEST_DATASET_RECORD_ID}",
+        f"{TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL}/{black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+        f"{TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL}/{compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
+        f"{TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL}/{thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}",
     ],
 )
 @pytest.mark.asyncio
@@ -6681,6 +7062,9 @@ async def test_get_403(data_endpoint_path):
         TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
         TestContentPathsApiV2.SATURATION_TEST,
+        TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+        TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+        TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
     ],
 )
 @pytest.mark.asyncio
@@ -6913,6 +7297,7 @@ async def test_post_integrity_error(
         TestContentPathsApiV2.DEPTH_SHIFT_MODEL,
         TestContentPathsApiV2.ROLLER_OVEN_TEST,
         TestContentPathsApiV2.SATURATION_TEST,
+        TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
     ],
 )
 async def test_invalid_data_with_nan(path):
@@ -6982,6 +7367,7 @@ async def test_invalid_data_with_nan(path):
         (TestContentPathsApiV2.CRUSHED_ROCK_ANALYSIS, ORIENT_SPLIT_422_PAYLOADS),
         (TestContentPathsApiV2.ROLLER_OVEN_TEST, ORIENT_SPLIT_422_PAYLOADS),
         (TestContentPathsApiV2.SATURATION_TEST, ORIENT_SPLIT_422_PAYLOADS),
+        (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, ORIENT_SPLIT_422_PAYLOADS),
     ],
 )
 async def test_invalid_data_json_payload(path, payloads):
@@ -6994,7 +7380,7 @@ async def test_invalid_data_json_payload(path, payloads):
                     content=json.dumps(payload),
                 )
 
-        assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+        assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
         body = response.json()
         print(body)
         assert ["code", "reason"] == list(body.keys())
@@ -7029,7 +7415,7 @@ async def test_post_data_rejects_mismatched_samplesanalysis_id():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert body["reason"] == "Data validation failed."
     assert "Invalid value" in body["errors"]
@@ -7051,7 +7437,7 @@ async def test_post_data_null_samplesanalysis_id_not_mismatch_error():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert body["reason"] == "Data validation failed."
     # Must be a schema error — not an ID mismatch
@@ -7098,7 +7484,7 @@ async def test_post_sfs_data_rejects_mismatched_id():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert body["reason"] == "Data validation failed."
     assert "Invalid value" in body["errors"]
@@ -7121,7 +7507,7 @@ async def test_post_rsrpm_data_rejects_mismatched_id():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert body["reason"] == "Data validation failed."
     assert "Invalid value" in body["errors"]
@@ -7157,7 +7543,7 @@ async def test_post_ds_data_rejects_mismatched_id():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert body["reason"] == "Data validation failed."
     assert "Invalid value" in body["errors"]
@@ -7185,7 +7571,7 @@ async def test_post_ds_data_rejects_multi_row_payload():
                 content=json.dumps(multi_row),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert "exactly 1 row" in response.json()["reason"]
 
 
@@ -7228,7 +7614,7 @@ async def test_post_ds_data_rejects_null_depth_shift_values():
                 content=json.dumps(null_payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     # Schema validation catches null before the parquet validator; either path produces 422.
     assert "DepthShiftSet" in str(body)
@@ -7289,7 +7675,7 @@ async def test_get_data_with_null_depth_shift_values_returns_422():
                             },
                         )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     assert "null" in response.json()["reason"].lower()
     assert "OriginalBaseDepth" in response.json()["reason"]
 
@@ -7466,7 +7852,7 @@ async def test_get_data_with_depth_shift_id_rejects_multiple_wellbores():
                             },
                         )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
     body = response.json()
     assert "wellbore-scoped" in body["reason"].lower()
 
@@ -7555,7 +7941,7 @@ async def test_get_data_definitive_policy_no_definitive_id_returns_422():
                             params={"depth_shift_policy": "definitive"},
                         )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 @pytest.mark.asyncio
@@ -7735,7 +8121,7 @@ async def test_search_data_with_empty_results_and_depth_shift_without_wellbore_i
                     },
                 )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
     body = response.json()
     assert body["reason"] == ("Depth shift requires a wellbore-scoped search. " "Please provide wellbore_id parameter.")
@@ -7783,10 +8169,426 @@ async def test_get_data_definitive_flat_path_recognized():
     assert body["DepthShiftMetadata"]["usedDefinitive"] is True
     assert body["DepthShiftMetadata"]["definitiveDepthShiftAvailable"] is True
 
+
+# Issue #678 FluidModelID mismatch validation
+_MISMATCHED_FM_ID = "partition:work-product-component--FluidModel:wrong-record:"
+
+
+def _blfm_data_with_id(value):
+    data = _copy.deepcopy(black_oil_fluid_model_mock_objects.TEST_DATA)
+    col_idx = data["columns"].index("FluidModelID")
+    for row in data["data"]:
+        row[col_idx] = value
+    return data
+
+
+def _cfm_data_with_id(value):
+    data = _copy.deepcopy(compositional_fluid_model_mock_objects.TEST_DATA)
+    col_idx = data["columns"].index("FluidModelID")
+    for row in data["data"]:
+        row[col_idx] = value
+    return data
+
+
+def _tcfm_data_with_id(value):
+    data = _copy.deepcopy(thermal_compositional_fluid_model_mock_objects.TEST_DATA)
+    col_idx = data["columns"].index("FluidModelID")
+    for row in data["data"]:
+        row[col_idx] = value
+    return data
+
+
+@pytest.mark.asyncio
+async def test_post_blfm_data_rejects_mismatched_id():
+    """Issue #678: FluidModelID in payload must match record_id in URL."""
+    payload = _blfm_data_with_id(_MISMATCHED_FM_ID)
+    with post_overrides(
+        black_oil_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        payload,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    body = response.json()
+    assert body["reason"] == "Data validation failed."
+    assert "Invalid value" in body["errors"]
+    assert any("FluidModelID" in entry for entry in body["errors"]["Invalid value"])
+
+
+@pytest.mark.asyncio
+async def test_post_cfm_data_rejects_mismatched_id():
+    """Issue #678: FluidModelID in payload must match record_id in URL."""
+    payload = _cfm_data_with_id(_MISMATCHED_FM_ID)
+    with post_overrides(
+        compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        payload,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    body = response.json()
+    assert body["reason"] == "Data validation failed."
+    assert "Invalid value" in body["errors"]
+    assert any("FluidModelID" in entry for entry in body["errors"]["Invalid value"])
+
+
+@pytest.mark.asyncio
+async def test_post_tcfm_data_rejects_mismatched_id():
+    """Issue #678: FluidModelID in payload must match record_id in URL."""
+    payload = _tcfm_data_with_id(_MISMATCHED_FM_ID)
+    with post_overrides(
+        thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
+        payload,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    body = response.json()
+    assert body["reason"] == "Data validation failed."
+    assert "Invalid value" in body["errors"]
+    assert any("FluidModelID" in entry for entry in body["errors"]["Invalid value"])
+
+
+@pytest.mark.parametrize(
+    "record_id",
+    [
+        "not-a-fluid-model-id",
+        "partition:work-product-component--WrongType:fluid_model_test_id:",
+        "partition:work-product-component--FluidModel",
+    ],
+)
+@pytest.mark.asyncio
+async def test_post_tcfm_data_malformed_record_id_returns_422(record_id):
+    """A record_id that does not match FM_ID_REGEX_STR must be rejected before any I/O."""
+    from tests.test_api.test_routes.osdu.storage_mock_objects import (
+        FLUID_MODEL_ENDPOINT_PATH,
+        fluid_model_relative_paths_v2,
+    )
+
+    data_endpoint_path = (
+        f"{FLUID_MODEL_ENDPOINT_PATH}/{record_id}" f"{fluid_model_relative_paths_v2.THERMAL_COMPOSITIONAL_FLUID_MODEL}"
+    )
+    with post_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                data_endpoint_path,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(thermal_compositional_fluid_model_mock_objects.TEST_DATA),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+
+
+# ---------------------------------------------------------------------------
+# Thermal Fluid Model — GET /{record_id}/data/thermalcompositionalfluidmodel/{content_id}
+# ---------------------------------------------------------------------------
+
+_TCFM_DATA_PATH = f"{TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL}/{thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}"
+_TCFM_HEADERS_NO_ACCEPT = {
+    "data-partition-id": "opendes",
+    "Authorization": "Bearer token",
+}
+
+
+@contextmanager
+def _tcfm_get_patches(record_data=None, blob=None):
+    """Patch storage/dataset so a thermal GET resolves to the fixture dataframe."""
+    if record_data is None:
+        record_data = thermal_compositional_fluid_model_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
+    if blob is None:
+        blob = build_get_test_data("x-parquet", thermal_compositional_fluid_model_mock_objects.TEST_DATA)
+    with patch.object(async_storage_record_service_mock, "get_record", return_value=record_data):
+        with patch.object(async_dataset_service_mock, "download_file", return_value=blob) as download:
+            yield download
+
+
+@pytest.mark.parametrize(
+    "record_id",
+    [
+        "not-a-fluid-model-id",
+        "partition:work-product-component--WrongType:fluid_model_test_id:",
+        "partition:work-product-component--FluidModel",
+    ],
+)
+@pytest.mark.asyncio
+async def test_get_tcfm_data_malformed_record_id_returns_422(record_id):
+    """A record_id that does not match FM_ID_REGEX_STR must be rejected before any I/O."""
+    from tests.test_api.test_routes.osdu.storage_mock_objects import (
+        FLUID_MODEL_ENDPOINT_PATH,
+        fluid_model_relative_paths_v2,
+    )
+
+    data_endpoint_path = (
+        f"{FLUID_MODEL_ENDPOINT_PATH}/{record_id}"
+        f"{fluid_model_relative_paths_v2.THERMAL_COMPOSITIONAL_FLUID_MODEL}"
+        f"/{thermal_compositional_fluid_model_mock_objects.TEST_DATASET_RECORD_ID}"
+    )
+    with services_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(data_endpoint_path, headers=_headers_json("1.0.0"))
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    body = response.json()
+    assert body["reason"] == "Unprocessable entity."
+    assert any(
+        "work-product-component--FluidModel ID is not provided in expected OSDU pattern" in entry
+        for entry in body["errors"]
+    )
+
+
+@pytest.mark.parametrize(
+    "content_id",
+    [
+        "not-a-dataset-id",
+        "partition:dataset--File.Wrong:thermalcompositionalfluidmodel-1:",
+        "12345678-1234-1234-1234",
+    ],
+)
+@pytest.mark.asyncio
+async def test_get_tcfm_data_malformed_content_id_returns_422(content_id):
+    """A content_id matching neither the dataset nor the UUID pattern must return 422."""
+    with services_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(
+                f"{TestContentPathsApiV2.THERMAL_COMPOSITIONAL_FLUID_MODEL}/{content_id}",
+                headers=_headers_json("1.0.0"),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    body = response.json()
+    assert body["reason"] == "Unprocessable entity."
+    assert any("content_id string does not match regex" in entry for entry in body["errors"])
+
+
+@pytest.mark.parametrize("schema_version", ["abc", "1", "1.0.0.0", "v1.0.0", "1..0"])
+@pytest.mark.asyncio
+async def test_get_tcfm_data_malformed_content_schema_version_returns_422(schema_version):
+    """A malformed content_schema_version query parameter must return 422."""
+    with services_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(
+                _TCFM_DATA_PATH,
+                headers=_TCFM_HEADERS_NO_ACCEPT,
+                params={"content_schema_version": schema_version},
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    assert (
+        f"Invalid version format in content_schema_version: '{schema_version}'."
+        " Expected format: major.minor.patch (e.g. 1.0.0)"
+    ) in response.json()["reason"]
+
+
+@pytest.mark.asyncio
+async def test_get_tcfm_data_unimplemented_content_schema_version_returns_404():
+    """A well-formed but unimplemented content schema version must return 404, not 422."""
+    with services_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(
+                _TCFM_DATA_PATH,
+                headers=_TCFM_HEADERS_NO_ACCEPT,
+                params={"content_schema_version": "9.0.0"},
+            )
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    reason = response.json()["reason"]
+    assert "Model not found for type 'thermalcompositionalfluidmodel'" in reason
+    assert "version '9.0.0'" in reason
+    assert "1.0.0" in reason
+
+
+@pytest.mark.asyncio
+async def test_get_tcfm_data_no_schema_version_anywhere_returns_406():
+    """Neither query parameter nor Accept header supplying a version must return 406."""
+    with services_overrides():
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.get(_TCFM_DATA_PATH, headers=_TCFM_HEADERS_NO_ACCEPT)
+
+    assert response.status_code == status.HTTP_406_NOT_ACCEPTABLE
+    assert "No schema version specified or invalid schema format" in response.json()["reason"]
+
+
+@pytest.mark.asyncio
+async def test_get_tcfm_data_query_schema_version_takes_priority_over_accept_header():
+    """content_schema_version must win over a bogus version in the deprecated Accept header."""
+    with services_overrides():
+        with _tcfm_get_patches():
+            async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                response = await client.get(
+                    _TCFM_DATA_PATH,
+                    headers={**_TCFM_HEADERS_NO_ACCEPT, "Accept": "application/json;version=9.0.0"},
+                    params={"content_schema_version": "1.0.0"},
+                )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.headers["content-type"].startswith("application/json")
+
+
+@pytest.mark.parametrize("accept", ["*/*", "application/json"])
+@pytest.mark.asyncio
+async def test_get_tcfm_data_defaults_to_json_for_absent_or_wildcard_accept(accept):
+    """Wildcard or explicit JSON Accept must return JSON, with the version taken from the query.
+
+    ``httpx`` always sends ``Accept: */*`` when the header is not set, so the
+    genuinely-absent case is asserted directly against the dependency in
+    ``test_get_tcfm_data_response_mime_type_defaults_to_json_without_accept``.
+    """
+    headers = {**_TCFM_HEADERS_NO_ACCEPT, "Accept": accept}
+
+    with services_overrides():
+        with _tcfm_get_patches():
+            async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                response = await client.get(
+                    _TCFM_DATA_PATH,
+                    headers=headers,
+                    params={"content_schema_version": "1.0.0"},
+                )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.headers["content-type"].startswith("application/json")
+    assert set(response.json()["columns"]) == set(thermal_compositional_fluid_model_mock_objects.TEST_DATA["columns"])
+
+
+def test_get_tcfm_data_response_mime_type_defaults_to_json_without_accept():
+    """With no Accept header at all the response MIME type must resolve to JSON."""
+    from app.api.dependencies.request import get_response_mime_type
+    from app.resources.mime_types import SupportedMimeTypes
+
+    request = _tcfm_cache_request()
+    assert get_response_mime_type(request) == SupportedMimeTypes.JSON
+
+
+@pytest.mark.parametrize(
+    "params,expected_message",
+    [
+        ({"columns_filter": "UnknownColumn"}, "Invalid columns:"),
+        ({"rows_filter": "Invalid syntax"}, "Bad rows_filter expression. Correct format"),
+        ({"rows_filter": "UnknownColumn,eq,x"}, "For filter select one of"),
+        ({"rows_filter": "FluidModelID,equal,x"}, "Invalid comparison operator 'equal'"),
+        ({"columns_aggregation": "UnknownColumn,describe"}, "For aggregation select one of"),
+        ({"columns_aggregation": "FluidModelID,avg"}, "Invalid aggregation operator 'avg'"),
+        ({"columns_aggregation": "FluidModelID"}, "Bad aggregation expression. Correct form"),
+    ],
+)
+@pytest.mark.asyncio
+async def test_get_tcfm_data_invalid_filter_params_return_422(params, expected_message):
+    """Invalid columns_filter/rows_filter/columns_aggregation must return 422."""
+    with services_overrides():
+        with _tcfm_get_patches():
+            async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+                response = await client.get(
+                    _TCFM_DATA_PATH,
+                    headers=_TCFM_HEADERS_NO_ACCEPT,
+                    params={"content_schema_version": "1.0.0", **params},
+                )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    assert expected_message in response.json()["reason"]
+
+
+def _tcfm_cache_request(token="Bearer token", partition="opendes", query="content_schema_version=1.0.0"):
+    """Build a minimal GET request for the thermal data route, for cache key inspection."""
+    from starlette.requests import Request
+
+    return Request(
+        {
+            "type": "http",
+            "method": "GET",
+            "scheme": "http",
+            "server": ("testserver", 80),
+            "root_path": "",
+            "path": _TCFM_DATA_PATH,
+            "raw_path": _TCFM_DATA_PATH.encode(),
+            "query_string": query.encode(),
+            "headers": [
+                (b"authorization", token.encode()),
+                (b"data-partition-id", partition.encode()),
+            ],
+        },
+    )
+
+
+def test_get_tcfm_data_cache_key_is_stable_for_identical_requests():
+    """Identical thermal GET requests must resolve to one cache key, differing ones must not.
+
+    The end-to-end TTL behaviour cannot be asserted here: ``tests/conftest.py``
+    replaces ``fastapi_cache.decorator.cache`` with a pass-through for the whole
+    unit suite.  What is verifiable in-process is the precondition the caching
+    acceptance criterion rests on — that the key builder is deterministic per
+    request and discriminates on token, partition and query parameters.  The
+    served-from-cache behaviour itself is covered by the integration suite
+    (``test_black_oil_get_data_returns_identical_response_inside_cache_ttl``)
+    against the same shared route handler.
+    """
+    from app.api.routes.v2.data.endpoints import DynamicContentTypeDataViewV2
+    from app.core.helpers.cache.key_builder import key_builder_using_token
+
+    func = DynamicContentTypeDataViewV2.get_data_multiple_content_type
+
+    def build_key(**request_kwargs):
+        with patch("fastapi_cache.FastAPICache.get_prefix", return_value="rafs"):
+            return key_builder_using_token(
+                func,
+                "",
+                request=_tcfm_cache_request(**request_kwargs),
+                response=None,
+                args=(),
+                kwargs={},
+            )
+
+    baseline = build_key()
+
+    assert build_key() == baseline
+    assert build_key(token="Bearer other-token") != baseline
+    assert build_key(partition="other-partition") != baseline
+    assert build_key(query="content_schema_version=1.0.0&columns_filter=FluidModelID") != baseline
+
+
 # ---------------------------------------------------------------------------
 # Issue #768 — lead review feedback: str-column corruption and general
 # (non-depth-shift) parquet path coverage
 # ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_post_data_json_rejects_complex_value_for_str_field():
+    """A list must not be coerced to text for a str-typed field."""
+    columns = transport_test_mock_objects.TEST_DATA["columns"]
+    payload = json.loads(json.dumps(transport_test_mock_objects.TEST_DATA))
+    test_number_idx = columns.index("TestNumber")
+    payload["data"][0][test_number_idx] = ["invalid"]
+
+    with post_overrides(
+        transport_test_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+        transport_test_mock_objects.TEST_DATASET_RECORD_ID,
+        payload,
+    ):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                TestContentPathsApiV2.TRANSPORT_TEST,
+                headers=_headers_json("1.0.0"),
+                content=json.dumps(payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
 
 
 @pytest.mark.asyncio
@@ -7840,7 +8642,7 @@ async def test_post_data_json_preserves_str_field_exact_value():
                     content=json.dumps(payload),
                 )
 
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_200_OK, response.text
     assert len(uploaded_blobs) == 1
 
     uploaded_df = pd.read_parquet(io.BytesIO(uploaded_blobs[0]))

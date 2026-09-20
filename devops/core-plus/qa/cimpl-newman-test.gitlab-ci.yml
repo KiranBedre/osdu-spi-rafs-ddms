@@ -26,6 +26,8 @@
         --env-var "TENANT_ID=${CIMPL_TENANT}" \
         --env-var "CLIENT_ID=${CIMPL_CLIENT_ID}" \
         --env-var "CLIENT_SECRET=${CIMPL_CLIENT_SECRET}" \
+        --env-var "HOSTNAME=${CIMPL_DNS_NAME}" \
+        --env-var "Token_Fetch_URL=${CIMPL_TOKEN_URI}" \
         --reporters cli,allure \
         --insecure; echo $? > /tmp/newman_exit; } 2>&1 | tee "$CI_PROJECT_DIR/newman.log"
     NEWMAN_EXIT_CODE=$(cat /tmp/newman_exit)
@@ -62,3 +64,27 @@ cimpl-acceptance-test-postman:
     COLLECTION_JSON: "./devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
     ALLURE_RESULTS_DIR: "tests/cimpl/allure-results"
   allow_failure: true
+
+# Run the RAFS Postman collection against the CIMPL-STACK DEV environment.
+cimpl-dev-acceptance-test-postman:
+  extends:
+    - .cimpl_newman_rafs_tests
+    - .cimpl-dev-variables
+  stage: acceptance
+  variables:
+    ENVIRONMENT: "./devops/core-plus/qa/Postman Collection/Environment/OSDU_CI.postman_environment.json"
+    COLLECTION_JSON: "./devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
+    ALLURE_RESULTS_DIR: "tests/cimpl/allure-results"
+  needs:
+    - job: cimpl-dev-test-python
+  allow_failure: true  # TODO: Remove when issue #834 is resolved.
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^release/'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CIMPL_STACK == "1" && $DEV == "1"'
+      when: on_success
+    - when: never
