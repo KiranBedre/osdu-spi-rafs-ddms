@@ -51,6 +51,7 @@ from app.models.data_schemas.sample_analysis_api_v2.gcmsms_data_model_1_0_0 impo
 from app.models.data_schemas.sample_analysis_api_v2.cec_data_model_1_0_0 import CecModel100
 from app.models.data_schemas.sample_analysis_api_v2.triaxial_data_model_1_0_0 import TriaxialModel100
 from app.models.data_schemas.sample_analysis_api_v2.wettability_index_data_model_1_0_0 import WettabilityIndexModel100
+from app.models.data_schemas.sample_analysis_api_v2.wettability_index_data_model_2_0_0 import WettabilityIndexModel200
 from app.models.data_schemas.sample_analysis_api_v2.tec_data_model_1_0_0 import TecModel100
 from app.models.data_schemas.sample_analysis_api_v2.eds_mapping_data_model_1_0_0 import EdsMappingModel100
 from app.models.data_schemas.sample_analysis_api_v2.xrf_data_model_1_0_0 import XrfModel100
@@ -183,7 +184,8 @@ CAP_SUCTION_TIME_MODELS = {
     ContentSchemaVersion.V_1_0_0: CapillarySuctionTimeModel100
 }
 WETTABILITY_INDEX_MODELS = {
-    ContentSchemaVersion.V_1_0_0: WettabilityIndexModel100
+    ContentSchemaVersion.V_1_0_0: WettabilityIndexModel100,
+    ContentSchemaVersion.V_2_0_0: WettabilityIndexModel200,
 }
 TEC_MODELS = {
     ContentSchemaVersion.V_1_0_0: TecModel100

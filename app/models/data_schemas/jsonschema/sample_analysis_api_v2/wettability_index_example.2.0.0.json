@@ -1,0 +1,81 @@
+{
+  "SamplesAnalysisID": "partition:work-product-component--SamplesAnalysis:uuuid:123456",
+  "SampleID": "partition:master-data--Sample:uuuid:123456",
+  "Meta": [
+    {
+      "kind": "Unit",
+      "name": "degF",
+      "unitOfMeasureID": "partition:reference-data--UnitOfMeasure:degF:",
+      "propertyNames": [
+        "Temperature"
+      ]
+    },
+    {
+      "kind": "Unit",
+      "name": "psi",
+      "unitOfMeasureID": "partition:reference-data--UnitOfMeasure:psi:",
+      "propertyNames": [
+        "ConfiningPressure",
+        "TestSteps[*].EndPoints.CapillaryPressureMax",
+        "TestSteps[*].EndPoints.CapillaryPressureMin"
+      ]
+    },
+    {
+      "kind": "Unit",
+      "name": "m3/m3",
+      "unitOfMeasureID": "partition:reference-data--UnitOfMeasure:m3%2Fm3:",
+      "propertyNames": [
+        "InitialWaterSaturation",
+        "TestSteps[*].EndPoints.EndfaceSaturationAtCapillaryPressureMax",
+        "TestSteps[*].EndPoints.AveragePhaseSaturationAtCapillaryPressureMax",
+        "TestSteps[*].EndPoints.EndfaceSaturationAtCapillaryPressureMin",
+        "TestSteps[*].EndPoints.AveragePhaseSaturationAtCapillaryPressureMin"
+      ]
+    },
+    {
+      "kind": "Unit",
+      "name": "cm3",
+      "unitOfMeasureID": "partition:reference-data--UnitOfMeasure:cm3:",
+      "propertyNames": [
+        "TestSteps[*].TotalProducedVolume"
+      ]
+    }
+  ],
+  "Temperature": 185.0,
+  "WettabilityIndex": [
+    {
+      "Value": 0.45,
+      "WettabilityIndexTypeID": "partition:reference-data--WettabilityIndexType:AmottHarvey:"
+    }
+  ],
+  "ConfiningPressure": 3000.0,
+  "DesaturationMethod": "partition:reference-data--DesaturationMethod:Centrifuge:",
+  "FluidSystem": "partition:reference-data--FluidSystemAnalysisType:GasBrine:",
+  "InitialWaterSaturation": 0.22,
+  "Remarks": [
+    {
+      "RemarkSequenceNumber": 1,
+      "Remark": "Sample cleaned and restored to reservoir wettability prior to testing.",
+      "RemarkSource": "Lab Analyst",
+      "RemarkDate": "2026-06-15"
+    }
+  ],
+  "TestSteps": [
+    {
+      "SequenceNumber": 1,
+      "CapillaryPressureAnalysisID": "partition:work-product-component--SamplesAnalysis:uuuid:123456",
+      "SaturationProcessMethodID": "partition:reference-data--SaturationProcessMethod:Imbibition:",
+      "InjectionFluidID": "partition:reference-data--CoreAnalysisFluidType:Oil:",
+      "DisplacedFluidID": "partition:reference-data--CoreAnalysisFluidType:Brine:",
+      "EndPoints": {
+        "CapillaryPressureMax": 50.0,
+        "EndfaceSaturationAtCapillaryPressureMax": 0.35,
+        "AveragePhaseSaturationAtCapillaryPressureMax": 0.38,
+        "CapillaryPressureMin": 0.0,
+        "EndfaceSaturationAtCapillaryPressureMin": 0.22,
+        "AveragePhaseSaturationAtCapillaryPressureMin": 0.22
+      },
+      "TotalProducedVolume": 4.5
+    }
+  ]
+}

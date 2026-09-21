@@ -16,19 +16,19 @@ import copy
 import json
 import os
 
+from app.models.data_schemas.version import ContentSchemaVersion
 from tests.test_api.test_routes.osdu.storage_mock_objects import (
     OSDU_GENERIC_RECORD,
     TEST_SAMPLESANALYSIS_ID,
+    BulkDatasetIdV2,
 )
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 
-TEST_DATASET_RECORD_ID = "opendes:dataset--File.Generic:wettabilityindexdata-123:1234"
+TEST_DATASET_RECORD_ID = BulkDatasetIdV2.WETTABILITY_INDEX
 TEST_DDMS_URN = f"urn://rafs-v2/wettabilityindexdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}"
-TEST_SCHEMA_VERSION = "1.0.0"
-TEST_DDMS_URN_WITH_VERSION = (
-    f"urn://rafs-v2/wettabilityindexdata/{TEST_SAMPLESANALYSIS_ID}/{TEST_DATASET_RECORD_ID}/{TEST_SCHEMA_VERSION}"
-)
+TEST_SCHEMA_VERSION = ContentSchemaVersion.V_1_0_0
+TEST_DDMS_URN_WITH_VERSION = f"{TEST_DDMS_URN}/{TEST_SCHEMA_VERSION}"
 RECORD_DATA = {
     **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
     **{
@@ -161,3 +161,64 @@ INCORRECT_SCHEMA_TEST_DATA = {
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
 INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting WettabilityIndexData in index row 0
 EXPECTED_ERROR_REASON = "Data error: 4 columns passed, passed data had 3 columns"
+
+
+TEST_SCHEMA_VERSION_V2 = ContentSchemaVersion.V_2_0_0
+TEST_DDMS_URN_WITH_VERSION_V2 = f"{TEST_DDMS_URN}/{TEST_SCHEMA_VERSION_V2}"
+RECORD_DATA_WITH_SCHEMA_VERSION_V2 = {
+    **OSDU_GENERIC_RECORD.model_dump(exclude_none=True),
+    **{
+        "data": {
+            "DDMSDatasets": [TEST_DDMS_URN_WITH_VERSION_V2],
+        },
+    },
+}
+TEST_PARAMS_AGGREGATION_V2 = {
+    "columns_aggregation": "SampleID,count",
+}
+TEST_PARAMS_FILTERS_V2 = {
+    "columns_filter": "SamplesAnalysisID,SampleID,Temperature",
+    "rows_filter": "SampleID,eq,partition:master-data--Sample:uuuid:123456",
+}
+
+with open(f"{dir_path}/wettability_index_orient_split_2.0.0.json") as fp:
+    TEST_DATA_V2 = json.load(fp)
+
+TEST_AGGREGATED_DATA_V2 = {
+    "columns": [
+        "SampleID",
+    ],
+    "index": [
+        "count",
+    ],
+    "data": [
+        [
+            1,
+        ],
+    ],
+}
+
+TEST_FILTERED_DATA_V2 = {
+    "columns": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Temperature",
+    ],
+    "index": [
+        0,
+    ],
+    "data": [
+        [
+            "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
+            "partition:master-data--Sample:uuuid:123456",
+            185.0,
+        ],
+    ],
+}
+
+INCORRECT_DATAFRAME_TEST_DATA_V2 = copy.deepcopy(TEST_DATA_V2)
+INCORRECT_DATAFRAME_TEST_DATA_V2["data"][0].pop()
+EXPECTED_ERROR_REASON_V2 = (
+    f"Data error: {len(INCORRECT_DATAFRAME_TEST_DATA_V2['columns'])} columns passed, "
+    f"passed data had {len(INCORRECT_DATAFRAME_TEST_DATA_V2['data'][0])} columns"
+)
