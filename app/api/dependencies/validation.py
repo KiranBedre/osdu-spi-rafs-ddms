@@ -662,6 +662,38 @@ def validate_and_parse_date(date_str: Optional[str], field_name: str) -> Optiona
         )
 
 
+DataPaginationParameters = Tuple[Optional[int], int]
+MAX_ROW_LIMIT_GET_DATA = 10000
+
+
+def get_data_pagination_parameters(
+    row_limit: Optional[int] = Query(
+        default=None,
+        description=(
+            "Maximum number of rows to return. Omit for all rows (backward compatible). "
+            "Applied after rows_filter and columns_filter."
+        ),
+        gt=0,
+        le=MAX_ROW_LIMIT_GET_DATA,
+    ),
+    row_offset: int = Query(
+        default=0,
+        ge=0,
+        description="Number of rows to skip before returning data.",
+    ),
+) -> DataPaginationParameters:
+    """Row-level pagination parameters for get_data_v2 (Issue-819).
+
+    Distinct from the dataset-level `offset`/`page_limit` used by search
+    endpoints: this pair paginates the *rows* of a single dataset's bulk
+    data, not the number of datasets/parquet files read.
+
+    :return: (row_limit, row_offset) tuple
+    :rtype: DataPaginationParameters
+    """
+    return row_limit, row_offset  # noqa: ASYNC910
+
+
 def get_search_data_pagination_parameters(
     page_limit: int = Query(
         default=100,
