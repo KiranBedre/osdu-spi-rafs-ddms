@@ -1750,12 +1750,48 @@ paths:
           - records
           title: Orient
           type: string
+      - description: Maximum number of rows to return. Omit for all rows (backward
+          compatible). Applied after rows_filter and columns_filter.
+        in: query
+        name: row_limit
+        required: false
+        schema:
+          anyOf:
+          - exclusiveMinimum: 0
+            maximum: 10000
+            type: integer
+          - type: 'null'
+          description: Maximum number of rows to return. Omit for all rows (backward
+            compatible). Applied after rows_filter and columns_filter.
+          title: Row Limit
+      - description: Number of rows to skip before returning data.
+        in: query
+        name: row_offset
+        required: false
+        schema:
+          default: 0
+          description: Number of rows to skip before returning data.
+          minimum: 0
+          title: Row Offset
+          type: integer
       responses:
         '200':
           content:
             application/json:
               schema: {}
           description: Successful Response
+          headers:
+            X-Row-Offset:
+              description: Echoes the row_offset applied to this response. Only present
+                when row_limit or row_offset is supplied (Issue-819).
+              schema:
+                type: integer
+            X-Total-Rows:
+              description: Total row count of the dataset after rows_filter/columns_filter,
+                before row_limit/row_offset slicing. Only present when row_limit or
+                row_offset is supplied (Issue-819).
+              schema:
+                type: integer
         '422':
           content:
             application/json:
@@ -2823,12 +2859,48 @@ paths:
           - records
           title: Orient
           type: string
+      - description: Maximum number of rows to return. Omit for all rows (backward
+          compatible). Applied after rows_filter and columns_filter.
+        in: query
+        name: row_limit
+        required: false
+        schema:
+          anyOf:
+          - exclusiveMinimum: 0
+            maximum: 10000
+            type: integer
+          - type: 'null'
+          description: Maximum number of rows to return. Omit for all rows (backward
+            compatible). Applied after rows_filter and columns_filter.
+          title: Row Limit
+      - description: Number of rows to skip before returning data.
+        in: query
+        name: row_offset
+        required: false
+        schema:
+          default: 0
+          description: Number of rows to skip before returning data.
+          minimum: 0
+          title: Row Offset
+          type: integer
       responses:
         '200':
           content:
             application/json:
               schema: {}
           description: Successful Response
+          headers:
+            X-Row-Offset:
+              description: Echoes the row_offset applied to this response. Only present
+                when row_limit or row_offset is supplied (Issue-819).
+              schema:
+                type: integer
+            X-Total-Rows:
+              description: Total row count of the dataset after rows_filter/columns_filter,
+                before row_limit/row_offset slicing. Only present when row_limit or
+                row_offset is supplied (Issue-819).
+              schema:
+                type: integer
         '422':
           content:
             application/json:
@@ -4629,12 +4701,48 @@ paths:
           - records
           title: Orient
           type: string
+      - description: Maximum number of rows to return. Omit for all rows (backward
+          compatible). Applied after rows_filter and columns_filter.
+        in: query
+        name: row_limit
+        required: false
+        schema:
+          anyOf:
+          - exclusiveMinimum: 0
+            maximum: 10000
+            type: integer
+          - type: 'null'
+          description: Maximum number of rows to return. Omit for all rows (backward
+            compatible). Applied after rows_filter and columns_filter.
+          title: Row Limit
+      - description: Number of rows to skip before returning data.
+        in: query
+        name: row_offset
+        required: false
+        schema:
+          default: 0
+          description: Number of rows to skip before returning data.
+          minimum: 0
+          title: Row Offset
+          type: integer
       responses:
         '200':
           content:
             application/json:
               schema: {}
           description: Successful Response
+          headers:
+            X-Row-Offset:
+              description: Echoes the row_offset applied to this response. Only present
+                when row_limit or row_offset is supplied (Issue-819).
+              schema:
+                type: integer
+            X-Total-Rows:
+              description: Total row count of the dataset after rows_filter/columns_filter,
+                before row_limit/row_offset slicing. Only present when row_limit or
+                row_offset is supplied (Issue-819).
+              schema:
+                type: integer
         '422':
           content:
             application/json:
@@ -6326,12 +6434,48 @@ paths:
           - records
           title: Orient
           type: string
+      - description: Maximum number of rows to return. Omit for all rows (backward
+          compatible). Applied after rows_filter and columns_filter.
+        in: query
+        name: row_limit
+        required: false
+        schema:
+          anyOf:
+          - exclusiveMinimum: 0
+            maximum: 10000
+            type: integer
+          - type: 'null'
+          description: Maximum number of rows to return. Omit for all rows (backward
+            compatible). Applied after rows_filter and columns_filter.
+          title: Row Limit
+      - description: Number of rows to skip before returning data.
+        in: query
+        name: row_offset
+        required: false
+        schema:
+          default: 0
+          description: Number of rows to skip before returning data.
+          minimum: 0
+          title: Row Offset
+          type: integer
       responses:
         '200':
           content:
             application/json:
               schema: {}
           description: Successful Response
+          headers:
+            X-Row-Offset:
+              description: Echoes the row_offset applied to this response. Only present
+                when row_limit or row_offset is supplied (Issue-819).
+              schema:
+                type: integer
+            X-Total-Rows:
+              description: Total row count of the dataset after rows_filter/columns_filter,
+                before row_limit/row_offset slicing. Only present when row_limit or
+                row_offset is supplied (Issue-819).
+              schema:
+                type: integer
         '422':
           content:
             application/json:
@@ -7428,12 +7572,48 @@ paths:
           - records
           title: Orient
           type: string
+      - description: Maximum number of rows to return. Omit for all rows (backward
+          compatible). Applied after rows_filter and columns_filter.
+        in: query
+        name: row_limit
+        required: false
+        schema:
+          anyOf:
+          - exclusiveMinimum: 0
+            maximum: 10000
+            type: integer
+          - type: 'null'
+          description: Maximum number of rows to return. Omit for all rows (backward
+            compatible). Applied after rows_filter and columns_filter.
+          title: Row Limit
+      - description: Number of rows to skip before returning data.
+        in: query
+        name: row_offset
+        required: false
+        schema:
+          default: 0
+          description: Number of rows to skip before returning data.
+          minimum: 0
+          title: Row Offset
+          type: integer
       responses:
         '200':
           content:
             application/json:
               schema: {}
           description: Successful Response
+          headers:
+            X-Row-Offset:
+              description: Echoes the row_offset applied to this response. Only present
+                when row_limit or row_offset is supplied (Issue-819).
+              schema:
+                type: integer
+            X-Total-Rows:
+              description: Total row count of the dataset after rows_filter/columns_filter,
+                before row_limit/row_offset slicing. Only present when row_limit or
+                row_offset is supplied (Issue-819).
+              schema:
+                type: integer
         '422':
           content:
             application/json:

@@ -83,6 +83,12 @@ def get_application() -> FastAPI:
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
+        # X-Total-Rows/X-Row-Offset (Issue-819/820 row pagination) are custom response
+        # headers; without expose_headers, browser fetch()/XHR can't read them even
+        # though they're present on the wire — CORS only exposes a small safelisted
+        # set by default. The Bulk Data Viewer (a browser client) needs both to
+        # implement paging, per the original issue thread.
+        expose_headers=["X-Total-Rows", "X-Row-Offset"],
     )
     application.add_middleware(CorrelationIDMiddleware)
     application.add_middleware(TracingMiddleware)

@@ -37,6 +37,7 @@ from app.api.dependencies.services import (
     get_async_storage_service,
 )
 from app.api.dependencies.validation import (
+    DataPaginationParameters,
     get_data_model,
     get_validated_bulk_data_json,
     validate_filters,
@@ -58,6 +59,7 @@ from app.core.config import get_app_settings
 from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
+from app.dataframe.pagination import reject_aggregation_with_pagination, slice_dataframe
 from app.dataframe.parquet_filter import apply_filters_from_bytes
 from app.exceptions import exceptions
 from app.models.data_schemas.data_schema import build_data_schema
@@ -294,7 +296,7 @@ class BaseDataView(object):
             record=record,
         )
 
-    async def _get_data(
+    async def _get_data(  # noqa: CCR001
         self,
         request: Request,
         record_id: str,
@@ -304,6 +306,7 @@ class BaseDataView(object):
         df_filter: DataFrameFilterValidator = Depends(validate_filters),
         content_schema_version: str = Depends(get_content_schema_version),
         orient: str = "split",
+        pagination: DataPaginationParameters = (None, 0),
     ) -> Response:
         """Get record data.
 
@@ -321,6 +324,9 @@ class BaseDataView(object):
         :type df_filter: DataFrameFilterValidator
         :param orient: JSON output format ('split' or 'records')
         :type orient: str
+        :param pagination: (row_limit, row_offset) row-level pagination,
+            defaults to no pagination (backward compatible)
+        :type pagination: DataPaginationParameters
         :return: dataset data
         :rtype: Response
         """
@@ -347,6 +353,12 @@ class BaseDataView(object):
             df = apply_filters_from_bytes(parquet_bytes, df_filter)
             logger.debug(f"Dataset info: {df.size} elements; {df.columns}")
 
+            row_limit, row_offset = pagination
+            pagination_active = row_limit is not None or row_offset > 0
+            reject_aggregation_with_pagination(pagination_active, df_filter.valid_columns_aggregation)
+            if pagination_active:
+                df, total_rows = slice_dataframe(df, row_offset, row_limit)
+
             if mime_type == SupportedMimeTypes.PARQUET:
                 response = Response(content=df.to_parquet(), media_type=SupportedMimeTypes.PARQUET.mime_type)
             else:
@@ -354,6 +366,9 @@ class BaseDataView(object):
                     content=df.to_json(orient=orient),
                     media_type=SupportedMimeTypes.JSON.mime_type,
                 )
+            if pagination_active:
+                response.headers["X-Total-Rows"] = str(total_rows)
+                response.headers["X-Row-Offset"] = str(row_offset)
             del df
         else:
             response = JSONResponse(

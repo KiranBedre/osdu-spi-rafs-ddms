@@ -30,10 +30,12 @@ from app.api.dependencies.services import (
     get_async_storage_service,
     get_blob_storage_service,
 )
-from app.api.dependencies.validation import (
+from app.api.dependencies.validation import (  # noqa: WPS235
+    DataPaginationParameters,
     get_data_model,
     get_data_model_for_content_type,
     get_data_model_inferred_from_domain,
+    get_data_pagination_parameters,
     get_orient,
     validate_filters,
     validate_filters_for_content_type,
@@ -90,6 +92,19 @@ class BaseDataViewV2(BaseDataView):
                 query parameters can be used to manage data in response.<br><br>\
             Use the `orient` query parameter to select the JSON output format (`split` or `records`).",
         )
+        self._row_pagination_response_headers = {
+            "X-Total-Rows": {
+                "description": "Total row count of the dataset after rows_filter/columns_filter, "
+                "before row_limit/row_offset slicing. Only present when row_limit or row_offset "
+                "is supplied (Issue-819).",
+                "schema": {"type": "integer"},
+            },
+            "X-Row-Offset": {
+                "description": "Echoes the row_offset applied to this response. Only present when "
+                "row_limit or row_offset is supplied (Issue-819).",
+                "schema": {"type": "integer"},
+            },
+        }
         dataset_regex = r"([\w\-\.]+:dataset--File.Generic:[\w\-\d\.]+:?[\w\-\.\:\%]*)"
         uuid_regex = r"([\d\w]+-[\d\w]+-[\d\w]+-[\d\w]+-[\d\w]+)"
         self._content_id_regex = f"{dataset_regex}|{uuid_regex}"
@@ -110,6 +125,7 @@ class BaseDataViewV2(BaseDataView):
         df_filter: DataFrameFilterValidator = Depends(validate_filters),
         content_schema_version: str = Depends(get_content_schema_version),
         orient: str = Depends(get_orient),
+        pagination: DataPaginationParameters = Depends(get_data_pagination_parameters),
     ) -> Response:
         """Get record data.
 
@@ -134,6 +150,9 @@ class BaseDataViewV2(BaseDataView):
         :type content_schema_version: str
         :param orient: JSON output format ('split' or 'records')
         :type orient: str
+        :param pagination: (row_limit, row_offset) row-level pagination
+            (Issue-819)
+        :type pagination: DataPaginationParameters
         :return: dataset data
         :rtype: Response
         """
@@ -156,6 +175,7 @@ class BaseDataViewV2(BaseDataView):
                 storage_service=storage_service,
                 df_filter=df_filter,
                 orient=orient,
+                pagination=pagination,
             )
         else:
             response = await self._get_data(
@@ -167,6 +187,7 @@ class BaseDataViewV2(BaseDataView):
                 df_filter,
                 content_schema_version,
                 orient,
+                pagination,
             )
         return response
 
@@ -290,6 +311,7 @@ class BaseDataViewV2(BaseDataView):
                 Depends(validate_record_id),
                 Depends(validate_content_id),
             ],
+            responses={status.HTTP_200_OK: {"headers": self._row_pagination_response_headers}},
         )
 
     def _prepare_post_data_route_v2(self) -> None:
@@ -350,6 +372,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         df_filter: DataFrameFilterValidator = Depends(validate_filters_for_content_type),
         content_schema_version: str = Depends(get_content_schema_version),
         orient: str = Depends(get_orient),
+        pagination: DataPaginationParameters = Depends(get_data_pagination_parameters),
     ) -> Response:
         """Get record data.
 
@@ -372,6 +395,9 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :type content_schema_version: str
         :param orient: JSON output format ('split' or 'records')
         :type orient: str
+        :param pagination: (row_limit, row_offset) row-level pagination
+            (Issue-819)
+        :type pagination: DataPaginationParameters
         :return: dataset data
         :rtype: Response
         """
@@ -393,6 +419,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
                 storage_service=storage_service,
                 df_filter=df_filter,
                 orient=orient,
+                pagination=pagination,
             )
         else:
             response = await self._get_data(
@@ -404,6 +431,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
                 df_filter,
                 content_schema_version,
                 orient,
+                pagination,
             )
         return response
 
@@ -469,6 +497,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         df_filter: DataFrameFilterValidator = Depends(validate_filters_for_domain_inferred_model),
         content_schema_version: str = Depends(get_content_schema_version),
         orient: str = Depends(get_orient),
+        pagination: DataPaginationParameters = Depends(get_data_pagination_parameters),
     ) -> Response:
         """Get record data.
 
@@ -491,6 +520,9 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
         :type content_schema_version: str
         :param orient: JSON output format ('split' or 'records')
         :type orient: str
+        :param pagination: (row_limit, row_offset) row-level pagination
+            (Issue-819)
+        :type pagination: DataPaginationParameters
         :return: dataset data
         :rtype: Response
         """
@@ -511,6 +543,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
                 storage_service=storage_service,
                 df_filter=df_filter,
                 orient=orient,
+                pagination=pagination,
             )
         else:
             response = await self._get_data(
@@ -522,6 +555,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
                 df_filter,
                 content_schema_version,
                 orient,
+                pagination,
             )
         return response
 
@@ -629,6 +663,7 @@ class DynamicContentTypeDataViewV2(BaseDataViewV2):
                 Depends(validate_record_id),
                 Depends(validate_content_id),
             ],
+            responses={status.HTTP_200_OK: {"headers": self._row_pagination_response_headers}},
         )
 
     def _prepare_post_data_route(self, api_function: Callable, path: str) -> None:

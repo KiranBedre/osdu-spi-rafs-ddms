@@ -17,7 +17,7 @@ import io
 import json
 from contextlib import contextmanager
 from datetime import date
-from unittest.mock import AsyncMock, create_autospec, patch
+from unittest.mock import AsyncMock, MagicMock, create_autospec, patch
 
 import pandas as pd
 import pyarrow as pa
@@ -31,6 +31,7 @@ from app.api.dependencies.services import (
     get_async_entitlements_service,
     get_async_storage_service,
 )
+from app.api.routes.samplesanalysis.endpoints import SamplesAnalysisDataView
 from app.api.routes.utils.query import find_osdu_ids_from_string
 from app.api.routes.utils.records import get_id, get_id_version
 from app.main import app
