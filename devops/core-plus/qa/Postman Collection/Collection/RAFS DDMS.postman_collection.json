@@ -26741,17 +26741,46 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Status code is 200\", function () {",
-                      "    pm.expect(pm.response.code).to.equal(200);",
-                      "});",
+                      "const rsrp_record_id = pm.collectionVariables.get(\"rsrp_record_id\");",
+                      "if (!rsrp_record_id) {",
+                      "    throw new Error(\"rsrp_record_id is not defined\");",
+                      "}",
+                      "const normalizeId = (id) => String(id || \"\").replace(/:$/, \"\");",
+                      "let jsonData;",
+                      "let notReady = false;",
                       "",
-                      "pm.test(\"Record_id visible under search results'\", function () {",
-                      "    var jsonData = pm.response.json();",
-                      "    let rsrp_record_id = pm.variables.get(\"rsrp_record_id\")",
-                      "    pm.expect(jsonData.result).to.include(rsrp_record_id);",
-                      "    pm.expect(jsonData.result).to.be.an(\"array\").with.lengthOf(1);",
-                      "});",
-                      ""
+                      "if (pm.response.code === 200) {",
+                      "    try {",
+                      "        jsonData = pm.response.json();",
+                      "        notReady = Array.isArray(jsonData.result) && !jsonData.result.some((id) => normalizeId(id) === normalizeId(rsrp_record_id));",
+                      "    } catch (error) {",
+                      "        // Let the existing assertions report malformed responses normally.",
+                      "    }",
+                      "}",
+                      "",
+                      "if (notReady) {",
+                      "    const attempt = Number(pm.collectionVariables.get(\"rsrp_search_records_attempt\") || 0) + 1;",
+                      "    if (attempt < 60) {",
+                      "        pm.collectionVariables.set(\"rsrp_search_records_attempt\", attempt);",
+                      "        pm.execution.setNextRequest(pm.info.requestId);",
+                      "    } else {",
+                      "        pm.collectionVariables.unset(\"rsrp_search_records_attempt\");",
+                      "        throw new Error(`Simulation Rock Physics Search Records: record ${rsrp_record_id} was not available after 60 attempts (~120 seconds)`);",
+                      "    }",
+                      "} else {",
+                      "    pm.collectionVariables.unset(\"rsrp_search_records_attempt\");",
+                      "",
+                      "    pm.test(\"Status code is 200\", function () {",
+                      "        pm.expect(pm.response.code).to.equal(200);",
+                      "    });",
+                      "",
+                      "    pm.test(\"Record_id visible under search results'\", function () {",
+                      "        var jsonData = pm.response.json();",
+                      "        let rsrp_record_id = pm.collectionVariables.get(\"rsrp_record_id\")",
+                      "        pm.expect(jsonData.result).to.include(rsrp_record_id);",
+                      "        pm.expect(jsonData.result).to.be.an(\"array\").with.lengthOf(1);",
+                      "    });",
+                      "}"
                     ],
                     "type": "text/javascript",
                     "packages": {},
@@ -26762,51 +26791,10 @@
                   "listen": "prerequest",
                   "script": {
                     "exec": [
-                      "const rsrp_record_id = pm.variables.get(\"rsrp_record_id\");",
-                      "const host = pm.variables.get(\"HOSTNAME\");",
-                      "const url = `https://${host}/api/rafs-ddms/v2/reservoirsimulationrockphysicsmodel/search?rows_filter=ReservoirSimulationRockPhysicsID,eq,${rsrp_record_id}:`;",
-                      "",
-                      "const maxAttempts = 60; // Maximum number of polling attempts",
-                      "const intervalMs = 2000; // Interval between attempts (2 seconds)",
-                      "let attempt = 0;",
-                      "",
-                      "function pollForRecord() {",
-                      "    pm.sendRequest({",
-                      "        url: url,",
-                      "        method: 'GET',",
-                      "        header: {",
-                      "            'Authorization': 'Bearer ' + pm.environment.get('access_token'),",
-                      "            'data-partition-id': pm.environment.get('data-partition-id'),",
-                      "            'Accept': '*/*;version=1.0.0'",
-                      "        }",
-                      "    }, function (err, res) {",
-                      "        attempt++;",
-                      "        if (err) {",
-                      "            console.log('Error:', err);",
-                      "            if (attempt < maxAttempts) {",
-                      "                setTimeout(pollForRecord, intervalMs);",
-                      "            } else {",
-                      "                throw new Error('Polling failed due to repeated errors.');",
-                      "            }",
-                      "            return;",
-                      "        }",
-                      "        const jsonData = res.json();",
-                      "        if (jsonData.result && Array.isArray(jsonData.result) && jsonData.result.length === 1 && jsonData.result[0] === rsrp_record_id) {",
-                      "            // Record found, proceed",
-                      "            console.log('Record found!');",
-                      "            setTimeout(function() {",
-                      "                // safety sleep for stability reasons",
-                      "            }, 10000);",
-                      "        } else if (attempt < maxAttempts) {",
-                      "            setTimeout(pollForRecord, intervalMs);",
-                      "        } else {",
-                      "            throw new Error('Record not found after maximum polling attempts.');",
-                      "        }",
-                      "    });",
-                      "}",
-                      "",
-                      "// Start polling",
-                      "pollForRecord();"
+                      "if (Number(pm.collectionVariables.get(\"rsrp_search_records_attempt\") || 0) > 0) {",
+                      "    console.log(\"Waiting 2000 ms before the next Simulation Rock Physics record readiness probe\");",
+                      "    setTimeout(function () { console.log(\"Simulation Rock Physics record readiness probe delay completed\"); }, 2000);",
+                      "}"
                     ],
                     "type": "text/javascript",
                     "packages": {},
@@ -26861,22 +26849,51 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Response contains non-empty result list\", function () {",
-                      "    const json = pm.response.json();",
+                      "const rsrp_record_id = pm.collectionVariables.get(\"rsrp_record_id\");",
+                      "if (!rsrp_record_id) {",
+                      "    throw new Error(\"rsrp_record_id is not defined\");",
+                      "}",
                       "",
-                      "    pm.expect(pm.response.code).to.equal(200);",
+                      "const normalizeId = (id) => String(id || \"\").replace(/:$/, \"\");",
+                      "let notReady = false;",
                       "",
-                      "    pm.expect(json).to.have.property(\"result\");",
-                      "    pm.expect(json.result).to.be.an(\"array\");",
+                      "if (pm.response.code === 200) {",
+                      "    try {",
+                      "        const jsonData = pm.response.json();",
+                      "        notReady = Array.isArray(jsonData.result) && !jsonData.result.some((id) => normalizeId(id) === normalizeId(rsrp_record_id));",
+                      "    } catch (error) {",
+                      "        // Let the existing assertions report malformed responses normally.",
+                      "    }",
+                      "}",
                       "",
-                      "    // array is not empty",
-                      "    pm.expect(json.result.length).to.be.above(0);",
+                      "if (notReady) {",
+                      "    const attempt = Number(pm.collectionVariables.get(\"rsrp_search_start_date_attempt\") || 0) + 1;",
+                      "    if (attempt < 60) {",
+                      "        pm.collectionVariables.set(\"rsrp_search_start_date_attempt\", attempt);",
+                      "        pm.execution.setNextRequest(pm.info.requestId);",
+                      "    } else {",
+                      "        pm.collectionVariables.unset(\"rsrp_search_start_date_attempt\");",
+                      "        throw new Error(`Simulation Rock Physics Search Records: record ${rsrp_record_id} was not available after 60 attempts (~120 seconds)`);",
+                      "    }",
+                      "} else {",
+                      "    pm.collectionVariables.unset(\"rsrp_search_start_date_attempt\");",
                       "",
-                      "    // total_size corresponds and is > 0",
-                      "    pm.expect(json).to.have.property(\"total_size\");",
-                      "    pm.expect(json.total_size).to.be.above(0);",
-                      "});",
-                      ""
+                      "    pm.test(\"Response contains non-empty result list\", function () {",
+                      "        const json = pm.response.json();",
+                      "",
+                      "        pm.expect(pm.response.code).to.equal(200);",
+                      "",
+                      "        pm.expect(json).to.have.property(\"result\");",
+                      "        pm.expect(json.result).to.be.an(\"array\");",
+                      "",
+                      "        // array is not empty",
+                      "        pm.expect(json.result.length).to.be.above(0);",
+                      "",
+                      "        // total_size corresponds and is > 0",
+                      "        pm.expect(json).to.have.property(\"total_size\");",
+                      "        pm.expect(json.total_size).to.be.above(0);",
+                      "    });",
+                      "}"
                     ],
                     "type": "text/javascript",
                     "packages": {},
@@ -26895,7 +26912,12 @@
                       "    const dd = String(today.getDate()).padStart(2, '0');\r",
                       "    const currentDate = `${yyyy}-${mm}-${dd}`;\r",
                       "    pm.variables.set('indexed_start_date', currentDate);\r",
-                      "})();"
+                      "})();",
+                      "",
+                      "if (Number(pm.collectionVariables.get(\"rsrp_search_start_date_attempt\") || 0) > 0) {",
+                      "    console.log(\"Waiting 2000 ms before the next Simulation Rock Physics start-date readiness probe\");",
+                      "    setTimeout(function () { console.log(\"Simulation Rock Physics start-date readiness probe delay completed\"); }, 2000);",
+                      "}"
                     ],
                     "type": "text/javascript",
                     "packages": {},
@@ -27280,11 +27302,40 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Status code is 200\", function () {",
-                      "    pm.expect(pm.response.code).to.equal(200);",
-                      "});",
+                      "const rsrp_record_id = pm.collectionVariables.get(\"rsrp_record_id\");",
+                      "if (!rsrp_record_id) {",
+                      "    throw new Error(\"rsrp_record_id is not defined\");",
+                      "}",
+                      "const normalizeId = (id) => String(id || \"\").replace(/:$/, \"\");",
+                      "let jsonData;",
+                      "let notReady = false;",
                       "",
-                      "pm.test(\"Record_id is visible under search results\", function () {",
+                      "if (pm.response.code === 200) {",
+                      "    try {",
+                      "        jsonData = pm.response.json();",
+                      "        notReady = jsonData.result && Array.isArray(jsonData.result.data) && !jsonData.result.data.some((row) => normalizeId(row[0]) === normalizeId(rsrp_record_id));",
+                      "    } catch (error) {",
+                      "        // Let the existing assertions report malformed responses normally.",
+                      "    }",
+                      "}",
+                      "",
+                      "if (notReady) {",
+                      "    const attempt = Number(pm.collectionVariables.get(\"rsrp_search_data_attempt\") || 0) + 1;",
+                      "    if (attempt < 60) {",
+                      "        pm.collectionVariables.set(\"rsrp_search_data_attempt\", attempt);",
+                      "        pm.execution.setNextRequest(pm.info.requestId);",
+                      "    } else {",
+                      "        pm.collectionVariables.unset(\"rsrp_search_data_attempt\");",
+                      "        throw new Error(`Simulation Rock Physics Search Data: record ${rsrp_record_id} was not available after 60 attempts (~120 seconds)`);",
+                      "    }",
+                      "} else {",
+                      "    pm.collectionVariables.unset(\"rsrp_search_data_attempt\");",
+                      "",
+                      "    pm.test(\"Status code is 200\", function () {",
+                      "        pm.expect(pm.response.code).to.equal(200);",
+                      "    });",
+                      "",
+                      "    pm.test(\"Record_id is visible under search results\", function () {",
                       "    var jsonData = pm.response.json();",
                       "",
                       "    // Basic structural checks (no strict expectations)",
@@ -27293,7 +27344,7 @@
                       "    pm.expect(jsonData.result.data).to.be.an(\"array\").with.length.greaterThan(0);",
                       "",
                       "    // Get dynamic RSRP id",
-                      "    let rsrp_record_id = pm.variables.get(\"rsrp_record_id\");",
+                      "    let rsrp_record_id = pm.collectionVariables.get(\"rsrp_record_id\");",
                       "    let expected_id = rsrp_record_id + \":\";",
                       "",
                       "    // Search across all returned rows",
@@ -27305,8 +27356,22 @@
                       "    });",
                       "",
                       "    pm.expect(found, \"Expected rsrp_record_id with ':' was not found in any data row\").to.be.true;",
-                      "});",
-                      ""
+                      "    });",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "if (Number(pm.collectionVariables.get(\"rsrp_search_data_attempt\") || 0) > 0) {",
+                      "    console.log(\"Waiting 2000 ms before the next Simulation Rock Physics data readiness probe\");",
+                      "    setTimeout(function () { console.log(\"Simulation Rock Physics data readiness probe delay completed\"); }, 2000);",
+                      "}"
                     ],
                     "type": "text/javascript",
                     "packages": {},
@@ -29863,7 +29928,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.equal(200);\n});\n\npm.test(\"Record_id visible under search results'\", function () {\n    var jsonData = pm.response.json();\n    let saturation_record_id = pm.variables.get(\"saturation_record_id\")\n    pm.expect(jsonData.result).to.include(saturation_record_id);\n    pm.expect(jsonData.result).to.be.an(\"array\").with.lengthOf(1);\n});\n"
+                      "const saturation_record_id = pm.collectionVariables.get(\"saturation_record_id\");\nif (!saturation_record_id) {\n    throw new Error(\"saturation_record_id is not defined\");\n}\n\nconst normalizeId = (id) => String(id || \"\").replace(/:$/, \"\");\nlet jsonData;\nlet notReady = false;\n\nif (pm.response.code === 200) {\n    try {\n        jsonData = pm.response.json();\n        notReady = Array.isArray(jsonData.result) && !jsonData.result.some((id) => normalizeId(id) === normalizeId(saturation_record_id));\n    } catch (error) {\n        // Let the existing assertions report malformed responses normally.\n    }\n}\n\nif (notReady) {\n    const attempt = Number(pm.collectionVariables.get(\"sfs_search_records_attempt\") || 0) + 1;\n    if (attempt < 60) {\n        pm.collectionVariables.set(\"sfs_search_records_attempt\", attempt);\n        pm.execution.setNextRequest(pm.info.requestId);\n    } else {\n        pm.collectionVariables.unset(\"sfs_search_records_attempt\");\n        throw new Error(`Saturation Function Set Search Records: record ${saturation_record_id} was not available after 60 attempts (~120 seconds)`);\n    }\n} else {\n    pm.collectionVariables.unset(\"sfs_search_records_attempt\");\n\n    pm.test(\"Status code is 200\", function () {\n        pm.expect(pm.response.code).to.equal(200);\n    });\n\n    pm.test(\"Record_id visible under search results'\", function () {\n        var jsonData = pm.response.json();\n        let saturation_record_id = pm.collectionVariables.get(\"saturation_record_id\")\n        pm.expect(jsonData.result).to.include(saturation_record_id);\n        pm.expect(jsonData.result).to.be.an(\"array\").with.lengthOf(1);\n    });\n}\n"
                     ]
                   }
                 },
@@ -29872,7 +29937,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "const rawRecordId = pm.variables.get(\"saturation_record_id\");\r\n\r\nif (!rawRecordId) {\r\n    throw new Error(\"saturation_record_id is not defined\");\r\n}\r\n\r\nconst storageRecordId = rawRecordId.replace(/:+$/, \"\");\r\nconst referenceRecordId = `${storageRecordId}:`;\r\n\r\nconst host = pm.variables.get(\"HOSTNAME\");\r\nconst accessToken = pm.environment.get(\"access_token\");\r\nconst partition = pm.environment.get(\"data-partition-id\");\r\n\r\nconst rowsFilter = encodeURIComponent(\r\n    `SaturationFunctionSetID,eq,${referenceRecordId}`\r\n);\r\n\r\nconst url =\r\n    `https://${host}/api/rafs-ddms/v2/saturationfunctionset/search` +\r\n    `?rows_filter=${rowsFilter}`;\r\n\r\nconst maxAttempts = 60;\r\nconst intervalMs = 2000;\r\nlet attempt = 0;\r\n\r\nfunction pollForRecord() {\r\n    pm.sendRequest(\r\n        {\r\n            url,\r\n            method: \"GET\",\r\n            header: {\r\n                Authorization: `Bearer ${accessToken}`,\r\n                \"data-partition-id\": partition,\r\n                Accept: \"*/*;version=1.0.0\"\r\n            }\r\n        },\r\n        function (error, response) {\r\n            attempt += 1;\r\n\r\n            if (!error && response.code === 200) {\r\n                const body = response.json();\r\n                const result = Array.isArray(body.result)\r\n                    ? body.result.map(id => id.replace(/:+$/, \"\"))\r\n                    : [];\r\n\r\n                if (result.includes(storageRecordId)) {\r\n                    console.log(\r\n                        `Saturation Function Set indexed after ${attempt} attempts`\r\n                    );\r\n                    return;\r\n                }\r\n            }\r\n\r\n            if (attempt >= maxAttempts) {\r\n                throw new Error(\r\n                    `Saturation Function Set ${storageRecordId} was not indexed ` +\r\n                    `after ${maxAttempts} attempts`\r\n                );\r\n            }\r\n\r\n            setTimeout(pollForRecord, intervalMs);\r\n        }\r\n    );\r\n}\r\n\r\npollForRecord();"
+                      "if (Number(pm.collectionVariables.get(\"sfs_search_records_attempt\") || 0) > 0) {\r\n    console.log(\"Waiting 2000 ms before the next Saturation Function Set record readiness probe\");\r\n    setTimeout(function () { console.log(\"Saturation Function Set record readiness probe delay completed\"); }, 2000);\r\n}"
                     ]
                   }
                 }
@@ -29989,7 +30054,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.equal(200);\n});\n\npm.test(\"Record_id visible under search results'\", function () {\n    var jsonData = pm.response.json();\n    let saturation_record_id = pm.variables.get(\"saturation_record_id\")\n     pm.expect(jsonData.result).to.include(saturation_record_id);\n});\n"
+                      "const saturation_record_id = pm.variables.get(\"saturation_record_id\");\nif (!saturation_record_id) {\n    throw new Error(\"saturation_record_id is not defined\");\n}\n\nconst normalizeId = (id) => String(id || \"\").replace(/:$/, \"\");\nlet jsonData;\nlet notReady = false;\n\nif (pm.response.code === 200) {\n    try {\n        jsonData = pm.response.json();\n        notReady = Array.isArray(jsonData.result) && !jsonData.result.some((id) => normalizeId(id) === normalizeId(saturation_record_id));\n    } catch (error) {\n        // Let the existing assertions report malformed responses normally.\n    }\n}\n\nif (notReady) {\n    const attempt = Number(pm.collectionVariables.get(\"sfs_search_start_date_attempt\") || 0) + 1;\n    if (attempt < 60) {\n        pm.collectionVariables.set(\"sfs_search_start_date_attempt\", attempt);\n        pm.execution.setNextRequest(pm.info.requestId);\n    } else {\n        pm.collectionVariables.unset(\"sfs_search_start_date_attempt\");\n        throw new Error(`Saturation Function Set Search Records: record ${saturation_record_id} was not available after 60 attempts (~120 seconds)`);\n    }\n} else {\n    pm.collectionVariables.unset(\"sfs_search_start_date_attempt\");\n\n    pm.test(\"Status code is 200\", function () {\n        pm.expect(pm.response.code).to.equal(200);\n    });\n\n    pm.test(\"Record_id visible under search results'\", function () {\n        var jsonData = pm.response.json();\n        let saturation_record_id = pm.variables.get(\"saturation_record_id\")\n         pm.expect(jsonData.result).to.include(saturation_record_id);\n    });\n}\n"
                     ]
                   }
                 },
@@ -29998,7 +30063,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "(function () {\r\n    const today = new Date();\r\n    today.setDate(today.getDate() );\r\n    const yyyy = today.getFullYear();\r\n    const mm = String(today.getMonth() + 1).padStart(2, '0');\r\n    const dd = String(today.getDate()).padStart(2, '0');\r\n    const currentDate = `${yyyy}-${mm}-${dd}`;\r\n    pm.variables.set('indexed_start_date', currentDate);\r\n\r\n    // Temporary delay to allow Search indexing to propagate\r\n    const delayMs = 10000;\r\n    console.log(`Waiting ${delayMs} ms before date-filtered search...`);\r\n\r\n    setTimeout(() => {\r\n        console.log(\"Indexing wait completed\");\r\n    }, delayMs);\r\n})();"
+                      "(function () {\r\n    const today = new Date();\r\n    today.setDate(today.getDate() );\r\n    const yyyy = today.getFullYear();\r\n    const mm = String(today.getMonth() + 1).padStart(2, '0');\r\n    const dd = String(today.getDate()).padStart(2, '0');\r\n    const currentDate = `${yyyy}-${mm}-${dd}`;\r\n    pm.variables.set('indexed_start_date', currentDate);\r\n})();\r\n\r\nif (Number(pm.collectionVariables.get(\"sfs_search_start_date_attempt\") || 0) > 0) {\r\n    console.log(\"Waiting 2000 ms before the next Saturation Function Set start-date readiness probe\");\r\n    setTimeout(function () { console.log(\"Saturation Function Set start-date readiness probe delay completed\"); }, 2000);\r\n}"
                     ]
                   }
                 }
@@ -36750,7 +36815,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.equal(200);\n});\n\npm.test(\"Record_id visible under search results'\", function () {\n    var jsonData = pm.response.json();\n    let depth_shift_record_id = pm.variables.get(\"depth_shift_record_id\")\n    pm.expect(jsonData.result).to.include(depth_shift_record_id);\n    pm.expect(jsonData.result).to.be.an(\"array\").with.lengthOf(1);\n});\n"
+                      "const depth_shift_record_id = pm.variables.get(\"depth_shift_record_id\");\nif (!depth_shift_record_id) {\n    throw new Error(\"depth_shift_record_id is not defined\");\n}\n\nconst normalizeId = (id) => String(id || \"\").replace(/:$/, \"\");\nlet jsonData;\nlet notReady = false;\n\nif (pm.response.code === 200) {\n    try {\n        jsonData = pm.response.json();\n        notReady = Array.isArray(jsonData.result) && !jsonData.result.some((id) => normalizeId(id) === normalizeId(depth_shift_record_id));\n    } catch (error) {\n        // Let the existing assertions report malformed responses normally.\n    }\n}\n\nif (notReady) {\n    const attempt = Number(pm.collectionVariables.get(\"depth_shift_search_records_attempt\") || 0) + 1;\n    if (attempt < 60) {\n        pm.collectionVariables.set(\"depth_shift_search_records_attempt\", attempt);\n        pm.execution.setNextRequest(pm.info.requestId);\n    } else {\n        pm.collectionVariables.unset(\"depth_shift_search_records_attempt\");\n        throw new Error(`Depth Shift Search Records: record ${depth_shift_record_id} was not available after 60 attempts (~120 seconds)`);\n    }\n} else {\n    pm.collectionVariables.unset(\"depth_shift_search_records_attempt\");\n\n    pm.test(\"Status code is 200\", function () {\n        pm.expect(pm.response.code).to.equal(200);\n    });\n\n    pm.test(\"Record_id visible under search results'\", function () {\n        var jsonData = pm.response.json();\n        let depth_shift_record_id = pm.collectionVariables.get(\"depth_shift_record_id\")\n        pm.expect(jsonData.result).to.include(depth_shift_record_id);\n        pm.expect(jsonData.result).to.be.an(\"array\").with.lengthOf(1);\n    });\n}\n"
                     ]
                   }
                 },
@@ -36759,7 +36824,7 @@
                   "script": {
                     "type": "text/javascript",
                     "exec": [
-                      "const rawRecordId = pm.variables.get(\"depth_shift_record_id\");\r\n\r\nif (!rawRecordId) {\r\n    throw new Error(\"depth_shift_record_id is not defined\");\r\n}\r\n\r\nconst storageRecordId = rawRecordId.replace(/:+$/, \"\");\r\nconst referenceRecordId = `${storageRecordId}:`;\r\n\r\nconst host = pm.variables.get(\"HOSTNAME\");\r\nconst accessToken = pm.environment.get(\"access_token\");\r\nconst partition = pm.environment.get(\"data-partition-id\");\r\n\r\nconst rowsFilter = encodeURIComponent(\r\n    `DepthShiftWPCID,eq,${referenceRecordId}`\r\n);\r\n\r\nconst url =\r\n    `https://${host}/api/rafs-ddms/v2/depthshift/search` +\r\n    `?rows_filter=${rowsFilter}`;\r\n\r\nconst maxAttempts = 60;\r\nconst intervalMs = 2000;\r\nlet attempt = 0;\r\n\r\nfunction pollForRecord() {\r\n    pm.sendRequest(\r\n        {\r\n            url,\r\n            method: \"GET\",\r\n            header: {\r\n                Authorization: `Bearer ${accessToken}`,\r\n                \"data-partition-id\": partition,\r\n                Accept: \"*/*;version=1.0.0\"\r\n            }\r\n        },\r\n        function (error, response) {\r\n            attempt += 1;\r\n\r\n            if (!error && response.code === 200) {\r\n                let body;\r\n\r\n                try {\r\n                    body = response.json();\r\n                } catch (parseError) {\r\n                    console.log(\r\n                        `Attempt ${attempt}: Search returned a non-JSON response`\r\n                    );\r\n                }\r\n\r\n                const result =\r\n                    body && Array.isArray(body.result)\r\n                        ? body.result.map(id => id.replace(/:+$/, \"\"))\r\n                        : [];\r\n\r\n                if (result.includes(storageRecordId)) {\r\n                    console.log(\r\n                        `Depth Shift indexed after ${attempt} attempts`\r\n                    );\r\n                    return;\r\n                }\r\n            } else {\r\n                console.log(\r\n                    `Attempt ${attempt}: ${\r\n                        error || `HTTP ${response.code}`\r\n                    }`\r\n                );\r\n            }\r\n\r\n            if (attempt >= maxAttempts) {\r\n                throw new Error(\r\n                    `Depth Shift ${storageRecordId} was not indexed after ` +\r\n                    `${maxAttempts} attempts`\r\n                );\r\n            }\r\n\r\n            setTimeout(pollForRecord, intervalMs);\r\n        }\r\n    );\r\n}\r\n\r\npollForRecord();"
+                      "if (Number(pm.collectionVariables.get(\"depth_shift_search_records_attempt\") || 0) > 0) {\r\n    console.log(\"Waiting 2000 ms before the next Depth Shift record readiness probe\");\r\n    setTimeout(function () { console.log(\"Depth Shift record readiness probe delay completed\"); }, 2000);\r\n}"
                     ]
                   }
                 }
@@ -36875,16 +36940,45 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Status code is 200\", function () {",
-                      "    pm.expect(pm.response.code).to.equal(200);",
-                      "});",
+                      "const depth_shift_record_id = pm.variables.get(\"depth_shift_record_id\");",
+                      "if (!depth_shift_record_id) {",
+                      "    throw new Error(\"depth_shift_record_id is not defined\");",
+                      "}",
                       "",
-                      "pm.test(\"Record_id visible under search results'\", function () {",
-                      "    var jsonData = pm.response.json();",
-                      "    let depth_shift_record_id = pm.variables.get(\"depth_shift_record_id\")",
-                      "     pm.expect(jsonData.result).to.include(depth_shift_record_id);",
-                      "});",
-                      ""
+                      "const normalizeId = (id) => String(id || \"\").replace(/:$/, \"\");",
+                      "let notReady = false;",
+                      "",
+                      "if (pm.response.code === 200) {",
+                      "    try {",
+                      "        const jsonData = pm.response.json();",
+                      "        notReady = Array.isArray(jsonData.result) && !jsonData.result.some((id) => normalizeId(id) === normalizeId(depth_shift_record_id));",
+                      "    } catch (error) {",
+                      "        // Let the existing assertions report malformed responses normally.",
+                      "    }",
+                      "}",
+                      "",
+                      "if (notReady) {",
+                      "    const attempt = Number(pm.collectionVariables.get(\"depth_shift_search_start_date_attempt\") || 0) + 1;",
+                      "    if (attempt < 60) {",
+                      "        pm.collectionVariables.set(\"depth_shift_search_start_date_attempt\", attempt);",
+                      "        pm.execution.setNextRequest(pm.info.requestId);",
+                      "    } else {",
+                      "        pm.collectionVariables.unset(\"depth_shift_search_start_date_attempt\");",
+                      "        throw new Error(`Depth Shift Search Records: record ${depth_shift_record_id} was not available after 60 attempts (~120 seconds)`);",
+                      "    }",
+                      "} else {",
+                      "    pm.collectionVariables.unset(\"depth_shift_search_start_date_attempt\");",
+                      "",
+                      "    pm.test(\"Status code is 200\", function () {",
+                      "        pm.expect(pm.response.code).to.equal(200);",
+                      "    });",
+                      "",
+                      "    pm.test(\"Record_id visible under search results'\", function () {",
+                      "        var jsonData = pm.response.json();",
+                      "        let depth_shift_record_id = pm.variables.get(\"depth_shift_record_id\")",
+                      "         pm.expect(jsonData.result).to.include(depth_shift_record_id);",
+                      "    });",
+                      "}"
                     ],
                     "type": "text/javascript",
                     "packages": {},
@@ -36903,7 +36997,12 @@
                       "    const dd = String(today.getDate()).padStart(2, '0');\r",
                       "    const currentDate = `${yyyy}-${mm}-${dd}`;\r",
                       "    pm.variables.set('indexed_start_date', currentDate);\r",
-                      "})();"
+                      "})();",
+                      "",
+                      "if (Number(pm.collectionVariables.get(\"depth_shift_search_start_date_attempt\") || 0) > 0) {",
+                      "    console.log(\"Waiting 2000 ms before the next Depth Shift start-date readiness probe\");",
+                      "    setTimeout(function () { console.log(\"Depth Shift start-date readiness probe delay completed\"); }, 2000);",
+                      "}"
                     ],
                     "type": "text/javascript",
                     "packages": {},
