@@ -42,6 +42,8 @@ _MODEL_DIRS = [
     _PROJECT_ROOT / "app/models/data_schemas/depth_shift_v2",
 ]
 
+_DOMAIN_OSDU_DIR = _PROJECT_ROOT / "app/models/domain/osdu"
+
 _VALID_SAR_ID = "opendes:work-product-component--SamplesAnalysis:smoke-test:1"
 _VALID_SAMPLE_ID = "opendes:master-data--Sample:smoke-test:1"
 # Minimal Meta entry: only `kind` is needed; everything else is optional.
@@ -58,6 +60,16 @@ def _module_params():
             rel = path.relative_to(_PROJECT_ROOT)
             mod_name = ".".join(rel.parts).removesuffix(".py")
             yield pytest.param(mod_name, id=path.stem)
+
+
+def _domain_osdu_module_params():
+    """Yield pytest params for every generated module under app/models/domain/osdu."""
+    for path in sorted(_DOMAIN_OSDU_DIR.rglob("*.py")):
+        if path.name == "__init__.py":
+            continue
+        rel = path.relative_to(_PROJECT_ROOT)
+        mod_name = ".".join(rel.parts).removesuffix(".py")
+        yield pytest.param(mod_name, id=str(rel))
 
 
 def _registered_model_params():
@@ -94,6 +106,20 @@ def test_model_module_imports_cleanly(module_name):
 
     Catches v1 codegen patterns (const=, constr(regex=), Extra) that
     survive static analysis but blow up at import time.
+    """
+    importlib.import_module(module_name)
+
+
+@pytest.mark.parametrize("module_name", list(_domain_osdu_module_params()))
+def test_domain_osdu_model_module_imports_cleanly(module_name):
+    """Every generated OSDU domain model module must import without raising under Pydantic v2.
+
+    Complements test_model_module_imports_cleanly, which only covers
+    sample_analysis_api_v2/depth_shift_v2 -- this covers the broader set of
+    generated domain models under app/models/domain/osdu (e.g. AccessControlList,
+    WPCGroupType), where incomplete v1-to-v2 codegen conversions can otherwise
+    hide undetected (e.g. `List[StringConstraints(...)]` instead of
+    `List[Annotated[str, StringConstraints(...)]]`).
     """
     importlib.import_module(module_name)
 

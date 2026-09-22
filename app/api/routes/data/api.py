@@ -80,11 +80,19 @@ def _normalize_nan_to_none(df: pd.DataFrame) -> None:
 
 
 def _unwrap_optional(annotation):
-    """Return the inner type of Optional[T] (Union[T, None] or T | None), or annotation unchanged."""
-    if get_origin(annotation) is Union or isinstance(annotation, types.UnionType):
-        non_none = [arg for arg in get_args(annotation) if arg is not type(None)]  # noqa: WPS516, E721
-        return non_none[0] if non_none else annotation
-    return annotation
+    """Return the inner type of Optional[T] (Union[T, None] or T | None); preserve genuine multi-member unions.
+
+    Only unwraps when NoneType is present and exactly one non-None member remains, so a
+    real union like Union[str, int] is returned unchanged rather than collapsed to `str`.
+    """
+    is_union = get_origin(annotation) is Union or isinstance(annotation, types.UnionType)
+    if not is_union:
+        return annotation
+    args = get_args(annotation)
+    if type(None) not in args:  # noqa: WPS516, E721
+        return annotation
+    non_none = [arg for arg in args if arg is not type(None)]  # noqa: WPS516, E721
+    return non_none[0] if len(non_none) == 1 else annotation
 
 
 def _str_field_names(model: type) -> List[str]:

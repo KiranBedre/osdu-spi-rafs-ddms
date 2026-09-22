@@ -70,17 +70,17 @@ SPECIFIC_INVALID_TYPE_FIELDS = [
     (
         "/data/FluidModelSaturationTypeID",
         ["FluidModelSaturationTypeID"],
-        "['FluidModelSaturationTypeID'] is not of type 'string'"
+        "['FluidModelSaturationTypeID'] is not of type 'string'",
     ),
     (
         "/data/IsApplicableForThermalSimulation",
         ["IsApplicableForThermalSimulation"],
-        "['IsApplicableForThermalSimulation'] is not of type 'boolean'"
+        "['IsApplicableForThermalSimulation'] is not of type 'boolean'",
     ),
     (
         "/data/HasVariableDepthFluidProperties",
         ["HasVariableDepthFluidProperties"],
-        "['HasVariableDepthFluidProperties'] is not of type 'boolean'"
+        "['HasVariableDepthFluidProperties'] is not of type 'boolean'",
     ),
 ]
 

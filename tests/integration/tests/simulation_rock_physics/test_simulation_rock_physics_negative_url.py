@@ -20,9 +20,9 @@ from starlette import status
 from app.resources.common_headers import ACCEPT
 from tests.integration.config import (
     CONFIG,
+    SEARCH_PAGE_LIMITS,
     DataFiles,
     Endpoints,
-    SEARCH_PAGE_LIMITS,
 )
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]

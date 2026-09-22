@@ -32,9 +32,12 @@ class Field0(BaseModel):
         title="List of Viewers",
     )
     owners: List[
-        StringConstraints(
-            pattern=r"^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$"
-        )
+        Annotated[
+            str,
+            StringConstraints(
+                pattern=r"^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$"
+            ),
+        ]
     ] = Field(
         ...,
         description="The list of owners of this data record formatted as an email (core.common.model.storage.validation.ValidationDoc.EMAIL_REGEX).",

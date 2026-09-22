@@ -20,11 +20,11 @@ from tests.integration.config import CONFIG
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
 RECORD_ID_ENDPOINTS_ARGS = [
-        ("get_record", ("record_id",)),
-        ("get_record_versions", ("record_id",)),
-        ("get_record_version", ("record_id", "version")),
-        ("soft_delete_record", ("record_id",)),
-    ]
+    ("get_record", ("record_id",)),
+    ("get_record_versions", ("record_id",)),
+    ("get_record_version", ("record_id", "version")),
+    ("soft_delete_record", ("record_id",)),
+]
 
 
 @pytest.mark.parametrize("endpoint,args", RECORD_ID_ENDPOINTS_ARGS)

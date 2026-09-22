@@ -415,7 +415,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
 
         if missing:
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=HTTP_422_UNPROCESSABLE,
                 detail=(
                     "Depth shift requires every sample record to resolve to a WellboreID. "
                     f"Missing WellboreID for sample ids: {sorted(str(s) for s in missing)}."

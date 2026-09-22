@@ -478,9 +478,9 @@ class DataValidator(object):  # noqa: WPS214
 
         try:
             sanitized = raw_failure
-            sanitized = re.sub(r'\bnan\b', 'None', sanitized)
-            sanitized = re.sub(r'\binf\b', "'inf'", sanitized)
-            sanitized = re.sub(r'\b-inf\b', "'-inf'", sanitized)
+            sanitized = re.sub(r"\bnan\b", "None", sanitized)
+            sanitized = re.sub(r"\binf\b", "'inf'", sanitized)
+            sanitized = re.sub(r"\b-inf\b", "'-inf'", sanitized)
             return ast.literal_eval(sanitized)
         except (ValueError, SyntaxError):
             return None
@@ -861,7 +861,7 @@ class DataValidator(object):  # noqa: WPS214
 
         Only unwraps a plain Optional[T] to T; a genuine multi-member Union
         (e.g. Union[A, B]) is ambiguous at this point (the caller hasn't
-        picked a matching candidate yet) so it returns {} rather than
+        picked a matching candidate yet) so it returns an empty dictionary rather than
         guessing, mirroring the v1 behavior of only recursing through
         single-model fields.
 

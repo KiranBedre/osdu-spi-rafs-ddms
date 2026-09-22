@@ -20,9 +20,9 @@ from starlette import status
 from app.resources.common_headers import ACCEPT
 from tests.integration.config import (
     CONFIG,
+    SEARCH_PAGE_LIMITS,
     DataFiles,
     SamplesAnalysisEndpoints,
-    SEARCH_PAGE_LIMITS,
 )
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
@@ -44,10 +44,12 @@ def test_nmr_negative_invalid_regex_record_id_in_url(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
@@ -77,10 +79,12 @@ def test_nmr_negative_invalid_data_partition_id_record_id_in_url(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "allowed_codes": [status.HTTP_400_BAD_REQUEST],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "allowed_codes": [status.HTTP_400_BAD_REQUEST],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
@@ -107,11 +111,12 @@ def test_nmr_negative_non_existing_record_id_in_url(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-
-    call_kwargs.update({
-        "allowed_codes": [status.HTTP_404_NOT_FOUND],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "allowed_codes": [status.HTTP_404_NOT_FOUND],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
@@ -365,9 +370,9 @@ def test_nmr_negative_unsupported_filtering_rows_filter_param(
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert (
-        "Column 'NMRTest' is an array; dotted field access ('NMRTest.TestConditionID') is not supported."
-    ) in body["reason"]
+    assert ("Column 'NMRTest' is an array; dotted field access ('NMRTest.TestConditionID') is not supported.") in body[
+        "reason"
+    ]
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.ENDPOINTS_WITH_FILTERS_ARGS)
@@ -475,9 +480,9 @@ def test_nmr_negative_unsupported_aggregation_on_array_fields(
     # Assert
     assert response.status_code == 422
     body = response.json()
-    assert (
-        "Column 'NMRTest' is an array; dotted field access ('NMRTest.TestConditionID') is not supported."
-    ) in body["reason"]
+    assert ("Column 'NMRTest' is an array; dotted field access ('NMRTest.TestConditionID') is not supported.") in body[
+        "reason"
+    ]
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.RETURN_DATA_ENDPOINTS_ARGS)
@@ -510,9 +515,7 @@ def test_nmr_negative_params_conflict(api, tests_data, endpoint, args, record_id
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.ORIENT_ENDPOINTS_ARGS)
-def test_nmr_negative_invalid_orient_param(
-    api, tests_data, endpoint, args, record_id, dataset_id_v1, analysis_type
-):
+def test_nmr_negative_invalid_orient_param(api, tests_data, endpoint, args, record_id, dataset_id_v1, analysis_type):
     """Reject invalid orient parameter values with 422 Unprocessable Content."""
     dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
@@ -577,9 +580,7 @@ def test_nmr_negative_invalid_format_indexed_end_date_param(api, tests_data, end
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.SEARCH_ENDPOINTS_ARGS)
-def test_nmr_negative_indexed_end_date_before_indexed_start_date_param(
-    api, tests_data, endpoint, args, analysis_type
-):
+def test_nmr_negative_indexed_end_date_before_indexed_start_date_param(api, tests_data, endpoint, args, analysis_type):
     """Reject end_date before start_date with 422 Unprocessable Content."""
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
@@ -689,20 +690,20 @@ def test_nmr_negative_boundary_value_offset_param(api, tests_data, endpoint, arg
 
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.SCHEMA_VERSION_ENDPOINTS_ARGS)
-def test_nmr_negative_missing_schema_version(
-    api, tests_data, endpoint, args, record_id, dataset_id_v1, analysis_type
-):
+def test_nmr_negative_missing_schema_version(api, tests_data, endpoint, args, record_id, dataset_id_v1, analysis_type):
     """Reject missing schema version with 406 Not Applicable."""
     dataset_id = dataset_id_v1
     method = getattr(api.sample_analysis, endpoint)
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "schema_version": None,
-        "allowed_codes": [status.HTTP_406_NOT_ACCEPTABLE],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "schema_version": None,
+            "allowed_codes": [status.HTTP_406_NOT_ACCEPTABLE],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
@@ -731,11 +732,13 @@ def test_nmr_negative_unsupported_format_schema_version(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "schema_version": "0",
-        "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "schema_version": "0",
+            "allowed_codes": [status.HTTP_422_UNPROCESSABLE_CONTENT],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
@@ -762,11 +765,13 @@ def test_nmr_negative_unsupported_schema_version(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "schema_version": "0.0.7",
-        "allowed_codes": [status.HTTP_404_NOT_FOUND],
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "schema_version": "0.0.7",
+            "allowed_codes": [status.HTTP_404_NOT_FOUND],
+            "raw": True,
+        }
+    )
 
     if endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
@@ -778,9 +783,10 @@ def test_nmr_negative_unsupported_schema_version(
     # Assert
     assert response.status_code == 404
     body = response.json()
-    assert (
-        f"Model not found for type '{analysis_type}',  version '0.0.7'. Available versions: {{'1.0.0'}}"
-    ) in body["reason"]
+    assert (f"Model not found for type '{analysis_type}',  version '0.0.7'. Available versions: {{'1.0.0'}}") in body[
+        "reason"
+    ]
+
 
 @pytest.mark.parametrize("endpoint,args", SamplesAnalysisEndpoints.SCHEMA_VERSION_ENDPOINTS_ARGS)
 def test_nmr_negative_schema_version_overwritten_by_param(
@@ -792,12 +798,14 @@ def test_nmr_negative_schema_version_overwritten_by_param(
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "schema_version": "0.0.7",
-        "allowed_codes": [status.HTTP_404_NOT_FOUND],
-        "raw": True,
-        "headers": {ACCEPT: "application/json;version=1.0.0"},
-    })
+    call_kwargs.update(
+        {
+            "schema_version": "0.0.7",
+            "allowed_codes": [status.HTTP_404_NOT_FOUND],
+            "raw": True,
+            "headers": {ACCEPT: "application/json;version=1.0.0"},
+        }
+    )
 
     if endpoint == "post_data":
         data_payload = copy.deepcopy(tests_data(DataFiles.NMR_DATA_V1))
@@ -809,9 +817,9 @@ def test_nmr_negative_schema_version_overwritten_by_param(
     # Assert
     assert response.status_code == 404
     body = response.json()
-    assert (
-        f"Model not found for type '{analysis_type}',  version '0.0.7'. Available versions: {{'1.0.0'}}"
-    ) in body["reason"]
+    assert (f"Model not found for type '{analysis_type}',  version '0.0.7'. Available versions: {{'1.0.0'}}") in body[
+        "reason"
+    ]
 
 
 @pytest.mark.parametrize("geo_param,master_data_type", GEO_PARAMS)
