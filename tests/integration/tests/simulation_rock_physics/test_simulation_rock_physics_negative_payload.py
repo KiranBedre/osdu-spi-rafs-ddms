@@ -199,7 +199,7 @@ SPECIFIC_INVALID_TYPE_DATA1_FIELDS = [
     ("/data/0/1/0/unitOfMeasureID", ["unitOfMeasureID"]),
     ("/data/0/2", "Compressibility"),
     ("/data/0/2/ReferencePressure", "ReferencePressure"),
-    ("/data/0/2/PoreVolumeCompressibilityAtReferencePressure",  "PoreVolumeCompressibilityAtReferencePressure"),
+    ("/data/0/2/PoreVolumeCompressibilityAtReferencePressure", "PoreVolumeCompressibilityAtReferencePressure"),
     ("/data/0/3", "ThermalModelDefinition"),
     ("/data/0/3/ThermalConductivity", "ThermalConductivity"),
     ("/data/0/3/HeatCapacity", "HeatCapacity"),
@@ -210,7 +210,7 @@ SPECIFIC_INVALID_TYPE_DATA2_FIELDS = [
     ("/data/0/2/Pressure/0", "Pressure"),
     ("/data/0/2/PoreVolumeMultiplier", "PoreVolumeMultiplier"),
     ("/data/0/2/PoreVolumeMultiplier/0", "PoreVolumeMultiplier"),
-    ("/data/0/2/TransmissibilityMultiplier",  "TransmissibilityMultiplier"),
+    ("/data/0/2/TransmissibilityMultiplier", "TransmissibilityMultiplier"),
     ("/data/0/2/TransmissibilityMultiplier/0", "TransmissibilityMultiplier"),
 ]
 
@@ -255,7 +255,7 @@ SPECIFIC_INVALID_TYPE_DATA_FIELDS_RECORDS_FORMAT = [
 SPECIFIC_MISSING_REFERENCE_DATA_FIELDS_RECORDS_FORMAT = [
     (
         "/ReservoirSimulationRockPhysicsID",
-        f"{DATA_PARTITION_ID}:work-product-component--ReservoirSimulationRockPhysicsModel:Dummy:"
+        f"{DATA_PARTITION_ID}:work-product-component--ReservoirSimulationRockPhysicsModel:Dummy:",
     ),
     ("/Meta/0/unitOfMeasureID", f"{DATA_PARTITION_ID}:reference-data--UnitOfMeasure:Dummy:"),
 ]
@@ -263,7 +263,7 @@ SPECIFIC_MISSING_REFERENCE_DATA_FIELDS_RECORDS_FORMAT = [
 SPECIFIC_INVALID_REGEX_DATA_FIELDS_RECORDS_FORMAT = [
     (
         "/ReservoirSimulationRockPhysicsID",
-        f"{DATA_PARTITION_ID}:work-product-component-ReservoirSimulationRockPhysicsModel:Dummy:"
+        f"{DATA_PARTITION_ID}:work-product-component-ReservoirSimulationRockPhysicsModel:Dummy:",
     ),
     ("/Meta/0/unitOfMeasureID", f"{DATA_PARTITION_ID}:reference-data-UnitOfMeasure:Dummy:"),
 ]
@@ -616,6 +616,7 @@ def test_rsrp_negative_add_data_volume_vtp_type_specific_field(api, tests_data, 
     body = response.json()
     assert "Data validation failed." in body["reason"]
     assert "field" in body["errors"]["Invalid type"][0]
+
 
 @pytest.mark.parametrize("field_path,value", SPECIFIC_MISSING_REFERENCE_DATA_FIELDS)
 def test_rsrp_negative_add_data_missing_reference_specific_field(api, tests_data, helper, field_path, value, record_id):

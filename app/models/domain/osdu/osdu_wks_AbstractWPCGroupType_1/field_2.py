@@ -49,7 +49,10 @@ class Field0(BaseModel):
     )
     DDMSDatasets: Optional[
         List[
-            StringConstraints(pattern=r"^(([^:/?#]+):)(\/\/([^/?#]+))(\/[^?#]+)(\?([^#]*))?(#(.*))?")
+            Annotated[
+                str,
+                StringConstraints(pattern=r"^(([^:/?#]+):)(\/\/([^/?#]+))(\/[^?#]+)(\?([^#]*))?(#(.*))?"),
+            ]
         ]
     ] = Field(
         None,

@@ -55,22 +55,21 @@ SPECIFIC_INVALID_TYPE_FIELDS = [
     (
         "/data/VerticalReferenceRecordID",
         ["VerticalReferenceRecordID"],
-        "['VerticalReferenceRecordID'] is not of type 'string'"
+        "['VerticalReferenceRecordID'] is not of type 'string'",
     ),
     (
         "/data/VerticalReferenceRecordCurveIDs",
         "VerticalReferenceRecordCurveIDs",
-        "'VerticalReferenceRecordCurveIDs' is not of type 'array'"
+        "'VerticalReferenceRecordCurveIDs' is not of type 'array'",
     ),
     ("/data/DepthShiftTypeID", ["DepthShiftTypeID"], "['DepthShiftTypeID'] is not of type 'string'"),
     (
         "/data/ShiftedSamplingDomainTypeID",
         ["ShiftedSamplingDomainTypeID"],
-        "['ShiftedSamplingDomainTypeID'] is not of type 'string'"
+        "['ShiftedSamplingDomainTypeID'] is not of type 'string'",
     ),
     ("/data/DepthShiftedSamples", "DepthShiftedSamples", "'DepthShiftedSamples' is not of type 'array'"),
-    (
-        "/data/DepthShiftedSamples/0/SampleID", ["SampleID"], "['SampleID'] is not of type 'string'"),
+    ("/data/DepthShiftedSamples/0/SampleID", ["SampleID"], "['SampleID'] is not of type 'string'"),
     (
         "/data/DepthShiftedSamples/0/CanDepthShiftBeAppliedToChildSamples",
         ["CanDepthShiftBeAppliedToChildSamples"],

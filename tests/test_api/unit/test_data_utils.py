@@ -14,7 +14,7 @@
 
 from typing import Optional, Union
 
-from app.api.routes.data.api import _unwrap_optional
+from app.api.routes.data.api import _cast_str_columns, _unwrap_optional
 from app.bulk_data_validation.data_validation import DataValidator
 
 
@@ -43,6 +43,24 @@ class TestUnwrapOptional:
         """
         assert _unwrap_optional(str | None) is str
         assert _unwrap_optional(int | None) is int
+
+    def test_genuine_multi_member_union_preserved(self):
+        """Verify a real union (no NoneType member) is returned unchanged, not collapsed to its first member.
+
+        A prior implementation collapsed any Union to non_none[0], so Union[str, int]
+        silently became `str` and Union[float, str] became `float`. That let
+        _str_field_names()/_cast_float_columns() mutate genuine union fields as if
+        they were single-typed, altering submitted values before validation/storage.
+        """
+        assert _unwrap_optional(Union[str, int]) == Union[str, int]
+        assert _unwrap_optional(Union[float, str]) == Union[float, str]
+
+    def test_optional_multi_member_union_preserved(self):
+        """Verify Optional[Union[A, B]] (i.e. Union[A, B, None]) is not collapsed to a single member.
+
+        Only Union[T, None] with exactly one non-None member should unwrap to T.
+        """
+        assert _unwrap_optional(Optional[Union[str, int]]) == Union[str, int, None]
 
 
 class TestDataValidatorUnwrapAnnotation:

@@ -90,3 +90,39 @@ def test_get_valid_ids_no_valid_urns():
     )
 
     assert result == []
+
+
+def test_get_valid_ids_selects_only_the_requested_schema_version():
+    """A WPC record's DDMSDatasets can accumulate datasets from more than one
+    schema version (e.g. a record that received both a v1.0.0 and a v1.1.0
+    upload). Regression guard for a search flake where the response for a
+    v1.1.0 query appeared to include v1.0.0 content: this asserts RAFS's own
+    dataset selection logic picks exactly the dataset matching the requested
+    target_schema_version, never both.
+    """
+    analysis_type = "relativepermeability"
+    wpc_id = "opendes:work-product-component--SamplesAnalysis:WPC"
+    dataset_id_v1 = f"opendes:dataset--File.Generic:{analysis_type}-{UUID_EXAMPLE}"
+    dataset_id_v1_1_uuid = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    dataset_id_v1_1 = f"opendes:dataset--File.Generic:{analysis_type}-{dataset_id_v1_1_uuid}"
+
+    ddms_datasets = [
+        f"urn://rafs-v2/{analysis_type}data/{wpc_id}/{dataset_id_v1}/1.0.0",
+        f"urn://rafs-v2/{analysis_type}data/{wpc_id}/{dataset_id_v1_1}/1.1.0",
+    ]
+
+    result_v1 = get_valid_ids_from_ddms_datasets(
+        ddms_datasets=ddms_datasets,
+        analysis_family="samplesanalysis",
+        analysis_type=analysis_type,
+        target_schema_version="1.0.0",
+    )
+    result_v1_1 = get_valid_ids_from_ddms_datasets(
+        ddms_datasets=ddms_datasets,
+        analysis_family="samplesanalysis",
+        analysis_type=analysis_type,
+        target_schema_version="1.1.0",
+    )
+
+    assert result_v1 == [(dataset_id_v1, wpc_id)]
+    assert result_v1_1 == [(dataset_id_v1_1, wpc_id)]

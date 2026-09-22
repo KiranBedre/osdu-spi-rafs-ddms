@@ -20,9 +20,9 @@ from starlette import status
 from app.resources.common_headers import ACCEPT
 from tests.integration.config import (
     CONFIG,
+    SEARCH_PAGE_LIMITS,
     DataFiles,
     Endpoints,
-    SEARCH_PAGE_LIMITS,
 )
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
@@ -763,4 +763,3 @@ def test_sfs_negative_invalid_geo_param_value(api, endpoint, geo_param, master_d
         f"Invalid '{geo_param}' format. Expected OSDU record ID matching ^[\\w\\-\\.]+:master-data--{master_data_type}:"
         "[\\w\\-\\.\\:\\%]+$. Got: dummy"
     ) in body["reason"]
-
