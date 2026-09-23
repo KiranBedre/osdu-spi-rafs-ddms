@@ -1224,15 +1224,30 @@ paths:
       description: 'Get `DepthShift` records bulk data content.<br><br> Use the `content_schema_version`
         query parameter to specify content schema version (e.g. `?content_schema_version=1.0.0`).
         The `Accept` header versioning is deprecated.<br><br> Use the `orient` query
-        parameter to select the JSON output format (`split` or `records`). The  `columns_filter`,
-        `rows_filter`, and  `columns_aggregation`  query parameters can be used to
-        manage data in response. <br><br>  Use `offset`, `page_limit` query parameters
-        to control response data size.  The `page_limit` and `total_size` (found in
-        response) <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date`
-        and `indexed_end_date` query parameters to filter the data based on indexing  date.
-        <br><br>  - `indexed_start_date`: Filter for data indexed on or after this
-        date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before
-        this date. <br><br>'
+        parameter to select the JSON output format (`split` or `records`).<br><br>
+        Use `row_offset`, `row_limit` query parameters (logical row pagination) to
+        paginate rows across the entire ordered set of rows from every dataset matching
+        the search, not a single dataset page. Rows are ordered by dataset (sorted
+        by samples analysis id, then dataset id) and, within a dataset, in stored
+        order, so consecutive row pages neither overlap nor skip rows. `total_rows`
+        (found in response, only present when `row_offset`/`row_limit` are used) is
+        the number of rows remaining after `rows_filter`/`columns_filter` across every
+        matching dataset: the full logical result set, not the returned window. Computing
+        it reads every matching dataset even after the requested window is complete,
+        so request cost grows with the number of matching datasets, not with `row_limit`.
+        `offset`/`page_limit` (legacy dataset pagination) and `row_offset`/`row_limit`
+        are mutually exclusive: supplying both in the same call returns `422`. In
+        row mode the JSON response carries `row_offset`, `row_limit` and `total_rows`
+        (and `total_size`) and does not echo `offset`/`page_limit`; Parquet responses
+        expose `total_rows` as the `X-Total-Rows` header. Cannot be combined with
+        `columns_aggregation`. The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query
+        parameters can be used to manage data in response. <br><br>  Use `offset`,
+        `page_limit` query parameters to control response data size.  The `page_limit`
+        and `total_size` (found in response) <br> refers to the number of parquet  files
+        read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters
+        to filter the data based on indexing  date. <br><br>  - `indexed_start_date`:
+        Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`:
+        Filter for data indexed on or before this date. <br><br>'
       operationId: search_endpoint_api_rafs_ddms_v2_depthshift_search_data_get
       parameters:
       - description: Specifies the proper data partition id
@@ -1403,12 +1418,57 @@ paths:
           - type: 'null'
           description: End date in YYYY-MM-DD format
           title: Indexed End Date
+      - description: Maximum number of rows to return, counted across the entire ordered
+          logical row stream formed by every dataset matching the search (not a single
+          dataset page). Unlike `page_limit` (which counts datasets), this counts
+          individual data rows. Omit for no row-level limit. Applied after rows_filter
+          and columns_filter. Mutually exclusive with `offset`/`page_limit` (422 if
+          both are supplied). Cannot be combined with columns_aggregation.
+        in: query
+        name: row_limit
+        required: false
+        schema:
+          anyOf:
+          - exclusiveMinimum: 0
+            maximum: 50000
+            type: integer
+          - type: 'null'
+          description: Maximum number of rows to return, counted across the entire
+            ordered logical row stream formed by every dataset matching the search
+            (not a single dataset page). Unlike `page_limit` (which counts datasets),
+            this counts individual data rows. Omit for no row-level limit. Applied
+            after rows_filter and columns_filter. Mutually exclusive with `offset`/`page_limit`
+            (422 if both are supplied). Cannot be combined with columns_aggregation.
+          title: Row Limit
+      - description: Number of rows to skip across the entire ordered logical row
+          stream formed by every dataset matching the search. Mutually exclusive with
+          `offset`/`page_limit` (422 if both are supplied).
+        in: query
+        name: row_offset
+        required: false
+        schema:
+          default: 0
+          description: Number of rows to skip across the entire ordered logical row
+            stream formed by every dataset matching the search. Mutually exclusive
+            with `offset`/`page_limit` (422 if both are supplied).
+          minimum: 0
+          title: Row Offset
+          type: integer
       responses:
         '200':
           content:
             application/json:
               schema: {}
           description: Successful Response
+          headers:
+            X-Total-Rows:
+              description: Total number of rows across every dataset matching the
+                search, after rows_filter/columns_filter and before row_offset/row_limit
+                slicing. Only present on Parquet responses, and only when row_offset
+                or row_limit is supplied. JSON responses carry the same value as `total_rows`
+                in the response body.
+              schema:
+                type: integer
         '422':
           content:
             application/json:
@@ -2348,14 +2408,30 @@ paths:
         the `content_schema_version` query parameter to specify content schema version
         (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is
         deprecated.<br><br> Use the `orient` query parameter to select the JSON output
-        format (`split` or `records`). The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query
-        parameters can be used to manage data in response. <br><br>  Use `offset`,
-        `page_limit` query parameters to control response data size.  The `page_limit`
-        and `total_size` (found in response) <br> refers to the number of parquet  files
-        read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters
-        to filter the data based on indexing  date. <br><br>  - `indexed_start_date`:
-        Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`:
-        Filter for data indexed on or before this date. <br><br>'
+        format (`split` or `records`).<br><br> Use `row_offset`, `row_limit` query
+        parameters (logical row pagination) to paginate rows across the entire ordered
+        set of rows from every dataset matching the search, not a single dataset page.
+        Rows are ordered by dataset (sorted by samples analysis id, then dataset id)
+        and, within a dataset, in stored order, so consecutive row pages neither overlap
+        nor skip rows. `total_rows` (found in response, only present when `row_offset`/`row_limit`
+        are used) is the number of rows remaining after `rows_filter`/`columns_filter`
+        across every matching dataset: the full logical result set, not the returned
+        window. Computing it reads every matching dataset even after the requested
+        window is complete, so request cost grows with the number of matching datasets,
+        not with `row_limit`. `offset`/`page_limit` (legacy dataset pagination) and
+        `row_offset`/`row_limit` are mutually exclusive: supplying both in the same
+        call returns `422`. In row mode the JSON response carries `row_offset`, `row_limit`
+        and `total_rows` (and `total_size`) and does not echo `offset`/`page_limit`;
+        Parquet responses expose `total_rows` as the `X-Total-Rows` header. Cannot
+        be combined with `columns_aggregation`. The  `columns_filter`, `rows_filter`,
+        and  `columns_aggregation`  query parameters can be used to manage data in
+        response. <br><br>  Use `offset`, `page_limit` query parameters to control
+        response data size.  The `page_limit` and `total_size` (found in response)
+        <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date`
+        and `indexed_end_date` query parameters to filter the data based on indexing  date.
+        <br><br>  - `indexed_start_date`: Filter for data indexed on or after this
+        date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before
+        this date. <br><br>'
       operationId: search_endpoint_api_rafs_ddms_v2_fluidmodel__fluid_model_type__search_data_get
       parameters:
       - description: Specifies the proper data partition id
@@ -2512,12 +2588,57 @@ paths:
           - type: 'null'
           description: End date in YYYY-MM-DD format
           title: Indexed End Date
+      - description: Maximum number of rows to return, counted across the entire ordered
+          logical row stream formed by every dataset matching the search (not a single
+          dataset page). Unlike `page_limit` (which counts datasets), this counts
+          individual data rows. Omit for no row-level limit. Applied after rows_filter
+          and columns_filter. Mutually exclusive with `offset`/`page_limit` (422 if
+          both are supplied). Cannot be combined with columns_aggregation.
+        in: query
+        name: row_limit
+        required: false
+        schema:
+          anyOf:
+          - exclusiveMinimum: 0
+            maximum: 50000
+            type: integer
+          - type: 'null'
+          description: Maximum number of rows to return, counted across the entire
+            ordered logical row stream formed by every dataset matching the search
+            (not a single dataset page). Unlike `page_limit` (which counts datasets),
+            this counts individual data rows. Omit for no row-level limit. Applied
+            after rows_filter and columns_filter. Mutually exclusive with `offset`/`page_limit`
+            (422 if both are supplied). Cannot be combined with columns_aggregation.
+          title: Row Limit
+      - description: Number of rows to skip across the entire ordered logical row
+          stream formed by every dataset matching the search. Mutually exclusive with
+          `offset`/`page_limit` (422 if both are supplied).
+        in: query
+        name: row_offset
+        required: false
+        schema:
+          default: 0
+          description: Number of rows to skip across the entire ordered logical row
+            stream formed by every dataset matching the search. Mutually exclusive
+            with `offset`/`page_limit` (422 if both are supplied).
+          minimum: 0
+          title: Row Offset
+          type: integer
       responses:
         '200':
           content:
             application/json:
               schema: {}
           description: Successful Response
+          headers:
+            X-Total-Rows:
+              description: Total number of rows across every dataset matching the
+                search, after rows_filter/columns_filter and before row_offset/row_limit
+                slicing. Only present on Parquet responses, and only when row_offset
+                or row_limit is supplied. JSON responses carry the same value as `total_rows`
+                in the response body.
+              schema:
+                type: integer
         '422':
           content:
             application/json:
@@ -4086,7 +4207,22 @@ paths:
         Use the `content_schema_version` query parameter to specify content schema
         version (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning
         is deprecated.<br><br> Use the `orient` query parameter to select the JSON
-        output format (`split` or `records`). The  `columns_filter`, `rows_filter`,
+        output format (`split` or `records`).<br><br> Use `row_offset`, `row_limit`
+        query parameters (logical row pagination) to paginate rows across the entire
+        ordered set of rows from every dataset matching the search, not a single dataset
+        page. Rows are ordered by dataset (sorted by samples analysis id, then dataset
+        id) and, within a dataset, in stored order, so consecutive row pages neither
+        overlap nor skip rows. `total_rows` (found in response, only present when
+        `row_offset`/`row_limit` are used) is the number of rows remaining after `rows_filter`/`columns_filter`
+        across every matching dataset: the full logical result set, not the returned
+        window. Computing it reads every matching dataset even after the requested
+        window is complete, so request cost grows with the number of matching datasets,
+        not with `row_limit`. `offset`/`page_limit` (legacy dataset pagination) and
+        `row_offset`/`row_limit` are mutually exclusive: supplying both in the same
+        call returns `422`. In row mode the JSON response carries `row_offset`, `row_limit`
+        and `total_rows` (and `total_size`) and does not echo `offset`/`page_limit`;
+        Parquet responses expose `total_rows` as the `X-Total-Rows` header. Cannot
+        be combined with `columns_aggregation`. The  `columns_filter`, `rows_filter`,
         and  `columns_aggregation`  query parameters can be used to manage data in
         response. <br><br>  Use `offset`, `page_limit` query parameters to control
         response data size.  The `page_limit` and `total_size` (found in response)
@@ -4251,12 +4387,57 @@ paths:
           - type: 'null'
           description: End date in YYYY-MM-DD format
           title: Indexed End Date
+      - description: Maximum number of rows to return, counted across the entire ordered
+          logical row stream formed by every dataset matching the search (not a single
+          dataset page). Unlike `page_limit` (which counts datasets), this counts
+          individual data rows. Omit for no row-level limit. Applied after rows_filter
+          and columns_filter. Mutually exclusive with `offset`/`page_limit` (422 if
+          both are supplied). Cannot be combined with columns_aggregation.
+        in: query
+        name: row_limit
+        required: false
+        schema:
+          anyOf:
+          - exclusiveMinimum: 0
+            maximum: 50000
+            type: integer
+          - type: 'null'
+          description: Maximum number of rows to return, counted across the entire
+            ordered logical row stream formed by every dataset matching the search
+            (not a single dataset page). Unlike `page_limit` (which counts datasets),
+            this counts individual data rows. Omit for no row-level limit. Applied
+            after rows_filter and columns_filter. Mutually exclusive with `offset`/`page_limit`
+            (422 if both are supplied). Cannot be combined with columns_aggregation.
+          title: Row Limit
+      - description: Number of rows to skip across the entire ordered logical row
+          stream formed by every dataset matching the search. Mutually exclusive with
+          `offset`/`page_limit` (422 if both are supplied).
+        in: query
+        name: row_offset
+        required: false
+        schema:
+          default: 0
+          description: Number of rows to skip across the entire ordered logical row
+            stream formed by every dataset matching the search. Mutually exclusive
+            with `offset`/`page_limit` (422 if both are supplied).
+          minimum: 0
+          title: Row Offset
+          type: integer
       responses:
         '200':
           content:
             application/json:
               schema: {}
           description: Successful Response
+          headers:
+            X-Total-Rows:
+              description: Total number of rows across every dataset matching the
+                search, after rows_filter/columns_filter and before row_offset/row_limit
+                slicing. Only present on Parquet responses, and only when row_offset
+                or row_limit is supplied. JSON responses carry the same value as `total_rows`
+                in the response body.
+              schema:
+                type: integer
         '422':
           content:
             application/json:
@@ -5685,16 +5866,31 @@ paths:
         `content_schema_version` query parameter to specify content schema version
         (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is
         deprecated.<br><br> Use the `orient` query parameter to select the JSON output
-        format (`split` or `records`). The  `columns_filter`, `rows_filter`, and  `columns_aggregation`  query
-        parameters can be used to manage data in response. <br><br>  Use `offset`,
-        `page_limit` query parameters to control response data size.  The `page_limit`
-        and `total_size` (found in response) <br> refers to the number of parquet  files
-        read.<br><br> Use `indexed_start_date` and `indexed_end_date` query parameters
-        to filter the data based on indexing  date. <br><br>  - `indexed_start_date`:
-        Filter for data indexed on or after this date. <br><br>   - `indexed_end_date`:
-        Filter for data indexed on or before this date.<br><br>Depth-shift augmentation
-        parameters: use <code>depth_shift_policy</code> (<code>definitive</code> or
-        <code>id_provided</code>) and optional <code>depth_shift_id</code>.<br><br>Scope
+        format (`split` or `records`).<br><br> Use `row_offset`, `row_limit` query
+        parameters (logical row pagination) to paginate rows across the entire ordered
+        set of rows from every dataset matching the search, not a single dataset page.
+        Rows are ordered by dataset (sorted by samples analysis id, then dataset id)
+        and, within a dataset, in stored order, so consecutive row pages neither overlap
+        nor skip rows. `total_rows` (found in response, only present when `row_offset`/`row_limit`
+        are used) is the number of rows remaining after `rows_filter`/`columns_filter`
+        across every matching dataset: the full logical result set, not the returned
+        window. Computing it reads every matching dataset even after the requested
+        window is complete, so request cost grows with the number of matching datasets,
+        not with `row_limit`. `offset`/`page_limit` (legacy dataset pagination) and
+        `row_offset`/`row_limit` are mutually exclusive: supplying both in the same
+        call returns `422`. In row mode the JSON response carries `row_offset`, `row_limit`
+        and `total_rows` (and `total_size`) and does not echo `offset`/`page_limit`;
+        Parquet responses expose `total_rows` as the `X-Total-Rows` header. Cannot
+        be combined with `columns_aggregation`. The  `columns_filter`, `rows_filter`,
+        and  `columns_aggregation`  query parameters can be used to manage data in
+        response. <br><br>  Use `offset`, `page_limit` query parameters to control
+        response data size.  The `page_limit` and `total_size` (found in response)
+        <br> refers to the number of parquet  files read.<br><br> Use `indexed_start_date`
+        and `indexed_end_date` query parameters to filter the data based on indexing  date.
+        <br><br>  - `indexed_start_date`: Filter for data indexed on or after this
+        date. <br><br>   - `indexed_end_date`: Filter for data indexed on or before
+        this date.<br><br>Depth-shift augmentation parameters: use <code>depth_shift_policy</code>
+        (<code>definitive</code> or <code>id_provided</code>) and optional <code>depth_shift_id</code>.<br><br>Scope
         parameters filter results hierarchically by organizational level: <code>basin_id</code>
         (broadest), <code>field_id</code>, <code>well_id</code>, <code>wellbore_id</code>
         (most restrictive). Scope parameters are optional for regular search, but
@@ -5918,12 +6114,57 @@ paths:
           - type: 'null'
           description: End date in YYYY-MM-DD format
           title: Indexed End Date
+      - description: Maximum number of rows to return, counted across the entire ordered
+          logical row stream formed by every dataset matching the search (not a single
+          dataset page). Unlike `page_limit` (which counts datasets), this counts
+          individual data rows. Omit for no row-level limit. Applied after rows_filter
+          and columns_filter. Mutually exclusive with `offset`/`page_limit` (422 if
+          both are supplied). Cannot be combined with columns_aggregation.
+        in: query
+        name: row_limit
+        required: false
+        schema:
+          anyOf:
+          - exclusiveMinimum: 0
+            maximum: 50000
+            type: integer
+          - type: 'null'
+          description: Maximum number of rows to return, counted across the entire
+            ordered logical row stream formed by every dataset matching the search
+            (not a single dataset page). Unlike `page_limit` (which counts datasets),
+            this counts individual data rows. Omit for no row-level limit. Applied
+            after rows_filter and columns_filter. Mutually exclusive with `offset`/`page_limit`
+            (422 if both are supplied). Cannot be combined with columns_aggregation.
+          title: Row Limit
+      - description: Number of rows to skip across the entire ordered logical row
+          stream formed by every dataset matching the search. Mutually exclusive with
+          `offset`/`page_limit` (422 if both are supplied).
+        in: query
+        name: row_offset
+        required: false
+        schema:
+          default: 0
+          description: Number of rows to skip across the entire ordered logical row
+            stream formed by every dataset matching the search. Mutually exclusive
+            with `offset`/`page_limit` (422 if both are supplied).
+          minimum: 0
+          title: Row Offset
+          type: integer
       responses:
         '200':
           content:
             application/json:
               schema: {}
           description: Successful Response
+          headers:
+            X-Total-Rows:
+              description: Total number of rows across every dataset matching the
+                search, after rows_filter/columns_filter and before row_offset/row_limit
+                slicing. Only present on Parquet responses, and only when row_offset
+                or row_limit is supplied. JSON responses carry the same value as `total_rows`
+                in the response body.
+              schema:
+                type: integer
         '422':
           content:
             application/json:
@@ -6985,7 +7226,22 @@ paths:
         Use the `content_schema_version` query parameter to specify content schema
         version (e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning
         is deprecated.<br><br> Use the `orient` query parameter to select the JSON
-        output format (`split` or `records`). The  `columns_filter`, `rows_filter`,
+        output format (`split` or `records`).<br><br> Use `row_offset`, `row_limit`
+        query parameters (logical row pagination) to paginate rows across the entire
+        ordered set of rows from every dataset matching the search, not a single dataset
+        page. Rows are ordered by dataset (sorted by samples analysis id, then dataset
+        id) and, within a dataset, in stored order, so consecutive row pages neither
+        overlap nor skip rows. `total_rows` (found in response, only present when
+        `row_offset`/`row_limit` are used) is the number of rows remaining after `rows_filter`/`columns_filter`
+        across every matching dataset: the full logical result set, not the returned
+        window. Computing it reads every matching dataset even after the requested
+        window is complete, so request cost grows with the number of matching datasets,
+        not with `row_limit`. `offset`/`page_limit` (legacy dataset pagination) and
+        `row_offset`/`row_limit` are mutually exclusive: supplying both in the same
+        call returns `422`. In row mode the JSON response carries `row_offset`, `row_limit`
+        and `total_rows` (and `total_size`) and does not echo `offset`/`page_limit`;
+        Parquet responses expose `total_rows` as the `X-Total-Rows` header. Cannot
+        be combined with `columns_aggregation`. The  `columns_filter`, `rows_filter`,
         and  `columns_aggregation`  query parameters can be used to manage data in
         response. <br><br>  Use `offset`, `page_limit` query parameters to control
         response data size.  The `page_limit` and `total_size` (found in response)
@@ -7150,12 +7406,57 @@ paths:
           - type: 'null'
           description: End date in YYYY-MM-DD format
           title: Indexed End Date
+      - description: Maximum number of rows to return, counted across the entire ordered
+          logical row stream formed by every dataset matching the search (not a single
+          dataset page). Unlike `page_limit` (which counts datasets), this counts
+          individual data rows. Omit for no row-level limit. Applied after rows_filter
+          and columns_filter. Mutually exclusive with `offset`/`page_limit` (422 if
+          both are supplied). Cannot be combined with columns_aggregation.
+        in: query
+        name: row_limit
+        required: false
+        schema:
+          anyOf:
+          - exclusiveMinimum: 0
+            maximum: 50000
+            type: integer
+          - type: 'null'
+          description: Maximum number of rows to return, counted across the entire
+            ordered logical row stream formed by every dataset matching the search
+            (not a single dataset page). Unlike `page_limit` (which counts datasets),
+            this counts individual data rows. Omit for no row-level limit. Applied
+            after rows_filter and columns_filter. Mutually exclusive with `offset`/`page_limit`
+            (422 if both are supplied). Cannot be combined with columns_aggregation.
+          title: Row Limit
+      - description: Number of rows to skip across the entire ordered logical row
+          stream formed by every dataset matching the search. Mutually exclusive with
+          `offset`/`page_limit` (422 if both are supplied).
+        in: query
+        name: row_offset
+        required: false
+        schema:
+          default: 0
+          description: Number of rows to skip across the entire ordered logical row
+            stream formed by every dataset matching the search. Mutually exclusive
+            with `offset`/`page_limit` (422 if both are supplied).
+          minimum: 0
+          title: Row Offset
+          type: integer
       responses:
         '200':
           content:
             application/json:
               schema: {}
           description: Successful Response
+          headers:
+            X-Total-Rows:
+              description: Total number of rows across every dataset matching the
+                search, after rows_filter/columns_filter and before row_offset/row_limit
+                slicing. Only present on Parquet responses, and only when row_offset
+                or row_limit is supplied. JSON responses carry the same value as `total_rows`
+                in the response body.
+              schema:
+                type: integer
         '422':
           content:
             application/json:
