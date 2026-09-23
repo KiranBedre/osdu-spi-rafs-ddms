@@ -31838,7 +31838,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "[\n    {\n        \"id\": \"{{data-partition-id}}:work-product-component--FluidModel:{{fluidRunId}}\",\n        \"kind\": \"{{authority}}:wks:work-product-component--FluidModel:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ]\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ]\n        },\n        \"data\": {\n            \"FluidModelTypeID\": \"{{data-partition-id}}:reference-data--FluidModelType:BlackOil:\",\n            \"BasisOfModelling\": {\n                \"InputDataCollectionID\": \"{{data-partition-id}}:work-product-component--PersistedCollection:f3e451d1-9d49-559f-93d8-2e36722016fb:\",\n                \"ModelPropertyFormulationMethods\": [\n                    {\n                        \"ModelPropertyTypeID\": \"{{data-partition-id}}:reference-data--FluidModelPropertyType:Density:\",\n                        \"ModelPropertyFormulationMethodID\": \"{{data-partition-id}}:reference-data--FluidModelPropertyFormulationMethod:BlackOil.SimulatedLiberation:\"\n                    }\n                ],\n                \"ModellingApplicationsUsed\": [\n                    \"PVTsim Nova 5.0\"\n                ],\n                \"IntendedWorkflowUsageIDs\": [\n                    \"{{data-partition-id}}:reference-data--WorkflowUsageType:Assessment:\"\n                ],\n                \"IsOptimizedForEnhancedRecoveryStudies\": false,\n                \"IsModelPvtOptimized\": true,\n                \"IsModelViscosityOptimized\": true,\n                \"IsCompositionLumped\": true,\n                \"ComponentCount\": 8,\n                \"BlackOilFlashMechanismAppliedID\": \"{{data-partition-id}}:reference-data--BlackOilFlashMechanismApplied:DifferentialLiberation:\"\n\n            },\n            \"ParentModelID\": \"{{data-partition-id}}:work-product-component--FluidModel:ParentModelID:\",\n            \"DatePublished\": \"2020-02-13T09:13:15.55Z\",\n            \"ModellingContacts\": [\n                {\n                    \"EmailAddress\": \"pvt-analyst@company.com\",\n                    \"Name\": \"PVT Analyst\"\n                }\n            ],\n            \"ModelAreaOfInterestIDs\": [\n                \"{{data-partition-id}}:master-data--Reservoir:reservoir-123::\"\n            ],\n            \"IsApplicableForThermalSimulation\": false,\n            \"FluidModelSaturationTypeID\": \"{{data-partition-id}}:reference-data--FluidModelSaturationType:BubblePoint:\",\n            \"HasVariableDepthFluidProperties\": false,\n            \"Remarks\": [\n                {\n                    \"RemarkSequenceNumber\": 1,\n                    \"Remark\": \"For SGFN: COREY = 2 as in old model, but uses equidistant SG after recommendation\",\n                    \"RemarkSource\": \"Jostein Skretting\",\n                    \"RemarkDate\": \"2010-03-24\"\n                },\n                {\n                    \"RemarkSequenceNumber\": 2,\n                    \"Remark\": \"For SWFN: (a) Krw PESSIMISTIC from J. Skretting (Corey = 2) in Table I (b) Krw with Corey = 1.5 in Table II\",\n                    \"RemarkSource\": \"Jostein Skretting\",\n                    \"RemarkDate\": \"2010-09-08\"\n                }\n            ]\n        }\n    }   \n]"
+                      "raw": "[\n    {\n        \"id\": \"{{data-partition-id}}:work-product-component--FluidModel:{{fluidRunId}}\",\n        \"kind\": \"{{authority}}:wks:work-product-component--FluidModel:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ]\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ]\n        },\n        \"data\": {\n            \"FluidModelTypeID\": \"{{data-partition-id}}:reference-data--FluidModelType:BlackOil:\",\n            \"BasisOfModelling\": {\n                \"InputDataCollectionID\": \"{{data-partition-id}}:work-product-component--PersistedCollection:DummyCollection:\",\n                \"ModelPropertyFormulationMethods\": [\n                    {\n                        \"ModelPropertyTypeID\": \"{{data-partition-id}}:reference-data--FluidModelPropertyType:Density:\",\n                        \"ModelPropertyFormulationMethodID\": \"{{data-partition-id}}:reference-data--FluidModelPropertyFormulationMethod:BlackOil.SimulatedLiberation:\"\n                    }\n                ],\n                \"ModellingApplicationsUsed\": [\n                    \"PVTsim Nova 5.0\"\n                ],\n                \"IntendedWorkflowUsageIDs\": [\n                    \"{{data-partition-id}}:reference-data--WorkflowUsageType:Assessment:\"\n                ],\n                \"IsOptimizedForEnhancedRecoveryStudies\": false,\n                \"IsModelPvtOptimized\": true,\n                \"IsModelViscosityOptimized\": true,\n                \"IsCompositionLumped\": true,\n                \"ComponentCount\": 8,\n                \"BlackOilFlashMechanismAppliedID\": \"{{data-partition-id}}:reference-data--BlackOilFlashMechanismApplied:DifferentialLiberation:\"\n\n            },\n            \"ParentModelID\": \"{{data-partition-id}}:work-product-component--FluidModel:ParentModelID:\",\n            \"DatePublished\": \"2020-02-13T09:13:15.55Z\",\n            \"ModellingContacts\": [\n                {\n                    \"EmailAddress\": \"pvt-analyst@company.com\",\n                    \"Name\": \"PVT Analyst\"\n                }\n            ],\n            \"ModelAreaOfInterestIDs\": [\n                \"{{data-partition-id}}:master-data--Reservoir:reservoir-123::\"\n            ],\n            \"IsApplicableForThermalSimulation\": false,\n            \"FluidModelSaturationTypeID\": \"{{data-partition-id}}:reference-data--FluidModelSaturationType:BubblePoint:\",\n            \"HasVariableDepthFluidProperties\": false,\n            \"Remarks\": [\n                {\n                    \"RemarkSequenceNumber\": 1,\n                    \"Remark\": \"For SGFN: COREY = 2 as in old model, but uses equidistant SG after recommendation\",\n                    \"RemarkSource\": \"Jostein Skretting\",\n                    \"RemarkDate\": \"2010-03-24\"\n                },\n                {\n                    \"RemarkSequenceNumber\": 2,\n                    \"Remark\": \"For SWFN: (a) Krw PESSIMISTIC from J. Skretting (Corey = 2) in Table I (b) Krw with Corey = 1.5 in Table II\",\n                    \"RemarkSource\": \"Jostein Skretting\",\n                    \"RemarkDate\": \"2010-09-08\"\n                }\n            ]\n        }\n    }   \n]"
                     },
                     "url": {
                       "raw": "https://{{RAFS_DDMS_HOST}}/v2/fluidmodel",
@@ -32973,7 +32973,88 @@
                       "listen": "prerequest",
                       "script": {
                         "exec": [
-                          ""
+                          "const rawRecordId = pm.variables.get(\"fluid_record_id\");\r",
+                          "\r",
+                          "if (!rawRecordId) {\r",
+                          "    throw new Error(\"fluid_record_id is not defined\");\r",
+                          "}\r",
+                          "\r",
+                          "const storageRecordId = rawRecordId.replace(/:+$/, \"\");\r",
+                          "const referenceRecordId = `${storageRecordId}:`;\r",
+                          "\r",
+                          "const host = pm.variables.get(\"HOSTNAME\");\r",
+                          "const accessToken = pm.environment.get(\"access_token\");\r",
+                          "const partition = pm.environment.get(\"data-partition-id\");\r",
+                          "\r",
+                          "const rowsFilter = encodeURIComponent(\r",
+                          "    `FluidModelID,eq,${referenceRecordId}`\r",
+                          ");\r",
+                          "\r",
+                          "const url =\r",
+                          "    `https://${host}/api/rafs-ddms/v2/fluidmodel/blackoilfluidmodel/search` +\r",
+                          "    `?rows_filter=${rowsFilter}`;\r",
+                          "\r",
+                          "const maxAttempts = 60;\r",
+                          "const intervalMs = 2000;\r",
+                          "let attempt = 0;\r",
+                          "\r",
+                          "function pollForRecord() {\r",
+                          "    pm.sendRequest(\r",
+                          "        {\r",
+                          "            url,\r",
+                          "            method: \"GET\",\r",
+                          "            header: {\r",
+                          "                Authorization: `Bearer ${accessToken}`,\r",
+                          "                \"data-partition-id\": partition,\r",
+                          "                Accept: \"*/*;version=1.0.0\"\r",
+                          "            }\r",
+                          "        },\r",
+                          "        function (error, response) {\r",
+                          "            attempt += 1;\r",
+                          "\r",
+                          "            if (!error && response.code === 200) {\r",
+                          "                let body;\r",
+                          "\r",
+                          "                try {\r",
+                          "                    body = response.json();\r",
+                          "                } catch (parseError) {\r",
+                          "                    console.log(\r",
+                          "                        `Attempt ${attempt}: Search returned a non-JSON response`\r",
+                          "                    );\r",
+                          "                }\r",
+                          "\r",
+                          "                const result =\r",
+                          "                    body && Array.isArray(body.result)\r",
+                          "                        ? body.result.map(id => id.replace(/:+$/, \"\"))\r",
+                          "                        : [];\r",
+                          "\r",
+                          "                if (result.includes(storageRecordId)) {\r",
+                          "                    console.log(\r",
+                          "                        `Black Oil Fluid Model indexed after ${attempt} attempts`\r",
+                          "                    );\r",
+                          "                    return;\r",
+                          "                }\r",
+                          "            } else {\r",
+                          "                console.log(\r",
+                          "                    `Attempt ${attempt}: ${\r",
+                          "                        error || `HTTP ${response.code}`\r",
+                          "                    }`\r",
+                          "                );\r",
+                          "            }\r",
+                          "\r",
+                          "            if (attempt >= maxAttempts) {\r",
+                          "                throw new Error(\r",
+                          "                    `Black Oil Fluid Model ${storageRecordId} was not indexed after ` +\r",
+                          "                    `${maxAttempts} attempts`\r",
+                          "                );\r",
+                          "            }\r",
+                          "\r",
+                          "            setTimeout(pollForRecord, intervalMs);\r",
+                          "        }\r",
+                          "    );\r",
+                          "}\r",
+                          "\r",
+                          "pollForRecord();"
                         ],
                         "type": "text/javascript",
                         "packages": {},
@@ -33122,9 +33203,14 @@
                           "    pm.expect(pm.response.code).to.equal(200);",
                           "});",
                           "",
-                          "pm.test(\"Empty search results list'\", function () {",
+                          "pm.test(\"Current record_id not present under search results'\", function () {",
                           "    var jsonData = pm.response.json();",
-                          "    pm.expect(jsonData.result).to.be.an(\"array\").with.lengthOf(0);",
+                          "    let rawRecordId = pm.variables.get(\"fluid_record_id\");",
+                          "    let storageRecordId = rawRecordId.replace(/:+$/, \"\");",
+                          "    let result = Array.isArray(jsonData.result)",
+                          "        ? jsonData.result.map(id => id.replace(/:+$/, \"\"))",
+                          "        : [];",
+                          "    pm.expect(result).to.not.include(storageRecordId);",
                           "});",
                           ""
                         ],
@@ -33586,7 +33672,7 @@
                       }
                     ],
                     "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/fluidmodel/blackoilfluidmodel/search/data?columns_filter=FluidModelID,OilTable",
+                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/fluidmodel/blackoilfluidmodel/search/data?columns_filter=FluidModelID,OilTable&rows_filter=FluidModelID,eq,{{fluid_record_id}}:",
                       "protocol": "https",
                       "host": [
                         "{{RAFS_DDMS_HOST}}"
@@ -33602,6 +33688,10 @@
                         {
                           "key": "columns_filter",
                           "value": "FluidModelID,OilTable"
+                        },
+                        {
+                          "key": "rows_filter",
+                          "value": "FluidModelID,eq,{{fluid_record_id}}:"
                         }
                       ]
                     }
@@ -33723,11 +33813,22 @@
                           "    pm.expect(pm.response.code).to.equal(200);",
                           "});",
                           "",
-                          "pm.test(\"Empty search results list'\", function () {",
+                          "pm.test(\"Current record not present in filtered-out results'\", function () {",
                           "    var jsonData = pm.response.json();",
-                          "    pm.expect(jsonData.result.index).to.be.an(\"array\").with.lengthOf(0);",
-                          "    pm.expect(jsonData.result.columns).to.be.an(\"array\").with.lengthOf(0);",
-                          "    pm.expect(jsonData.result.data).to.be.an(\"array\").with.lengthOf(0);",
+                          "    let rawRecordId = pm.variables.get(\"fluid_record_id\");",
+                          "    let storageRecordId = rawRecordId.replace(/:+$/, \"\");",
+                          "",
+                          "    pm.expect(jsonData.result).to.have.property(\"columns\").that.is.an(\"array\");",
+                          "    pm.expect(jsonData.result).to.have.property(\"index\").that.is.an(\"array\");",
+                          "    pm.expect(jsonData.result).to.have.property(\"data\").that.is.an(\"array\");",
+                          "",
+                          "    let fluidModelIdIndex = jsonData.result.columns.indexOf(\"FluidModelID\");",
+                          "",
+                          "    let found = jsonData.result.data.some(function (row) {",
+                          "        return fluidModelIdIndex !== -1 && String(row[fluidModelIdIndex]).replace(/:+$/, \"\") === storageRecordId;",
+                          "    });",
+                          "",
+                          "    pm.expect(found, \"Current fluid_record_id should not appear in filtered-out results\").to.be.false;",
                           "});",
                           ""
                         ],
@@ -33857,7 +33958,7 @@
                       }
                     ],
                     "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/fluidmodel/blackoilfluidmodel/search/data?columns_aggregation=FluidModelID,count",
+                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/fluidmodel/blackoilfluidmodel/search/data?columns_aggregation=FluidModelID,count&rows_filter=FluidModelID,eq,{{fluid_record_id}}:",
                       "protocol": "https",
                       "host": [
                         "{{RAFS_DDMS_HOST}}"
@@ -33873,6 +33974,10 @@
                         {
                           "key": "columns_aggregation",
                           "value": "FluidModelID,count"
+                        },
+                        {
+                          "key": "rows_filter",
+                          "value": "FluidModelID,eq,{{fluid_record_id}}:"
                         }
                       ]
                     }
@@ -33898,8 +34003,6 @@
                           "    pm.expect(jsonData.result).to.have.property(\"index\").that.is.an(\"array\");",
                           "    pm.expect(jsonData.result).to.have.property(\"data\").that.is.an(\"array\");",
                           "",
-                          "    pm.expect(jsonData.result.data).to.be.an(\"array\").with.lengthOf(1);",
-                          "",
                           "    // Columns",
                           "    pm.expect(jsonData.result.columns).to.include.members([",
                           "        \"FluidModelID\",",
@@ -33914,6 +34017,17 @@
                           "        \"WaterTable\"",
                           "    ]);",
                           "",
+                          "    var data = jsonData.result.data;",
+                          "    let fluid_record_id = pm.variables.get(\"fluid_record_id\") + \":\";",
+                          "",
+                          "    let found = false;",
+                          "    for (let i = 0; i < data.length; i++) {",
+                          "        if (data[i][0] === fluid_record_id) {",
+                          "            found = true;",
+                          "            break; // Stop the loop as soon as we find a match",
+                          "        }",
+                          "    }",
+                          "    pm.expect(found, \"Expected record_id with ':' was not found in any data element\").to.be.true;",
                           "});"
                         ],
                         "type": "text/javascript",
