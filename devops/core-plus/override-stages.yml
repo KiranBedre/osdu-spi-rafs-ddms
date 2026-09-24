@@ -488,7 +488,7 @@ cimpl-dev-seed-reference-data:
 
 # Run the RAFS pytest suite against CIMPL-STACK DEV.
 cimpl-dev-test-python:
-  allow_failure: true  # TODO: Remove when issue #834 is resolved.
+  allow_failure: true
   extends:
     - .cimpl-dev-variables
     - .rafs_cimpl_pytest_integration
@@ -519,7 +519,6 @@ cimpl-dev-test-python:
     expire_in: 1 week
   needs:
     - job: build_rafs_tests
-    - job: cimpl-dev-deploy
     - job: cimpl-dev-seed-reference-data
 
 cimpl-helm-charts-release-gitlab:
@@ -697,7 +696,7 @@ cimpl-dev-backup-seed-reference-data:
 
 # Run the RAFS pytest suite against CIMPL-STACK DEV.
 cimpl-dev-backup-test-python:
-  allow_failure: true  # TODO: Remove when issue #834 is resolved.
+  allow_failure: true
   extends:
     - .cimpl-dev-backup-variables
     - .rafs_cimpl_pytest_integration
@@ -728,5 +727,4 @@ cimpl-dev-backup-test-python:
     expire_in: 1 week
   needs:
     - job: build_rafs_tests
-    - job: cimpl-dev-backup-deploy
     - job: cimpl-dev-backup-seed-reference-data
