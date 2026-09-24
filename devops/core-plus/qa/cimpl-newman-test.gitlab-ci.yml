@@ -56,14 +56,6 @@
 # This job is for running the Postman collection for the RAFS DDMS API 
 # against the OSDU Community Implementation (CI) environment.
 # --------------------------------------------------------------------------------
-cimpl-acceptance-test-postman:
-  extends: .cimpl_newman_rafs_tests
-  stage: acceptance
-  variables:
-    ENVIRONMENT: "./devops/core-plus/qa/Postman Collection/Environment/OSDU_CI.postman_environment.json"
-    COLLECTION_JSON: "./devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
-    ALLURE_RESULTS_DIR: "tests/cimpl/allure-results"
-  allow_failure: true
 
 # Run the RAFS Postman collection against the CIMPL-STACK DEV environment.
 cimpl-dev-acceptance-test-postman:
@@ -86,5 +78,29 @@ cimpl-dev-acceptance-test-postman:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: never
     - if: '$CIMPL_STACK == "1" && $DEV == "1"'
+      when: on_success
+    - when: never
+
+# Run the RAFS Postman collection against the CIMPL-STACK DEV environment.
+cimpl-dev-backup-acceptance-test-postman:
+  extends:
+    - .cimpl_newman_rafs_tests
+    - .cimpl-dev-backup-variables
+  stage: acceptance
+  variables:
+    ENVIRONMENT: "./devops/core-plus/qa/Postman Collection/Environment/OSDU_CI.postman_environment.json"
+    COLLECTION_JSON: "./devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
+    ALLURE_RESULTS_DIR: "tests/cimpl/allure-results"
+  needs:
+    - job: cimpl-dev-backup-test-python
+  allow_failure: true  # TODO: Remove when issue #834 is resolved.
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^release/'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CIMPL_STACK == "1" && $DEV_BACKUP == "1"'
       when: on_success
     - when: never

@@ -9,6 +9,9 @@ variables:
   # Azure specific
   AZURE_TEST_TYPE: python
   AZURE_SKIP_COVERAGE: "true"
+  CIMPL: "1"
+  CIMPL_STACK: "1"
+  DEV: "1"
 
 include:
   
@@ -43,14 +46,17 @@ include:
 
   # CI provider
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: "cimpl-legacy"
     file: "cloud-providers/cimpl-global.yml"
 
   # CI provider - OpenAPI spec validation
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: "cimpl-legacy"
     file: "cloud-providers/cimpl-openapi.yml"
 
   # reporting stage
   - project: "osdu/platform/ci-cd-pipelines"
+    ref: "cimpl-legacy"
     file: "reporting/reporting.yml"
 
   # OVERRIDE STAGES
