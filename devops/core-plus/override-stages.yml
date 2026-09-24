@@ -55,7 +55,7 @@ variables:
   script:
     - |
       # Dev1: keycloak.$CIMPL_DOMAIN ; Prod: keycloak-$CIMPL_DOMAIN (see TEST_OPENID_PROVIDER_URL)
-      OIDC_BASE="${TEST_OPENID_PROVIDER_URL:-${CIMPL_TOKEN_URI}"
+      OIDC_BASE="${TEST_OPENID_PROVIDER_URL:-${CIMPL_TOKEN_URI}}"
       OIDC_BASE="$(echo "$OIDC_BASE" | tr -d '[:space:]')"
       TOKEN_URL="${OIDC_BASE%/}/protocol/openid-connect/token"
       OIDC_CLIENT_ID="${TEST_OPENID_PROVIDER_CLIENT_ID:-${CIMPL_CLIENT_ID}}"
