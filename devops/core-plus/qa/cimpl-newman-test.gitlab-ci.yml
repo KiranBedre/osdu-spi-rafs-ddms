@@ -56,7 +56,8 @@ cimpl-dev-acceptance-test-postman:
     ENVIRONMENT: "./devops/core-plus/qa/Postman Collection/Environment/OSDU_CI.postman_environment.json"
     COLLECTION_JSON: "./devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
     ALLURE_RESULTS_DIR: "tests/cimpl/allure-results"
-  allow_failure: true
+  needs:
+    - job: cimpl-dev-seed-reference-data
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^release/'
       when: never
@@ -78,7 +79,8 @@ cimpl-dev-backup-acceptance-test-postman:
     ENVIRONMENT: "./devops/core-plus/qa/Postman Collection/Environment/OSDU_CI.postman_environment.json"
     COLLECTION_JSON: "./devops/core-plus/qa/Postman Collection/Collection/RAFS DDMS.postman_collection.json"
     ALLURE_RESULTS_DIR: "tests/cimpl/allure-results"
-  allow_failure: true
+  needs:
+    - job: cimpl-dev-backup-seed-reference-data
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^release/'
       when: never
