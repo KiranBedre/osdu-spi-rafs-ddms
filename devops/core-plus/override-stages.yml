@@ -239,11 +239,8 @@ cimpl-helm-charts-gitlab:
 .rafs_cimpl_reference_bootstrap:
   stage: integration
   tags: ["osdu-medium"]
-
   image:
     name: node:alpine
-  needs:
-    - job: cimpl-deploy
   before_script:
     - apk add --no-cache curl jq
   script:
