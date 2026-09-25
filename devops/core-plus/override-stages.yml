@@ -54,10 +54,7 @@ variables:
 .get_cimpl_access_token:
   script:
     - |
-      # Dev1: keycloak.$CIMPL_DOMAIN ; Prod: keycloak-$CIMPL_DOMAIN (see TEST_OPENID_PROVIDER_URL)
-      OIDC_BASE="${TEST_OPENID_PROVIDER_URL:-${CIMPL_TOKEN_URI}}"
-      OIDC_BASE="$(echo "$OIDC_BASE" | tr -d '[:space:]')"
-      TOKEN_URL="${OIDC_BASE%/}/protocol/openid-connect/token"
+      TOKEN_URL="${CIMPL_TOKEN_URI}"
       OIDC_CLIENT_ID="${TEST_OPENID_PROVIDER_CLIENT_ID:-${CIMPL_CLIENT_ID}}"
       OIDC_CLIENT_SECRET="${TEST_OPENID_PROVIDER_CLIENT_SECRET:-${CIMPL_CLIENT_SECRET}}"
       echo "Requesting access token from Keycloak..."
@@ -263,10 +260,8 @@ cimpl-helm-charts-gitlab:
       OIDC_CLIENT_SECRET="${TEST_OPENID_PROVIDER_CLIENT_SECRET:-${CIMPL_CLIENT_SECRET}}"
 
       SEED_HOSTNAME="${CIMPL_SEED_HOSTNAME:-${CIMPL_TENANT}.${CIMPL_DOMAIN}}"
-      OIDC_BASE="${TEST_OPENID_PROVIDER_URL:-${CIMPL_SEED_OIDC_BASE:-${CIMPL_TOKEN_URI}}}"
-      OIDC_BASE="$(echo "$OIDC_BASE" | tr -d '[:space:]')"
 
-      TOKEN_FETCH_URL="${OIDC_BASE%/}/protocol/openid-connect/token"
+      TOKEN_FETCH_URL="${CIMPL_TOKEN_URI}"
       STORAGE_URL="https://${SEED_HOSTNAME}/api/storage/v2"
       LEGAL_URL="https://${SEED_HOSTNAME}/api/legal/v1"
       BOOTSTRAP_LEGAL_TAG="${LEGAL_TAG:-osdu-demo-legaltag}"
