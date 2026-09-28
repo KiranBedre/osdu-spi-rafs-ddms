@@ -18,7 +18,7 @@
   "data": [
     [
       "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
-      "partition:master-data--Sample:uuuid:123456",
+      "partition:master-data--Sample:uuuid:12345",
       [
         {
           "kind": "Unit",
@@ -57,6 +57,14 @@
           "propertyNames": [
             "TestSteps[*].TotalProducedVolume"
           ]
+        },
+        {
+          "kind": "DateTime",
+          "name": "UTC",
+          "persistableReference": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
+          "propertyNames": [
+            "Remarks[*].RemarkDate"
+          ]
         }
       ],
       185.0,
@@ -81,7 +89,7 @@
       [
         {
           "SequenceNumber": 1,
-          "CapillaryPressureAnalysisID": "partition:work-product-component--SamplesAnalysis:uuuid:123456",
+          "CapillaryPressureAnalysisID": "partition:work-product-component--SamplesAnalysis:uuuid:12345",
           "SaturationProcessMethodID": "partition:reference-data--SaturationProcessMethod:Imbibition:",
           "InjectionFluidID": "partition:reference-data--CoreAnalysisFluidType:Oil:",
           "DisplacedFluidID": "partition:reference-data--CoreAnalysisFluidType:Brine:",
