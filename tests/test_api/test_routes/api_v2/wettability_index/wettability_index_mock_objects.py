@@ -149,7 +149,9 @@ INCORRECT_SCHEMA_TEST_DATA = {
         "data",
         # "SamplesAnalysisID",  # Missing mandatory field
     ],
-    "index": [0],
+    "index": [
+        0,
+    ],
     "data": [
         [
             "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
@@ -159,10 +161,14 @@ INCORRECT_SCHEMA_TEST_DATA = {
 }
 
 INCORRECT_DATAFRAME_TEST_DATA = copy.deepcopy(TEST_DATA)
-INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()  # deleting WettabilityIndexData in index row 0
-EXPECTED_ERROR_REASON = "Data error: 4 columns passed, passed data had 3 columns"
+INCORRECT_DATAFRAME_TEST_DATA["data"][0].pop()
+EXPECTED_ERROR_REASON = (
+    f"Data error: {len(INCORRECT_DATAFRAME_TEST_DATA['columns'])} columns passed, "
+    f"passed data had {len(INCORRECT_DATAFRAME_TEST_DATA['data'][0])} columns"
+)
 
 
+# V2.0.0 mock objects
 TEST_SCHEMA_VERSION_V2 = ContentSchemaVersion.V_2_0_0
 TEST_DDMS_URN_WITH_VERSION_V2 = f"{TEST_DDMS_URN}/{TEST_SCHEMA_VERSION_V2}"
 RECORD_DATA_WITH_SCHEMA_VERSION_V2 = {
@@ -178,7 +184,7 @@ TEST_PARAMS_AGGREGATION_V2 = {
 }
 TEST_PARAMS_FILTERS_V2 = {
     "columns_filter": "SamplesAnalysisID,SampleID,Temperature",
-    "rows_filter": "SampleID,eq,partition:master-data--Sample:uuuid:123456",
+    "rows_filter": "SampleID,eq,partition:master-data--Sample:uuuid:12345",
 }
 
 with open(f"{dir_path}/wettability_index_orient_split_2.0.0.json") as fp:
@@ -210,7 +216,7 @@ TEST_FILTERED_DATA_V2 = {
     "data": [
         [
             "partition:work-product-component--SamplesAnalysis:samplesanalysis_test:",
-            "partition:master-data--Sample:uuuid:123456",
+            "partition:master-data--Sample:uuuid:12345",
             185.0,
         ],
     ],

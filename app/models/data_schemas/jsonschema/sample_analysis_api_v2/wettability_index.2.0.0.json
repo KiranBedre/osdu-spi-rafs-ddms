@@ -464,6 +464,9 @@
             "x-osdu-frame-of-reference": "UOM:volume"
           }
         },
+        "required": [
+          "SequenceNumber"
+        ],
         "additionalProperties": false
       }
     }

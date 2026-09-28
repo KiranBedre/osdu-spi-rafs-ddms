@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "eb8b6b4a-f813-403b-b366-0cb8c05d36af",
+    "_postman_id": "3911343a-d6fa-47fc-8273-19aaa373382d",
     "name": "RAFS DDMS",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "56682315"
@@ -12082,7 +12082,7 @@
               "name": "Samples Analysis [Wettability Index]",
               "item": [
                 {
-                  "name": "v1.0.0",
+                  "name": "common",
                   "item": [
                     {
                       "name": "01 - Create record",
@@ -12090,20 +12090,10 @@
                         {
                           "listen": "test",
                           "script": {
-                            "exec": [
-                              "pm.test(\"Status code is 200\", function () {",
-                              "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                              "});",
-                              "",
-                              "let response = pm.response.json().recordIdVersions[0];",
-                              "",
-                              "var parts = response.split(\":\");",
-                              "var record_id = parts.slice(0, 3).join(\":\");",
-                              "pm.setCollectionVar(pm, \"wettabilityindex_record_id\", record_id);",
-                              "pm.addRecordToCleanUp(pm, record_id);"
-                            ],
                             "type": "text/javascript",
-                            "packages": {}
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});\n\nconst data = pm.response.json(); \nconst parts = data.recordIdVersions[0].split(\":\");\nconst recordId = parts.slice(0, 3).join(\":\");\npm.collectionVariables.set(\"wettabilityindex_record_id\", recordId);\npm.addRecordToCleanUp(pm, recordId);"
+                            ]
                           }
                         }
                       ],
@@ -12112,23 +12102,25 @@
                         "header": [
                           {
                             "key": "Authorization",
-                            "value": "Bearer {{access_token}}",
-                            "type": "text"
+                            "value": "Bearer {{access_token}}"
                           },
                           {
                             "key": "data-partition-id",
-                            "value": "{{data-partition-id}}",
-                            "type": "text"
+                            "value": "{{data-partition-id}}"
                           },
                           {
                             "key": "Content-Type",
-                            "value": "application/json",
-                            "type": "text"
+                            "value": "application/json"
                           }
                         ],
                         "body": {
                           "mode": "raw",
-                          "raw": "[\n    {\n        \"kind\": \"{{authority}}:wks:work-product-component--SamplesAnalysis:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ]\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"status\": \"compliant\"\n        },\n        \"tags\": {\n            \"NameOfKey\": \"String value\"\n        },\n        \"data\": {\n            \"SampleIDs\": [\n                \"{{SampleID_Sample_200}}:\"\n            ],\n            \"ReportSampleIdentifiers\": [\n                \"88Y\"\n            ],\n            \"AnalysisDate\": \"2022-12-16\",\n            \"LaboratoryIDs\": [\n                \"{{data-partition-id}}:master-data--Organisation:GenericOrganisation_100:\"\n            ],\n            \"LaboratoryNames\": [\n                \"TestLab\"\n            ],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"Test was successfully conducted\",\n                    \"RemarkSequenceNumber\": 1,\n                    \"RemarkSource\": \"Lab\",\n                    \"RemarkDate\": \"2023-10-23\"\n                }\n            ],\n            \"DatePublished\": \"2022-12-16\",\n            \"ParentSamplesAnalysesReports\": [\n                {\n                    \"ParentSamplesAnalysesReportID\": \"{{sar_record_id}}:\"\n                }\n            ],\n            \"SampleAnalysisTypeIDs\": [\n                \"{{data-partition-id}}:reference-data--SampleAnalysisType:Wettability.AmottHarvey:\"\n            ],\n            \"SamplesAnalysisCategoryTagIDs\": [\n                \"{{data-partition-id}}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:\"\n            ],\n            \"AvailableSampleAnalysisProperties\": [],\n            \"DDMSDatasets\": [],\n            \"Parameters\": [],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"SampleAnalysisTypeID is incorrect for this example as WettabilityIndex is not currently a type\"\n                }\n            ]\n        }\n    }\n]"
+                          "raw": "[\n    {\n        \"kind\": \"{{authority}}:wks:work-product-component--SamplesAnalysis:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ]\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"status\": \"compliant\"\n        },\n        \"tags\": {\n            \"NameOfKey\": \"String value\"\n        },\n        \"data\": {\n            \"SampleIDs\": [\n                \"{{SampleID_Sample_200}}:\"\n            ],\n            \"ReportSampleIdentifiers\": [\n                \"88Y\"\n            ],\n            \"AnalysisDate\": \"2022-12-16\",\n            \"LaboratoryIDs\": [\n                \"{{data-partition-id}}:master-data--Organisation:GenericOrganisation_100:\"\n            ],\n            \"LaboratoryNames\": [\n                \"TestLab\"\n            ],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"Test was successfully conducted\",\n                    \"RemarkSequenceNumber\": 1,\n                    \"RemarkSource\": \"Lab\",\n                    \"RemarkDate\": \"2023-10-23\"\n                }\n            ],\n            \"DatePublished\": \"2022-12-16\",\n            \"ParentSamplesAnalysesReports\": [\n                {\n                    \"ParentSamplesAnalysesReportID\": \"{{sar_record_id}}:\"\n                }\n            ],\n            \"SampleAnalysisTypeIDs\": [\n                \"{{data-partition-id}}:reference-data--SampleAnalysisType:Wettability.AmottHarvey:\"\n            ],\n            \"SamplesAnalysisCategoryTagIDs\": [\n                \"{{data-partition-id}}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:\"\n            ],\n            \"AvailableSampleAnalysisProperties\": [],\n            \"DDMSDatasets\": [],\n            \"Parameters\": [],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"SampleAnalysisTypeID is incorrect for this example as WettabilityIndex is not currently a type\"\n                }\n            ]\n        }\n    }\n]",
+                          "options": {
+                            "raw": {
+                              "language": "text"
+                            }
+                          }
                         },
                         "url": {
                           "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis",
@@ -12145,18 +12137,15 @@
                       "response": []
                     },
                     {
-                      "name": "02 - Get content schema",
+                      "name": "02 - Get record",
                       "event": [
                         {
                           "listen": "test",
                           "script": {
-                            "exec": [
-                              "pm.test(\"Status code is 200\", function () {",
-                              "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                              "});"
-                            ],
                             "type": "text/javascript",
-                            "packages": {}
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});"
+                            ]
                           }
                         }
                       ],
@@ -12165,32 +12154,175 @@
                         "header": [
                           {
                             "key": "Authorization",
-                            "value": "Bearer {{access_token}}",
-                            "type": "text"
+                            "value": "Bearer {{access_token}}"
                           },
                           {
                             "key": "data-partition-id",
-                            "value": "{{data-partition-id}}",
-                            "type": "text"
+                            "value": "{{data-partition-id}}"
                           },
                           {
                             "key": "Content-Type",
-                            "value": "application/json",
-                            "type": "text"
+                            "value": "application/json"
                           },
                           {
                             "key": "Cache-Control",
-                            "value": "no-store",
-                            "type": "text"
-                          },
-                          {
-                            "key": "Accept",
-                            "value": "*/*;version=1.0.0",
-                            "type": "text"
+                            "value": "no-store"
                           }
                         ],
                         "url": {
-                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/wettabilityindex/data/schema",
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{wettabilityindex_record_id}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{wettabilityindex_record_id}}"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "03 - Get versions",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});\n\nconst data = pm.response.json();\nconst versions = data.versions;\nconst latestVersion = versions[versions.length - 1];\npm.collectionVariables.set(\"wettabilityindex_record_version\", latestVersion);"
+                            ]
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Cache-Control",
+                            "value": "no-store"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{wettabilityindex_record_id}}/versions",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{wettabilityindex_record_id}}",
+                            "versions"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "04 - Get concrete version",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});"
+                            ]
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{wettabilityindex_record_id}}/versions/{{wettabilityindex_record_version}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{wettabilityindex_record_id}}",
+                            "versions",
+                            "{{wettabilityindex_record_version}}"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "v1.0.0",
+                  "item": [
+                    {
+                      "name": "05 - Get content schema",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});"
+                            ]
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Cache-Control",
+                            "value": "no-store"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/wettabilityindex/data/schema?content_schema_version=1.0.0",
                           "protocol": "https",
                           "host": [
                             "{{RAFS_DDMS_HOST}}"
@@ -12201,20 +12333,26 @@
                             "wettabilityindex",
                             "data",
                             "schema"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "1.0.0"
+                            }
                           ]
                         }
                       },
                       "response": []
                     },
                     {
-                      "name": "03 - Add data",
+                      "name": "06 - Add data",
                       "event": [
                         {
                           "listen": "test",
                           "script": {
                             "type": "text/javascript",
                             "exec": [
-                              "// Fixed the typo in the response object property name\npm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});\n\n(function main() {\n    const data = pm.response.json();\n    const dataPartitionId = pm.environment.get(\"data-partition-id\");\n    let datasetUuid;\n\n    console.log(\"Response data:\", data);\n    console.log(\"dataPartitionId:\", dataPartitionId);\n\n    if (data.updated_wpc_id !== undefined) {\n        console.log(\"Found updated_wpc_id → WPC format\");\n\n        const parts = data.ddms_urn.split(\"/\");\n        console.log(\"Split parts:\", parts);\n\n        datasetUuid = parts[parts.length - 1];  \n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n\n    else {\n        console.log(\"No updated_wpc_id → dataset format\");\n\n        const uriParts = data.ddms_urn.split(\"/\");\n        console.log(\"URI parts:\", uriParts);\n\n        datasetUuid = uriParts[uriParts.length - 2];\n\n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n\n    if (datasetUuid) {\n        console.info(\"Setting wettabilityindex_dataset_id:\", datasetUuid);\n        pm.collectionVariables.set(\"wettabilityindex_dataset_id\", datasetUuid);\n    } else {\n        console.error(\"datasetUuid is undefined or null — check ddms_urn format!\");\n    }\n})();"
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});\n\n(function main() {\n    const data = pm.response.json();\n    const dataPartitionId = pm.environment.get(\"data-partition-id\");\n    let datasetUuid;\n\n    console.log(\"Response data:\", data);\n    console.log(\"dataPartitionId:\", dataPartitionId);\n\n    if (data.updated_wpc_id !== undefined) {\n        console.log(\"Found updated_wpc_id → WPC format\");\n\n        const parts = data.ddms_urn.split(\"/\");\n        console.log(\"Split parts:\", parts);\n\n        datasetUuid = parts[parts.length - 1];  \n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n    else {\n        console.log(\"No updated_wpc_id → dataset format\");\n\n        const uriParts = data.ddms_urn.split(\"/\");\n        console.log(\"URI parts:\", uriParts);\n\n        datasetUuid = uriParts[uriParts.length - 2];\n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n\n    if (datasetUuid) {\n        console.info(\"Setting wettabilityindex_dataset_id:\", datasetUuid);\n        pm.collectionVariables.set(\"wettabilityindex_dataset_id\", datasetUuid);\n    } else {\n        console.error(\"datasetUuid is undefined or null — check ddms_urn format!\");\n    }\n})();"
                             ]
                           }
                         }
@@ -12236,7 +12374,7 @@
                           },
                           {
                             "key": "Accept",
-                            "value": "*/*;version=1.0.0"
+                            "value": "*/*"
                           }
                         ],
                         "body": {
@@ -12249,7 +12387,7 @@
                           }
                         },
                         "url": {
-                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{wettabilityindex_record_id}}/data/wettabilityindex",
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{wettabilityindex_record_id}}/data/wettabilityindex?content_schema_version=1.0.0",
                           "protocol": "https",
                           "host": [
                             "{{RAFS_DDMS_HOST}}"
@@ -12260,6 +12398,12 @@
                             "{{wettabilityindex_record_id}}",
                             "data",
                             "wettabilityindex"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "1.0.0"
+                            }
                           ]
                         },
                         "description": "Possible reference data types:  \nWholeOilGasChromatographyCompounds  \nSaturateGasChromatographyCompounds  \nAromaticGasChromatographyCompounds  \nGasolineGasChromatographyCompounds  \nPyrolysisGasChromatographyCompounds"
@@ -12267,7 +12411,7 @@
                       "response": []
                     },
                     {
-                      "name": "04 - Get record data",
+                      "name": "07 - Get record data",
                       "event": [
                         {
                           "listen": "test",
@@ -12300,11 +12444,11 @@
                           },
                           {
                             "key": "Accept",
-                            "value": "*/*;version=1.0.0"
+                            "value": "*/*"
                           }
                         ],
                         "url": {
-                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{wettabilityindex_record_id}}/data/wettabilityindex/{{wettabilityindex_dataset_id}}",
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{wettabilityindex_record_id}}/data/wettabilityindex/{{wettabilityindex_dataset_id}}?content_schema_version=1.0.0",
                           "protocol": "https",
                           "host": [
                             "{{RAFS_DDMS_HOST}}"
@@ -12316,6 +12460,12 @@
                             "data",
                             "wettabilityindex",
                             "{{wettabilityindex_dataset_id}}"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "1.0.0"
+                            }
                           ]
                         }
                       },
@@ -12327,7 +12477,7 @@
                   "name": "v2.0.0",
                   "item": [
                     {
-                      "name": "02 - Get content schema",
+                      "name": "05 - Get content schema",
                       "event": [
                         {
                           "listen": "test",
@@ -12360,11 +12510,11 @@
                           },
                           {
                             "key": "Accept",
-                            "value": "*/*;version=2.0.0"
+                            "value": "*/*"
                           }
                         ],
                         "url": {
-                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/wettabilityindex/data/schema",
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/wettabilityindex/data/schema?content_schema_version=2.0.0",
                           "protocol": "https",
                           "host": [
                             "{{RAFS_DDMS_HOST}}"
@@ -12375,20 +12525,26 @@
                             "wettabilityindex",
                             "data",
                             "schema"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "2.0.0"
+                            }
                           ]
                         }
                       },
                       "response": []
                     },
                     {
-                      "name": "03 - Add data",
+                      "name": "06 - Add data",
                       "event": [
                         {
                           "listen": "test",
                           "script": {
                             "type": "text/javascript",
                             "exec": [
-                              "// Fixed the typo in the response object property name\npm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});\n\n(function main() {\n    const data = pm.response.json();\n    const dataPartitionId = pm.environment.get(\"data-partition-id\");\n    let datasetUuid;\n\n    console.log(\"Response data:\", data);\n    console.log(\"dataPartitionId:\", dataPartitionId);\n\n    if (data.updated_wpc_id !== undefined) {\n        console.log(\"Found updated_wpc_id → WPC format\");\n\n        const parts = data.ddms_urn.split(\"/\");\n        console.log(\"Split parts:\", parts);\n\n        datasetUuid = parts[parts.length - 1];  \n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n\n    else {\n        console.log(\"No updated_wpc_id → dataset format\");\n\n        const uriParts = data.ddms_urn.split(\"/\");\n        console.log(\"URI parts:\", uriParts);\n\n        datasetUuid = uriParts[uriParts.length - 2];\n\n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n\n    if (datasetUuid) {\n        console.info(\"Setting wettabilityindex_dataset_id:\", datasetUuid);\n        pm.collectionVariables.set(\"wettabilityindex_dataset_id\", datasetUuid);\n    } else {\n        console.error(\"datasetUuid is undefined or null — check ddms_urn format!\");\n    }\n})();"
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});\n\n(function main() {\n    const data = pm.response.json();\n    const dataPartitionId = pm.environment.get(\"data-partition-id\");\n    let datasetUuid;\n\n    console.log(\"Response data:\", data);\n    console.log(\"dataPartitionId:\", dataPartitionId);\n\n    if (data.updated_wpc_id !== undefined) {\n        console.log(\"Found updated_wpc_id → WPC format\");\n\n        const parts = data.ddms_urn.split(\"/\");\n        console.log(\"Split parts:\", parts);\n\n        datasetUuid = parts[parts.length - 1];  \n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n    else {\n        console.log(\"No updated_wpc_id → dataset format\");\n\n        const uriParts = data.ddms_urn.split(\"/\");\n        console.log(\"URI parts:\", uriParts);\n\n        datasetUuid = uriParts[uriParts.length - 2];\n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n\n    if (datasetUuid) {\n        console.info(\"Setting wettabilityindex_dataset_id:\", datasetUuid);\n        pm.collectionVariables.set(\"wettabilityindex_dataset_id\", datasetUuid);\n    } else {\n        console.error(\"datasetUuid is undefined or null — check ddms_urn format!\");\n    }\n})();"
                             ]
                           }
                         }
@@ -12410,12 +12566,12 @@
                           },
                           {
                             "key": "Accept",
-                            "value": "*/*;version=2.0.0"
+                            "value": "*/*"
                           }
                         ],
                         "body": {
                           "mode": "raw",
-                          "raw": "{\n  \"columns\": [\n    \"SamplesAnalysisID\",\n    \"SampleID\",\n    \"Meta\",\n    \"Temperature\",\n    \"WettabilityIndex\",\n    \"ConfiningPressure\",\n    \"DesaturationMethod\",\n    \"FluidSystem\",\n    \"InitialWaterSaturation\",\n    \"Remarks\",\n    \"TestSteps\"\n  ],\n  \"index\": [\n    0\n  ],\n  \"data\": [\n    [\n      \"{{wettabilityindex_record_id}}:\",\n      \"{{SampleID_Sample_200}}:\",\n      [\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"degF\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:degF:\",\n          \"propertyNames\": [\n            \"Temperature\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"psi\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:psi:\",\n          \"propertyNames\": [\n            \"ConfiningPressure\",\n            \"TestSteps[*].EndPoints.CapillaryPressureMax\",\n            \"TestSteps[*].EndPoints.CapillaryPressureMin\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"m3/m3\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:m3%2Fm3:\",\n          \"propertyNames\": [\n            \"InitialWaterSaturation\",\n            \"TestSteps[*].EndPoints.EndfaceSaturationAtCapillaryPressureMax\",\n            \"TestSteps[*].EndPoints.AveragePhaseSaturationAtCapillaryPressureMax\",\n            \"TestSteps[*].EndPoints.EndfaceSaturationAtCapillaryPressureMin\",\n            \"TestSteps[*].EndPoints.AveragePhaseSaturationAtCapillaryPressureMin\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"cm3\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3:\",\n          \"propertyNames\": [\n            \"TestSteps[*].TotalProducedVolume\"\n          ]\n        }\n      ],\n      185.0,\n      [\n        {\n          \"Value\": 0.45,\n          \"WettabilityIndexTypeID\": \"{{data-partition-id}}:reference-data--WettabilityIndexType:AmottHarvey:\"\n        }\n      ],\n      3000.0,\n      \"{{data-partition-id}}:reference-data--DesaturationMethod:Centrifuge:\",\n      \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\",\n      0.22,\n      [\n        {\n          \"RemarkSequenceNumber\": 1,\n          \"Remark\": \"Sample cleaned and restored to reservoir wettability prior to testing.\",\n          \"RemarkSource\": \"Lab Analyst\",\n          \"RemarkDate\": \"2026-06-15\"\n        }\n      ],\n      [\n        {\n          \"SequenceNumber\": 1,\n          \"CapillaryPressureAnalysisID\": \"{{cp_record_id2}}:\",\n          \"SaturationProcessMethodID\": \"{{data-partition-id}}:reference-data--SaturationProcessMethod:Imbibition:\",\n          \"InjectionFluidID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\",\n          \"DisplacedFluidID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Brine:\",\n          \"EndPoints\": {\n            \"CapillaryPressureMax\": 50.0,\n            \"EndfaceSaturationAtCapillaryPressureMax\": 0.35,\n            \"AveragePhaseSaturationAtCapillaryPressureMax\": 0.38,\n            \"CapillaryPressureMin\": 0.0,\n            \"EndfaceSaturationAtCapillaryPressureMin\": 0.22,\n            \"AveragePhaseSaturationAtCapillaryPressureMin\": 0.22\n          },\n          \"TotalProducedVolume\": 4.5\n        }\n      ]\n    ]\n  ]\n}",
+                          "raw": "{\n  \"columns\": [\n    \"SamplesAnalysisID\",\n    \"SampleID\",\n    \"Meta\",\n    \"Temperature\",\n    \"WettabilityIndex\",\n    \"ConfiningPressure\",\n    \"DesaturationMethod\",\n    \"FluidSystem\",\n    \"InitialWaterSaturation\",\n    \"Remarks\",\n    \"TestSteps\"\n  ],\n  \"index\": [\n    0\n  ],\n  \"data\": [\n    [\n      \"{{wettabilityindex_record_id}}:\",\n      \"{{SampleID_Sample_200}}:\",\n      [\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"degF\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:degF:\",\n          \"propertyNames\": [\n            \"Temperature\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"psi\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:psi:\",\n          \"propertyNames\": [\n            \"ConfiningPressure\",\n            \"TestSteps[*].EndPoints.CapillaryPressureMax\",\n            \"TestSteps[*].EndPoints.CapillaryPressureMin\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"m3/m3\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:m3%2Fm3:\",\n          \"propertyNames\": [\n            \"InitialWaterSaturation\",\n            \"TestSteps[*].EndPoints.EndfaceSaturationAtCapillaryPressureMax\",\n            \"TestSteps[*].EndPoints.AveragePhaseSaturationAtCapillaryPressureMax\",\n            \"TestSteps[*].EndPoints.EndfaceSaturationAtCapillaryPressureMin\",\n            \"TestSteps[*].EndPoints.AveragePhaseSaturationAtCapillaryPressureMin\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"cm3\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3:\",\n          \"propertyNames\": [\n            \"TestSteps[*].TotalProducedVolume\"\n          ]\n        },\n        {\n          \"kind\": \"DateTime\",\n          \"name\": \"UTC\",\n          \"persistableReference\": \"{\\\"format\\\":\\\"yyyy-MM-ddTHH:mm:ssZ\\\",\\\"timeZone\\\":\\\"UTC\\\",\\\"type\\\":\\\"DTM\\\"}\",\n          \"propertyNames\": [\n            \"Remarks[*].RemarkDate\"\n          ]\n        }\n      ],\n      185.0,\n      [\n        {\n          \"Value\": 0.45,\n          \"WettabilityIndexTypeID\": \"{{data-partition-id}}:reference-data--WettabilityIndexType:AmottHarvey:\"\n        }\n      ],\n      3000.0,\n      \"{{data-partition-id}}:reference-data--DesaturationMethod:Centrifuge:\",\n      \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\",\n      0.22,\n      [\n        {\n          \"RemarkSequenceNumber\": 1,\n          \"Remark\": \"Sample cleaned and restored to reservoir wettability prior to testing.\",\n          \"RemarkSource\": \"Lab Analyst\",\n          \"RemarkDate\": \"2026-06-15\"\n        }\n      ],\n      [\n        {\n          \"SequenceNumber\": 1,\n          \"CapillaryPressureAnalysisID\": \"{{cp_record_id}}:\",\n          \"SaturationProcessMethodID\": \"{{data-partition-id}}:reference-data--SaturationProcessMethod:Imbibition:\",\n          \"InjectionFluidID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\",\n          \"DisplacedFluidID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Brine:\",\n          \"EndPoints\": {\n            \"CapillaryPressureMax\": 50.0,\n            \"EndfaceSaturationAtCapillaryPressureMax\": 0.35,\n            \"AveragePhaseSaturationAtCapillaryPressureMax\": 0.38,\n            \"CapillaryPressureMin\": 0.0,\n            \"EndfaceSaturationAtCapillaryPressureMin\": 0.22,\n            \"AveragePhaseSaturationAtCapillaryPressureMin\": 0.22\n          },\n          \"TotalProducedVolume\": 4.5\n        }\n      ]\n    ]\n  ]\n}",
                           "options": {
                             "raw": {
                               "language": "text"
@@ -12423,7 +12579,7 @@
                           }
                         },
                         "url": {
-                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{wettabilityindex_record_id}}/data/wettabilityindex",
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{wettabilityindex_record_id}}/data/wettabilityindex?content_schema_version=2.0.0",
                           "protocol": "https",
                           "host": [
                             "{{RAFS_DDMS_HOST}}"
@@ -12434,6 +12590,12 @@
                             "{{wettabilityindex_record_id}}",
                             "data",
                             "wettabilityindex"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "2.0.0"
+                            }
                           ]
                         },
                         "description": "Possible reference data types:  \nWholeOilGasChromatographyCompounds  \nSaturateGasChromatographyCompounds  \nAromaticGasChromatographyCompounds  \nGasolineGasChromatographyCompounds  \nPyrolysisGasChromatographyCompounds"
@@ -12441,7 +12603,7 @@
                       "response": []
                     },
                     {
-                      "name": "04 - Get record data",
+                      "name": "07 - Get record data",
                       "event": [
                         {
                           "listen": "test",
@@ -12474,11 +12636,11 @@
                           },
                           {
                             "key": "Accept",
-                            "value": "*/*;version=2.0.0"
+                            "value": "*/*"
                           }
                         ],
                         "url": {
-                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{wettabilityindex_record_id}}/data/wettabilityindex/{{wettabilityindex_dataset_id}}",
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{wettabilityindex_record_id}}/data/wettabilityindex/{{wettabilityindex_dataset_id}}?content_schema_version=2.0.0",
                           "protocol": "https",
                           "host": [
                             "{{RAFS_DDMS_HOST}}"
@@ -12490,6 +12652,12 @@
                             "data",
                             "wettabilityindex",
                             "{{wettabilityindex_dataset_id}}"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "2.0.0"
+                            }
                           ]
                         }
                       },
