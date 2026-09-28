@@ -49,13 +49,11 @@ rafs_code_quality_check:
 
 # Local override for cimpl OpenAPI validation:
 # keep live endpoint as JSON while allowing committed YAML specs.
-cimpl-check-openapi-spec:
+.cimpl-check-openapi-spec:
   stage: acceptance
   image: alpine:3.23
-  extends: .cimpl-variables
   variables:
     CIMPL_API_BASE_URL: "https://${CIMPL_DNS_NAME}"
-  needs: ["cimpl-deploy"]
   tags: ["osdu-small"]
   before_script:
     - apk add --no-cache wget yq jq
@@ -224,7 +222,7 @@ cimpl-check-openapi-spec:
 # Validate the deployed OpenAPI document on the CIMPL-STACK DEV environment.
 cimpl-dev-check-openapi-spec:
   extends:
-    - cimpl-check-openapi-spec
+    - .cimpl-check-openapi-spec
     - .cimpl-dev-variables
   needs:
     - job: cimpl-dev-deploy
@@ -234,5 +232,20 @@ cimpl-dev-check-openapi-spec:
     - if: '$CI_COMMIT_TAG'
       when: never
     - if: '$CIMPL_STACK == "1" && $DEV == "1"'
+      when: on_success
+    - when: never
+
+cimpl-dev-backup-check-openapi-spec:
+  extends:
+    - .cimpl-check-openapi-spec
+    - .cimpl-dev-backup-variables
+  needs:
+    - job: cimpl-dev-backup-deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^release/'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CIMPL_STACK == "1" && $DEV_BACKUP == "1"'
       when: on_success
     - when: never

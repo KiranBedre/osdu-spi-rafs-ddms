@@ -54,10 +54,7 @@ variables:
 .get_cimpl_access_token:
   script:
     - |
-      # Dev1: keycloak.$CIMPL_DOMAIN ; Prod: keycloak-$CIMPL_DOMAIN (see TEST_OPENID_PROVIDER_URL)
-      OIDC_BASE="${TEST_OPENID_PROVIDER_URL:-https://keycloak.${CIMPL_DOMAIN}/realms/osdu}"
-      OIDC_BASE="$(echo "$OIDC_BASE" | tr -d '[:space:]')"
-      TOKEN_URL="${OIDC_BASE%/}/protocol/openid-connect/token"
+      TOKEN_URL="${CIMPL_TOKEN_URI}"
       OIDC_CLIENT_ID="${TEST_OPENID_PROVIDER_CLIENT_ID:-${CIMPL_CLIENT_ID}}"
       OIDC_CLIENT_SECRET="${TEST_OPENID_PROVIDER_CLIENT_SECRET:-${CIMPL_CLIENT_SECRET}}"
       echo "Requesting access token from Keycloak..."
@@ -141,43 +138,6 @@ cimpl-helm-charts-gitlab:
     - !reference [.cimpl_set_image_name, script]
     - !reference [.cimpl_substitute_cronjob_image_in_helm, script]
     - cat $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml | grep -i image
-
-cimpl-deploy:
-  needs:
-    - "cimpl-containerize-gitlab"
-    - "cimpl-cronjob-containerize-gitlab"
-    - "cimpl-helm-charts-gitlab"
-  script:
-    - !reference [.cimpl_obtain_credentials, script]
-    - !reference [.cimpl_set_image_name, script]
-    - !reference [.cimpl_common_config, script]
-    - >
-      helm upgrade $CIMPL_SERVICE-deploy oci://$CI_REGISTRY_IMAGE/cimpl-helm/$CIMPL_HELM_PACKAGE_NAME
-      --version $CIMPL_HELM_PACKAGE_VERSION-$CIMPL_HELM_TAG
-      --install
-      --create-namespace
-      --namespace=$CIMPL_HELM_NAMESPACE
-      --wait
-      --history-max=3
-      --set global.onPremEnabled=true
-      --set global.domain=$CIMPL_DOMAIN
-      --set global.dataPartitionId=osdu
-      --set global.RAFS_URI=https://$CIMPL_TENANT.$CIMPL_DOMAIN
-      --set data.serviceAccountName=$CIMPL_SERVICE
-      --set data.logLevel=INFO
-      --set data.bucketPrefix="refi"
-      --set data.groupId=$GROUP_ID
-      --set data.sharedTenantName=$CIMPL_TENANT
-      --set data.googleCloudProject=$CIMPL_PROJECT
-      --set data.bucketName=$CIMPL_POLICY_BUCKET
-      --set data.subscriberPrivateKeyId=$CIMPL_SUBSCRIBER_PRIVATE_KEY_ID
-      --set data.pythonToolOptions=$CIMPL_OTEL_PYTHON_TOOL_OPTIONS
-      --set data.otelExporterEndpoint=$CIMPL_OTEL_PYTHON_EXPORTER_ENDPOINT
-      --set data.otelExporterProtocol=$CIMPL_OTEL_PYTHON_EXPORTER_PROTOCOL
-      --set rosa=true
-      $CIMPL_HELM_SETS
-      $CIMPL_HELM_TIMEOUT
-    - !reference [.cimpl_verify_deploy, script]
 
 .rafs_cimpl_integration_variables:
   variables:
@@ -277,15 +237,10 @@ cimpl-deploy:
 # Seed the complete, deterministic set of reference-data records required by
 # RAFS integration fixtures directly through Storage.
 .rafs_cimpl_reference_bootstrap:
-  extends:
-    - .cimpl-variables
   stage: integration
   tags: ["osdu-medium"]
-
   image:
     name: node:alpine
-  needs:
-    - job: cimpl-deploy
   before_script:
     - apk add --no-cache curl jq
   script:
@@ -302,10 +257,8 @@ cimpl-deploy:
       OIDC_CLIENT_SECRET="${TEST_OPENID_PROVIDER_CLIENT_SECRET:-${CIMPL_CLIENT_SECRET}}"
 
       SEED_HOSTNAME="${CIMPL_SEED_HOSTNAME:-${CIMPL_TENANT}.${CIMPL_DOMAIN}}"
-      OIDC_BASE="${TEST_OPENID_PROVIDER_URL:-${CIMPL_SEED_OIDC_BASE:-https://keycloak.${CIMPL_DOMAIN}/realms/osdu}}"
-      OIDC_BASE="$(echo "$OIDC_BASE" | tr -d '[:space:]')"
 
-      TOKEN_FETCH_URL="${OIDC_BASE%/}/protocol/openid-connect/token"
+      TOKEN_FETCH_URL="${CIMPL_TOKEN_URI}"
       STORAGE_URL="https://${SEED_HOSTNAME}/api/storage/v2"
       LEGAL_URL="https://${SEED_HOSTNAME}/api/legal/v1"
       BOOTSTRAP_LEGAL_TAG="${LEGAL_TAG:-osdu-demo-legaltag}"
@@ -496,44 +449,6 @@ cimpl-deploy:
       - reference-data-seed-response.json
     expire_in: 1 week
 
-cimpl-seed-reference-data:
-  extends:
-    - .rafs_cimpl_reference_bootstrap
-  rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^trusted-/ && $CIMPL == "1"
-      when: on_success
-    - if: $CI_COMMIT_REF_NAME == "main"
-      when: on_success
-    - when: never
-
-cimpl-test-python:
-  extends:
-    - .cimpl-variables
-    - .rafs_cimpl_pytest_integration
-  image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
-  before_script:
-    - !reference [.rafs_cimpl_pytest_integration, before_script]
-  script:
-    - !reference [.rafs_cimpl_pytest_integration, script]
-  after_script:
-    - !reference [.rafs_cimpl_pytest_integration, after_script]
-  artifacts:
-    paths:
-      - tests/cimpl/allure-results/
-      - allure-report/
-    reports:
-      junit: integration_tests_report.xml
-      coverage_report:
-        coverage_format: cobertura
-        path: coverage.xml
-    when: always
-    expire_in: 1 week
-  needs:
-    - job: build_rafs_tests
-    - job: cimpl-deploy
-    - job: cimpl-seed-reference-data
-      optional: true
-
 # Ensure CIMPL-STACK DEV waits for both RAFS service images.
 cimpl-dev-deploy:
   needs:
@@ -565,7 +480,7 @@ cimpl-dev-seed-reference-data:
 
 # Run the RAFS pytest suite against CIMPL-STACK DEV.
 cimpl-dev-test-python:
-  allow_failure: true  # TODO: Remove when issue #834 is resolved.
+  allow_failure: true
   extends:
     - .cimpl-dev-variables
     - .rafs_cimpl_pytest_integration
@@ -596,101 +511,7 @@ cimpl-dev-test-python:
     expire_in: 1 week
   needs:
     - job: build_rafs_tests
-    - job: cimpl-dev-deploy
     - job: cimpl-dev-seed-reference-data
-  rules:
-    - if: '$DISABLE_INTEGRATION_TEST == "true"'
-      when: never
-    - if: '$CI_COMMIT_BRANCH =~ /^release/'
-      when: never
-    - if: '$CI_COMMIT_TAG'
-      when: never
-    - if: '$CIMPL_STACK == "1" && $CIMPL_INT_TEST_TYPE == "python" && $DEV == "1"'
-      when: on_success
-    - when: never
-
-# RAFS does not validate against the legacy CIMPL DEV2 environment.
-# Override the centrally imported executable jobs so they are not created.
-cimpl-dev2-test:
-  rules:
-    - when: never
-
-cimpl-dev2-acceptance-test:
-  rules:
-    - when: never
-
-cimpl-dev2-acceptance-test-python:
-  rules:
-    - when: never
-
-cimpl-dev2-deploy:
-  rules:
-    - when: never
-  needs:
-    - "cimpl-containerize-gitlab"
-    - "cimpl-cronjob-containerize-gitlab"
-    - "cimpl-helm-charts-release-gitlab"
-  script:
-    - !reference [.cimpl_obtain_credentials, script]
-    - !reference [.cimpl_set_image_name, script]
-    - !reference [.cimpl_define_version, script]
-    - !reference [.cimpl_common_config, script]
-    - >
-      helm upgrade $CIMPL_SERVICE-deploy oci://$CI_REGISTRY_IMAGE/cimpl-helm/$CIMPL_HELM_PACKAGE_NAME
-      --version $VERSION
-      --install
-      --create-namespace
-      --namespace=$CIMPL_HELM_NAMESPACE
-      --wait
-      --history-max=3
-      --set global.onPremEnabled=true
-      --set global.domain=$CIMPL_DOMAIN
-      --set global.dataPartitionId=osdu
-      --set global.RAFS_URI=$CIMPL_TENANT.$CIMPL_DOMAIN
-      --set data.serviceAccountName=$CIMPL_SERVICE
-      --set data.logLevel=INFO
-      --set data.bucketPrefix="refi"
-      --set data.groupId=$GROUP_ID
-      --set data.sharedTenantName=$CIMPL_TENANT
-      --set data.googleCloudProject=$CIMPL_PROJECT
-      --set data.bucketName=$CIMPL_POLICY_BUCKET
-      --set data.subscriberPrivateKeyId=$CIMPL_SUBSCRIBER_PRIVATE_KEY_ID
-      --set rosa=true
-      $CIMPL_HELM_SETS
-      $CIMPL_HELM_TIMEOUT
-    - !reference [.cimpl_verify_deploy, script]
-
-cimpl-dev2-test-python:
-  rules:
-    - when: never
-  image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
-  variables:
-    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-    PARTITION: $CIMPL_TENANT
-    SERVICE_HOST_STORAGE: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/storage/v2
-    SERVICE_HOST_LEGAL: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/legal/v1
-    SERVICE_HOST_SEARCH: https://${CIMPL_TENANT}.${CIMPL_DOMAIN}/api/search/v2
-    RAFS_USE_BLOB_STORAGE: "False"
-  extends:
-    - .cimpl-dev2-variables
-    - .cimpl_python_test_report
-  before_script:
-    - apt update -qqq -y && apt install -qqq -y curl jq &> /dev/null
-    - !reference [.get_cimpl_access_token, script]
-  script:
-    - |
-      echo "🚀 Running integration tests against ${CIMPL_TENANT}.${CIMPL_DOMAIN}"
-      time pytest -n 3 \
-        --junitxml=integration_tests_report.xml \
-        --cov=app \
-        --cov-report=xml:coverage.xml \
-        --cov-report=term \
-        ./tests/integration/tests \
-        --ddms-base-url "https://${CIMPL_TENANT}.${CIMPL_DOMAIN}" \
-        --url-prefix "${URL_PREFIX}" \
-        --bearer-token "${ACCESS_TOKEN}" \
-        --partition "${PARTITION}" \
-        --cloud-provider "cimpl"
 
 cimpl-helm-charts-release-gitlab:
   stage: containerize
@@ -834,11 +655,68 @@ cimpl-prod-acceptance-test-python:
     expire_in: 1 week
   needs:
     - job: cimpl-prod-test-python
+
+# osdu-main DEV-BACKUP Env
+
+cimpl-dev-backup-deploy:
+  needs:
+    - job: cimpl-containerize-gitlab
+    - job: cimpl-cronjob-containerize-gitlab
+    - job: cimpl-helm-charts-gitlab
+    - job: cimpl-helm-charts-release-gitlab
+      optional: true
+
+# Seed the reference and master-data records required by RAFS tests.
+cimpl-dev-backup-seed-reference-data:
+  extends:
+    - .rafs_cimpl_reference_bootstrap
+    - .cimpl-dev-backup-variables
+  variables:
+    CIMPL_SEED_HOSTNAME: "${CIMPL_DOMAIN}"
+  needs:
+    - job: cimpl-dev-backup-deploy
   rules:
     - if: '$DISABLE_INTEGRATION_TEST == "true"'
       when: never
-    - if: '$CIMPL_STACK == "1" && $CIMPL_INT_TEST_TYPE == "python" && $CI_COMMIT_BRANCH =~ /^release/'
-      when: on_success
-    - if: '$CIMPL_STACK == "1" && $CIMPL_INT_TEST_TYPE == "python" && $CI_COMMIT_TAG'
+    - if: '$CI_COMMIT_BRANCH =~ /^release/'
+      when: never
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: '$CIMPL_STACK == "1" && $DEV_BACKUP == "1"'
       when: on_success
     - when: never
+
+# Run the RAFS pytest suite against CIMPL-STACK DEV.
+cimpl-dev-backup-test-python:
+  allow_failure: true
+  extends:
+    - .cimpl-dev-backup-variables
+    - .rafs_cimpl_pytest_integration
+  image: ${CI_REGISTRY_IMAGE}:build-${CI_COMMIT_SHA}
+  stage: integration
+  tags: ["osdu-medium"]
+  variables:
+    CIMPL_RAFS_BASE_URL: "https://${CIMPL_DOMAIN}"
+    SERVICE_HOST_STORAGE: "${CIMPL_RAFS_BASE_URL}/api/storage/v2"
+    SERVICE_HOST_LEGAL: "${CIMPL_RAFS_BASE_URL}/api/legal/v1"
+    SERVICE_HOST_SEARCH: "${CIMPL_RAFS_BASE_URL}/api/search/v2"
+  before_script:
+    - !reference [.rafs_cimpl_pytest_integration, before_script]
+  script:
+    - !reference [.rafs_cimpl_pytest_integration, script]
+  after_script:
+    - !reference [.rafs_cimpl_pytest_integration, after_script]
+  artifacts:
+    paths:
+      - tests/cimpl/allure-results/
+      - allure-report/
+    reports:
+      junit: integration_tests_report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+    when: always
+    expire_in: 1 week
+  needs:
+    - job: build_rafs_tests
+    - job: cimpl-dev-backup-seed-reference-data
