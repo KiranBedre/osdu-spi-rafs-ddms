@@ -57,14 +57,6 @@
           "propertyNames": [
             "TestSteps[*].TotalProducedVolume"
           ]
-        },
-        {
-          "kind": "DateTime",
-          "name": "UTC",
-          "persistableReference": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}",
-          "propertyNames": [
-            "Remarks[*].RemarkDate"
-          ]
         }
       ],
       185.0,

@@ -34,6 +34,7 @@ from app.models.data_schemas.sample_analysis_api_v2.extraction_data_model_1_0_0 
 from app.models.data_schemas.sample_analysis_api_v2.fractionation_data_model_1_0_0 import FractionationModel100
 from app.models.data_schemas.sample_analysis_api_v2.relative_permeability_data_model_1_0_0 import RelativePermeabilityModel100
 from app.models.data_schemas.sample_analysis_api_v2.relative_permeability_data_model_1_1_0 import RelativePermeabilityModel110
+from app.models.data_schemas.sample_analysis_api_v2.relative_permeability_data_model_2_0_0 import RelativePermeabilityModel200
 from app.models.data_schemas.sample_analysis_api_v2.rock_compressibility_data_model_1_0_0 import RockCompressibilityModel100
 from app.models.data_schemas.sample_analysis_api_v2.electrical_properties_data_model_1_0_0 import ElectricalPropertiesModel100
 from app.models.data_schemas.sample_analysis_api_v2.nmr_data_model_1_0_0 import NmrModel100
@@ -127,6 +128,7 @@ FRACTIONATION_MODELS = {
 RELATIVE_PERMEABILITY_MODELS = {
     ContentSchemaVersion.V_1_0_0: RelativePermeabilityModel100,
     ContentSchemaVersion.V_1_1_0: RelativePermeabilityModel110,
+    ContentSchemaVersion.V_2_0_0: RelativePermeabilityModel200,
 }
 ROCK_COMPRESSIBILITY_MODELS = {
     ContentSchemaVersion.V_1_0_0: RockCompressibilityModel100,

@@ -521,6 +521,7 @@ async def test_post_data_wrong_content_header(data_endpoint_path):
     [
         (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.RELATIVE_PERMEABILITY, relative_permeability_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.WETTABILITY_INDEX, wettability_index_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID),
         (
@@ -574,6 +575,7 @@ async def test_get_data_no_content_type_does_not_return_400(data_endpoint_path, 
     [
         (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.RELATIVE_PERMEABILITY, relative_permeability_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.WETTABILITY_INDEX, wettability_index_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID),
         (
@@ -804,6 +806,16 @@ async def test_get_data_accept_parquet_does_not_return_content_type_error(data_e
             ],
             "download_file",
             [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
         ),
         (
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
@@ -1270,6 +1282,30 @@ async def test_get_content_parquet_data(
             [build_get_test_data("x-parquet", cce_mock_objects.TEST_DATA)],
         ),
         (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V2)],
+        ),
+        (
             TestContentPathsApiV2.WETTABILITY_INDEX,
             wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
             "get_record",
@@ -1346,6 +1382,7 @@ async def test_get_data_accept_negotiation_returns_parquet(
     [
         (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.RELATIVE_PERMEABILITY, relative_permeability_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.WETTABILITY_INDEX, wettability_index_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID),
         (
@@ -1547,6 +1584,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             "download_file",
             [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA)],
             relative_permeability_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
         ),
         (
             f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -1982,7 +2028,16 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
         ),
         (
             f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
-            relative_permeability_mock_objects.TEST_PARAMS_AGGREGATION,
+            relative_permeability_mock_objects.TEST_PARAMS_AGGREGATION_V1_1,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+            relative_permeability_mock_objects.TEST_AGGREGATED_DATA_V1_1,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            relative_permeability_mock_objects.TEST_PARAMS_AGGREGATION_V2,
             "get_record",
             [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
             "download_file",
@@ -2393,6 +2448,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             "download_file",
             [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA)],
             relative_permeability_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            relative_permeability_mock_objects.TEST_PARAMS_FILTERS_V1_1,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+            relative_permeability_mock_objects.TEST_FILTERED_DATA_V1_1,
         ),
         (
             f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -3219,6 +3283,22 @@ async def test_get_data_json_data(
             relative_permeability_mock_objects.TEST_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V2)],
+            relative_permeability_mock_objects.TEST_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.ROCK_COMPRESSIBILITY}/{rock_compressibility_mock_objects.TEST_DATASET_RECORD_ID}",
             "get_record",
             [rock_compressibility_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
@@ -3684,6 +3764,22 @@ async def test_get_data_json_data_no_content_schema_version(
             "download_file",
             [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA)],
             relative_permeability_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V2)],
+            relative_permeability_mock_objects.TEST_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.ROCK_COMPRESSIBILITY}/{rock_compressibility_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -4608,6 +4704,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
         ),
         (
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V1_1,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
             relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             relative_permeability_mock_objects.TEST_DATA_V2,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
@@ -5071,6 +5174,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
         ),
         (
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V1_1,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
             relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             relative_permeability_mock_objects.TEST_DATA_V2,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
@@ -5498,6 +5608,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
         ),
         (
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
             relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
         ),
@@ -5862,6 +5977,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             relative_permeability_mock_objects.TEST_DATA,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
             relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V1_1,
         ),
         (
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
@@ -6327,6 +6449,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             relative_permeability_mock_objects.TEST_DATA,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
             relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V1_1,
         ),
         (
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
@@ -6836,6 +6965,16 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
             relative_permeability_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             relative_permeability_mock_objects.EXPECTED_ERROR_REASON,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.INCORRECT_DATAFRAME_TEST_DATA_V1_1,
+            relative_permeability_mock_objects.EXPECTED_ERROR_REASON_V1_1,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.INCORRECT_DATAFRAME_TEST_DATA_V2,
+            relative_permeability_mock_objects.EXPECTED_ERROR_REASON_V2,
         ),
         (
             TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
