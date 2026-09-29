@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "3911343a-d6fa-47fc-8273-19aaa373382d",
+    "_postman_id": "9d7bc246-14e8-4b0d-8ed4-d4b27a8f2a36",
     "name": "RAFS DDMS",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "56682315"
@@ -5961,466 +5961,767 @@
               "name": "Samples Analysis [Relative Permeability]",
               "item": [
                 {
-                  "name": "01 - Create record",
-                  "event": [
+                  "name": "common",
+                  "item": [
                     {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                          "});",
-                          "",
-                          "let response = pm.response.json().recordIdVersions[0];",
-                          "",
-                          "var parts = response.split(\":\");",
-                          "var record_id = parts.slice(0, 3).join(\":\");",
-                          "pm.setCollectionVar(pm, \"v2_rp_record_id\", record_id);",
-                          "pm.addRecordToCleanUp(pm, record_id);"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "data-partition-id",
-                        "value": "{{data-partition-id}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "[\n    {\n        \"kind\": \"{{authority}}:wks:work-product-component--SamplesAnalysis:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ]\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"status\": \"compliant\"\n        },\n        \"tags\": {\n            \"NameOfKey\": \"String value\"\n        },\n        \"data\": {\n            \"SampleIDs\": [\n                \"{{SampleID_KentishKnockSouth1_48B}}:\"\n            ],\n            \"ReportSampleIdentifiers\": [\n                \"48B\"\n            ],\n            \"AnalysisDate\": \"2022-12-16\",\n            \"LaboratoryIDs\": [\n                \"{{data-partition-id}}:master-data--Organisation:GenericOrganisation_100:\"\n            ],\n            \"LaboratoryNames\": [\n                \"TestLab\"\n            ],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"Kentish Knock South 1 - Special Core Analysis (SCAL) Report, Page 105\",\n                    \"RemarkSequenceNumber\": 1,\n                    \"RemarkSource\": \"RAFSDDMS\",\n                    \"RemarkDate\": \"2023-12-21\"\n                }\n            ],\n            \"DatePublished\": \"2015-01-01\",\n            \"ParentSamplesAnalysesReports\": [\n                {\n                    \"ParentSamplesAnalysesReportID\": \"{{sar_kks1_record_id}}:\"\n                }\n            ],\n            \"SampleAnalysisTypeIDs\": [\n                \"{{data-partition-id}}:reference-data--SampleAnalysisType:RelativePermeability.SteadyState:\"\n            ],\n            \"SamplesAnalysisCategoryTagIDs\": [\n                \"{{data-partition-id}}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:\"\n            ],\n            \"DDMSDatasets\": [],\n            \"Parameters\": []\n        }\n    }\n]"
-                    },
-                    "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis",
-                      "protocol": "https",
-                      "host": [
-                        "{{RAFS_DDMS_HOST}}"
+                      "name": "01 - Create record",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});\n\nconst data = pm.response.json(); \nconst parts = data.recordIdVersions[0].split(\":\");\nconst recordId = parts.slice(0, 3).join(\":\");\npm.collectionVariables.set(\"relativepermeability_record_id\", recordId);\npm.addRecordToCleanUp(pm, recordId);"
+                            ]
+                          }
+                        }
                       ],
-                      "path": [
-                        "v2",
-                        "samplesanalysis"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
-                {
-                  "name": "02 - Get record",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                          "});"
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          }
                         ],
-                        "type": "text/javascript"
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}",
-                        "type": "text"
+                        "body": {
+                          "mode": "raw",
+                          "raw": "[\n    {\n        \"kind\": \"{{authority}}:wks:work-product-component--SamplesAnalysis:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ]\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"status\": \"compliant\"\n        },\n        \"tags\": {\n            \"NameOfKey\": \"String value\"\n        },\n        \"data\": {\n            \"SampleIDs\": [\n                \"{{SampleID_Sample_200}}:\"\n            ],\n            \"ReportSampleIdentifiers\": [\n                \"88Y\"\n            ],\n            \"AnalysisDate\": \"2022-12-16\",\n            \"LaboratoryIDs\": [\n                \"{{data-partition-id}}:master-data--Organisation:GenericOrganisation_100:\"\n            ],\n            \"LaboratoryNames\": [\n                \"TestLab\"\n            ],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"Test was successfully conducted\",\n                    \"RemarkSequenceNumber\": 1,\n                    \"RemarkSource\": \"Lab\",\n                    \"RemarkDate\": \"2023-10-23\"\n                }\n            ],\n            \"DatePublished\": \"2022-12-16\",\n            \"ParentSamplesAnalysesReports\": [\n                {\n                    \"ParentSamplesAnalysesReportID\": \"{{sar_record_id}}:\"\n                }\n            ],\n            \"SampleAnalysisTypeIDs\": [\n                \"{{data-partition-id}}:reference-data--SampleAnalysisType:RelativePermeability.SteadyState:\"\n            ],\n            \"SamplesAnalysisCategoryTagIDs\": [\n                \"{{data-partition-id}}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:\"\n            ],\n            \"AvailableSampleAnalysisProperties\": [],\n            \"DDMSDatasets\": [],\n            \"Parameters\": []\n        }\n    }\n]",
+                          "options": {
+                            "raw": {
+                              "language": "text"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis"
+                          ]
+                        }
                       },
-                      {
-                        "key": "data-partition-id",
-                        "value": "{{data-partition-id}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Cache-Control",
-                        "value": "no-store",
-                        "type": "text"
-                      }
-                    ],
-                    "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{v2_rp_record_id}}",
-                      "protocol": "https",
-                      "host": [
-                        "{{RAFS_DDMS_HOST}}"
-                      ],
-                      "path": [
-                        "v2",
-                        "samplesanalysis",
-                        "{{v2_rp_record_id}}"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
-                {
-                  "name": "03 - Get content schema",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                          "});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "data-partition-id",
-                        "value": "{{data-partition-id}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Cache-Control",
-                        "value": "no-store",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "*/*;version=1.0.0",
-                        "type": "text"
-                      }
-                    ],
-                    "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/relativepermeability/data/schema",
-                      "protocol": "https",
-                      "host": [
-                        "{{RAFS_DDMS_HOST}}"
-                      ],
-                      "path": [
-                        "v2",
-                        "samplesanalysis",
-                        "relativepermeability",
-                        "data",
-                        "schema"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
-                {
-                  "name": "04a - Add data",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "// Fixed the typo in the response object property name",
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                          "});",
-                          "",
-                          "(function main() {",
-                          "    const data = pm.response.json();",
-                          "    const dataPartitionId = pm.environment.get(\"data-partition-id\");",
-                          "    let datasetUuid;",
-                          "",
-                          "    console.log(\"Response data:\", data);",
-                          "    console.log(\"dataPartitionId:\", dataPartitionId);",
-                          "",
-                          "    if (data.updated_wpc_id !== undefined) {",
-                          "        console.log(\"Found updated_wpc_id → WPC format\");",
-                          "",
-                          "        const parts = data.ddms_urn.split(\"/\");",
-                          "        console.log(\"Split parts:\", parts);",
-                          "",
-                          "        datasetUuid = parts[parts.length - 1];  ",
-                          "        console.log(\"Extracted datasetUuid:\", datasetUuid);",
-                          "    }",
-                          "",
-                          "    else {",
-                          "        console.log(\"No updated_wpc_id → dataset format\");",
-                          "",
-                          "        const uriParts = data.ddms_urn.split(\"/\");",
-                          "        console.log(\"URI parts:\", uriParts);",
-                          "",
-                          "        datasetUuid = uriParts[uriParts.length - 2];",
-                          "",
-                          "        console.log(\"Extracted datasetUuid:\", datasetUuid);",
-                          "    }",
-                          "",
-                          "    if (datasetUuid) {",
-                          "        console.info(\"Setting v2_rp_dataset_id:\", datasetUuid);",
-                          "        pm.collectionVariables.set(\"v2_rp_dataset_id\", datasetUuid);",
-                          "    } else {",
-                          "        console.error(\"datasetUuid is undefined or null — check ddms_urn format!\");",
-                          "    }",
-                          "})();",
-                          "",
-                          "",
-                          "",
-                          ""
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
+                      "response": []
                     },
                     {
-                      "listen": "prerequest",
-                      "script": {
-                        "exec": [
-                          ""
+                      "name": "02 - Get record",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});"
+                            ]
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Cache-Control",
+                            "value": "no-store"
+                          }
                         ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "data-partition-id",
-                        "value": "{{data-partition-id}}"
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{relativepermeability_record_id}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{relativepermeability_record_id}}"
+                          ]
+                        }
                       },
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}"
-                      },
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "*/*;version={{rafsddms-content-schema-version}}",
-                        "type": "text"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n    \"columns\": [\n        \"SamplesAnalysisID\",\n        \"SampleID\",\n        \"Meta\",\n        \"DesaturationMethodID\",\n        \"InitialConditions\",\n        \"TerminalConditions\",\n        \"ReferencePermeability\",\n        \"InterfacialTension\",\n        \"BrineSalinity\",\n        \"OilViscosity\",\n        \"GasViscosity\",\n        \"WaterViscosity\",\n        \"OilDensity\",\n        \"GasDensity\",\n        \"WaterDensity\",\n        \"PermeabilityTestSteps\",\n        \"OilTypeID\",\n        \"GasTypeID\",\n        \"WaterTypeID\",\n        \"EndTime\"\n    ],\n    \"index\": [\n        0,\n        1\n    ],\n    \"data\": [\n        [\n            \"{{v2_rp_record_id}}:\",\n            \"{{SampleID_KentishKnockSouth1_48B}}:\",\n            [\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"degree Fahrenheit\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:degF:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.TestTemperature\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"feet\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:ft:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Position\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"centiPoise\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cP:\",\n                    \"propertyNames\": [\n                        \"OilViscosity\",\n                        \"GasViscosity\",\n                        \"WaterViscosity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"minute\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:min:\",\n                    \"propertyNames\": [\n                        \"EndTime\",\n                        \"PermeabilityTestSteps.StartTime\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Time\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.Time\",\n                        \"PermeabilityTestSteps.ProductionProfiles.Time\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"percent\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:%25:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.RelativePermeability\",\n                        \"InitialConditions.Saturation.Value\",\n                        \"TerminalConditions.RelativePermeability\",\n                        \"TerminalConditions.Saturation.Value\",\n                        \"RelativePermeabilityCrossover\",\n                        \"EndFaceSaturationCrossover\",\n                        \"PermeabilityTestSteps.RelativePermeability\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.InitialSaturation\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.EquilibriumSaturation\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"millidarcys\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:mD:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.EffectivePermeability.Value\",\n                        \"TerminalConditions.EffectivePermeability.Value\",\n                        \"PermeabilityTestSteps.EffectivePermeability.Value\",\n                        \"ReferencePermeability.Value\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"pounds per square inch\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:psi:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.NetConfiningStress\",\n                        \"InitialConditions.OverburdenPressure\",\n                        \"InitialConditions.PorePressure\",\n                        \"PermeabilityTestSteps.DifferentialPressure\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.DifferentialPressure\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"Flow Rate\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3%2Fmin:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.LastFlowRate\",\n                        \"PermeabilityTestSteps.FractionalFlowRate\",\n                        \"PermeabilityTestSteps.InjectionRate.Value\",\n                        \"ProductionProfiles.ProductionRate\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"gram per cubic centimetre\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:g%2Fcm3:\",\n                    \"propertyNames\": [\n                        \"GasDensity\",\n                        \"OilDensity\",\n                        \"WaterDensity\",\n                        \"BrineSalinity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"cubic centimetres\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.CumulativeProduction\",\n                        \"CumulativeProduction.Value\"\n                    ]\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DesaturationMethod:CentrifugeGasWater:\",\n            {\n                \"TestTemperature\": 70,\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 5915,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 1.0,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.073,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            {\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 1687,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 0.285,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.819,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            [\n                {\n                    \"Value\": 6690,\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                }\n            ],\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            [\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 1.00,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.073,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.001,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.057,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.698,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.003,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.049,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.715,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.005,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.045,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.724,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.752,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.285,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.787,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.116,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.012,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.819,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DisplacedFluidType:LiveCrudeOil:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n            null\n        ],\n        [\n            \"{{v2_rp_record_id}}:\",\n            \"{{SampleID_KentishKnockSouth1_48B}}:\",\n            [\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"degree Fahrenheit\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:degF:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.TestTemperature\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"feet\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:ft:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Position\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"centiPoise\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cP:\",\n                    \"propertyNames\": [\n                        \"OilViscosity\",\n                        \"GasViscosity\",\n                        \"WaterViscosity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"minute\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:min:\",\n                    \"propertyNames\": [\n                        \"EndTime\",\n                        \"PermeabilityTestSteps.StartTime\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Time\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.Time\",\n                        \"PermeabilityTestSteps.ProductionProfiles.Time\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"percent\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:%25:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.RelativePermeability\",\n                        \"InitialConditions.Saturation.Value\",\n                        \"TerminalConditions.RelativePermeability\",\n                        \"TerminalConditions.Saturation.Value\",\n                        \"RelativePermeabilityCrossover\",\n                        \"EndFaceSaturationCrossover\",\n                        \"PermeabilityTestSteps.RelativePermeability\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.InitialSaturation\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.EquilibriumSaturation\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"millidarcys\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:mD:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.EffectivePermeability.Value\",\n                        \"TerminalConditions.EffectivePermeability.Value\",\n                        \"PermeabilityTestSteps.EffectivePermeability.Value\",\n                        \"ReferencePermeability.Value\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"pounds per square inch\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:psi:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.NetConfiningStress\",\n                        \"InitialConditions.OverburdenPressure\",\n                        \"InitialConditions.PorePressure\",\n                        \"PermeabilityTestSteps.DifferentialPressure\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.DifferentialPressure\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"Flow Rate\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3%2Fmin:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.LastFlowRate\",\n                        \"PermeabilityTestSteps.FractionalFlowRate\",\n                        \"PermeabilityTestSteps.InjectionRate.Value\",\n                        \"ProductionProfiles.ProductionRate\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"gram per cubic centimetre\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:g%2Fcm3:\",\n                    \"propertyNames\": [\n                        \"GasDensity\",\n                        \"OilDensity\",\n                        \"WaterDensity\",\n                        \"BrineSalinity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"cubic centimetres\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.CumulativeProduction\",\n                        \"CumulativeProduction.Value\"\n                    ]\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DesaturationMethod:CentrifugeGasWater:\",\n            {\n                \"TestTemperature\": 70,\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 5915,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 1.0,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.073,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            {\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 1687,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 0.285,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.819,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            [\n                {\n                    \"Value\": 6690,\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                }\n            ],\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            [\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 1.00,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.073,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.001,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.057,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.698,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.003,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.049,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.715,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.005,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.045,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.724,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.752,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.285,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.787,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.116,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.012,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.819,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DisplacedFluidType:LiveCrudeOil:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n            null\n        ]\n    ]\n}"
+                      "response": []
                     },
-                    "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{v2_rp_record_id}}/data/relativepermeability",
-                      "protocol": "https",
-                      "host": [
-                        "{{RAFS_DDMS_HOST}}"
+                    {
+                      "name": "03 - Get versions",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});\n\nconst data = pm.response.json();\nconst versions = data.versions;\nconst latestVersion = versions[versions.length - 1];\npm.collectionVariables.set(\"relativepermeability_record_version\", latestVersion);"
+                            ]
+                          }
+                        }
                       ],
-                      "path": [
-                        "v2",
-                        "samplesanalysis",
-                        "{{v2_rp_record_id}}",
-                        "data",
-                        "relativepermeability"
-                      ]
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Cache-Control",
+                            "value": "no-store"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{relativepermeability_record_id}}/versions",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{relativepermeability_record_id}}",
+                            "versions"
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "04 - Get concrete version",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});"
+                            ]
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{relativepermeability_record_id}}/versions/{{relativepermeability_record_version}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{relativepermeability_record_id}}",
+                            "versions",
+                            "{{relativepermeability_record_version}}"
+                          ]
+                        }
+                      },
+                      "response": []
                     }
-                  },
-                  "response": []
+                  ]
                 },
                 {
-                  "name": "05 - Get record data",
-                  "event": [
+                  "name": "v1.0.0",
+                  "item": [
                     {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                          "});"
-                        ],
-                        "type": "text/javascript"
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "data-partition-id",
-                        "value": "{{data-partition-id}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "*/*;version={{rafsddms-content-schema-version}}",
-                        "type": "text"
-                      }
-                    ],
-                    "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{v2_rp_record_id}}/data/relativepermeability/{{v2_rp_dataset_id}}",
-                      "protocol": "https",
-                      "host": [
-                        "{{RAFS_DDMS_HOST}}"
+                      "name": "05 - Get content schema",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});"
+                            ]
+                          }
+                        }
                       ],
-                      "path": [
-                        "v2",
-                        "samplesanalysis",
-                        "{{v2_rp_record_id}}",
-                        "data",
-                        "relativepermeability",
-                        "{{v2_rp_dataset_id}}"
-                      ]
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Cache-Control",
+                            "value": "no-store"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/relativepermeability/data/schema?content_schema_version=1.0.0",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "relativepermeability",
+                            "data",
+                            "schema"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "1.0.0"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "06a - Add data",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});\n\n(function main() {\n    const data = pm.response.json();\n    const dataPartitionId = pm.environment.get(\"data-partition-id\");\n    let datasetUuid;\n\n    console.log(\"Response data:\", data);\n    console.log(\"dataPartitionId:\", dataPartitionId);\n\n    if (data.updated_wpc_id !== undefined) {\n        console.log(\"Found updated_wpc_id → WPC format\");\n\n        const parts = data.ddms_urn.split(\"/\");\n        console.log(\"Split parts:\", parts);\n\n        datasetUuid = parts[parts.length - 1];  \n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n    else {\n        console.log(\"No updated_wpc_id → dataset format\");\n\n        const uriParts = data.ddms_urn.split(\"/\");\n        console.log(\"URI parts:\", uriParts);\n\n        datasetUuid = uriParts[uriParts.length - 2];\n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n\n    if (datasetUuid) {\n        console.info(\"Setting relativepermeability_dataset_id:\", datasetUuid);\n        pm.collectionVariables.set(\"relativepermeability_dataset_id\", datasetUuid);\n    } else {\n        console.error(\"datasetUuid is undefined or null — check ddms_urn format!\");\n    }\n})();"
+                            ]
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"columns\": [\n        \"SamplesAnalysisID\",\n        \"SampleID\",\n        \"Meta\",\n        \"DesaturationMethodID\",\n        \"InitialConditions\",\n        \"TerminalConditions\",\n        \"RelativePermeabilityCrossover\",\n        \"EndFaceSaturationCrossover\",\n        \"ReferencePermeability\",\n        \"SaturationProcessMethodID\",\n        \"InterfacialTension\",\n        \"BrineSalinity\",\n        \"OilViscosity\",\n        \"GasViscosity\",\n        \"WaterViscosity\",\n        \"OilDensity\",\n        \"GasDensity\",\n        \"WaterDensity\",\n        \"FluidSystemAnalysisTypeID\",\n        \"PermeabilityTestSteps\",\n        \"OilTypeID\",\n        \"GasTypeID\",\n        \"WaterTypeID\",\n        \"EndTime\"\n    ],\n    \"index\": [\n        0\n    ],\n    \"data\": [\n        [\n            \"{{relativepermeability_record_id}}:\",\n            \"{{SampleID_Sample_200}}:\",\n            [\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"degree Fahrenheit\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:degF:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.TestTemperature\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"feet\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:ft:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Position\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"centiPoise\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cP:\",\n                    \"propertyNames\": [\n                        \"OilViscosity\",\n                        \"GasViscosity\",\n                        \"WaterViscosity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"minute\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:min:\",\n                    \"propertyNames\": [\n                        \"EndTime\",\n                        \"PermeabilityTestSteps.StartTime\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Time\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.Time\",\n                        \"PermeabilityTestSteps.ProductionProfiles.Time\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"percent\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:%25:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.RelativePermeability\",\n                        \"InitialConditions.Saturation.Value\",\n                        \"TerminalConditions.RelativePermeability\",\n                        \"TerminalConditions.Saturation.Value\",\n                        \"RelativePermeabilityCrossover\",\n                        \"EndFaceSaturationCrossover\",\n                        \"PermeabilityTestSteps.RelativePermeability\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.InitialSaturation\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.EquilibriumSaturation\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"millidarcys\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:mD:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.EffectivePermeability.Value\",\n                        \"TerminalConditions.EffectivePermeability.Value\",\n                        \"PermeabilityTestSteps.EffectivePermeability.Value\",\n                        \"ReferencePermeability.Value\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"pounds per square inch\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:psi:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.NetConfiningStress\",\n                        \"InitialConditions.OverburdenPressure\",\n                        \"InitialConditions.PorePressure\",\n                        \"PermeabilityTestSteps.DifferentialPressure\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.DifferentialPressure\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"Flow Rate\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3%2Fmin:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.LastFlowRate\",\n                        \"PermeabilityTestSteps.FractionalFlowRate\",\n                        \"PermeabilityTestSteps.InjectionRate.Value\",\n                        \"ProductionProfiles.ProductionRate\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"gram per cubic centimetre\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:g%2Fcm3:\",\n                    \"propertyNames\": [\n                        \"GasDensity\",\n                        \"OilDensity\",\n                        \"WaterDensity\",\n                        \"BrineSalinity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"cubic centimetres\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.CumulativeProduction\",\n                        \"CumulativeProduction.Value\"\n                    ]\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DesaturationMethod:CentrifugeGasWater:\",\n            {\n                \"TestTemperature\": 70,\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 5915,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 1.0,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.073,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            {\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 1687,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 0.285,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.819,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            15.0,\n            20.5,\n            [\n                {\n                    \"Value\": 6690,\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--SaturationProcessMethod:Imbibition:\",\n            10.0,\n            23.0,\n            34.0,\n            56.0,\n            67.0,\n            34.5,\n            33.0,\n            654.0,\n            \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasOil:\",\n            [\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 1.00,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.073,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.001,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.057,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.698,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.003,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.049,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.715,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.005,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.045,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.724,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.752,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.285,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.787,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.116,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.012,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.819,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DisplacedFluidType:LiveCrudeOil:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n            24.0\n        ]\n    ]\n}\n",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{relativepermeability_record_id}}/data/relativepermeability?content_schema_version=1.0.0",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{relativepermeability_record_id}}",
+                            "data",
+                            "relativepermeability"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "1.0.0"
+                            }
+                          ]
+                        },
+                        "description": "Possible reference data types:  \nWholeOilGasChromatographyCompounds  \nSaturateGasChromatographyCompounds  \nAromaticGasChromatographyCompounds  \nGasolineGasChromatographyCompounds  \nPyrolysisGasChromatographyCompounds"
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "06b - Add data",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});\n\n(function main() {\n    const data = pm.response.json();\n    const dataPartitionId = pm.environment.get(\"data-partition-id\");\n    let datasetUuid;\n\n    console.log(\"Response data:\", data);\n    console.log(\"dataPartitionId:\", dataPartitionId);\n\n    if (data.updated_wpc_id !== undefined) {\n        console.log(\"Found updated_wpc_id → WPC format\");\n\n        const parts = data.ddms_urn.split(\"/\");\n        console.log(\"Split parts:\", parts);\n\n        datasetUuid = parts[parts.length - 1];  \n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n    else {\n        console.log(\"No updated_wpc_id → dataset format\");\n\n        const uriParts = data.ddms_urn.split(\"/\");\n        console.log(\"URI parts:\", uriParts);\n\n        datasetUuid = uriParts[uriParts.length - 2];\n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n\n    if (datasetUuid) {\n        console.info(\"Setting relativepermeability_dataset_id:\", datasetUuid);\n        pm.collectionVariables.set(\"relativepermeability_dataset_id\", datasetUuid);\n    } else {\n        console.error(\"datasetUuid is undefined or null — check ddms_urn format!\");\n    }\n})();"
+                            ]
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"columns\": [\n        \"SamplesAnalysisID\",\n        \"SampleID\",\n        \"Meta\",\n        \"DesaturationMethodID\",\n        \"InitialConditions\",\n        \"TerminalConditions\",\n        \"ReferencePermeability\",\n        \"InterfacialTension\",\n        \"BrineSalinity\",\n        \"OilViscosity\",\n        \"GasViscosity\",\n        \"WaterViscosity\",\n        \"OilDensity\",\n        \"GasDensity\",\n        \"WaterDensity\",\n        \"PermeabilityTestSteps\",\n        \"OilTypeID\",\n        \"GasTypeID\",\n        \"WaterTypeID\",\n        \"EndTime\"\n    ],\n    \"index\": [\n        0,\n        1\n    ],\n    \"data\": [\n        [\n            \"{{relativepermeability_record_id}}:\",\n            \"{{SampleID_Sample_200}}:\",\n            [\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"degree Fahrenheit\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:degF:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.TestTemperature\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"feet\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:ft:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Position\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"centiPoise\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cP:\",\n                    \"propertyNames\": [\n                        \"OilViscosity\",\n                        \"GasViscosity\",\n                        \"WaterViscosity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"minute\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:min:\",\n                    \"propertyNames\": [\n                        \"EndTime\",\n                        \"PermeabilityTestSteps.StartTime\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Time\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.Time\",\n                        \"PermeabilityTestSteps.ProductionProfiles.Time\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"percent\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:%25:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.RelativePermeability\",\n                        \"InitialConditions.Saturation.Value\",\n                        \"TerminalConditions.RelativePermeability\",\n                        \"TerminalConditions.Saturation.Value\",\n                        \"RelativePermeabilityCrossover\",\n                        \"EndFaceSaturationCrossover\",\n                        \"PermeabilityTestSteps.RelativePermeability\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.InitialSaturation\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.EquilibriumSaturation\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"millidarcys\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:mD:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.EffectivePermeability.Value\",\n                        \"TerminalConditions.EffectivePermeability.Value\",\n                        \"PermeabilityTestSteps.EffectivePermeability.Value\",\n                        \"ReferencePermeability.Value\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"pounds per square inch\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:psi:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.NetConfiningStress\",\n                        \"InitialConditions.OverburdenPressure\",\n                        \"InitialConditions.PorePressure\",\n                        \"PermeabilityTestSteps.DifferentialPressure\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.DifferentialPressure\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"Flow Rate\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3%2Fmin:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.LastFlowRate\",\n                        \"PermeabilityTestSteps.FractionalFlowRate\",\n                        \"PermeabilityTestSteps.InjectionRate.Value\",\n                        \"ProductionProfiles.ProductionRate\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"gram per cubic centimetre\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:g%2Fcm3:\",\n                    \"propertyNames\": [\n                        \"GasDensity\",\n                        \"OilDensity\",\n                        \"WaterDensity\",\n                        \"BrineSalinity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"cubic centimetres\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.CumulativeProduction\",\n                        \"CumulativeProduction.Value\"\n                    ]\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DesaturationMethod:CentrifugeGasWater:\",\n            {\n                \"TestTemperature\": 70,\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 5915,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 1.0,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.073,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            {\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 1687,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 0.285,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.819,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            [\n                {\n                    \"Value\": 6690,\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                }\n            ],\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            [\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 1.00,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.073,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.001,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.057,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.698,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.003,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.049,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.715,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.005,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.045,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.724,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.752,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.285,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.787,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.116,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.012,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.819,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DisplacedFluidType:LiveCrudeOil:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n            null\n        ],\n        [\n            \"{{relativepermeability_record_id}}:\",\n            \"{{SampleID_Sample_200}}:\",\n            [\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"degree Fahrenheit\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:degF:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.TestTemperature\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"feet\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:ft:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Position\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"centiPoise\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cP:\",\n                    \"propertyNames\": [\n                        \"OilViscosity\",\n                        \"GasViscosity\",\n                        \"WaterViscosity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"minute\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:min:\",\n                    \"propertyNames\": [\n                        \"EndTime\",\n                        \"PermeabilityTestSteps.StartTime\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Time\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.Time\",\n                        \"PermeabilityTestSteps.ProductionProfiles.Time\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"percent\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:%25:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.RelativePermeability\",\n                        \"InitialConditions.Saturation.Value\",\n                        \"TerminalConditions.RelativePermeability\",\n                        \"TerminalConditions.Saturation.Value\",\n                        \"RelativePermeabilityCrossover\",\n                        \"EndFaceSaturationCrossover\",\n                        \"PermeabilityTestSteps.RelativePermeability\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.InitialSaturation\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.EquilibriumSaturation\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"millidarcys\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:mD:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.EffectivePermeability.Value\",\n                        \"TerminalConditions.EffectivePermeability.Value\",\n                        \"PermeabilityTestSteps.EffectivePermeability.Value\",\n                        \"ReferencePermeability.Value\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"pounds per square inch\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:psi:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.NetConfiningStress\",\n                        \"InitialConditions.OverburdenPressure\",\n                        \"InitialConditions.PorePressure\",\n                        \"PermeabilityTestSteps.DifferentialPressure\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.DifferentialPressure\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"Flow Rate\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3%2Fmin:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.LastFlowRate\",\n                        \"PermeabilityTestSteps.FractionalFlowRate\",\n                        \"PermeabilityTestSteps.InjectionRate.Value\",\n                        \"ProductionProfiles.ProductionRate\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"gram per cubic centimetre\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:g%2Fcm3:\",\n                    \"propertyNames\": [\n                        \"GasDensity\",\n                        \"OilDensity\",\n                        \"WaterDensity\",\n                        \"BrineSalinity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"cubic centimetres\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.CumulativeProduction\",\n                        \"CumulativeProduction.Value\"\n                    ]\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DesaturationMethod:CentrifugeGasWater:\",\n            {\n                \"TestTemperature\": 70,\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 5915,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 1.0,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.073,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            {\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 1687,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 0.285,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.819,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            [\n                {\n                    \"Value\": 6690,\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                }\n            ],\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            null,\n            [\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 1.00,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.073,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.001,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.057,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.698,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.003,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.049,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.715,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.005,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.045,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.724,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.752,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.285,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.787,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.116,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.012,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.819,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DisplacedFluidType:LiveCrudeOil:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n            null\n        ]\n    ]\n}",
+                          "options": {
+                            "raw": {
+                              "language": "text"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{relativepermeability_record_id}}/data/relativepermeability?content_schema_version=1.0.0",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{relativepermeability_record_id}}",
+                            "data",
+                            "relativepermeability"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "1.0.0"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "07 - Get record data",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});"
+                            ]
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{relativepermeability_record_id}}/data/relativepermeability/{{relativepermeability_dataset_id}}?content_schema_version=1.0.0",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{relativepermeability_record_id}}",
+                            "data",
+                            "relativepermeability",
+                            "{{relativepermeability_dataset_id}}"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "1.0.0"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
                     }
-                  },
-                  "response": []
+                  ]
                 },
                 {
-                  "name": "06 - Get versions",
-                  "event": [
+                  "name": "v1.1.0",
+                  "item": [
                     {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                          "});",
-                          "",
-                          "// Parse the response body to get the versions array",
-                          "var data = JSON.parse(responseBody);",
-                          "var versions = data.versions;",
-                          "",
-                          "// Get the latest version (i.e., the last element of the array)",
-                          "var latestVersion = versions[versions.length - 1];",
-                          "",
-                          "// Set the latest version as an environment variable",
-                          "pm.setCollectionVar(pm, \"v2_rp_record_version\", latestVersion);"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "data-partition-id",
-                        "value": "{{data-partition-id}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Cache-Control",
-                        "value": "no-store",
-                        "type": "text"
-                      }
-                    ],
-                    "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{v2_rp_record_id}}/versions",
-                      "protocol": "https",
-                      "host": [
-                        "{{RAFS_DDMS_HOST}}"
+                      "name": "05 - Get content schema",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});"
+                            ]
+                          }
+                        }
                       ],
-                      "path": [
-                        "v2",
-                        "samplesanalysis",
-                        "{{v2_rp_record_id}}",
-                        "versions"
-                      ]
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Cache-Control",
+                            "value": "no-store"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/relativepermeability/data/schema?content_schema_version=1.1.0",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "relativepermeability",
+                            "data",
+                            "schema"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "1.1.0"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "07 - Get record data",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});"
+                            ]
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{relativepermeability_record_id}}/data/relativepermeability/{{relativepermeability_dataset_id}}?content_schema_version=1.1.0",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{relativepermeability_record_id}}",
+                            "data",
+                            "relativepermeability",
+                            "{{relativepermeability_dataset_id}}"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "1.1.0"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
                     }
-                  },
-                  "response": []
+                  ]
                 },
                 {
-                  "name": "07 - Get concrete version",
-                  "event": [
+                  "name": "v2.0.0",
+                  "item": [
                     {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                          "});"
-                        ],
-                        "type": "text/javascript"
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "data-partition-id",
-                        "value": "{{data-partition-id}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                      }
-                    ],
-                    "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{v2_rp_record_id}}/versions/{{v2_rp_record_version}}",
-                      "protocol": "https",
-                      "host": [
-                        "{{RAFS_DDMS_HOST}}"
+                      "name": "05 - Get content schema",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});"
+                            ]
+                          }
+                        }
                       ],
-                      "path": [
-                        "v2",
-                        "samplesanalysis",
-                        "{{v2_rp_record_id}}",
-                        "versions",
-                        "{{v2_rp_record_version}}"
-                      ]
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Cache-Control",
+                            "value": "no-store"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/relativepermeability/data/schema?content_schema_version=2.0.0",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "relativepermeability",
+                            "data",
+                            "schema"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "2.0.0"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "06 - Add data",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});\n\n(function main() {\n    const data = pm.response.json();\n    const dataPartitionId = pm.environment.get(\"data-partition-id\");\n    let datasetUuid;\n\n    console.log(\"Response data:\", data);\n    console.log(\"dataPartitionId:\", dataPartitionId);\n\n    if (data.updated_wpc_id !== undefined) {\n        console.log(\"Found updated_wpc_id → WPC format\");\n\n        const parts = data.ddms_urn.split(\"/\");\n        console.log(\"Split parts:\", parts);\n\n        datasetUuid = parts[parts.length - 1];  \n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n    else {\n        console.log(\"No updated_wpc_id → dataset format\");\n\n        const uriParts = data.ddms_urn.split(\"/\");\n        console.log(\"URI parts:\", uriParts);\n\n        datasetUuid = uriParts[uriParts.length - 2];\n        console.log(\"Extracted datasetUuid:\", datasetUuid);\n    }\n\n    if (datasetUuid) {\n        console.info(\"Setting relativepermeability_dataset_id:\", datasetUuid);\n        pm.collectionVariables.set(\"relativepermeability_dataset_id\", datasetUuid);\n    } else {\n        console.error(\"datasetUuid is undefined or null — check ddms_urn format!\");\n    }\n})();"
+                            ]
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n  \"columns\": [\n    \"SamplesAnalysisID\",\n    \"SampleID\",\n    \"Meta\",\n    \"DesaturationMethodID\",\n    \"InitialConditions\",\n    \"TerminalConditions\",\n    \"RelativePermeabilityCrossover\",\n    \"EndFaceSaturationCrossover\",\n    \"ReferencePermeability\",\n    \"SaturationProcessMethodID\",\n    \"InterfacialTension\",\n    \"BrineSalinity\",\n    \"OilViscosity\",\n    \"GasViscosity\",\n    \"WaterViscosity\",\n    \"OilDensity\",\n    \"GasDensity\",\n    \"WaterDensity\",\n    \"FluidSystemAnalysisTypeID\",\n    \"PermeabilityTestSteps\",\n    \"OilTypeID\",\n    \"GasTypeID\",\n    \"WaterTypeID\",\n    \"EndTime\"\n  ],\n  \"index\": [\n    0\n  ],\n  \"data\": [\n    [\n      \"{{relativepermeability_record_id}}:\",\n      \"{{SampleID_Sample_200}}:\",\n      [\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"degF\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:degF:\",\n          \"propertyNames\": [\n            \"InitialConditions.TestTemperature\",\n            \"PermeabilityTestSteps[*].ProductionMeasurementCondition.Temperature\",\n            \"PermeabilityTestSteps[*].ProductionProfiles[*].ProductionMeasurementCondition.Temperature\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"psi\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:psi:\",\n          \"propertyNames\": [\n            \"InitialConditions.NetConfiningStress\",\n            \"InitialConditions.OverburdenPressure\",\n            \"InitialConditions.PorePressure\",\n            \"PermeabilityTestSteps[*].DifferentialPressure\",\n            \"PermeabilityTestSteps[*].DifferentialPressureProfiles[*].DifferentialPressure\",\n            \"PermeabilityTestSteps[*].ProductionMeasurementCondition.Pressure\",\n            \"PermeabilityTestSteps[*].ProductionProfiles[*].ProductionMeasurementCondition.Pressure\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"mD\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:mD:\",\n          \"propertyNames\": [\n            \"InitialConditions.EffectivePermeability.Permeability.Value\",\n            \"TerminalConditions.EffectivePermeability.Permeability.Value\",\n            \"ReferencePermeability.Permeability.Value\",\n            \"PermeabilityTestSteps[*].EffectivePermeability[*].Permeability.Value\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"m3/m3\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:m3%2Fm3:\",\n          \"propertyNames\": [\n            \"InitialConditions.EffectivePermeability.Saturation.Value\",\n            \"InitialConditions.RelativePermeability.SaturationValues[*].Value\",\n            \"TerminalConditions.EffectivePermeability.Saturation.Value\",\n            \"TerminalConditions.RelativePermeability.SaturationValues[*].Value\",\n            \"EndFaceSaturationCrossover\",\n            \"ReferencePermeability.Saturation.Value\",\n            \"PermeabilityTestSteps[*].EffectivePermeability[*].Saturation.Value\",\n            \"PermeabilityTestSteps[*].RelativePermeability.SaturationValues[*].Value\",\n            \"PermeabilityTestSteps[*].InSituSaturationProfiles[*].InSituPhaseSaturationProfile[*].Saturation\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"Euc\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:Euc:\",\n          \"propertyNames\": [\n            \"InitialConditions.RelativePermeability.RelativePermeabilityValues[*].Value\",\n            \"TerminalConditions.RelativePermeability.RelativePermeabilityValues[*].Value\",\n            \"PermeabilityTestSteps[*].RelativePermeability.RelativePermeabilityValues[*].Value\",\n            \"PermeabilityTestSteps[*].InSituSaturationProfiles[*].InSituPhaseSaturationProfile[*].RelativePosition\",\n            \"PermeabilityTestSteps[*].FractionalFlow[*].Value\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"mN/m\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:mN%2Fm:\",\n          \"propertyNames\": [\n            \"InterfacialTension[*].Value\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"g/cm3\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:g%2Fcm3:\",\n          \"propertyNames\": [\n            \"BrineSalinity\",\n            \"OilDensity\",\n            \"GasDensity\",\n            \"WaterDensity\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"cP\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cP:\",\n          \"propertyNames\": [\n            \"OilViscosity\",\n            \"GasViscosity\",\n            \"WaterViscosity\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"s\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:s:\",\n          \"propertyNames\": [\n            \"EndTime\",\n            \"PermeabilityTestSteps[*].StartTime\",\n            \"PermeabilityTestSteps[*].InSituSaturationProfiles[*].InSituPhaseSaturationProfile[*].Time\",\n            \"PermeabilityTestSteps[*].DifferentialPressureProfiles[*].Time\",\n            \"PermeabilityTestSteps[*].ProductionProfiles[*].PhaseProductionProfile[*].Time\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"cm3/s\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3%2Fs:\",\n          \"propertyNames\": [\n            \"PermeabilityTestSteps[*].InjectionRate[*].Value\",\n            \"PermeabilityTestSteps[*].ProductionProfiles[*].PhaseProductionProfile[*].ProductionRate\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"cm3\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3:\",\n          \"propertyNames\": [\n            \"PermeabilityTestSteps[*].CumulativeProduction[*].Value\",\n            \"PermeabilityTestSteps[*].ProductionProfiles[*].PhaseProductionProfile[*].ProductionVolume\"\n          ]\n        },\n        {\n          \"kind\": \"Unit\",\n          \"name\": \"m\",\n          \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:m:\",\n          \"propertyNames\": [\n            \"PermeabilityTestSteps[*].InSituSaturationProfiles[*].InSituPhaseSaturationProfile[*].Position\"\n          ]\n        }, \n        {\n          \"kind\": \"DateTime\",\n          \"name\": \"UTC\",\n          \"persistableReference\": \"{\\\"format\\\":\\\"yyyy-MM-ddTHH:mm:ssZ\\\",\\\"timeZone\\\":\\\"UTC\\\",\\\"type\\\":\\\"DTM\\\"}\",\n          \"propertyNames\": [\n             \"PermeabilityTestSteps[*].Remarks[*].RemarkDate\"\n          ]\n        }\n      ],\n      \"{{data-partition-id}}:reference-data--DesaturationMethod:CentrifugeGasWater:\",\n      {\n        \"EffectivePermeability\": {\n          \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n          \"Permeability\": {\n            \"Value\": 12.5,\n            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\",\n            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n          },\n          \"Saturation\": {\n            \"Value\": 0.20,\n            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Water:\",\n            \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:EndFace:\"\n          }\n        },\n        \"RelativePermeability\": {\n          \"SaturationValues\": [\n            {\n              \"Value\": 0.20,\n              \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Water:\",\n              \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:EndFace:\"\n            }\n          ],\n          \"RelativePermeabilityValues\": [\n            {\n              \"Value\": 1.0,\n              \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\"\n            }\n          ]\n        },\n        \"TestTemperature\": 185.5,\n        \"NetConfiningStress\": 3000.0,\n        \"OverburdenPressure\": 5000.0,\n        \"PorePressure\": 2000.0,\n        \"FlowDirection\": \"Vertical from bottom\"\n      },\n      {\n        \"EffectivePermeability\": {\n          \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n          \"Permeability\": {\n            \"Value\": 2.1,\n            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\",\n            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n          },\n          \"Saturation\": {\n            \"Value\": 0.65,\n            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\",\n            \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:EndFace:\"\n          }\n        },\n        \"RelativePermeability\": {\n          \"SaturationValues\": [\n            {\n              \"Value\": 0.65,\n              \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\",\n              \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:EndFace:\"\n            }\n          ],\n          \"RelativePermeabilityValues\": [\n            {\n              \"Value\": 0.85,\n              \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\"\n            }\n          ]\n        }\n      },\n      0.48,\n      0.52,\n      {\n        \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n        \"Permeability\": {\n          \"Value\": 50.0,\n          \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\",\n          \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n        },\n        \"Saturation\": {\n          \"Value\": 0.20,\n          \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Water:\",\n          \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:EndFace:\"\n        }\n      },\n      \"{{data-partition-id}}:reference-data--SaturationProcessMethod:Imbibition:\",\n      [\n        {\n          \"Value\": 30.5,\n          \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n        }\n      ],\n      35.0,\n      2.5,\n      0.02,\n      1.0,\n      0.85,\n      0.10,\n      1.025,\n      \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\",\n      [\n        {\n          \"StartTime\": 0.0,\n          \"DifferentialPressure\": 15.0,\n          \"InjectionRate\": [\n            {\n              \"Value\": 5.0,\n              \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Water:\"\n            }\n          ],\n          \"CumulativeProduction\": [\n            {\n              \"Value\": 2.5,\n              \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\",\n              \"ProductionMeasurementCondition\": {\n                \"Pressure\": 101.325,\n                \"Temperature\": 68.0,\n                \"IsStandardConditions\": true\n              }\n            }\n          ],\n          \"EffectivePermeability\": [\n            {\n              \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n              \"Permeability\": {\n                \"Value\": 8.5,\n                \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Water:\",\n                \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n              },\n              \"Saturation\": {\n                \"Value\": 0.35,\n                \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Water:\",\n                \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n              }\n            }\n          ],\n          \"RelativePermeability\": {\n            \"SaturationValues\": [\n              {\n                \"Value\": 0.35,\n                \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Water:\",\n                \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n              }\n            ],\n            \"RelativePermeabilityValues\": [\n              {\n                \"Value\": 0.15,\n                \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Water:\"\n              }\n            ]\n          },\n          \"InSituSaturationProfiles\": [\n            {\n              \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Water:\",\n              \"InSituPhaseSaturationProfile\": [\n                {\n                  \"Time\": 60.0,\n                  \"Position\": 0.05,\n                  \"RelativePosition\": 0.25,\n                  \"Saturation\": 0.30\n                }\n              ]\n            }\n          ],\n          \"DifferentialPressureProfiles\": [\n            {\n              \"Time\": 60.0,\n              \"DifferentialPressure\": 15.0\n            }\n          ],\n          \"ProductionProfiles\": [\n            {\n              \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\",\n              \"PhaseProductionProfile\": [\n                {\n                  \"Time\": 60.0,\n                  \"ProductionRate\": 2.5,\n                  \"ProductionVolume\": 2.5\n                }\n              ],\n              \"ProductionMeasurementCondition\": {\n                \"Pressure\": 101.325,\n                \"Temperature\": 68.0,\n                \"IsStandardConditions\": true\n              }\n            }\n          ],\n          \"FractionalFlow\": [\n            {\n              \"Value\": 1.0,\n              \"FluidTypeID\": \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Water:\"\n            }\n          ],\n          \"Remarks\": [\n            {\n              \"RemarkSequenceNumber\": 1,\n              \"Remark\": \"Initial steady-state reached successfully and verified.\",\n              \"RemarkSource\": \"Lab Analyst\",\n              \"RemarkDate\": \"2026-06-16\"\n            }\n          ]\n        }\n      ],\n      \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Oil:\",\n      \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Gas:\",\n      \"{{data-partition-id}}:reference-data--CoreAnalysisFluidType:Water:\",\n      3600.0\n    ]\n  ]\n}\n",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{relativepermeability_record_id}}/data/relativepermeability?content_schema_version=2.0.0",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{relativepermeability_record_id}}",
+                            "data",
+                            "relativepermeability"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "2.0.0"
+                            }
+                          ]
+                        },
+                        "description": "Possible reference data types:  \nWholeOilGasChromatographyCompounds  \nSaturateGasChromatographyCompounds  \nAromaticGasChromatographyCompounds  \nGasolineGasChromatographyCompounds  \nPyrolysisGasChromatographyCompounds"
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "07 - Get record data",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "type": "text/javascript",
+                            "exec": [
+                              "pm.test(\"Status code is 200\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200]);\n});"
+                            ]
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{access_token}}"
+                          },
+                          {
+                            "key": "data-partition-id",
+                            "value": "{{data-partition-id}}"
+                          },
+                          {
+                            "key": "Content-Type",
+                            "value": "application/json"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "*/*"
+                          }
+                        ],
+                        "url": {
+                          "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{relativepermeability_record_id}}/data/relativepermeability/{{relativepermeability_dataset_id}}?content_schema_version=2.0.0",
+                          "protocol": "https",
+                          "host": [
+                            "{{RAFS_DDMS_HOST}}"
+                          ],
+                          "path": [
+                            "v2",
+                            "samplesanalysis",
+                            "{{relativepermeability_record_id}}",
+                            "data",
+                            "relativepermeability",
+                            "{{relativepermeability_dataset_id}}"
+                          ],
+                          "query": [
+                            {
+                              "key": "content_schema_version",
+                              "value": "2.0.0"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
                     }
-                  },
-                  "response": []
+                  ]
                 }
               ],
               "description": "Kentish Knock South 1 - Special Core Analysis (SCAL) Report, Page 105"
@@ -23451,301 +23752,6 @@
                         "data",
                         "capillarysuctiontime",
                         "{{cap_suc_time_dataset_id}}"
-                      ]
-                    }
-                  },
-                  "response": []
-                }
-              ]
-            },
-            {
-              "name": "Samples Analysis [Relative Permeability]",
-              "item": [
-                {
-                  "name": "01 - Create record",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                          "});",
-                          "",
-                          "let response = pm.response.json().recordIdVersions[0];",
-                          "",
-                          "var parts = response.split(\":\");",
-                          "var record_id = parts.slice(0, 3).join(\":\");",
-                          "pm.setCollectionVar(pm, \"rel_perm_record_id\", record_id);",
-                          "pm.addRecordToCleanUp(pm, record_id);"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "data-partition-id",
-                        "value": "{{data-partition-id}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "[\n    {\n        \"kind\": \"{{authority}}:wks:work-product-component--SamplesAnalysis:1.0.0\",\n        \"acl\": {\n            \"viewers\": [\n                \"data.default.viewers@{{data-partition-id}}{{domain}}\"\n            ],\n            \"owners\": [\n                \"data.default.owners@{{data-partition-id}}{{domain}}\"\n            ]\n        },\n        \"legal\": {\n            \"legaltags\": [\n                \"{{LtagName}}\"\n            ],\n            \"otherRelevantDataCountries\": [\n                \"US\"\n            ],\n            \"status\": \"compliant\"\n        },\n        \"tags\": {\n            \"NameOfKey\": \"String value\"\n        },\n        \"data\": {\n            \"SampleIDs\": [\n                \"{{SampleID_Sample_200}}:\"\n            ],\n            \"ReportSampleIdentifiers\": [\n                \"88Y\"\n            ],\n            \"AnalysisDate\": \"2022-12-16\",\n            \"LaboratoryIDs\": [\n                \"{{data-partition-id}}:master-data--Organisation:GenericOrganisation_100:\"\n            ],\n            \"LaboratoryNames\": [\n                \"TestLab\"\n            ],\n            \"Remarks\": [\n                {\n                    \"Remark\": \"Test was successfully conducted\",\n                    \"RemarkSequenceNumber\": 1,\n                    \"RemarkSource\": \"Lab\",\n                    \"RemarkDate\": \"2023-10-23\"\n                }\n            ],\n            \"DatePublished\": \"2022-12-16\",\n            \"ParentSamplesAnalysesReports\": [\n                {\n                    \"ParentSamplesAnalysesReportID\": \"{{sar_record_id}}:\"\n                }\n            ],\n            \"SampleAnalysisTypeIDs\": [\n                \"{{data-partition-id}}:reference-data--SampleAnalysisType:RelativePermeability.SteadyState:\"\n            ],\n            \"SamplesAnalysisCategoryTagIDs\": [\n                \"{{data-partition-id}}:reference-data--SamplesAnalysisCategoryTag:GreenCompany.SCAL:\"\n            ],\n            \"AvailableSampleAnalysisProperties\": [],\n            \"DDMSDatasets\": [],\n            \"Parameters\": []\n        }\n    }\n]"
-                    },
-                    "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis",
-                      "protocol": "https",
-                      "host": [
-                        "{{RAFS_DDMS_HOST}}"
-                      ],
-                      "path": [
-                        "v2",
-                        "samplesanalysis"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
-                {
-                  "name": "02 - Get content schema",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                          "});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "data-partition-id",
-                        "value": "{{data-partition-id}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Cache-Control",
-                        "value": "no-store",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "*/*;version=1.0.0",
-                        "type": "text"
-                      }
-                    ],
-                    "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/relativepermeability/data/schema",
-                      "protocol": "https",
-                      "host": [
-                        "{{RAFS_DDMS_HOST}}"
-                      ],
-                      "path": [
-                        "v2",
-                        "samplesanalysis",
-                        "relativepermeability",
-                        "data",
-                        "schema"
-                      ]
-                    }
-                  },
-                  "response": []
-                },
-                {
-                  "name": "03 - Add data",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "// Fixed the typo in the response object property name",
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                          "});",
-                          "",
-                          "(function main() {",
-                          "    const data = pm.response.json();",
-                          "    const dataPartitionId = pm.environment.get(\"data-partition-id\");",
-                          "    let datasetUuid;",
-                          "",
-                          "    console.log(\"Response data:\", data);",
-                          "    console.log(\"dataPartitionId:\", dataPartitionId);",
-                          "",
-                          "    if (data.updated_wpc_id !== undefined) {",
-                          "        console.log(\"Found updated_wpc_id → WPC format\");",
-                          "",
-                          "        const parts = data.ddms_urn.split(\"/\");",
-                          "        console.log(\"Split parts:\", parts);",
-                          "",
-                          "        datasetUuid = parts[parts.length - 1];  ",
-                          "        console.log(\"Extracted datasetUuid:\", datasetUuid);",
-                          "    }",
-                          "",
-                          "    else {",
-                          "        console.log(\"No updated_wpc_id → dataset format\");",
-                          "",
-                          "        const uriParts = data.ddms_urn.split(\"/\");",
-                          "        console.log(\"URI parts:\", uriParts);",
-                          "",
-                          "        datasetUuid = uriParts[uriParts.length - 2];",
-                          "",
-                          "        console.log(\"Extracted datasetUuid:\", datasetUuid);",
-                          "    }",
-                          "",
-                          "    if (datasetUuid) {",
-                          "        console.info(\"Setting rel_perm_dataset_id:\", datasetUuid);",
-                          "        pm.collectionVariables.set(\"rel_perm_dataset_id\", datasetUuid);",
-                          "    } else {",
-                          "        console.error(\"datasetUuid is undefined or null — check ddms_urn format!\");",
-                          "    }",
-                          "})();"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "POST",
-                    "header": [
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}"
-                      },
-                      {
-                        "key": "data-partition-id",
-                        "value": "{{data-partition-id}}"
-                      },
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "*/*;version={{rafsddms-content-schema-version}}"
-                      }
-                    ],
-                    "body": {
-                      "mode": "raw",
-                      "raw": "{\n    \"columns\": [\n        \"SamplesAnalysisID\",\n        \"SampleID\",\n        \"Meta\",\n        \"DesaturationMethodID\",\n        \"InitialConditions\",\n        \"TerminalConditions\",\n        \"RelativePermeabilityCrossover\",\n        \"EndFaceSaturationCrossover\",\n        \"ReferencePermeability\",\n        \"SaturationProcessMethodID\",\n        \"InterfacialTension\",\n        \"BrineSalinity\",\n        \"OilViscosity\",\n        \"GasViscosity\",\n        \"WaterViscosity\",\n        \"OilDensity\",\n        \"GasDensity\",\n        \"WaterDensity\",\n        \"FluidSystemAnalysisTypeID\",\n        \"PermeabilityTestSteps\",\n        \"OilTypeID\",\n        \"GasTypeID\",\n        \"WaterTypeID\",\n        \"EndTime\"\n    ],\n    \"index\": [\n        0\n    ],\n    \"data\": [\n        [\n            \"{{rel_perm_record_id}}:\",\n            \"{{SampleID_Sample_200}}:\",\n            [\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"degree Fahrenheit\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:degF:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.TestTemperature\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"feet\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:ft:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Position\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"centiPoise\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cP:\",\n                    \"propertyNames\": [\n                        \"OilViscosity\",\n                        \"GasViscosity\",\n                        \"WaterViscosity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"minute\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:min:\",\n                    \"propertyNames\": [\n                        \"EndTime\",\n                        \"PermeabilityTestSteps.StartTime\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.Time\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.Time\",\n                        \"PermeabilityTestSteps.ProductionProfiles.Time\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"percent\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:%25:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.RelativePermeability\",\n                        \"InitialConditions.Saturation.Value\",\n                        \"TerminalConditions.RelativePermeability\",\n                        \"TerminalConditions.Saturation.Value\",\n                        \"RelativePermeabilityCrossover\",\n                        \"EndFaceSaturationCrossover\",\n                        \"PermeabilityTestSteps.RelativePermeability\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.InitialSaturation\",\n                        \"PermeabilityTestSteps.InSituSaturationProfiles.EquilibriumSaturation\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"millidarcys\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:mD:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.EffectivePermeability.Value\",\n                        \"TerminalConditions.EffectivePermeability.Value\",\n                        \"PermeabilityTestSteps.EffectivePermeability.Value\",\n                        \"ReferencePermeability.Value\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"pounds per square inch\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:psi:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.NetConfiningStress\",\n                        \"InitialConditions.OverburdenPressure\",\n                        \"InitialConditions.PorePressure\",\n                        \"PermeabilityTestSteps.DifferentialPressure\",\n                        \"PermeabilityTestSteps.DifferentialPressureProfiles.DifferentialPressure\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"Flow Rate\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3%2Fmin:\",\n                    \"propertyNames\": [\n                        \"InitialConditions.LastFlowRate\",\n                        \"PermeabilityTestSteps.FractionalFlowRate\",\n                        \"PermeabilityTestSteps.InjectionRate.Value\",\n                        \"ProductionProfiles.ProductionRate\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"gram per cubic centimetre\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:g%2Fcm3:\",\n                    \"propertyNames\": [\n                        \"GasDensity\",\n                        \"OilDensity\",\n                        \"WaterDensity\",\n                        \"BrineSalinity\"\n                    ]\n                },\n                {\n                    \"kind\": \"Unit\",\n                    \"name\": \"cubic centimetres\",\n                    \"unitOfMeasureID\": \"{{data-partition-id}}:reference-data--UnitOfMeasure:cm3:\",\n                    \"propertyNames\": [\n                        \"PermeabilityTestSteps.CumulativeProduction\",\n                        \"CumulativeProduction.Value\"\n                    ]\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DesaturationMethod:CentrifugeGasWater:\",\n            {\n                \"TestTemperature\": 70,\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 5915,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 1.0,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.073,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            {\n                \"EffectivePermeability\": {\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                    \"Value\": 1687,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                },\n                \"RelativePermeability\": {\n                    \"Value\": 0.285,\n                    \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                },\n                \"Saturation\": {\n                    \"Value\": 0.819,\n                    \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                    \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                }\n            },\n            15.0,\n            20.5,\n            [\n                {\n                    \"Value\": 6690,\n                    \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--SaturationProcessMethod:Imbibition:\",\n            10.0,\n            23.0,\n            34.0,\n            56.0,\n            67.0,\n            34.5,\n            33.0,\n            654.0,\n            \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasOil:\",\n            [\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 1.00,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.073,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\",\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.001,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.057,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.698,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.003,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.049,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.715,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.005,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.045,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.724,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.031,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.752,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.285,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.787,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                },\n                {\n                    \"EffectivePermeability\": [\n                        {\n                            \"Value\": 250,\n                            \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n                            \"PermeabilityMeasurementMethodID\": \"{{data-partition-id}}:reference-data--PermeabilityMeasurementMethod:SteadyState:\"\n                        }\n                    ],\n                    \"RelativePermeability\": [\n                        {\n                            \"Value\": 0.116,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        },\n                        {\n                            \"Value\": 0.012,\n                            \"FluidSystemAnalysisTypeID\": \"{{data-partition-id}}:reference-data--FluidSystemAnalysisType:GasBrine:\"\n                        }\n                    ],\n                    \"Saturation\": {\n                        \"Value\": 0.819,\n                        \"FluidTypeID\": \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n                        \"SaturationMeasurementLocationID\": \"{{data-partition-id}}:reference-data--SaturationMeasurementLocation:Average:\"\n                    }\n                }\n            ],\n            \"{{data-partition-id}}:reference-data--DisplacedFluidType:LiveCrudeOil:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Gas:\",\n            \"{{data-partition-id}}:reference-data--SampleInjectionFluidType:Brine:\",\n            24.0\n        ]\n    ]\n}\n",
-                      "options": {
-                        "raw": {
-                          "language": "json"
-                        }
-                      }
-                    },
-                    "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{rel_perm_record_id}}/data/relativepermeability",
-                      "protocol": "https",
-                      "host": [
-                        "{{RAFS_DDMS_HOST}}"
-                      ],
-                      "path": [
-                        "v2",
-                        "samplesanalysis",
-                        "{{rel_perm_record_id}}",
-                        "data",
-                        "relativepermeability"
-                      ]
-                    },
-                    "description": "Possible reference data types:  \nWholeOilGasChromatographyCompounds  \nSaturateGasChromatographyCompounds  \nAromaticGasChromatographyCompounds  \nGasolineGasChromatographyCompounds  \nPyrolysisGasChromatographyCompounds"
-                  },
-                  "response": []
-                },
-                {
-                  "name": "04 - Get record data",
-                  "event": [
-                    {
-                      "listen": "test",
-                      "script": {
-                        "exec": [
-                          "pm.test(\"Status code is 200\", function () {",
-                          "    pm.expect(pm.response.code).to.be.oneOf([200]);",
-                          "});"
-                        ],
-                        "type": "text/javascript",
-                        "packages": {},
-                        "requests": {}
-                      }
-                    }
-                  ],
-                  "request": {
-                    "method": "GET",
-                    "header": [
-                      {
-                        "key": "Authorization",
-                        "value": "Bearer {{access_token}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "data-partition-id",
-                        "value": "{{data-partition-id}}",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Content-Type",
-                        "value": "application/json",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Cache-Control",
-                        "value": "no-store",
-                        "type": "text"
-                      },
-                      {
-                        "key": "Accept",
-                        "value": "*/*;version={{rafsddms-content-schema-version}}",
-                        "type": "text"
-                      }
-                    ],
-                    "url": {
-                      "raw": "https://{{RAFS_DDMS_HOST}}/v2/samplesanalysis/{{rel_perm_record_id}}/data/relativepermeability/{{rel_perm_dataset_id}}",
-                      "protocol": "https",
-                      "host": [
-                        "{{RAFS_DDMS_HOST}}"
-                      ],
-                      "path": [
-                        "v2",
-                        "samplesanalysis",
-                        "{{rel_perm_record_id}}",
-                        "data",
-                        "relativepermeability",
-                        "{{rel_perm_dataset_id}}"
                       ]
                     }
                   },
