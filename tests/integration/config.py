@@ -69,6 +69,9 @@ class DataFiles:
     SATURATION_TEST_DATA_V1 = "v2/samples_analysis/saturation_test_data.1.0.0.json"
     SATURATION_TEST_SCHEMA_V1 = "v2/samples_analysis/saturation_test_schema.1.0.0.json"
 
+    WETTABILITY_INDEX_DATA_V1 = "v2/samples_analysis/wettability_index_data.1.0.0.json"
+    WETTABILITY_INDEX_DATA_V2 = "v2/samples_analysis/wettability_index_data.2.0.0.json"
+
     SLIM_TUBE_DATA_V1 = "v2/samples_analysis/slimtube_data.1.0.0.json"
     SLIM_TUBE_DATA_V2 = "v2/samples_analysis/slimtube_data.2.0.0.json"
     SLIM_TUBE_SCHEMA_V1 = "v2/samples_analysis/slimtube_schema.1.0.0.json"
@@ -159,6 +162,7 @@ class SamplesAnalysisTypes:  # Custom values
     SLIM_TUBE = "slimtube"
     STOCK_TANK_OIL = "stocktankoilanalysis"
     VLE = "vaporliquidequilibrium"
+    WETTABILITY_INDEX = "wettabilityindex"
     XRD = "xrd"
     XRF = "xrf"
 
@@ -249,6 +253,10 @@ class SamplesAnalysisConfig:
         },
         SamplesAnalysisTypes.VLE: {
             "samples_analysis_type": "PVT.VaporLiquidEquilibria",
+            "parent_report_id": "sar_record_id",
+        },
+        SamplesAnalysisTypes.WETTABILITY_INDEX: {
+            "samples_analysis_type": "Wettability.AmottHarvey",
             "parent_report_id": "sar_record_id",
         },
         SamplesAnalysisTypes.XRD: {
