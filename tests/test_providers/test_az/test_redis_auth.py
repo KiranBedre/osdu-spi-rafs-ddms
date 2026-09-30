@@ -34,7 +34,9 @@ class TestRedisAuthUtilities:
         # Encode header and payload as base64
         header_b64 = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
         payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
-        signature = "mock_signature"
+        signature = base64.urlsafe_b64encode(b"mock_signature").decode().rstrip(
+            "="
+        )
 
         return f"{header_b64}.{payload_b64}.{signature}"
 
