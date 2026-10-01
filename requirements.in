@@ -31,7 +31,7 @@ requests==2.33.0
 setuptools==82.0.1
 tenacity==8.2.3
 uvicorn==0.23.2
-urllib3==2.7.0
+urllib3==2.8.0    # CVE-2026-97689 fix
 wheel==0.46.3     # CVE-2026-24049 fix
 PyYAML==6.0.3     # For YAML OpenAPI spec generation and validation
 # azure deps
