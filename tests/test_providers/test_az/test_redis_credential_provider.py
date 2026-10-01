@@ -35,9 +35,8 @@ class TestAzureRedisCredentialProvider:
 
         header_b64 = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
         payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
-        signature = base64.urlsafe_b64encode(b"mock_signature").decode().rstrip(
-            "="
-        )
+        # PyJWT >=2.15 requires valid base64url padding on the crypto segment
+        signature = base64.urlsafe_b64encode(b"mock_signature").decode().rstrip("=")
 
         return f"{header_b64}.{payload_b64}.{signature}"
 

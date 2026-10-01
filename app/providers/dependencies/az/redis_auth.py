@@ -32,7 +32,12 @@ def extract_oid_from_token(token: str) -> Optional[str]:
     """
     try:
         # Decode without verification - token is already validated by Azure Identity
-        decoded = jwt.decode(token, options={"verify_signature": False})
+        # algorithms required by PyJWT >=2.14 even when verify_signature is False
+        decoded = jwt.decode(
+            token,
+            options={"verify_signature": False},
+            algorithms=["RS256"],
+        )
         oid = decoded.get("oid")
 
         if not oid:
