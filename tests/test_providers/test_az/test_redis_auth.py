@@ -34,7 +34,8 @@ class TestRedisAuthUtilities:
         # Encode header and payload as base64
         header_b64 = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
         payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
-        signature = "mock_signature"
+        # PyJWT >=2.15 requires valid base64url padding on the crypto segment
+        signature = base64.urlsafe_b64encode(b"mock_signature").decode().rstrip("=")
 
         return f"{header_b64}.{payload_b64}.{signature}"
 
@@ -51,7 +52,8 @@ class TestRedisAuthUtilities:
 
         header_b64 = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
         payload_b64 = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
-        token_no_oid = f"{header_b64}.{payload_b64}.signature"
+        signature = base64.urlsafe_b64encode(b"signature").decode().rstrip("=")
+        token_no_oid = f"{header_b64}.{payload_b64}.{signature}"
 
         oid = extract_oid_from_token(token_no_oid)
         assert oid is None
