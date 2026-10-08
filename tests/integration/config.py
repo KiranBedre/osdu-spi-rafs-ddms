@@ -60,6 +60,7 @@ class DataFiles:
 
     RELATIVE_PERMEABILITY_DATA_V1 = "v2/samples_analysis/relative_permeability_data.1.0.0.json"
     RELATIVE_PERMEABILITY_DATA_V1_1 = "v2/samples_analysis/relative_permeability_data.1.1.0.json"
+    RELATIVE_PERMEABILITY_DATA_V2 = "v2/samples_analysis/relative_permeability_data.2.0.0.json"
     RELATIVE_PERMEABILITY_SCHEMA_V1 = "v2/samples_analysis/relative_permeability_schema.1.0.0.json"
     RELATIVE_PERMEABILITY_SCHEMA_V1_1 = "v2/samples_analysis/relative_permeability_schema.1.1.0.json"
 
@@ -179,6 +180,7 @@ class VersionedDataFiles:
         (SamplesAnalysisTypes.PROPPANT_EMBEDMENT, SchemaVersions.V1_0_0): DataFiles.PROPPANT_EMBEDMENT_DATA_V1,
         (SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_0_0): DataFiles.RELATIVE_PERMEABILITY_DATA_V1,
         (SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V1_1_0): DataFiles.RELATIVE_PERMEABILITY_DATA_V1_1,
+        (SamplesAnalysisTypes.RELATIVE_PERMEABILITY, SchemaVersions.V2_0_0): DataFiles.RELATIVE_PERMEABILITY_DATA_V2,
         (SamplesAnalysisTypes.ROLLER_OVEN_TEST, SchemaVersions.V1_0_0): DataFiles.ROLLER_OVEN_TEST_DATA_V1,
         (SamplesAnalysisTypes.SATURATION_TEST, SchemaVersions.V1_0_0): DataFiles.SATURATION_TEST_DATA_V1,
         (SamplesAnalysisTypes.SLIM_TUBE, SchemaVersions.V1_0_0): DataFiles.SLIM_TUBE_DATA_V1,
