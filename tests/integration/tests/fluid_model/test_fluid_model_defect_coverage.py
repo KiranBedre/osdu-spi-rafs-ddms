@@ -19,6 +19,7 @@ from starlette import status
 
 from tests.integration.config import (
     CONFIG,
+    SCHEMA_AUTHORITY,
     DataFiles,
 )
 
@@ -86,7 +87,7 @@ def test_fluid_create_record_with_kind_matching_semantic_version(api, helper, te
     """Verify record creation with kind matching only semantic version can be retrieved unchanged via GET."""
     # Record creation
     data_payload = copy.deepcopy(tests_data(DataFiles.FLUID_MODEL))
-    data_payload["kind"] = f"{DATA_PARTITION_ID}:wks:work-product-component--FluidModel:5.23.72"
+    data_payload["kind"] = f"{SCHEMA_AUTHORITY}:wks:work-product-component--FluidModel:5.23.72"
     response = api.fluid_model.post_record(body=[data_payload])
     record_id = response["recordIdVersions"][0].rsplit(":", 1)[0]
 

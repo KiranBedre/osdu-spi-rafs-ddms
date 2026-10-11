@@ -21,6 +21,7 @@ from starlette import status
 from app.resources.common_headers import CACHE_CONTROL
 from tests.integration.config import (
     CONFIG,
+    SCHEMA_AUTHORITY,
     DataFiles,
     Endpoints,
 )
@@ -203,7 +204,7 @@ def test_rsrp_create_record_with_kind_matching_semantic_version(api, helper, tes
     """Verify record creation with kind matching only semantic version can be retrieved unchanged via GET."""
     # Record creation
     payload = copy.deepcopy(tests_data(DataFiles.SIMULATION_ROCK_PHYSICS))
-    payload["kind"] = f"{DATA_PARTITION_ID}:wks:work-product-component--ReservoirSimulationRockPhysicsModel:5.23.72"
+    payload["kind"] = f"{SCHEMA_AUTHORITY}:wks:work-product-component--ReservoirSimulationRockPhysicsModel:5.23.72"
     response = api.simulation_rock_physics.post_record(body=[payload])
     record_id = response["recordIdVersions"][0].rsplit(":", 1)[0]
 

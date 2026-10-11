@@ -21,6 +21,7 @@ from starlette import status
 from app.resources.common_headers import CACHE_CONTROL
 from tests.integration.config import (
     CONFIG,
+    SCHEMA_AUTHORITY,
     DataFiles,
     Endpoints,
 )
@@ -203,7 +204,7 @@ def test_sfs_create_record_with_kind_matching_semantic_version(api, helper, test
     """Verify record creation with kind matching only semantic version can be retrieved unchanged via GET."""
     # Record creation
     data_payload = copy.deepcopy(tests_data(DataFiles.SATURATION_FUNCTION_SET))
-    data_payload["kind"] = f"{DATA_PARTITION_ID}:wks:work-product-component--SaturationFunctionSet:5.23.72"
+    data_payload["kind"] = f"{SCHEMA_AUTHORITY}:wks:work-product-component--SaturationFunctionSet:5.23.72"
     response = api.saturation_function_set.post_record(body=[data_payload])
     record_id = response["recordIdVersions"][0].rsplit(":", 1)[0]
 
