@@ -1,0 +1,6 @@
+# RAFS uses SYNC_MODE=passthrough because the community tree already contains
+# its Azure implementation. This minimal file intentionally fails closed if
+# the repository is ever switched to filter mode without first defining an
+# ownership split.
+service: rafs-ddms-services
+top_level: {}

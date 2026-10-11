@@ -1,0 +1,13 @@
+{
+  "description": "GitHub Copilot Agent firewall configuration for RAFS DDMS",
+  "firewall_additions": [
+    "community.opengroup.org",
+    "pypi.org",
+    "files.pythonhosted.org"
+  ],
+  "reasoning": {
+    "community.opengroup.org": "Required to inspect and synchronize the OSDU community source",
+    "pypi.org": "Python package index metadata",
+    "files.pythonhosted.org": "Python package downloads"
+  }
+}
