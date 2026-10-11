@@ -9,6 +9,14 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+!build/
+build/*
+!build/Dockerfile
+!build/*.Dockerfile
+!build/*.dockerignore
+!build/*-entrypoint.sh
+!build/*-entrypoint.js
+!build/*-entrypoint.py
 develop-eggs/
 dist/
 downloads/
