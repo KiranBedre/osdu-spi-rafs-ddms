@@ -166,7 +166,7 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           queries: security-extended
-          build-mode: none
+          build-mode: ${{ matrix.language == 'go' && 'autobuild' || 'none' }}
           config: |
             paths-ignore:
               - '**/build/**'
