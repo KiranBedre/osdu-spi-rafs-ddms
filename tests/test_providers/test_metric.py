@@ -1,11 +1,12 @@
 from unittest.mock import Mock
 
 import pytest
-from app.core.settings.base import AppEnvTypes
-from app.providers.helpers.metric import init_metric
 from fastapi import APIRouter, FastAPI
 from httpx import AsyncClient
 from starlette.status import HTTP_200_OK
+
+from app.core.settings.base import AppEnvTypes
+from app.providers.helpers.metric import init_metric
 
 
 @pytest.mark.asyncio
