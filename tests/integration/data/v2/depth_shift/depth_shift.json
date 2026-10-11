@@ -43,7 +43,7 @@
       "GeoContexts": [
                 {
                     "BasinID": "{data_partition_id}:master-data--Basin:SomeUniqueBasinID:",
-                    "GeoTypeID": "osdu:reference-data--BasinType:PassiveMargin:"
+                    "GeoTypeID": "{data_partition_id}:reference-data--BasinType:PassiveMargin:"
                 },
                 {
                     "FieldID": "{data_partition_id}:master-data--Field:SomeUniqueFieldID:",
