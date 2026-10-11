@@ -26,9 +26,7 @@ class _Storage:
         )
 
     def get(self, path, allowed_codes):
-        return _Response(
-            200 if unquote(path.rsplit("/", 1)[-1]) in self.existing else 404
-        )
+        return _Response(200 if unquote(path.rsplit("/", 1)[-1]) in self.existing else 404)
 
     def create_or_update_records(self, records):
         self.upserts.append(records)
@@ -58,15 +56,11 @@ def test_extract_reference_ids_walks_nested_payload_and_deduplicates():
 def test_discover_reference_ids_ignores_schema_examples_and_supports_supplements(
     tmp_path,
 ):
-    (tmp_path / "payload.json").write_text(
-        json.dumps({"id": "{data_partition_id}:reference-data--UnitOfMeasure:m:"})
-    )
+    (tmp_path / "payload.json").write_text(json.dumps({"id": "{data_partition_id}:reference-data--UnitOfMeasure:m:"}))
     (tmp_path / "payload_schema.json").write_text(
         json.dumps({"example": "{data_partition_id}:reference-data--UnitOfMeasure:ft:"})
     )
-    assert discover_reference_ids(
-        tmp_path, "demo", {"demo:reference-data--Generated:Runtime"}
-    ) == {
+    assert discover_reference_ids(tmp_path, "demo", {"demo:reference-data--Generated:Runtime"}) == {
         "demo:reference-data--UnitOfMeasure:m",
         "demo:reference-data--Generated:Runtime",
     }
@@ -75,9 +69,7 @@ def test_discover_reference_ids_ignores_schema_examples_and_supports_supplements
 def test_load_required_records_reports_all_missing_definitions(tmp_path):
     catalog = tmp_path / "catalog.json"
     catalog.write_text("[]")
-    with pytest.raises(
-        ReferenceDataPreflightError, match="Missing canonical definitions"
-    ) as error:
+    with pytest.raises(ReferenceDataPreflightError, match="Missing canonical definitions") as error:
         load_required_records(
             catalog,
             {"osdu:reference-data--A:one", "osdu:reference-data--B:two"},
@@ -115,9 +107,7 @@ def test_seed_reports_every_unavailable_record():
         {"id": "osdu:reference-data--A:one"},
         {"id": "osdu:reference-data--B:two"},
     ]
-    with pytest.raises(
-        ReferenceDataPreflightError, match="Missing in Storage"
-    ) as error:
+    with pytest.raises(ReferenceDataPreflightError, match="Missing in Storage") as error:
         seed_required_reference_data(_Api(_Storage(create_records=False)), records)
     assert "osdu:reference-data--A:one" in str(error.value)
     assert "osdu:reference-data--B:two" in str(error.value)
@@ -135,3 +125,15 @@ def test_seed_reports_storage_and_catalog_gaps_together():
     assert "osdu:reference-data--A:one" in str(error.value)
     assert "Missing canonical definitions" in str(error.value)
     assert "osdu:reference-data--B:two" in str(error.value)
+
+
+def test_seed_accepts_uncatalogued_record_already_in_storage():
+    external = "osdu:reference-data--BasinType:PassiveMargin"
+
+    result = seed_required_reference_data(
+        _Api(_Storage(existing=[external])),
+        [],
+        missing_definitions={external},
+    )
+
+    assert result == {"inventory": 0, "existing": 0, "seeded": 0}

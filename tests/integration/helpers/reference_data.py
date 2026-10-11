@@ -85,14 +85,9 @@ def discover_reference_ids(
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as error:
-            raise ReferenceDataPreflightError(
-                f"Could not read integration payload {path}: {error}"
-            ) from error
+            raise ReferenceDataPreflightError(f"Could not read integration payload {path}: {error}") from error
         discovered.update(extract_reference_ids(payload, partition))
-    discovered.update(
-        reference_id.replace("{data_partition_id}", partition)
-        for reference_id in supplemental_ids
-    )
+    discovered.update(reference_id.replace("{data_partition_id}", partition) for reference_id in supplemental_ids)
     return discovered
 
 
@@ -119,9 +114,7 @@ def load_required_records(
     try:
         catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        raise ReferenceDataPreflightError(
-            f"Could not read reference-data catalog {catalog_path}: {error}"
-        ) from error
+        raise ReferenceDataPreflightError(f"Could not read reference-data catalog {catalog_path}: {error}") from error
 
     rendered = _render(
         catalog,
@@ -134,9 +127,7 @@ def load_required_records(
             "{{ISO_3166_ALPHA_2_CODE}}": "US",
         },
     )
-    records_by_id = {
-        record.get("id"): record for record in rendered if isinstance(record, dict)
-    }
+    records_by_id = {record.get("id"): record for record in rendered if isinstance(record, dict)}
     missing_definitions = sorted(required_ids - set(records_by_id))
     if missing_definitions:
         raise ReferenceDataPreflightError(
@@ -166,9 +157,7 @@ def load_available_records(
     try:
         catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
-        raise ReferenceDataPreflightError(
-            f"Could not read reference-data catalog {catalog_path}: {error}"
-        ) from error
+        raise ReferenceDataPreflightError(f"Could not read reference-data catalog {catalog_path}: {error}") from error
     rendered = _render(
         catalog,
         {
@@ -180,28 +169,18 @@ def load_available_records(
             "{{ISO_3166_ALPHA_2_CODE}}": "US",
         },
     )
-    records_by_id = {
-        record.get("id"): record for record in rendered if isinstance(record, dict)
-    }
+    records_by_id = {record.get("id"): record for record in rendered if isinstance(record, dict)}
     missing = required_ids - set(records_by_id)
-    return [
-        records_by_id[reference_id] for reference_id in sorted(required_ids - missing)
-    ], missing
+    return [records_by_id[reference_id] for reference_id in sorted(required_ids - missing)], missing
 
 
-def _format_missing(
-    missing_storage: set[str], missing_definitions: set[str] | None = None
-) -> str:
+def _format_missing(missing_storage: set[str], missing_definitions: set[str] | None = None) -> str:
     sections = ["RAFS integration reference-data preflight failed."]
     if missing_storage:
-        sections.append(
-            "Missing in Storage:\n"
-            + "\n".join(f"  - {item}" for item in sorted(missing_storage))
-        )
+        sections.append("Missing in Storage:\n" + "\n".join(f"  - {item}" for item in sorted(missing_storage)))
     if missing_definitions:
         sections.append(
-            "Missing canonical definitions:\n"
-            + "\n".join(f"  - {item}" for item in sorted(missing_definitions))
+            "Missing canonical definitions:\n" + "\n".join(f"  - {item}" for item in sorted(missing_definitions))
         )
     return "\n\n".join(sections)
 
@@ -242,28 +221,21 @@ def seed_required_reference_data(
     missing_definitions: set[str] | None = None,
 ) -> dict[str, int]:
     """Idempotently create missing records, then aggregate Storage preflight failures."""
-    record_ids = {record["id"] for record in records}
-    existing = {
-        record_id
-        for record_id in record_ids
-        if _storage_status(api, record_id) == status.HTTP_200_OK
+    unavailable_definitions = {
+        reference_id
+        for reference_id in missing_definitions or set()
+        if _storage_status(api, reference_id) != status.HTTP_200_OK
     }
+    record_ids = {record["id"] for record in records}
+    existing = {record_id for record_id in record_ids if _storage_status(api, record_id) == status.HTTP_200_OK}
     missing_before = record_ids - existing
     if missing_before:
         if before_seed:
             before_seed()
-        api.storage.create_or_update_records(
-            [record for record in records if record["id"] in missing_before]
-        )
-    missing_after = {
-        record_id
-        for record_id in record_ids
-        if _storage_status(api, record_id) != status.HTTP_200_OK
-    }
-    if missing_after or missing_definitions:
-        raise ReferenceDataPreflightError(
-            _format_missing(missing_after, missing_definitions)
-        )
+        api.storage.create_or_update_records([record for record in records if record["id"] in missing_before])
+    missing_after = {record_id for record_id in record_ids if _storage_status(api, record_id) != status.HTTP_200_OK}
+    if missing_after or unavailable_definitions:
+        raise ReferenceDataPreflightError(_format_missing(missing_after, unavailable_definitions))
     result = {
         "inventory": len(record_ids),
         "existing": len(existing),

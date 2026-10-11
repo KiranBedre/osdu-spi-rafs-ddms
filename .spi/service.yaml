@@ -48,3 +48,6 @@ tests:
       TOKEN: { source: token }
       CLOUD_PROVIDER: { source: static, value: azure }
       DOMAIN: { source: domain }
+      SERVICE_HOST_LEGAL: { source: gateway, suffix: /api/legal/v1 }
+      SERVICE_HOST_SEARCH: { source: gateway, suffix: /api/search/v2 }
+      SERVICE_HOST_STORAGE: { source: gateway, suffix: /api/storage/v2 }
