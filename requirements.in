@@ -21,7 +21,7 @@ loguru==0.7.2
 multimethod==1.12
 pandas==2.2.0
 pandera==0.25.0
-prometheus-fastapi-instrumentator==6.1.0
+prometheus-fastapi-instrumentator==8.0.1
 pyarrow==14.0.2
 pydantic>=2.9,<3
 pydantic-settings>=2.14.2,<3  # CVE-2026-58203 fix
