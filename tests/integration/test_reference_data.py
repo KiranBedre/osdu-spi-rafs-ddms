@@ -49,7 +49,7 @@ def test_extract_reference_ids_walks_nested_payload_and_deduplicates():
     }
     assert extract_reference_ids(payload, "demo") == {
         "demo:reference-data--UnitOfMeasure:m",
-        "osdu:reference-data--ViscosityModelType:FrictionTheory",
+        "demo:reference-data--ViscosityModelType:FrictionTheory",
     }
 
 

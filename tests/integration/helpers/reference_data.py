@@ -56,7 +56,7 @@ def _walk_strings(value: Any) -> Iterable[str]:
 
 def _normalise_reference_id(match: re.Match[str], partition: str) -> str:
     namespace = match.group("namespace")
-    if namespace == "{data_partition_id}":
+    if namespace in {"{data_partition_id}", "osdu"}:
         namespace = partition
     return f"{namespace}:reference-data--{match.group('kind')}:{match.group('value').rstrip(':')}"
 
