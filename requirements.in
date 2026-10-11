@@ -1,11 +1,11 @@
 aiofiles==24.1.0
-aiohttp==3.14.3  # CVE-2026-54273/54274/54277/54278/54276/54275/54279/54280/50269/47265/34993/69244 fix
+aiohttp==3.14.4  # CVE-2026-54273/54274/54277/54278/54276/54275/54279/54280/50269/47265/34993/69244 fix
 anyio==4.14.2  # CVE-2026-63374 fix
 async-lru==2.0.4
 async-timeout==5.0.1
 boto3==1.35.0
 certifi==2025.1.31
-cryptography>=49.0.0  # CVE remediation (GHSA-537c-gmf6-5ccf): raise floor above 46.0.6
+cryptography>=50.0.2  # CVE remediation (GHSA-537c-gmf6-5ccf): raise floor above 46.0.6
 fastapi-cache2==0.2.1
 redis==5.2.1
 fastapi==0.141.1  # starlette CVE-2026-48818/54283 fix (pulls starlette>=1.3.1)
