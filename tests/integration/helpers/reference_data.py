@@ -242,6 +242,11 @@ def seed_required_reference_data(
     missing_definitions: set[str] | None = None,
 ) -> dict[str, int]:
     """Idempotently create missing records, then aggregate Storage preflight failures."""
+    unavailable_definitions = {
+        reference_id
+        for reference_id in missing_definitions or set()
+        if _storage_status(api, reference_id) != status.HTTP_200_OK
+    }
     record_ids = {record["id"] for record in records}
     existing = {
         record_id
@@ -260,9 +265,9 @@ def seed_required_reference_data(
         for record_id in record_ids
         if _storage_status(api, record_id) != status.HTTP_200_OK
     }
-    if missing_after or missing_definitions:
+    if missing_after or unavailable_definitions:
         raise ReferenceDataPreflightError(
-            _format_missing(missing_after, missing_definitions)
+            _format_missing(missing_after, unavailable_definitions)
         )
     result = {
         "inventory": len(record_ids),

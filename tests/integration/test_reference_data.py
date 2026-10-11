@@ -135,3 +135,15 @@ def test_seed_reports_storage_and_catalog_gaps_together():
     assert "osdu:reference-data--A:one" in str(error.value)
     assert "Missing canonical definitions" in str(error.value)
     assert "osdu:reference-data--B:two" in str(error.value)
+
+
+def test_seed_accepts_uncatalogued_record_already_in_storage():
+    external = "osdu:reference-data--BasinType:PassiveMargin"
+
+    result = seed_required_reference_data(
+        _Api(_Storage(existing=[external])),
+        [],
+        missing_definitions={external},
+    )
+
+    assert result == {"inventory": 0, "existing": 0, "seeded": 0}

@@ -44,16 +44,19 @@ if not entrypoint:
 
 requested_working_directory = (suite_root / suite_dir).absolute()
 requested_executable = (requested_working_directory / entrypoint).absolute()
-if not is_within(requested_working_directory, suite_root) or not is_within(
-    requested_executable, requested_working_directory
-):
+if (
+    requested_working_directory != suite_root
+    and not is_within(requested_working_directory, suite_root)
+) or not is_within(requested_executable, requested_working_directory):
     fail("suite directory and entrypoint must stay inside /suite")
 if not requested_executable.exists():
     fail(f"script suite entrypoint '{entrypoint}' is not baked into '{suite_dir}'")
 
 working_directory = requested_working_directory.resolve()
 executable = requested_executable.resolve()
-if not is_within(working_directory, suite_root) or not is_within(executable, working_directory):
+if (
+    working_directory != suite_root and not is_within(working_directory, suite_root)
+) or not is_within(executable, working_directory):
     fail("suite directory and entrypoint symlinks must stay inside /suite")
 
 arguments = []
