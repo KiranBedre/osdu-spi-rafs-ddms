@@ -1,0 +1,50 @@
+schemaVersion: 4
+service:
+  name: rafs
+  archetype: python-fastapi-azure
+  sourcePath: .
+  pythonVersion: "3.11"
+  image:
+    context: .
+    dockerfile: Dockerfile
+tests:
+  acceptance:
+    type: script
+    path: .
+    entrypoint: tests/integration/run_spi.sh
+    arguments:
+      - "--ddms-base-url"
+      - "${DDMS_BASE_URL}"
+      - "--url-prefix"
+      - "${URL_PREFIX}"
+      - "--partition"
+      - "${PARTITION}"
+      - "--bearer-token"
+      - "${TOKEN}"
+      - "--cloud-provider"
+      - "${CLOUD_PROVIDER}"
+      - "--domain"
+      - "${DOMAIN}"
+    reportPaths:
+      - "tests/results/rafs.xml"
+    requires:
+      loads:
+        - rafs-schemas
+        - rafs-reference-data
+      groups: []
+    dependencies:
+      - dataset
+      - entitlements
+      - legal
+      - partition
+      - schema
+      - search
+      - storage
+    timeoutMinutes: 90
+    bindings:
+      DDMS_BASE_URL: { source: gateway }
+      URL_PREFIX: { source: static, value: /api/rafs-ddms }
+      PARTITION: { source: partition }
+      TOKEN: { source: token }
+      CLOUD_PROVIDER: { source: static, value: azure }
+      DOMAIN: { source: domain }

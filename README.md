@@ -1,583 +1,123 @@
-# Rock and Fluid Sample (RAFS) DDMS
+# OSDU Rock and Fluid Sample DDMS for Azure
 
-## ⚠️ CI/CD Migration Notice
+[![Release](https://img.shields.io/github/v/release/Azure/osdu-spi-rafs-ddms)](https://github.com/Azure/osdu-spi-rafs-ddms/releases)
+[![Validate](https://github.com/Azure/osdu-spi-rafs-ddms/actions/workflows/validate.yml/badge.svg?branch=main)](https://github.com/Azure/osdu-spi-rafs-ddms/actions/workflows/validate.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-The project is undergoing a phased migration to a unified CI environment (CI env), where build, containerization, Helm packaging, testing, and deployment are handled centrally through GitLab CI.
+> [!NOTE]
+> Application source comes from the
+> [OSDU community RAFS project](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services).
+> Its [OpenAPI specification](docs/api/community/v2/openapi.yaml) describes the
+> service contract.
 
-Detailed documentation for the new CI/CD structure is available here [README.md](https://community.opengroup.org/osdu/platform/domain-data-mgmt-services/rock-and-fluid-sample/rafs-ddms-services/-/tree/main/devops/core-plus/README.md?ref_type=heads)
+Rock and Fluid Sample DDMS stores and retrieves rock samples, fluid samples,
+sample analyses, and their associated datasets through OSDU services.
 
-## Introduction
+## At a glance
 
-Rock and Fluid Sample Domain Data Management Services (RAFS DDMS) Open Subsurface Data Universe (OSDU) is a microservices-based project that comprises OSDU software ecosystem, written in Python that provides an API for Rock and Fluid Sample related data.
+| | |
+|---|---|
+| API base path | `/api/rafs-ddms` |
+| Swagger UI | `/api/rafs-ddms/docs` |
+| Health | `/api/rafs-ddms/healthz` |
+| Readiness | `/api/rafs-ddms/readiness` |
+| Depends on | Storage, Dataset, Schema, Search, Entitlements, Partition, and Legal |
+| Runtime | Python 3.11, FastAPI, port 8080 |
+| Deployed by | [OSDU SPI Stack](https://github.com/Azure/osdu-spi-stack) (`software/stacks/osdu/services/rafs.yaml`) |
 
-For business context, videos, slides, OSDU schemas, and FAQs about the RAFS DDMS see [this separate Member Gitlab wiki](https://gitlab.opengroup.org/osdu/subcommittees/data-def/projects/RAFSDDMSDEV/home/-/wikis/home).
+## Repository layout
 
-[[_TOC_]]
+[CONTRIBUTING.md](CONTRIBUTING.md) explains where each kind of change belongs.
 
-## Project structure
+| Path | Owner | Contents |
+|---|---|---|
+| `app/`, `client/`, `tests/` | OSDU upstream | Application, clients, unit tests, and integration tests |
+| `devops/`, `deployments/` | OSDU upstream | Community deployment assets retained for source parity |
+| `.spi/service.yaml`, `.spi/ci/` | This repository | SPI build, image, and acceptance contract |
+| `.github/`, `build/` | SPI template | Shared repository automation and acceptance image |
 
-```txt
-app
-├── api              - web related stuff.
-│   ├── dependencies - dependencies for routes definition.
-│   ├── errors       - definition of error handlers.
-│   └── routes       - web routes.
-├── core             - application configuration, startup events, logging.
-├── db               - db related stuff.
-├── models           - pydantic models for this application.
-│   ├── domain       - main models that are related to the rock and fluid samples domain
-│   └── schemas      - schemas for using in web routes (request, responses bodies).
-├── resources        - any useful blob/file or constants
-├── services         - logic that is not just crud related.
-└── main.py          - FastAPI application creation and configuration.
-```
+The repository uses SPI's `passthrough` synchronization mode because the
+community repository already contains the Azure implementation. The
+`fork_upstream` branch mirrors community `main`; `fork_integration` stages
+upstream updates before they reach this repository's `main`.
 
-## Project Tutorial
+## Build
 
-Instructions and payload examples are presented on [the tutorial page](./docs/tutorial/readme.md).
-
-## API Specs
-
-Compiled REST API documentation is presented in the [openapi.yaml](./docs/api/community/v2/openapi.yaml) file.
-
-Depth-shift functional behavior for both GET data and search/data endpoints is documented in [docs/depth-shift/depth_shift_get_search_functionality.md](./docs/depth-shift/depth_shift_get_search_functionality.md).
-
-Run the OpenAPI maintenance commands from the repository root.
-
-Recommended local workflow:
-
-Step 1: Create and activate a virtual environment with a compatible Python version.
+Python 3.11 is required. CI installs runtime and test requirements under the
+runtime constraints, then runs the repository-owned build script:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pip install -c requirements.txt -r requirements-tests.in
+python -m pip install pre-commit==4.3.0
+.spi/ci/build.sh
 ```
 
-On Windows PowerShell:
+The build runs the pre-commit policy on changed Python files and runs the unit
+tests. Live integration tests and the Redis integration tests are deliberately
+excluded from this lane.
 
-```powershell
-py -3.11 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
+## Configuration on SPI Stack
 
-Step 2: Install the runtime dependencies required to import the FastAPI application.
+SPI Stack runs RAFS with workload identity and internal OSDU service URLs.
+Important settings include:
+
+| Variable | SPI value or source | Purpose |
+|---|---|---|
+| `CLOUD_PROVIDER` | `azure` | Select the Azure provider |
+| `OPENAPI_PREFIX` | `/api/rafs-ddms` | Public route and OpenAPI prefix |
+| `SERVICE_HOST_*` | Internal OSDU services | Storage, Dataset, Schema, Search, Entitlements, and Partition clients |
+| `CACHE_ENABLE` | `true` when Redis Stack is deployed | Enable response caching |
+| `REDIS_INDEX_ENABLE` | `true` when Redis Stack is deployed | Enable the derived RAFS search index |
+| `USE_BLOB_STORAGE` | `false` initially | Keep data access through OSDU Dataset and Storage |
+
+No credentials are stored in this repository. Azure access uses workload
+identity; acceptance receives a short-lived bearer token at run time.
+
+## Test
+
+| Suite | Where | Runs in CI | Run it yourself |
+|---|---|---|---|
+| Unit | `tests/test_*` except `test_cache_integration` | Pull requests | `.spi/ci/build.sh` |
+| Acceptance | `tests/integration/tests` | Pull requests against SPI Stack | `spi test rafs --source .` |
+| Redis integration | `tests/test_cache_integration` | Not in the build lane | Run against a configured Redis instance |
+
+Acceptance calls the deployed service through the gateway. The bindings in
+`.spi/service.yaml` provide the gateway, partition, legal domain, cloud
+provider, and bearer token.
+
+Against an environment you are connected to:
 
 ```bash
-pip install -r requirements.txt
+spi test rafs
+spi test rafs --source .
 ```
 
-Step 3: Regenerate the committed OpenAPI specifications.
+To call the API by hand:
 
 ```bash
-python -m scripts.generate_openapi
+curl -H "Authorization: Bearer $TOKEN" \
+  -H "data-partition-id: $PARTITION" \
+  "$GATEWAY/api/rafs-ddms/healthz"
 ```
 
-This command updates both `docs/spec/openapi.json` (pipeline validation source) and
-`docs/api/community/v<detected>/openapi.yaml` (community scan source; currently `v2`).
-The generated `info.title` and `info.version` values are sourced from the application settings
-(`AppSettings.app_name` and `AppSettings.app_version`) to keep docs aligned with code metadata.
+## Deploy
 
-Step 4: Check that the committed specification is still in sync with the codebase.
+For a pull request from this repository that changes code, CI publishes the
+service image and its acceptance image to GHCR. The Deploy and Test lane
+borrows an SPI Stack environment, runs the candidate image, proves it with the
+integration suite, and restores the environment's image.
+
+To try a build by hand on a connected environment, pin it by digest and release
+the pin when done:
 
 ```bash
-python -m scripts.check_openapi_sync
-```
-
-If your environment already has the project dependencies installed, only the last two commands are required.
-
-If local dependency installation is not working on your platform, run the same commands in a Linux environment, container, or CI image that already has `requirements.txt` installed.
-
-OpenAPI validation currently runs at two different levels in RAFS:
-
-* Pre-merge sync check: `rafs_openapi_sync_check` generates the OpenAPI document directly from the FastAPI codebase and fails the pipeline on drift between generated output and [openapi.yaml](./docs/api/community/v2/openapi.yaml).
-* Post-deploy CImpl check: `cimpl-check-openapi-spec` compares the committed [openapi.yaml](./docs/api/community/v2/openapi.yaml) file with the OpenAPI document served by the deployed RAFS service in CImpl.
-
-The post-deploy CImpl check is configured with `CIMPL_OPENAPI_SPEC_PATH` for the committed file location and `CIMPL_OPENAPI_YAML_ROUTE` for the live OpenAPI endpoint.
-
-OpenAPI validation flow in GitLab:
-
-* `build_rafs_tests` (`build` stage): builds the RAFS test image used by the pre-merge sync check.
-* `rafs_openapi_sync_check` (`scan` stage): runs `python scripts/check_openapi_sync.py` against the source code before deployment.
-* `cimpl-deploy` (`deploy` flow in CImpl): deploys the current build.
-* `cimpl-check-openapi-spec` (`acceptance` stage, CImpl only): downloads the live `/api/rafs-ddms/openapi.json` document from the deployed service, converts it to YAML, and compares it with the committed [openapi.yaml](./docs/api/community/v2/openapi.yaml).
-
-The generator uses deterministic defaults for repository-managed output:
-
-* `APP_ENV=test`
-* `OPENAPI_PREFIX=/api/rafs-ddms`
-
-## DDMS Footprint
-
-The DDMS Footprint lists of the OSDU `group-type--EntityType` and `content types` handled by the DDMS.
-
-RAFS DDMS Footpring is presented in the [file](./docs/rafs_ddms_footprint_v0.28.json).
-
-## OSDU Well Known Schemas Disclaimer
-
-Note regarding OSDU Well Known Schema interaction: Currently (April 2023), OSDU Data Definitions "Fluid Samples" and "Samples & Petrophysics" Project teams are re-working the data model for both rock and fluid samples in a way that there will be a unified way to handle both. That means that today there are no FluidSample, FluidSampleAnalysis, or FluidSampleAcquisition schemas published by OSDU Data Definitions, which can be used by the DDMS. Similarly, it is likely that RockSample, RockSampleAnalysis, and Coring schemas will be changed by the Forum or even be deprecated and replaced in the near future. In light of this: 
-  
-  1) With regard to PVT, the RAFS DDMS currently uses custom WPC and Master schemas 
-  2) With regard to RCA, the DDMS does have relationship to the existing rock-related schemas mentioned above.
-
-In both cases, the DDMS will need to be updated when the revised OSDU Data Definitions data model is published.
-
-**NB**: Before the custom schemas are marked as the official well-known schemas, the next custom schemas must be registered during the deployment of the service.
-
-[RAFS DDMS custom schemas](./deployments/README.md).
-
-## Content Schemas
-
-You can find more information about [content schemas](app/models/data_schemas/README.md).
-
-## Project Startup
-
-### Configuration
-
-The settings module can read environment variables as long as they are declared as fields of the
-Settings class (see app/core/settings/base.py).
-
-Or they can be provided in a .env or prod.env files
-
-#### Python Version
-
-RAFS DDMS runs in **Python 3.11**.  <br/>
-> **NOTE:** The pip install will not currently work on Windows.  Requires a Linux machine (or Container).
-
-#### Local settings
-
-Add an .env with^
-
-```bash
-APP_ENV="dev"
-OPENAPI_PREFIX="/api/os-rafs-ddms"
-CLOUD_PROVIDER="azure"
-API_BASE_URL="osdu_endpoint"
-SERVICE_HOST_DATASET="${API_BASE_URL}/api/dataset/v1"
-SERVICE_HOST_STORAGE="${API_BASE_URL}/api/storage/v2"
-```
-
-#### Cache settings
-
-> NOTE: Redis Cache it is a NFR, it is used to improve resiliency and performance.
-
-It is needed to add the following variables to .env to set up cache layer:
-
-```bash
-CACHE_ENABLE=True
-CACHE_BACKEND="app.core.helpers.cache.backends.redis_cache.RedisCacheBackend"
-```
-
-The `CACHE_ENABLE` variable can enable or disable cache for all app.
-Besides, to disable caching in a request just use "Cache-Control" in a request header as "no-store" or "no-cache".
-
-The `CACHE_BACKEND` variable is a path to your backend,
-which is used to initialize FastAPICache like [here](https://github.com/long2ice/fastapi-cache#quick-start).
-
-You can use already prepared backends like:
-
-* `app.core.helpers.cache.backends.redis_cache.RedisCacheBackend`
-* `app.core.helpers.cache.backends.inmemory_cache.InMemoryCacheBackend`
-
-Also, you can customize and use your own one.
-Customized backend is supposed to be based on [BaseCacheBackend class](/app/core/helpers/cache/backends/base_cache.py).
-
-To set up custom backend you maybe need to add optional variables to .env. For example for RedisCacheBackend we use:
-
-```bash
-REDIS_HOSTNAME=xxxxxx.redis.cache.windows.net
-REDIS_PASSWORD=<redis-key>
-REDIS_DATABASE=13
-REDIS_SSL=True
-REDIS_PORT=6380
-```
-
-By default `ttl = 60` sec is used. It is possible to set another ttl through the `CACHE_DEFAULT_TTL` variable.
-Also, it is possible to set ttl manually for a specific request directly at the place where @cache is used.
-
-##### Deployment-Specific Redis Configuration
-
-**Note:** Redis environment variables may be overridden in deployment configurations depending on your cloud provider:
-
-**For local development/testing (Docker):**
-
-```bash
-REDIS_HOSTNAME=redis        # Docker service name
-REDIS_PASSWORD=             # Empty for local Docker Redis
-REDIS_PORT=6379
-REDIS_DATABASE=0
-REDIS_SSL=False
-```
-
-**For production deployments:**
-
-* **Azure**: Redis hostname is configured via Helm values (default: `redis-rafs-service`) and password from Azure KeyVault. See [Azure deployment docs](./devops/azure/README.md).
-* **Google Cloud**: Redis hostname defaults to `redis-rafs-ddms` if `redisRafsDdmsHost` is empty in Helm values, otherwise uses specified external Redis. Password from Kubernetes secrets. See [GC deployment docs](./devops/gc/deploy/README.md).
-
-Deployment configurations take precedence over local `.env` settings.
-
-##### Cache Logging
-
-The Redis cache backend includes automatic logging at DEBUG level for cache operations:
-
-* **Cache HIT**: When data is successfully retrieved from cache
-* **Cache MISS**: When requested data is not found in cache
-* **Cache SET**: When data is stored in cache
-
-To view cache logs, ensure your logging level is set to DEBUG in `tests/integration/pytest.ini` or your application configuration. This provides visibility into cache utilization during both application runtime and integration tests.
-
-### Run with Docker
-
-Docker Compose is meant to be used for local development/testing, not for production. Be aware that Docker Compose uses higher privileges for development and testing purposes. We wouldn't recommend using the [docker-compose.yml](./docker-compose.yml) file for production, only for developers to add changes and test them locally as well as run unit/integration tests to avoid having to install all dependencies.
-We are using a distroless image as the default production docker image for an improved security experience.
-
-#### Docker Compose Flavors
-
-* [Distroless - Dockerfile](./Dockerfile) is the default image to run with Docker Compose. It is a balanced, production-ready Dockerfile that can be used to deploy an application as well as develop on your local machine. It is a lean Dockerfile (best practice for production systems due to lack of unneeded binaries and libraries) and is ideal for addressing security CVEs and providing a lean version of RAFS DDMS.
-  * Distroless build around ~400MB. You can test it with: `docker compose --profile distroless up distroless`
-* [tests - Dockerfile_test](./Dockerfile.tests) Dockerfile definition which contains and install all dependencies needed for unit/integration tests.
-
-#### Quickly Run Docker Compose
-
-**WARNING** Docker Compose is meant to be used for quick development/testing, not for production.
-
-```bash
-OSDU_ENDPOINT=https://<osdu>.<fqdn>
-cat > .env <<EOF
-SERVICE_NAME=rafs-ddms
-OPENAPI_PREFIX=/api/rafs-ddms
-CLOUD_PROVIDER=azure
-SERVICE_HOST_STORAGE=${OSDU_ENDPOINT}/api/storage/v2
-SERVICE_HOST_PARTITION=${OSDU_ENDPOINT}/api/partition/v1
-SERVICE_HOST_DATASET=${OSDU_ENDPOINT}/api/dataset/v1
-SERVICE_HOST_SCHEMA=${OSDU_ENDPOINT}/api/schema-service/v1
-SERVICE_HOST_SEARCH=${OSDU_ENDPOINT}/api/search/v2
-CACHE_ENABLE=False
-EOF
-
-docker compose up
-
-# Simple test
-curl localhost:8080/api/rafs-ddms/info
-```
-
-#### Run with Dockerfile
-
-```bash
-export BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-export COMMIT_ID=$(git rev-parse HEAD)
-export COMMIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-export COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-
-docker build -f "./Dockerfile" \
-    --build-arg build_date="$BUILD_DATE" \
-    --build-arg commit_id="$COMMIT_ID" \
-    --build-arg commit_branch="$COMMIT_BRANCH" \
-    --build-arg commit_message="$COMMIT_MESSAGE" . \
-    -t rafs-ddms:latest
-
-docker run rafs-ddms:latest
-```
-
-### Run with Uvicorn
-
-```bash
-uvicorn app.main:app --port LOCAL_PORT
-```
-
-To see the OpenAPI page, follow the link:
-
-`http://127.0.0.1:<LOCAL_PORT>/<OPENAPI_PREFIX>/docs`
-
-Use the `OPENAPI_PREFIX` value used for project settings.
-
-## Testing
-
-### Run Unit Tests
-
-**WARNING:** It is recommended to use the [Dockerfile](./Dockerfile) image for production systems.  The [Dockerfile.tests](./Dockerfile.tests) image, contains extra dependencies needed for testing purposes and is not intended for production use.
-
-Unit tests
-
-```shell
-docker compose --profile tests run tests
-docker compose --profile tests run --rm tests flake8 / --config=/setup.cfg
-docker compose --profile tests run --rm tests flake8 /app --select T1
-```
-
-### Run Cache Integration Tests
-
-Redis cache integration tests verify that the cache backend is functioning correctly with a real Redis connection. These tests are isolated from the main integration tests and only run when `CACHE_ENABLE=True` in your `.env` file.
-
-**Local Docker Redis configuration for testing:**
-
-```shell
-# Add to .env for local Docker testing
-CACHE_ENABLE=True
-CACHE_BACKEND="app.core.helpers.cache.backends.redis_cache.RedisCacheBackend"
-REDIS_HOSTNAME=redis
-REDIS_PORT=6379
-REDIS_DATABASE=0
-REDIS_SSL=False
-REDIS_PASSWORD=
-```
-
-**Run cache tests:**
-
-```shell
-docker compose --profile tests up cache_tests
-```
-
-The cache tests verify:
-
-* Redis backend initialization
-* Cache set and get operations
-* Cache miss behavior
-* Cache expiration/TTL
-* Cache value overwriting
-* Cache hit/miss/set logging
-
-All cache operations are logged at DEBUG level, providing visibility into cache utilization.
-
-### Run Local Integration Tests
-
-Using Docker [env substitution from shell](https://docs.docker.com/compose/environment-variables/set-environment-variables/#substitute-from-the-shell) capabilities.
-
-```shell
-# Start Docker Compose
-docker compose up rafs
-# Export needed envs for testing
-# Internal hostname in Docker Compose (rafs service)
-# Alternatively you can choose to test in remote env
-export DDMS_BASE_URL=http://rafs:8080
-export ACCESS_TOKEN=<access_token>
-export PARTITION=<partition>
-export URL_PREFIX=api/rafs-ddms
-export CLOUD_PROVIDER=<cloud-provider>
-export DOMAIN=<domain>
-# Run test
-docker compose build tests
-docker compose --profile tests run --rm integration
-
-# (Optional) Cleanup
-docker compose down
-```
-
-### Local running
-
-1. Install virtual env if needed
-
-   ```bash
-    python -m venv integration_env
-    source integration_env/bin/activate
-   ```
-
-2. Install requests
-
-    ```bash
-    pip install -r requirements.txt
-    pip install -r requirements-tests.in
-    ````
-
-3. Set required environment variables
-
-   The integration tests use **two separate URL settings**:
-   - `DDMS_BASE_URL` — URL of the RAFS DDMS service (passed via `--ddms-base-url`)
-   - `SERVICE_HOST_LEGAL` — URL of the OSDU Legal service (e.g. `https://<host>/api/legal/v1`)
-   - `SERVICE_HOST_STORAGE` — URL of the OSDU Storage service (e.g. `https://<host>/api/storage/v2`)
-
-   `SERVICE_HOST_LEGAL` and `SERVICE_HOST_STORAGE` are **not** derived from `DDMS_BASE_URL`.
-   They must be set as environment variables or in a `.env` file (see `.env.example`).
-
-   ```bash
-   export SERVICE_HOST_LEGAL=https://<osdu-host>/api/legal/v1
-   export SERVICE_HOST_STORAGE=https://<osdu-host>/api/storage/v2
-   ```
-
-   If these are not set, legal tag creation will fail with 401/connection errors
-   against the wrong (or missing) endpoint regardless of what `DDMS_BASE_URL` is set to.
-
-4. Run
-
-* Run via Terminal:
-
-    ```bash
-    pytest -n auto --dist=loadscope tests/integration/tests --ddms-base-url {DDMS_BASE_URL} --url-prefix {URL_PREFIX} --partition {PARTITION} --bearer-token {TOKEN} --cloud-provider {CLOUD_PROVIDER} --domain {DOMAIN}
-    ```
-
-* Run/Debug via PyCharm:
-  * Open "Run/Debug Configurations" in the upper right corner.
-  * Click "Edit configuration templates..." in the bottom left corner of the opened window.
-  * Find and expand "Python tests", click "pytest"
-  * Choose "Working directory" as root directory of the project
-  * Fill "Additional Arguments" with -n auto  
-
-    ```txt
-    -n auto --ddms-base-url={DDMS_BASE_URL} --url-prefix={URL_PREFIX} --partition={PARTITION} --bearer-token={token} --domain={DOMAIN}     
-    ```
-
-  * Apply and OK
-  * Use the green arrow next to the test name to run or debug it.
-
-### Integration tests structure
-
-```txt
-    app
-    ├── client
-    │   ├── api_client.py               - Client module for making API requests.
-    │   └── core                        - Core module containing endpoints and core functionalities.
-    └── tests
-        ├── integration
-        │   ├── data                    - Test data used in integration tests.
-        │   ├── helpers                 - Directory containing reusable functions for routine automation.
-        │   ├── tests                   - Directory with integration tests.
-        │   │   └── conftest.py         - Specific test fixtures shared across different types of tests.
-        │   ├── conftest.py             - Main infrastructure fixtures.
-        │   ├── config.py               - Configuration file with constants and data file paths.
-        │   ├── data_provider.py        - Data class to create the final data source for tests.
-        |   └── pytest.ini              - Pytest settings
-        ├── test_cache_integration      - Redis cache integration tests (isolated, requires CACHE_ENABLE=True).
-        │   └── test_redis_cache.py     - Tests for Redis cache operations with real Redis connection.
-        └── test_helpers
-            └── cache
-                └── test_redis_backend_mocked.py - Unit tests for Redis backend with mocks.
-```
-
-### Run Postman Tests
-
-[The following collection](https://community.opengroup.org/osdu/qa/-/tree/main/Dev/48_CICD_Setup_RAFSDDMSAPI?ref_type=heads) can be used to test RAFS DDMS with Postman.
-
-## Contribution
-
-### Manage package dependencies
-
-If new dependencies were added a new `requirements.txt` file must be generated by:
-
-* Add new dependencies to requirements.in
-* Run to generate a new requirements.txt file
-
-```shell
-pip install pip-tools 
-pip-compile requirements.in
-```
-
-### Manage package dependencies - Tests
-
-Testing dependencies are separated from the production dependencies.
-
-* Add new dependencies to `requirements-tests.in`
-* Run to generate a new requirements.txt file
-
-```shell
-pip install pip-tools 
-pip-compile requirements.in requirements-tests.in -o requirements-tests.txt -v
-pip install -r requirements-tests.txt
-```
-
-### Code Style Check
-
-There is a list of linters and formatters which are used in this project for code style check.
-Mostly it is [flake8](https://flake8.pycqa.org/en/latest/)
-with [wemake-python-styleguide extension](https://wemake-python-styleguide.readthedocs.io/en/latest/index.html).
-
-Full list of checkers can be found in [pre-commit config](.pre-commit-config.yaml) file. Configuration for
-checkers is in [setup.cfg](setup.cfg) file.
-
-#### Pre-commit Hooks Installation
-
-Pre-commit hooks are supposed to be installed locally.
-
-All requirements for development, tests and pre-commit checks can be installed to your python environment:
-
-```shell
-pip-compile requirements.in requirements-tests.in -o requirements-tests.txt -v
-pip install -r requirements-tests.txt
-```
-
-pre-commit tool should be used inside this environment.
-
-Steps after requirements installation:
-
-```shell
-pre-commit install
-pre-commit install --hook-type commit-msg
-```
-
-Second step is needed for correct gitlint work.
-
-#### Pre-commit Hooks Run
-
-Command to run pre-commit manually for all files:
-
-```shell
-pre-commit run --all-files
-```
-
-In other cases, all checks run automatically on commit.
-
-## Deployment
-
-* [Main deployment page](./devops/)
-
-### Core-plus
-
-* [Community implementation (CI) Deployment Instructions](./devops/core-plus/)
-
-### Azure
-
-* [Azure Deployment Instructions - Standard DDMS](./devops/azure/)
-
-### AWS
-
-The AWS provider has been removed from this repository.
-
-### Google
-
-* [Google Deployment Instructions](./devops/gc/deploy)
-
-## OpenTelemetry Integration
-
-RAFS DDMS supports OpenTelemetry (OTEL) for distributed tracing, metrics, and log correlation.
-See the [Community Implementation (CI) deployment docs](./devops/core-plus/README.md#opentelemetry-integration) for full configuration details.
-
-## Dedicated Blob Storage for Parquet Files
-
-A change request is underway to transition from using the Dataset service for storing Parquet files to a **dedicated blob storage** (bucket or container). This change is being rolled out in phases, with implementation details varying by cloud service provider (CSP).
-
-Once the implementation is ready for a specific CSP, the feature can be enabled using the following environment variable:
-
-```bash
-USE_BLOB_STORAGE=True
-```
-
-### Local Filesystem Support
-
-In addition to the CSP implementations, a class called [`LocalFilesystemBlobStorage`](./app/providers/dependencies/blob_storage.py?ref_type=heads#L148) has been implemented for use with a local filesystem as an alternative to CSP storage. To enable this feature, set the following environment variable:
-
-```bash
-LOCAL_DEV_MODE=True
-```
-
-This setup provides flexibility for development and testing environments where CSP integration is not required.
-
-### Azure Blob Storage
-
-* [Blob Storage Docs](./docs/providers/az/readme.md)
-
-
-## Namespace Isolation (`x-collaboration`)
-
-RAFS DDMS supports data namespace isolation through the OSDU `x-collaboration` header.  
-When the header is provided, it is validated and propagated to downstream OSDU services (Storage, Search, Dataset, Schema, Entitlements), which handle the actual data isolation.
-The `x-collaboration` header is optional. If it is not provided, RAFS DDMS behaves as before.
-
-### Supported header formats
-
-```text
-- x-collaboration: <uuid>
-
-- x-collaboration: id=<uuid>,application=<application_name>
+spi service pin rafs --image ghcr.io/azure/osdu-spi-rafs-ddms@sha256:<digest>
+spi service reset rafs
 ```
 
 ## License
 
-Licensed under Apache License Version 2.0; details can be found in [LICENSE](./LICENSE).
+Copyright © Microsoft Corporation
+
+Licensed under the [Apache License 2.0](LICENSE).
