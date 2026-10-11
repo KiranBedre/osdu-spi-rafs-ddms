@@ -19,6 +19,7 @@ import pytest
 from app.resources.common_headers import CACHE_CONTROL
 from tests.integration.config import (
     CONFIG,
+    SCHEMA_AUTHORITY,
     DataFiles,
     SamplesAnalysisEndpoints,
 )
@@ -34,10 +35,12 @@ def test_nmr_max_age_cache_header(api, endpoint, args, record_id, dataset_id_v1,
     local_vars = locals().copy()
     call_kwargs = {name: local_vars[name] for name in args}
 
-    call_kwargs.update({
-        "headers": {CACHE_CONTROL: "max-age=120"},
-        "raw": True,
-    })
+    call_kwargs.update(
+        {
+            "headers": {CACHE_CONTROL: "max-age=120"},
+            "raw": True,
+        }
+    )
 
     response = method(**call_kwargs)
 
@@ -49,7 +52,7 @@ def test_nmr_create_record_with_kind_matching_semantic_version(api, helper, test
     """Verify record creation with kind matching only semantic version can be retrieved unchanged via GET."""
     # Record creation
     data_payload = copy.deepcopy(tests_data(DataFiles.SAMPLE_ANALYSIS))
-    data_payload["kind"] = f"{DATA_PARTITION_ID}:wks:work-product-component--SamplesAnalysis:5.23.72"
+    data_payload["kind"] = f"{SCHEMA_AUTHORITY}:wks:work-product-component--SamplesAnalysis:5.23.72"
     response = api.sample_analysis.post_record(body=[data_payload])
     record_id = response["recordIdVersions"][0].rsplit(":", 1)[0]
 

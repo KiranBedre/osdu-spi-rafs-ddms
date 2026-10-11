@@ -175,18 +175,18 @@ def test_samples_analysis_types_negative_empty_data_partition_id_header(api):
 
 
 def test_samples_analysis_types_negative_invalid_data_partition_id_header(api):
-    """Reject requests invalid Data-Partition-ID header with 401 Unauthorized."""
+    """Reject requests with an invalid Data-Partition-ID header with 403 Forbidden."""
 
     kwargs = {
         "headers": {DATA_PARTITION_ID: "Dummy"},
-        "allowed_codes": [status.HTTP_401_UNAUTHORIZED],
+        "allowed_codes": [status.HTTP_403_FORBIDDEN],
         "raw": True,
     }
 
     response = api.sample_analysis.get_analysis_types(**kwargs)
 
     # Assert
-    assert response.status_code == 401
+    assert response.status_code == 403
     body = response.json()
-    assert "Access denied" in body["reason"]
-    assert "The user is not authorized to perform this action" in body["message"]
+    assert body["reason"] == "Forbidden"
+    assert body["message"] == "Invalid data partition id"
