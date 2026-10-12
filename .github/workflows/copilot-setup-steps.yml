@@ -40,6 +40,9 @@ jobs:
           java-version: "17"
           cache: maven
 
+      - name: Setup pinned Maven
+        uses: ./.github/actions/setup-maven
+
       - name: Install Maven dependencies
         if: steps.stacks.outputs.java == 'true'
         env:

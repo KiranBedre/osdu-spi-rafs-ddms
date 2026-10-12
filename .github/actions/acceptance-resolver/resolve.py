@@ -87,38 +87,36 @@ FACT_PATHS = {
 PARTITION_FACT_KEYS = {"partition": "name", "legalTag": "legal_tag"}
 VAULT_NAME_PATH = ("azure", "keyvault")
 
-RESERVED_ENV_NAMES = frozenset(
-    {
-        "AZURE_CLIENT_ID",
-        "AZURE_FEDERATED_TOKEN_FILE",
-        "AZURE_SUBSCRIPTION_ID",
-        "AZURE_TENANT_ID",
-        "BASH_ENV",
-        # Ambient on every runner: a binding with one of these names would read
-        # the runner's own value as an explicit override, never its source.
-        "CI",
-        "ENV",
-        "HOME",
-        "HOSTNAME",
-        "JAVA_TOOL_OPTIONS",
-        "LANG",
-        "LC_ALL",
-        "LD_LIBRARY_PATH",
-        "LD_PRELOAD",
-        "LOGNAME",
-        "MAVEN_OPTS",
-        "OLDPWD",
-        "PATH",
-        "PWD",
-        "PYTHONPATH",
-        "SHELL",
-        "SHLVL",
-        "TERM",
-        "TMPDIR",
-        "TZ",
-        "USER",
-    }
-)
+RESERVED_ENV_NAMES = frozenset({
+    "AZURE_CLIENT_ID",
+    "AZURE_FEDERATED_TOKEN_FILE",
+    "AZURE_SUBSCRIPTION_ID",
+    "AZURE_TENANT_ID",
+    "BASH_ENV",
+    # Ambient on every runner: a binding with one of these names would read
+    # the runner's own value as an explicit override, never its source.
+    "CI",
+    "ENV",
+    "HOME",
+    "HOSTNAME",
+    "JAVA_TOOL_OPTIONS",
+    "LANG",
+    "LC_ALL",
+    "LD_LIBRARY_PATH",
+    "LD_PRELOAD",
+    "LOGNAME",
+    "MAVEN_OPTS",
+    "OLDPWD",
+    "PATH",
+    "PWD",
+    "PYTHONPATH",
+    "SHELL",
+    "SHLVL",
+    "TERM",
+    "TMPDIR",
+    "TZ",
+    "USER",
+})
 RESERVED_ENV_PREFIXES = (
     "ACTIONS_",
     "GITHUB_",
@@ -165,7 +163,6 @@ class Infra(Exception):
 # scalars, comments. No anchors, no multi-line scalars, no escapes inside
 # quoted scalars, no tabs.
 
-
 def _strip_inline_comment(value):
     # YAML rules: an inline comment's '#' must be preceded by whitespace (or
     # start the value) and must sit outside any quoted scalar.
@@ -188,17 +185,20 @@ def _scalar(text, line_no):
         # The dialect has no escape syntax: a same-kind quote inside (or a
         # backslash, when double-quoted) would be silently misread; refuse it.
         if text[0] in inner or (text[0] == '"' and "\\" in inner):
-            raise Halt("DESCRIPTOR_INVALID", f"line {line_no}: unsupported escape inside a quoted scalar")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"line {line_no}: unsupported escape inside a quoted scalar")
         return inner
     if text and (text[0] in "'\"" or text[-1] in "'\""):
-        raise Halt("DESCRIPTOR_INVALID", f"line {line_no}: unterminated or mismatched quote")
+        raise Halt("DESCRIPTOR_INVALID",
+                   f"line {line_no}: unterminated or mismatched quote")
     if text in ("true", "false"):
         return text == "true"
     if re.fullmatch(r"-?[0-9]+", text):
         return int(text)
     for forbidden in ("{", "}", "[", "]", "&", "*", "#"):
         if forbidden in text:
-            raise Halt("DESCRIPTOR_INVALID", f"line {line_no}: unquoted scalar contains '{forbidden}'")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"line {line_no}: unquoted scalar contains '{forbidden}'")
     return text
 
 
@@ -232,7 +232,8 @@ def _flow_value(text, line_no):
         for item in _split_flow_items(text[1:-1], line_no):
             m = re.match(r"^([A-Za-z0-9_.-]+):\s*(.*)$", item)
             if not m:
-                raise Halt("DESCRIPTOR_INVALID", f"line {line_no}: expected 'key: value' inside flow mapping")
+                raise Halt("DESCRIPTOR_INVALID",
+                           f"line {line_no}: expected 'key: value' inside flow mapping")
             key = m.group(1)
             if key in result:
                 raise Halt("DESCRIPTOR_INVALID", f"line {line_no}: duplicate key '{key}'")
@@ -267,7 +268,8 @@ def parse_descriptor_yaml(text):
                 raise Halt("DESCRIPTOR_INVALID", f"line {line_no}: unexpected indentation")
             if body.startswith("- "):
                 if kind == "map":
-                    raise Halt("DESCRIPTOR_INVALID", f"line {line_no}: list entry inside a mapping block")
+                    raise Halt("DESCRIPTOR_INVALID",
+                               f"line {line_no}: list entry inside a mapping block")
                 kind = "list"
                 items.append(_flow_value(_strip_inline_comment(body[2:]), line_no))
                 pos += 1
@@ -276,7 +278,8 @@ def parse_descriptor_yaml(text):
             if not m:
                 raise Halt("DESCRIPTOR_INVALID", f"line {line_no}: expected 'key:' form")
             if kind == "list":
-                raise Halt("DESCRIPTOR_INVALID", f"line {line_no}: mapping entry inside a list block")
+                raise Halt("DESCRIPTOR_INVALID",
+                           f"line {line_no}: mapping entry inside a list block")
             kind = "map"
             key = m.group(1)
             if key in entries:
@@ -306,7 +309,6 @@ def parse_descriptor_yaml(text):
 
 # ---------------------------------------------------------------------------
 # Descriptor validation (schema v3)
-
 
 def _require_keys(mapping, allowed, required, where):
     unknown = sorted(set(mapping) - set(allowed))
@@ -357,12 +359,14 @@ def _validate_binding(name, binding, where):
     if source not in FACT_SOURCES + VALUE_SOURCES + CALLER_SOURCES and not keyvault:
         raise Halt(
             "UNKNOWN_SOURCE",
-            f"{where}.source '{source}' is not in the source vocabulary: " + " | ".join(SOURCE_VOCABULARY),
+            f"{where}.source '{source}' is not in the source vocabulary: "
+            + " | ".join(SOURCE_VOCABULARY),
         )
 
     if "suffix" in binding:
         if source not in FACT_SOURCES:
-            raise Halt("DESCRIPTOR_INVALID", f"{where}.suffix is only valid for fact sources")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}.suffix is only valid for fact sources")
         if not isinstance(binding["suffix"], str) or not SUFFIX_RE.fullmatch(binding["suffix"]):
             raise Halt("DESCRIPTOR_INVALID", f"{where}.suffix is not valid")
 
@@ -372,68 +376,76 @@ def _validate_binding(name, binding, where):
         if not isinstance(binding["value"], str) or binding["value"] == "":
             raise Halt("DESCRIPTOR_INVALID", f"{where}.value must be a non-empty string")
         if len(binding["value"]) > 240:
-            raise Halt("DESCRIPTOR_INVALID", f"{where}.value exceeds 240 characters, the published " "schema maximum")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}.value exceeds 240 characters, the published "
+                       "schema maximum")
     elif "value" in binding:
-        raise Halt("DESCRIPTOR_INVALID", f"{where}.value is only valid for sources static and template")
+        raise Halt("DESCRIPTOR_INVALID",
+                   f"{where}.value is only valid for sources static and template")
 
     if "default" in binding:
         if keyvault or source in TOKEN_SOURCES:
             # A default for a secret would put a secret value in the repository.
-            raise Halt("DESCRIPTOR_INVALID", f"{where}.default is not valid for source {source}")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}.default is not valid for source {source}")
         if source in VALUE_SOURCES:
-            raise Halt("DESCRIPTOR_INVALID", f"{where}.default is not valid for source {source}")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}.default is not valid for source {source}")
         if not isinstance(binding["default"], str):
             raise Halt("DESCRIPTOR_INVALID", f"{where}.default must be a string")
 
     if source == "template":
         refs = TEMPLATE_REF_RE.findall(binding["value"])
         if not refs:
-            raise Halt("DESCRIPTOR_INVALID", f"{where}.value has no ${{NAME}} reference; use source static")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}.value has no ${{NAME}} reference; use source static")
         if "${" in TEMPLATE_REF_RE.sub("", binding["value"]):
-            raise Halt("DESCRIPTOR_INVALID", f"{where}.value carries a malformed ${{...}} placeholder")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}.value carries a malformed ${{...}} placeholder")
     return source
 
 
 def validate_descriptor(data, suite="acceptance"):
-    _require_keys(data, ("schemaVersion", "service", "tests"), ("schemaVersion", "service", "tests"), "descriptor")
+    _require_keys(data, ("schemaVersion", "service", "tests"),
+                  ("schemaVersion", "service", "tests"), "descriptor")
     version = data["schemaVersion"]
     if version not in (3, 4):
-        raise Halt(
-            "UNSUPPORTED_SCHEMA_VERSION",
-            f"descriptor.schemaVersion {version!r} is not supported; " "this engine reads 3 and 4",
-        )
+        raise Halt("UNSUPPORTED_SCHEMA_VERSION",
+                   f"descriptor.schemaVersion {version!r} is not supported; "
+                   "this engine reads 3 and 4")
 
     service = data["service"]
     if not isinstance(service, dict):
         raise Halt("DESCRIPTOR_INVALID", "descriptor.service must be a mapping")
     _require_keys(
         service,
-        ("name", "archetype", "description", "sourcePath", "nodeVersion", "pythonVersion", "image"),
+        ("name", "archetype", "description", "sourcePath", "nodeVersion", "pythonVersion",
+         "image"),
         ("name", "archetype"),
         "descriptor.service",
     )
     _string_field(service, "name", "descriptor.service", SLUG_RE)
     archetype = _string_field(service, "archetype", "descriptor.service")
     if version == 3 and archetype != "java-maven-azure":
-        raise Halt("DESCRIPTOR_INVALID", "descriptor.service.archetype must be java-maven-azure in schemaVersion 3")
+        raise Halt("DESCRIPTOR_INVALID",
+                   "descriptor.service.archetype must be java-maven-azure in schemaVersion 3")
     if archetype not in (
         "java-maven-azure",
         "node-typescript-azure",
         "python-fastapi-azure",
     ):
-        raise Halt(
-            "DESCRIPTOR_INVALID",
-            "descriptor.service.archetype must be java-maven-azure " "or a supported schemaVersion 4 source archetype",
-        )
+        raise Halt("DESCRIPTOR_INVALID",
+                   "descriptor.service.archetype must be java-maven-azure "
+                   "or a supported schemaVersion 4 source archetype")
     if archetype in ("node-typescript-azure", "python-fastapi-azure") and version != 4:
-        raise Halt("DESCRIPTOR_INVALID", f"{archetype} requires schemaVersion 4")
+        raise Halt("DESCRIPTOR_INVALID",
+                   f"{archetype} requires schemaVersion 4")
     if "description" in service:
         description = _string_field(service, "description", "descriptor.service")
         if len(description) > 200:
-            raise Halt(
-                "DESCRIPTOR_INVALID",
-                "descriptor.service.description exceeds 200 characters, " "the published schema maximum",
-            )
+            raise Halt("DESCRIPTOR_INVALID",
+                       "descriptor.service.description exceeds 200 characters, "
+                       "the published schema maximum")
     service_config = _validate_service_config(service, archetype)
 
     tests = data["tests"]
@@ -444,17 +456,20 @@ def validate_descriptor(data, suite="acceptance"):
     suites = {}
     for suite_name in tests:
         if not SUITE_NAME_RE.fullmatch(suite_name):
-            raise Halt("DESCRIPTOR_INVALID", f"descriptor.tests.{suite_name}: suite names are lowercase slugs")
-        suites[suite_name] = _validate_suite(service["name"], suite_name, tests[suite_name], version)
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"descriptor.tests.{suite_name}: suite names are lowercase slugs")
+        suites[suite_name] = _validate_suite(
+            service["name"], suite_name, tests[suite_name], version)
     if suite not in suites:
-        raise Halt(
-            "DESCRIPTOR_INVALID",
-            f"descriptor.tests declares no suite named '{suite}'; " "declared: " + ", ".join(sorted(suites)),
-        )
+        raise Halt("DESCRIPTOR_INVALID",
+                   f"descriptor.tests declares no suite named '{suite}'; "
+                   "declared: " + ", ".join(sorted(suites)))
     contract = dict(suites[suite])
     contract["suite"] = suite
     contract["suites"] = {name: suites[name]["test_dir"] for name in sorted(suites)}
-    contract["suite_types"] = {name: suites[name]["test_type"] for name in sorted(suites)}
+    contract["suite_types"] = {
+        name: suites[name]["test_type"] for name in sorted(suites)
+    }
     contract["service_config"] = service_config
     return contract
 
@@ -463,9 +478,9 @@ def _validate_service_config(service, archetype):
     if archetype == "java-maven-azure":
         for key in ("sourcePath", "nodeVersion", "pythonVersion", "image"):
             if key in service:
-                raise Halt(
-                    "DESCRIPTOR_INVALID", f"descriptor.service.{key} is only valid for " "source-based archetypes"
-                )
+                raise Halt("DESCRIPTOR_INVALID",
+                           f"descriptor.service.{key} is only valid for "
+                           "source-based archetypes")
         return {
             "name": service["name"],
             "archetype": archetype,
@@ -501,12 +516,14 @@ def _validate_service_config(service, archetype):
     image = service["image"]
     if not isinstance(image, dict):
         raise Halt("DESCRIPTOR_INVALID", f"{where}.image must be a mapping")
-    _require_keys(image, ("context", "dockerfile"), ("context", "dockerfile"), f"{where}.image")
+    _require_keys(image, ("context", "dockerfile"), ("context", "dockerfile"),
+                  f"{where}.image")
     context = _string_field(image, "context", f"{where}.image", PATH_RE)
     dockerfile = _string_field(image, "dockerfile", f"{where}.image", PATH_RE)
     for key, value in (("context", context), ("dockerfile", dockerfile)):
         if ".." in value.split("/"):
-            raise Halt("DESCRIPTOR_INVALID", f"{where}.image.{key} must stay inside the repository")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}.image.{key} must stay inside the repository")
     return {
         "name": service["name"],
         "archetype": archetype,
@@ -526,19 +543,8 @@ def _validate_suite(service_name, suite_name, acceptance, schema_version):
     where = f"descriptor.tests.{suite_name}"
     _require_keys(
         acceptance,
-        (
-            "type",
-            "path",
-            "mavenArguments",
-            "entrypoint",
-            "arguments",
-            "reportPaths",
-            "bindings",
-            "keyVaultBindings",
-            "requires",
-            "dependencies",
-            "timeoutMinutes",
-        ),
+        ("type", "path", "mavenArguments", "entrypoint", "arguments", "reportPaths",
+         "bindings", "keyVaultBindings", "requires", "dependencies", "timeoutMinutes"),
         ("type", "path"),
         where,
     )
@@ -546,7 +552,8 @@ def _validate_suite(service_name, suite_name, acceptance, schema_version):
     if test_type not in ("maven", "script"):
         raise Halt("DESCRIPTOR_INVALID", f"{where}.type must be maven or script")
     if schema_version == 3 and test_type != "maven":
-        raise Halt("DESCRIPTOR_INVALID", f"{where}.type must be maven in schemaVersion 3")
+        raise Halt("DESCRIPTOR_INVALID",
+                   f"{where}.type must be maven in schemaVersion 3")
     path = _string_field(acceptance, "path", where, PATH_RE)
     if ".." in path.split("/"):
         raise Halt("DESCRIPTOR_INVALID", f"{where}.path must stay inside the repository")
@@ -556,42 +563,46 @@ def _validate_suite(service_name, suite_name, acceptance, schema_version):
     if test_type == "maven":
         for key in ("entrypoint", "arguments", "reportPaths"):
             if key in acceptance:
-                raise Halt("DESCRIPTOR_INVALID", f"{where}.{key} is only valid for script suites")
+                raise Halt("DESCRIPTOR_INVALID",
+                           f"{where}.{key} is only valid for script suites")
         test_arguments = acceptance.get("mavenArguments", ["verify"])
         if not isinstance(test_arguments, list) or not test_arguments:
             raise Halt("DESCRIPTOR_INVALID", f"{where}.mavenArguments must be a non-empty list")
         for position, argument in enumerate(test_arguments):
             if not isinstance(argument, str) or not MAVEN_ARG_RE.fullmatch(argument):
-                raise Halt(
-                    "DESCRIPTOR_INVALID",
-                    f"{where}.mavenArguments[{position}] must be one argv token " "with no whitespace",
-                )
+                raise Halt("DESCRIPTOR_INVALID",
+                           f"{where}.mavenArguments[{position}] must be one argv token "
+                           "with no whitespace")
         maven_arguments = test_arguments
     else:
         if "mavenArguments" in acceptance:
-            raise Halt("DESCRIPTOR_INVALID", f"{where}.mavenArguments is only valid for maven suites")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}.mavenArguments is only valid for maven suites")
         for key in ("entrypoint", "reportPaths"):
             if key not in acceptance:
                 raise Halt("MISSING_KEY", f"{where}.{key} is required for script suites")
         test_entrypoint = _string_field(acceptance, "entrypoint", where, PATH_RE)
         if ".." in test_entrypoint.split("/"):
-            raise Halt("DESCRIPTOR_INVALID", f"{where}.entrypoint must stay inside the suite directory")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}.entrypoint must stay inside the suite directory")
         test_arguments = acceptance.get("arguments", [])
         if not isinstance(test_arguments, list):
             raise Halt("DESCRIPTOR_INVALID", f"{where}.arguments must be a list")
         for position, argument in enumerate(test_arguments):
             if not isinstance(argument, str) or not ARGV_TOKEN_RE.fullmatch(argument):
-                raise Halt("DESCRIPTOR_INVALID", f"{where}.arguments[{position}] must be one printable argv token")
+                raise Halt("DESCRIPTOR_INVALID",
+                           f"{where}.arguments[{position}] must be one printable argv token")
         report_paths = acceptance["reportPaths"]
         if not isinstance(report_paths, list) or not report_paths:
-            raise Halt("DESCRIPTOR_INVALID", f"{where}.reportPaths must be a non-empty list")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}.reportPaths must be a non-empty list")
         for position, report_path in enumerate(report_paths):
             if not isinstance(report_path, str) or not REPORT_PATH_RE.fullmatch(report_path):
-                raise Halt("DESCRIPTOR_INVALID", f"{where}.reportPaths[{position}] must be a repository-relative glob")
+                raise Halt("DESCRIPTOR_INVALID",
+                           f"{where}.reportPaths[{position}] must be a repository-relative glob")
             if ".." in report_path.split("/"):
-                raise Halt(
-                    "DESCRIPTOR_INVALID", f"{where}.reportPaths[{position}] must stay inside the suite directory"
-                )
+                raise Halt("DESCRIPTOR_INVALID",
+                           f"{where}.reportPaths[{position}] must stay inside the suite directory")
         maven_arguments = []
 
     bindings = acceptance.get("bindings", {})
@@ -607,18 +618,16 @@ def _validate_suite(service_name, suite_name, acceptance, schema_version):
             continue
         for ref in TEMPLATE_REF_RE.findall(binding["value"]):
             if ref not in sources:
-                raise Halt("TEMPLATE_REF", f"{where}.bindings.{name} references undeclared binding '{ref}'")
+                raise Halt("TEMPLATE_REF",
+                           f"{where}.bindings.{name} references undeclared binding '{ref}'")
             if sources[ref] == "template":
-                raise Halt(
-                    "TEMPLATE_REF",
-                    f"{where}.bindings.{name} references template binding '{ref}'; "
-                    "templates may only reference non-template bindings",
-                )
+                raise Halt("TEMPLATE_REF",
+                           f"{where}.bindings.{name} references template binding '{ref}'; "
+                           "templates may only reference non-template bindings")
             if KEYVAULT_SOURCE_RE.fullmatch(sources[ref]):
-                raise Halt(
-                    "TEMPLATE_REF",
-                    f"{where}.bindings.{name} references secret binding '{ref}'; " "secrets stay leaf values",
-                )
+                raise Halt("TEMPLATE_REF",
+                           f"{where}.bindings.{name} references secret binding '{ref}'; "
+                           "secrets stay leaf values")
 
     key_vault_bindings = acceptance.get("keyVaultBindings", {})
     if not isinstance(key_vault_bindings, dict):
@@ -626,36 +635,40 @@ def _validate_suite(service_name, suite_name, acceptance, schema_version):
     for name, secret in key_vault_bindings.items():
         _env_name(name, f"{where}.keyVaultBindings")
         if name in bindings:
-            raise Halt("DESCRIPTOR_INVALID", f"{where}: '{name}' is declared in both bindings and keyVaultBindings")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}: '{name}' is declared in both bindings and keyVaultBindings")
         if not isinstance(secret, str) or not SECRET_NAME_RE.fullmatch(secret):
-            raise Halt("DESCRIPTOR_INVALID", f"{where}.keyVaultBindings.{name} must be a Key Vault secret name")
+            raise Halt("DESCRIPTOR_INVALID",
+                       f"{where}.keyVaultBindings.{name} must be a Key Vault secret name")
 
     if test_type == "script":
         declared_names = set(bindings) | set(key_vault_bindings)
         for position, argument in enumerate(test_arguments):
             reference = TEMPLATE_REF_RE.fullmatch(argument)
             if "${" in argument and reference is None:
-                raise Halt(
-                    "DESCRIPTOR_INVALID",
-                    f"{where}.arguments[{position}] must use an environment " "placeholder as the entire argv token",
-                )
+                raise Halt("DESCRIPTOR_INVALID",
+                           f"{where}.arguments[{position}] must use an environment "
+                           "placeholder as the entire argv token")
             if reference is not None:
                 ref = reference.group(1)
                 if ref not in declared_names:
-                    raise Halt(
-                        "TEMPLATE_REF", f"{where}.arguments[{position}] references undeclared " f"binding '{ref}'"
-                    )
+                    raise Halt("TEMPLATE_REF",
+                               f"{where}.arguments[{position}] references undeclared "
+                               f"binding '{ref}'")
 
     requires = acceptance.get("requires", {})
     if not isinstance(requires, dict):
         raise Halt("DESCRIPTOR_INVALID", f"{where}.requires must be a mapping")
     _require_keys(requires, ("loads", "groups"), (), f"{where}.requires")
     requires = {
-        "loads": _slug_list(requires.get("loads", []), f"{where}.requires.loads", SLUG_RE, "load name"),
-        "groups": _slug_list(requires.get("groups", []), f"{where}.requires.groups", GROUP_RE, "group name"),
+        "loads": _slug_list(requires.get("loads", []), f"{where}.requires.loads",
+                            SLUG_RE, "load name"),
+        "groups": _slug_list(requires.get("groups", []), f"{where}.requires.groups",
+                             GROUP_RE, "group name"),
     }
 
-    dependencies = _slug_list(acceptance.get("dependencies", []), f"{where}.dependencies", SLUG_RE, "service slug")
+    dependencies = _slug_list(acceptance.get("dependencies", []),
+                              f"{where}.dependencies", SLUG_RE, "service slug")
 
     timeout = acceptance.get("timeoutMinutes", 25)
     if isinstance(timeout, bool) or not isinstance(timeout, int) or not 1 <= timeout <= 180:
@@ -681,7 +694,6 @@ def _validate_suite(service_name, suite_name, acceptance, schema_version):
 # ---------------------------------------------------------------------------
 # Facts
 
-
 def load_facts(path):
     try:
         with open(path, encoding="utf-8") as stream:
@@ -692,9 +704,9 @@ def load_facts(path):
         raise Infra("FACTS_UNREADABLE", f"{path}: envelope is not a JSON object")
     api_version = facts.get("apiVersion", "")
     if api_version != FACTS_API_VERSION:
-        raise Infra(
-            "FACTS_API_VERSION", f"facts envelope declares {api_version!r}; this engine reads " f"{FACTS_API_VERSION!r}"
-        )
+        raise Infra("FACTS_API_VERSION",
+                    f"facts envelope declares {api_version!r}; this engine reads "
+                    f"{FACTS_API_VERSION!r}")
     return facts
 
 
@@ -702,14 +714,16 @@ def _fact_at(facts, path):
     node = facts
     for depth, key in enumerate(path):
         if not isinstance(node, dict):
-            raise Infra("FACTS_INVALID", f"facts value at '{'.'.join(path[:depth])}' is not a mapping")
+            raise Infra("FACTS_INVALID",
+                        f"facts value at '{'.'.join(path[:depth])}' is not a mapping")
         if key not in node:
             return ""
         node = node[key]
     if not isinstance(node, str):
         # Absent reads as env-not-ready; present with the wrong type is a
         # producer contract failure and must not masquerade as unseeded.
-        raise Infra("FACTS_INVALID", f"facts value at '{'.'.join(path)}' is not a string")
+        raise Infra("FACTS_INVALID",
+                    f"facts value at '{'.'.join(path)}' is not a string")
     return node
 
 
@@ -718,7 +732,8 @@ def _require_printable_fact(kind, value):
     # inside a JSON string value is never accidental, and stripping it would
     # silently alter what the environment published.
     if any(ord(ch) < 32 or ord(ch) == 127 for ch in value):
-        raise Infra("UNSAFE_VALUE", f"facts value for '{kind}' contains a control character")
+        raise Infra("UNSAFE_VALUE",
+                    f"facts value for '{kind}' contains a control character")
     return value
 
 
@@ -732,13 +747,16 @@ def fact_value(facts, kind):
         primary_entry = None
         for entry in partitions:
             if not isinstance(entry, dict):
-                raise Infra("FACTS_INVALID", "facts value at 'partitions[]' is not a mapping")
+                raise Infra("FACTS_INVALID",
+                            "facts value at 'partitions[]' is not a mapping")
             primary = entry.get("primary", False)
             if not isinstance(primary, bool):
-                raise Infra("FACTS_INVALID", "facts value at 'partitions[].primary' is not a boolean")
+                raise Infra("FACTS_INVALID",
+                            "facts value at 'partitions[].primary' is not a boolean")
             if primary:
                 if primary_entry is not None:
-                    raise Infra("FACTS_INVALID", "facts declare more than one primary partition")
+                    raise Infra("FACTS_INVALID",
+                                "facts declare more than one primary partition")
                 primary_entry = entry
         if primary_entry is None:
             return ""
@@ -748,7 +766,8 @@ def fact_value(facts, kind):
         if not isinstance(value, str):
             raise Infra(
                 "FACTS_INVALID",
-                f"facts value at 'partitions[].{PARTITION_FACT_KEYS[kind]}' " "is not a string",
+                f"facts value at 'partitions[].{PARTITION_FACT_KEYS[kind]}' "
+                "is not a string",
             )
         return _require_printable_fact(kind, value).strip()
     return _require_printable_fact(kind, _fact_at(facts, FACT_PATHS[kind])).strip()
@@ -757,16 +776,17 @@ def fact_value(facts, kind):
 # ---------------------------------------------------------------------------
 # Resolution
 
-
 def _check_value_safe(name, value):
     if any(ord(ch) < 32 or ord(ch) == 127 for ch in value):
-        raise Infra(
-            "UNSAFE_VALUE", f"resolved value for {name} contains a control character; " "an env file cannot carry it"
-        )
+        raise Infra("UNSAFE_VALUE",
+                    f"resolved value for {name} contains a control character; "
+                    "an env file cannot carry it")
     try:
         value.encode("utf-8")
     except UnicodeError:
-        raise Infra("UNSAFE_VALUE", f"resolved value for {name} is not UTF-8 encodable; " "an env file cannot carry it")
+        raise Infra("UNSAFE_VALUE",
+                    f"resolved value for {name} is not UTF-8 encodable; "
+                    "an env file cannot carry it")
 
 
 def check_agreement(facts, expect_gateway, expect_partition):
@@ -782,10 +802,9 @@ def check_agreement(facts, expect_gateway, expect_partition):
         if kind == "gateway":
             left, right = left.rstrip("/"), right.rstrip("/")
         if left != right:
-            raise Infra(
-                "AGREEMENT_MISMATCH",
-                f"caller and facts disagree on {kind}: " f"caller says {expected!r}, facts say {published!r}",
-            )
+            raise Infra("AGREEMENT_MISMATCH",
+                        f"caller and facts disagree on {kind}: "
+                        f"caller says {expected!r}, facts say {published!r}")
         checks.append(kind)
     return checks
 
@@ -799,9 +818,8 @@ def resolve(contract, facts, secrets, environ):
 
     # An unsupplied secret reads very differently when the environment never
     # published a vault to fetch it from; name that root cause in the miss.
-    vault_hint = (
-        "" if _fact_at(facts, VAULT_NAME_PATH).strip() else " and facts publish no azure.keyvault to fetch it from"
-    )
+    vault_hint = ("" if _fact_at(facts, VAULT_NAME_PATH).strip()
+                  else " and facts publish no azure.keyvault to fetch it from")
 
     ordered = sorted(contract["bindings"])
     for name in ordered:
@@ -892,14 +910,16 @@ def load_secrets(path):
             secrets = json.load(stream)
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
         raise Infra("SECRETS_UNREADABLE", f"{path}: {error}")
-    if not isinstance(secrets, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in secrets.items()):
-        raise Infra("SECRETS_UNREADABLE", f"{path}: expected a JSON object of secret name to value")
+    if not isinstance(secrets, dict) or not all(
+        isinstance(k, str) and isinstance(v, str) for k, v in secrets.items()
+    ):
+        raise Infra("SECRETS_UNREADABLE",
+                    f"{path}: expected a JSON object of secret name to value")
     return secrets
 
 
 # ---------------------------------------------------------------------------
 # Entry point
-
 
 def build_report(mode, contract, facts, resolved, missing, agreement):
     return {
@@ -923,7 +943,8 @@ def build_report(mode, contract, facts, resolved, missing, agreement):
             "dependencies": contract["dependencies"],
         },
         "key_vault": {
-            "vault": _require_printable_fact("keyvault", _fact_at(facts, VAULT_NAME_PATH)).strip(),
+            "vault": _require_printable_fact(
+                "keyvault", _fact_at(facts, VAULT_NAME_PATH)).strip(),
             "secret_names": secret_names(contract),
         },
         "agreement_checked": agreement,
@@ -947,13 +968,17 @@ def write_env_file(path, resolved):
     # elsewhere an islink pre-check keeps the refusal typed.
     nofollow = getattr(os, "O_NOFOLLOW", 0)
     if not nofollow and os.path.islink(path):
-        raise Infra("ENV_FILE_SYMLINK", f"{path} is a symlink; refusing to write secret values " "through it")
+        raise Infra("ENV_FILE_SYMLINK",
+                    f"{path} is a symlink; refusing to write secret values "
+                    "through it")
     flags = os.O_WRONLY | os.O_CREAT | os.O_TRUNC | nofollow
     try:
         fd = os.open(path, flags, 0o600)
     except OSError as error:
         if error.errno in (errno.ELOOP, errno.EMLINK):
-            raise Infra("ENV_FILE_SYMLINK", f"{path} is a symlink; refusing to write secret values " "through it")
+            raise Infra("ENV_FILE_SYMLINK",
+                        f"{path} is a symlink; refusing to write secret values "
+                        "through it")
         raise
     if hasattr(os, "fchmod"):
         os.fchmod(fd, 0o600)
@@ -981,14 +1006,11 @@ def main(argv=None):
     parser.add_argument("--expect-gateway", default="")
     parser.add_argument("--expect-partition", default="")
     parser.add_argument("--report", default="")
-    parser.add_argument(
-        "--suite", default="acceptance", help="which descriptor.tests suite to resolve (default: acceptance)"
-    )
-    parser.add_argument(
-        "--contract-only",
-        action="store_true",
-        help="validate the descriptor and report the contract; " "no facts, no resolution, no env file",
-    )
+    parser.add_argument("--suite", default="acceptance",
+                        help="which descriptor.tests suite to resolve (default: acceptance)")
+    parser.add_argument("--contract-only", action="store_true",
+                        help="validate the descriptor and report the contract; "
+                             "no facts, no resolution, no env file")
     args = parser.parse_args(argv)
     if args.contract_only:
         args.mode = "contract-only"
@@ -997,16 +1019,14 @@ def main(argv=None):
     # An output aliasing another output or an input would overwrite what this
     # run reads, or delete it in the failure cleanup. Only paths in play are
     # checked; contract-only runs carry no env file and may carry no facts.
-    if args.report and args.env_file and os.path.realpath(args.report) == os.path.realpath(args.env_file):
+    if args.report and args.env_file and \
+            os.path.realpath(args.report) == os.path.realpath(args.env_file):
         parser.error("--report and --env-file must name different paths")
     outputs = ([("--env-file", args.env_file)] if args.env_file else []) + (
-        [("--report", args.report)] if args.report else []
-    )
-    inputs = (
-        [("--descriptor", args.descriptor)]
-        + ([("--facts", args.facts)] if args.facts else [])
-        + ([("--secrets", args.secrets)] if args.secrets else [])
-    )
+        [("--report", args.report)] if args.report else [])
+    inputs = [("--descriptor", args.descriptor)] + (
+        [("--facts", args.facts)] if args.facts else []) + (
+        [("--secrets", args.secrets)] if args.secrets else [])
     for out_flag, out_path in outputs:
         for in_flag, in_path in inputs:
             if os.path.realpath(out_path) == os.path.realpath(in_path):
@@ -1023,7 +1043,8 @@ def main(argv=None):
         if args.contract_only:
             report = build_report(args.mode, contract, {}, {}, [], [])
             write_report(args.report, report)
-            print(f"contract validated for service '{contract['service']}' " f"(suite: {contract['test_dir']})")
+            print(f"contract validated for service '{contract['service']}' "
+                  f"(suite: {contract['test_dir']})")
             return 0
         facts = load_facts(args.facts)
         secrets = load_secrets(args.secrets)
@@ -1044,10 +1065,9 @@ def main(argv=None):
             # Keep the exit-code contract: a full disk or missing parent is an
             # infra failure (4), and the cleanup below discards any partial file.
             raise Infra("OUTPUT_UNWRITABLE", str(error)) from error
-        print(
-            f"resolved {len(resolved)} bindings for service "
-            f"'{contract['service']}' ({args.mode} mode" + (f", {len(missing)} missing" if missing else "") + ")"
-        )
+        print(f"resolved {len(resolved)} bindings for service "
+              f"'{contract['service']}' ({args.mode} mode"
+              + (f", {len(missing)} missing" if missing else "") + ")")
         return 0
     except (Halt, EnvNotReady, Infra) as error:
         if report is None:
@@ -1057,8 +1077,10 @@ def main(argv=None):
                 "mode": args.mode,
                 "error": None,
             }
-        category = {Halt: "descriptor", EnvNotReady: "env-not-ready", Infra: "infra"}[type(error)]
-        report["error"] = {"category": category, "code": error.code, "detail": error.detail}
+        category = {Halt: "descriptor", EnvNotReady: "env-not-ready",
+                    Infra: "infra"}[type(error)]
+        report["error"] = {"category": category, "code": error.code,
+                          "detail": error.detail}
         discard_env_file(args.env_file)
         try:
             write_report(args.report, report)
