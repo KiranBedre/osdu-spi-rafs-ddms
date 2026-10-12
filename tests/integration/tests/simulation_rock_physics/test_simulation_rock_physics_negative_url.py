@@ -132,8 +132,8 @@ def test_rsrp_negative_non_existing_version_in_url(api, tests_data, record_id):
     # Assert
     assert response.status_code == 404
     body = response.json()
-    assert "Record version not found" in body["reason"]
-    assert "The requested record version was not found" in body["message"]
+    assert body["reason"] == "Version not found"
+    assert body["message"] == f"The version {version} can't be found for record {record_id}"
 
 
 def test_rsrp_negative_edge_max_version_in_url(api, tests_data, record_id):

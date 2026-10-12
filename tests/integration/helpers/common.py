@@ -35,6 +35,7 @@ COMPARE_RESPONSES_EXCLUDE_PATHS = (
     "root['createTime']",
     "root['modifyUser']",
     "root['modifyTime']",
+    "root['meta']",
 )
 
 

@@ -19,6 +19,7 @@ from starlette import status
 
 from tests.integration.config import (
     CONFIG,
+    SCHEMA_AUTHORITY,
     DataFiles,
 )
 
@@ -403,7 +404,7 @@ def test_rsrp_negative_create_record_extra_field_generic(api, tests_data, helper
 def test_rsrp_negative_create_unsupported_kind(api, tests_data, helper):
     """Reject record creation with unsupported kind value with 422 Unprocessable Content."""
     data_payload = copy.deepcopy(tests_data(DataFiles.SIMULATION_ROCK_PHYSICS))
-    unsupported_kind = f"{DATA_PARTITION_ID}:wks:work-product-component--ReservoirSimulationRockPhysics:1.0.0"
+    unsupported_kind = f"{SCHEMA_AUTHORITY}:wks:work-product-component--ReservoirSimulationRockPhysics:1.0.0"
     helper.set_by_path(data_payload, "/kind", unsupported_kind)
 
     response = api.simulation_rock_physics.post_record(
@@ -417,7 +418,7 @@ def test_rsrp_negative_create_unsupported_kind(api, tests_data, helper):
     body = response.json()
     assert (
         f"Kind `{unsupported_kind}` not supported in RAFS-DDMS. Supported kinds for this endpoint: "
-        f"['{DATA_PARTITION_ID}:wks:work-product-component--ReservoirSimulationRockPhysicsModel']"
+        f"['{SCHEMA_AUTHORITY}:wks:work-product-component--ReservoirSimulationRockPhysicsModel']"
     ) in body["reason"]
 
 
@@ -426,7 +427,7 @@ def test_rsrp_negative_create_unsupported_kind_version(api, tests_data, helper):
     data_payload = copy.deepcopy(tests_data(DataFiles.SIMULATION_ROCK_PHYSICS))
     unsupported_version = "1.7"
     unsupported_kind = (
-        f"{DATA_PARTITION_ID}:wks:work-product-component--ReservoirSimulationRockPhysicsModel:{unsupported_version}"
+        f"{SCHEMA_AUTHORITY}:wks:work-product-component--ReservoirSimulationRockPhysicsModel:" f"{unsupported_version}"
     )
     helper.set_by_path(data_payload, "/kind", unsupported_kind)
 

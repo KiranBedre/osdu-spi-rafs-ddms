@@ -18,6 +18,7 @@ from typing import ClassVar
 CONFIG = {}
 
 WPC_VERSION = "1.0.0"
+SCHEMA_AUTHORITY = "osdu"
 PARQUET_HEADERS = {"Content-Type": "application/x-parquet"}
 ACCEPT_HEADERS = "*/*"
 
