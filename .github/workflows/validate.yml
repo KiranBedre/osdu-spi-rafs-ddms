@@ -597,7 +597,9 @@ jobs:
     # wants a human pause before a borrow adds required reviewers to the environment.
     name: "Deploy and Test"
     needs: [docker-push, deploy-gate]
-    if: needs.deploy-gate.outputs.run == 'true'
+    # docker-push has archetype-specific skipped dependencies. always() makes this
+    # job evaluate the gate output instead of inheriting those transitive skips.
+    if: always() && needs.deploy-gate.outputs.run == 'true'
     runs-on: ubuntu-latest
     outputs:
       verdicts: ${{ steps.prove.outputs.verdicts }}
