@@ -39,7 +39,12 @@ DEFAULT_PATTERNS = (
 def count(reports, patterns):
     totals = {"tests": 0, "skipped": 0, "failures": 0, "errors": 0}
     root_dir = pathlib.Path(reports)
-    files = sorted({path for pattern in patterns for path in root_dir.glob(pattern) if path.is_file()})
+    files = sorted({
+        path
+        for pattern in patterns
+        for path in root_dir.glob(pattern)
+        if path.is_file()
+    })
     for path in files:
         try:
             root = ET.parse(path).getroot()
@@ -59,7 +64,8 @@ def main():
     parser.add_argument(
         "--patterns-json",
         default="",
-        help="JSON array of JUnit XML globs relative to --reports; " "defaults to Maven Surefire and Failsafe reports",
+        help="JSON array of JUnit XML globs relative to --reports; "
+             "defaults to Maven Surefire and Failsafe reports",
     )
     args = parser.parse_args()
 
@@ -68,10 +74,8 @@ def main():
     except json.JSONDecodeError as error:
         print(f"FAIL: invalid report patterns: {error}")
         return 1
-    if (
-        not isinstance(patterns, (list, tuple))
-        or not patterns
-        or not all(isinstance(pattern, str) and pattern for pattern in patterns)
+    if not isinstance(patterns, (list, tuple)) or not patterns or not all(
+        isinstance(pattern, str) and pattern for pattern in patterns
     ):
         print("FAIL: report patterns must be a non-empty JSON string array")
         return 1
