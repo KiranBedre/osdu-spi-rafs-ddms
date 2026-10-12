@@ -198,6 +198,20 @@ runs:
         cp -a "$context/." "$target/"
         cp "$dockerfile" "$target/.spi.Dockerfile"
 
+    - name: "Compute source build metadata"
+      id: source-metadata
+      if: ${{ inputs.build_kind == 'source-direct' }}
+      shell: bash
+      run: |
+        commit_id="$(git rev-parse HEAD)"
+        build_date="$(git show -s --format=%cI "$commit_id")"
+        {
+          echo "build_args<<EOF"
+          echo "build_date=$build_date"
+          echo "commit_id=$commit_id"
+          echo "EOF"
+        } >> "$GITHUB_OUTPUT"
+
     - name: "Build container image"
       id: build
       uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf  # v7.2.0
@@ -214,6 +228,7 @@ runs:
         tags: ${{ steps.tags.outputs.docker_tags }}
         build-args: |
           ${{ inputs.build_kind == 'maven-jar' && format('JAR_FILE={0}', steps.jar.outputs.jar_file) || '' }}
+          ${{ steps.source-metadata.outputs.build_args }}
           ${{ inputs.build_args }}
         # Links the package to its repo in the GHCR UI; this inherits permissions, not visibility.
         labels: |

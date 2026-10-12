@@ -67,7 +67,6 @@ class Halt(Exception):
 # ---------------------------------------------------------------------------
 # Config
 
-
 def _unquote(value):
     if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
         return value[1:-1]
@@ -79,7 +78,7 @@ def _strip_inline_comment(value):
     if value.lstrip().startswith("#"):
         return ""
     m = re.search(r"\s#", value)
-    return value[: m.start()] if m else value
+    return value[:m.start()] if m else value
 
 
 def parse_config(text):
@@ -185,16 +184,13 @@ def load_config(path):
     if forks and not cfg["inject_testing_pom_azure_module"].strip():
         raise Halt("CONFIG_INVALID", "testing declares a fork verdict but inject_testing_pom_azure_module is empty")
     if cfg["inject_testing_pom_azure_module"].strip() and not forks:
-        raise Halt(
-            "CONFIG_INVALID", "inject_testing_pom_azure_module is set but no testing entry declares a fork verdict"
-        )
+        raise Halt("CONFIG_INVALID", "inject_testing_pom_azure_module is set but no testing entry declares a fork verdict")
     cfg["_sha256"] = hashlib.sha256(raw).hexdigest()
     return cfg
 
 
 # ---------------------------------------------------------------------------
 # Small file helpers
-
 
 def read_text(path):
     with open(path, encoding="utf-8") as fh:
@@ -227,7 +223,6 @@ def module_paths_in(block):
 
 # ---------------------------------------------------------------------------
 # Pom surgery (text-level: pom formatting and comments survive untouched)
-
 
 def in_xml_comment(text, pos):
     open_idx = text.rfind("<!--", 0, pos)
@@ -315,7 +310,6 @@ def inject_into_region(pom_path, tag, block, halt_detail):
 # ---------------------------------------------------------------------------
 # .fossa.yml surgery (v1 shape: analyze.modules, items keyed by name)
 
-
 def parse_fossa_modules(text):
     """Return (module items as (name, start_line, end_line), lines) or halt."""
     lines = text.split("\n")
@@ -341,11 +335,8 @@ def parse_fossa_modules(text):
         line = lines[idx]
         if line.strip() and not line.lstrip().startswith("#"):
             indent = len(line) - len(line.lstrip(" "))
-            is_item = (
-                bool(re.match(r"^\s*- ", line))
-                and indent >= mod_indent
+            is_item = bool(re.match(r"^\s*- ", line)) and indent >= mod_indent \
                 and (current_indent is None or indent == current_indent)
-            )
             if indent < mod_indent:
                 break
             if indent == mod_indent and not is_item:
@@ -355,7 +346,8 @@ def parse_fossa_modules(text):
                     items.append((current_start, idx))
                 current_start, current_indent = idx, indent
             elif current_start is None:
-                raise Halt("FOSSA_UNPARSEABLE", f".fossa.yml analyze.modules is not a list (line {idx + 1})")
+                raise Halt("FOSSA_UNPARSEABLE",
+                           f".fossa.yml analyze.modules is not a list (line {idx + 1})")
         idx += 1
     if current_start is not None:
         items.append((current_start, idx))
@@ -395,7 +387,6 @@ def filter_fossa(path, fossa_cfg, checkout):
 
 # ---------------------------------------------------------------------------
 # Generate
-
 
 def check_module_prefix(checkout, cfg):
     # provider/ is discarded wholesale, so this is the only point where a wrong
@@ -459,23 +450,15 @@ def generate(checkout, cfg, report):
         write_text(root_pom, strip_profiles(text, blocks))
         prune_dangling_modules(root_pom, exempt=set())
         if any(verdict == "inject" for _pid, verdict, _span in blocks) or cfg["inject_root_pom_azure_profile"].strip():
-            inject_into_region(
-                root_pom,
-                "profiles",
-                cfg["inject_root_pom_azure_profile"],
-                "root pom has no <profiles> element for the azure profile injection",
-            )
+            inject_into_region(root_pom, "profiles", cfg["inject_root_pom_azure_profile"],
+                               "root pom has no <profiles> element for the azure profile injection")
 
     testing_pom = os.path.join(testing_dir, "pom.xml")
     if os.path.isfile(testing_pom):
         prune_dangling_modules(testing_pom, exempt=set())
         if cfg["inject_testing_pom_azure_module"].strip():
-            inject_into_region(
-                testing_pom,
-                "modules",
-                cfg["inject_testing_pom_azure_module"],
-                "testing/pom.xml has no <modules> element for the azure module injection",
-            )
+            inject_into_region(testing_pom, "modules", cfg["inject_testing_pom_azure_module"],
+                               "testing/pom.xml has no <modules> element for the azure module injection")
 
     fossa = os.path.join(checkout, ".fossa.yml")
     if os.path.isfile(fossa):
@@ -490,7 +473,6 @@ def generate(checkout, cfg, report):
 
 # ---------------------------------------------------------------------------
 # Verify
-
 
 def verify(checkout, cfg):
     problems = []
@@ -514,24 +496,15 @@ def verify(checkout, cfg):
         for entry in sorted(os.listdir(testing_dir)):
             verdict = cfg["testing"].get(entry)
             check(verdict is not None, "UNKNOWN_TESTING_ENTRY", f"unclassified testing/ entry: {entry}")
-            check(
-                verdict == "keep" or verdict is None,
-                "STRIPPED_PATH_SURVIVES",
-                f"non-kept testing/ entry survives: testing/{entry}",
-            )
+            check(verdict == "keep" or verdict is None, "STRIPPED_PATH_SURVIVES",
+                  f"non-kept testing/ entry survives: testing/{entry}")
 
     for rel in cfg["expected_kept"]:
-        check(
-            os.path.exists(os.path.join(checkout, rel)),
-            "EXPECTED_KEPT_MISSING",
-            f"expected_kept path missing: {rel} (an upstream rename fails loud, not silent)",
-        )
+        check(os.path.exists(os.path.join(checkout, rel)), "EXPECTED_KEPT_MISSING",
+              f"expected_kept path missing: {rel} (an upstream rename fails loud, not silent)")
     for rel in cfg["expected_absent"]:
-        check(
-            not os.path.exists(os.path.join(checkout, rel)),
-            "EXPECTED_ABSENT_PRESENT",
-            f"expected_absent path present: {rel}",
-        )
+        check(not os.path.exists(os.path.join(checkout, rel)), "EXPECTED_ABSENT_PRESENT",
+              f"expected_absent path present: {rel}")
 
     root_pom = os.path.join(checkout, "pom.xml")
     root_exempt = module_paths_in(cfg["inject_root_pom_azure_profile"])
@@ -545,30 +518,22 @@ def verify(checkout, cfg):
         for name, verdict in cfg["profiles"].items():
             if verdict == "inject":
                 count = sum(1 for pid, _v, _s in blocks if pid == name)
-                check(
-                    count == 1,
-                    "INJECT_MISSING",
-                    f"injected profile '{name}' appears {count} times in pom.xml, expected exactly once",
-                )
+                check(count == 1, "INJECT_MISSING",
+                      f"injected profile '{name}' appears {count} times in pom.xml, expected exactly once")
         for target in iter_live_modules(text):
-            check(
-                target in root_exempt or os.path.exists(os.path.join(checkout, target)),
-                "MODULE_UNRESOLVED",
-                f"pom.xml module does not resolve: {target}",
-            )
+            check(target in root_exempt or os.path.exists(os.path.join(checkout, target)),
+                  "MODULE_UNRESOLVED", f"pom.xml module does not resolve: {target}")
 
     testing_pom = os.path.join(testing_dir, "pom.xml")
     testing_exempt = module_paths_in(cfg["inject_testing_pom_azure_module"])
     if os.path.isfile(testing_pom):
         live = list(iter_live_modules(read_text(testing_pom)))
         for target in live:
-            check(
-                target in testing_exempt or os.path.exists(os.path.join(testing_dir, target)),
-                "MODULE_UNRESOLVED",
-                f"testing/pom.xml module does not resolve: {target}",
-            )
+            check(target in testing_exempt or os.path.exists(os.path.join(testing_dir, target)),
+                  "MODULE_UNRESOLVED", f"testing/pom.xml module does not resolve: {target}")
         for target in sorted(testing_exempt):
-            check(target in live, "INJECT_MISSING", f"injected testing module missing from testing/pom.xml: {target}")
+            check(target in live, "INJECT_MISSING",
+                  f"injected testing module missing from testing/pom.xml: {target}")
 
     fossa = os.path.join(checkout, ".fossa.yml")
     if os.path.isfile(fossa):
@@ -584,7 +549,6 @@ def verify(checkout, cfg):
 
 # ---------------------------------------------------------------------------
 # Stamp
-
 
 def _pom_child(element, name):
     for child in element:
@@ -678,13 +642,8 @@ def stamp(checkout, cfg, report):
                 for dep in dependencies:
                     artifact = _pom_child(dep, "artifactId")
                     version = _pom_child(dep, "version")
-                    if (
-                        artifact is not None
-                        and artifact.text
-                        and artifact.text.strip() == f"{svc}-test-core"
-                        and version is not None
-                        and version.text
-                    ):
+                    if artifact is not None and artifact.text and artifact.text.strip() == f"{svc}-test-core" \
+                            and version is not None and version.text:
                         add(version.text.strip(), testcore_version)
 
         for pom in poms:
@@ -693,7 +652,8 @@ def stamp(checkout, cfg, report):
             for old, new in sorted(mapping.items()):
                 if old == new:
                     continue
-                updated, count = _version_site(old).subn(lambda m: f">{m.group(1)}{new}{m.group(2)}<", updated)
+                updated, count = _version_site(old).subn(
+                    lambda m: f">{m.group(1)}{new}{m.group(2)}<", updated)
                 if count:
                     rewrites.append({"pom": os.path.relpath(pom, checkout), "from": old, "to": new})
             if updated != text:
@@ -722,7 +682,6 @@ def stamp(checkout, cfg, report):
 # ---------------------------------------------------------------------------
 # Seed
 
-
 def seed(checkout, cfg, seed_source, report):
     svc = cfg["service"]
     seeded = []
@@ -740,7 +699,6 @@ def seed(checkout, cfg, seed_source, report):
 
 # ---------------------------------------------------------------------------
 # Entry point
-
 
 class _ArgumentParser(argparse.ArgumentParser):
     """Exit 1 on a bad invocation; exit 2 is reserved for halts."""
