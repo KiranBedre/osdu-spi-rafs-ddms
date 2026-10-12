@@ -205,10 +205,19 @@ runs:
       run: |
         commit_id="$(git rev-parse HEAD)"
         build_date="$(git show -s --format=%cI "$commit_id")"
+        commit_branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
+        [ -n "$commit_branch" ] || commit_branch="$(git branch --show-current)"
+        [ -n "$commit_branch" ] || commit_branch="detached"
+        commit_message="$(git show -s --format=%s "$commit_id")"
+        release_version="$(git describe --tags --exact-match "$commit_id" 2>/dev/null \
+          || git describe --tags --always "$commit_id")"
         {
           echo "build_args<<EOF"
           echo "build_date=$build_date"
           echo "commit_id=$commit_id"
+          echo "commit_branch=$commit_branch"
+          echo "commit_message=$commit_message"
+          echo "release_version=$release_version"
           echo "EOF"
         } >> "$GITHUB_OUTPUT"
 
