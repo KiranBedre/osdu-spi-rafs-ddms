@@ -545,3 +545,91 @@ def test_get_data_cache_keeps_content_negotiation_representations_separate(
     assert _rows_as_dicts(first_page) == _rows_as_dicts(second_page)
     _assert_active_pagination_headers(first_response, ROW_COUNT, 1)
     _assert_active_pagination_headers(second_response, ROW_COUNT, 1)
+
+
+def _search_data(api, case, params, accept=None, cache_control=None, raw=True):
+    headers = {}
+    if accept is not None:
+        headers[ACCEPT] = accept
+    if cache_control is not None:
+        headers[CACHE_CONTROL] = cache_control
+
+    return api.sample_analysis.search_data(
+        analysis_type=SamplesAnalysisTypes.SATURATION_TEST,
+        schema_version=SchemaVersions.V1_0_0,
+        params={"rows_filter": f"SamplesAnalysisID,eq,{case['record_id']}:", **params},
+        raw=raw,
+        **({"headers": headers} if headers else {}),
+    )
+
+
+def _decode_search_page(helper, response, media_type):
+    assert response.status_code == 200
+    assert response.headers["Content-Type"].startswith(media_type)
+    if media_type == PARQUET_MEDIA_TYPE:
+        return helper.load_parquet_data(response.content, content_type="parquet")
+    return response.json()["result"]
+
+
+@pytest.mark.parametrize(
+    "first_media_type,second_media_type,cache_probe",
+    [
+        pytest.param(
+            JSON_MEDIA_TYPE,
+            PARQUET_MEDIA_TYPE,
+            "search-json-then-parquet",
+            id="json-then-parquet",
+        ),
+        pytest.param(
+            PARQUET_MEDIA_TYPE,
+            JSON_MEDIA_TYPE,
+            "search-parquet-then-json",
+            id="parquet-then-json",
+        ),
+    ],
+)
+def test_search_data_cache_keeps_content_negotiation_representations_separate(
+    api,
+    helper,
+    get_data_pagination_case,
+    first_media_type,
+    second_media_type,
+    cache_probe,
+):
+    """Exercise the deployed cache on Search Data V2 with the same URL in both Accept orders.
+
+    Both requests of a pair deliberately share one ``cache_probe`` value so that
+    they differ only by Accept; pairs are isolated from each other by distinct values.
+    """
+    helper.wait_for_search_data(
+        lambda: _search_data(api, get_data_pagination_case, {}, raw=False),
+        get_data_pagination_case["record_id"],
+    )
+    params = {
+        "columns_filter": "TestNumber,Temperature,SaturationPressure",
+        "row_offset": 1,
+        "row_limit": 2,
+        "cache_probe": cache_probe,
+    }
+    first_response = _search_data(
+        api,
+        get_data_pagination_case,
+        params,
+        first_media_type,
+        cache_control="max-age=60",
+    )
+    second_response = _search_data(
+        api,
+        get_data_pagination_case,
+        params,
+        second_media_type,
+        cache_control="max-age=60",
+    )
+    first_page = _decode_search_page(helper, first_response, first_media_type)
+    second_page = _decode_search_page(helper, second_response, second_media_type)
+
+    assert _row_ids(first_page) == ROW_IDS[1:3]
+    assert _row_ids(second_page) == ROW_IDS[1:3]
+    assert _rows_as_dicts(first_page) == _rows_as_dicts(second_page)
+    json_response = first_response if first_media_type == JSON_MEDIA_TYPE else second_response
+    assert json_response.json()["total_rows"] == ROW_COUNT

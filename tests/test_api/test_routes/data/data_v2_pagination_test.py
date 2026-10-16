@@ -547,11 +547,22 @@ async def test_get_data_v2_rows_filter_with_row_pagination():
     assert response.headers["x-row-offset"] == "0"
 
 
-def _pagination_cache_request(query: str, token: str = "Bearer token", partition: str = "opendes"):
+def _pagination_cache_request(
+    query: str,
+    token: str = "Bearer token",
+    partition: str = "opendes",
+    accept: str | None = None,
+):
     """Build a minimal GET request for the RCA data route, for cache key inspection."""
     from starlette.requests import Request
 
     path = _rca_get_path()
+    headers = [
+        (b"authorization", token.encode()),
+        (b"data-partition-id", partition.encode()),
+    ]
+    if accept is not None:
+        headers.append((b"accept", accept.encode()))
     return Request(
         {
             "type": "http",
@@ -562,10 +573,7 @@ def _pagination_cache_request(query: str, token: str = "Bearer token", partition
             "path": path,
             "raw_path": path.encode(),
             "query_string": query.encode(),
-            "headers": [
-                (b"authorization", token.encode()),
-                (b"data-partition-id", partition.encode()),
-            ],
+            "headers": headers,
         },
     )
 
@@ -599,3 +607,34 @@ def test_get_data_v2_pagination_cache_distinct_keys():
     assert build_key("content_schema_version=1.0.0&row_offset=5&row_limit=10") != build_key(
         "content_schema_version=1.0.0&row_offset=10&row_limit=5",
     )
+
+
+def test_get_data_v2_cache_key_distinguishes_accept_header():
+    """Issue-850: JSON and Parquet requests for the same URL must not share a cache key.
+
+    The unit suite replaces the cache decorator with a pass-through, so this
+    verifies the key discrimination only; the end-to-end behaviour is covered by
+    the deployed-cache integration test for content negotiation.
+    """
+    from app.core.helpers.cache.key_builder import key_builder_using_token
+
+    func = SamplesAnalysisDataView.get_data_v2
+    query = "content_schema_version=1.0.0"
+
+    def build_key(accept):
+        with patch("fastapi_cache.FastAPICache.get_prefix", return_value="rafs"):
+            return key_builder_using_token(
+                func,
+                "",
+                request=_pagination_cache_request(query, accept=accept),
+                response=None,
+                args=(),
+                kwargs={},
+            )
+
+    json_key = build_key("application/json")
+    parquet_key = build_key("application/x-parquet")
+
+    assert json_key != parquet_key
+    assert build_key("application/json") == json_key
+    assert build_key("application/x-parquet") == parquet_key
