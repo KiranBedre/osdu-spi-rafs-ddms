@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.3.1](https://github.com/KiranBedre/osdu-spi-rafs-ddms/compare/v1.3.0...v1.3.1) (2026-10-16)
+
+
+### 🐛 Bug Fixes
+
+* Align acceptance with OSDU contracts ([#15](https://github.com/KiranBedre/osdu-spi-rafs-ddms/issues/15)) ([27e5b70](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/27e5b7016ad7fc3270a4caeb395745ba91bba4ef))
+* Complete acceptance prerequisites ([#12](https://github.com/KiranBedre/osdu-spi-rafs-ddms/issues/12)) ([2eafda4](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/2eafda4fb7f00c01257616f823e02f6a18fd4d96))
+* Normalize reference record partitions ([#13](https://github.com/KiranBedre/osdu-spi-rafs-ddms/issues/13)) ([2f7086d](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/2f7086d45c57948a3a3fbcaa54e500029c50f121))
+* Support FastAPI metrics routing ([84478a3](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/84478a31511bacf583d14c472006f75d89f0b385))
+
+
+### 🔧 Miscellaneous
+
+* **deps:** Bump async-timeout from 4.0.3 to 5.0.1 ([a1921a9](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/a1921a9dc4a13370c6c7d9de8d8fd9b959903404))
+* **deps:** Bump async-timeout from 4.0.3 to 5.0.1 ([d5a0360](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/d5a0360100c661c082c76a2d18d444ca0cc13c9a))
+* **deps:** Bump fastapi from 0.137.1 to 0.141.1 ([4d33e28](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/4d33e287594c96681e65c68744489107de792266))
+* **deps:** Bump fastapi from 0.137.1 to 0.141.1 ([75c1b8e](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/75c1b8ed81fd6454646f962178850204380fbe5d))
+* **deps:** Bump flake8-functions from 0.0.8 to 0.1.0 ([e1f7859](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/e1f7859426802af15934b514bce05472bc676ada))
+* **deps:** Bump flake8-functions from 0.0.8 to 0.1.0 ([6d8d4d6](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/6d8d4d6015adaa4e679e750cc0f550fb3d43c053))
+* **deps:** Update aiohttp and cryptography ([0043164](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/00431644ae47ae6e1b31df89773db47673349da6))
+* **deps:** Update aiohttp and cryptography ([fe9a5a7](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/fe9a5a7b909b9346bccc10d025e182081f60c3d5))
+* Sync template updates ([#14](https://github.com/KiranBedre/osdu-spi-rafs-ddms/issues/14)) ([9592704](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/95927043221f0f864a4dd7629a95a2cf21a3e865))
+* Sync template updates ([#17](https://github.com/KiranBedre/osdu-spi-rafs-ddms/issues/17)) ([a6241d5](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/a6241d5c4c1d858470f546a501cd9d18fbb5f11b))
+* Sync template updates ([#18](https://github.com/KiranBedre/osdu-spi-rafs-ddms/issues/18)) ([4e1ec28](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/4e1ec2871ddb1f502ed5d2adcfa9a2a0f5e79d7d))
+
+
+### 🧪 Tests
+
+* Verify Redis password environment binding ([#19](https://github.com/KiranBedre/osdu-spi-rafs-ddms/issues/19)) ([a25498d](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/a25498d5553f7b5456665ec2f0f0cfbfa6b2711b))
+
 ## [1.3.0](https://github.com/KiranBedre/osdu-spi-rafs-ddms/compare/v1.2.0...v1.3.0) (2026-10-11)
 
 
