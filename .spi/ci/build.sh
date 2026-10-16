@@ -22,7 +22,7 @@ mapfile -t lint_sources < <(
     fi
     git diff --name-only --diff-filter=ACMRT HEAD -- "*.py"
     git ls-files --others --exclude-standard -- "*.py"
-  } | awk '/^(app|client|tests)\/.*\.py$/' | sort -u
+  } | awk '/^(\.spi\/ci|app|client|tests)\/.*\.py$/' | sort -u
 )
 
 if (( ${#lint_sources[@]} > 0 )); then
@@ -32,6 +32,7 @@ else
 fi
 
 python -m pytest \
+  .spi/ci/test_runtime_contracts.py \
   tests/test_api \
   tests/test_helpers \
   tests/test_models \

@@ -37,12 +37,6 @@ def _make_config(**overrides) -> RedisCacheConfig:
     return RedisCacheConfig(**defaults)
 
 
-def test_redis_password_uses_the_standard_environment_key(monkeypatch):
-    monkeypatch.setenv("REDIS_PASSWORD", "stack-secret")
-
-    assert RedisCacheConfig().redis_password == "stack-secret"
-
-
 class TestRedisClientFactoryGetDatabase:
     """Tests for _get_database()."""
 
