@@ -19,6 +19,26 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 
+def _normalize_accept(accept: Optional[str]) -> str:
+    """Normalize a raw Accept header for use as a cache key component.
+
+    Lowercases and strips whitespace around ``,`` and ``;`` so cosmetic
+    differences share one entry. Order, q-values and ``version=`` parameters
+    are kept: they change which representation is returned and which schema
+    version is served.
+
+    :param accept: Raw Accept header value, or None when absent
+    :return: Normalized string, empty when the header is absent or blank
+    """
+    if not accept:
+        return ""
+
+    return ",".join(
+        ";".join(part.strip() for part in media_range.split(";"))
+        for media_range in accept.lower().split(",")
+    ).strip()
+
+
 def key_builder_using_token(
     func: Callable,
     namespace: Optional[str] = "",
@@ -36,9 +56,10 @@ def key_builder_using_token(
     token = request.headers.get("authorization")
     data_partition_id = request.headers.get("data-partition-id")
     content_type = request.headers.get("content-type")
+    accept = _normalize_accept(request.headers.get("accept"))
     url = request.url
     query_params = request.query_params.multi_items()
-    query_meta = f"{data_partition_id}:{token}:{url}:{query_params}:{content_type}"
+    query_meta = f"{data_partition_id}:{token}:{url}:{query_params}:{content_type}:{accept}"
 
     hash_key = hashlib.sha256(
         f"{func_meta}:{query_meta}".encode(),

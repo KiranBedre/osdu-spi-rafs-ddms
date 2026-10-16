@@ -8754,9 +8754,21 @@ async def test_get_tcfm_data_invalid_filter_params_return_422(params, expected_m
     assert expected_message in response.json()["reason"]
 
 
-def _tcfm_cache_request(token="Bearer token", partition="opendes", query="content_schema_version=1.0.0"):
+def _tcfm_cache_request(
+    token="Bearer token",
+    partition="opendes",
+    query="content_schema_version=1.0.0",
+    accept=None,
+):
     """Build a minimal GET request for the thermal data route, for cache key inspection."""
     from starlette.requests import Request
+
+    headers = [
+        (b"authorization", token.encode()),
+        (b"data-partition-id", partition.encode()),
+    ]
+    if accept is not None:
+        headers.append((b"accept", accept.encode()))
 
     return Request(
         {
@@ -8768,10 +8780,7 @@ def _tcfm_cache_request(token="Bearer token", partition="opendes", query="conten
             "path": _TCFM_DATA_PATH,
             "raw_path": _TCFM_DATA_PATH.encode(),
             "query_string": query.encode(),
-            "headers": [
-                (b"authorization", token.encode()),
-                (b"data-partition-id", partition.encode()),
-            ],
+            "headers": headers,
         },
     )
 
@@ -8810,6 +8819,10 @@ def test_get_tcfm_data_cache_key_is_stable_for_identical_requests():
     assert build_key(token="Bearer other-token") != baseline
     assert build_key(partition="other-partition") != baseline
     assert build_key(query="content_schema_version=1.0.0&columns_filter=FluidModelID") != baseline
+    # Issue-850: the Accept header selects JSON vs Parquet, so it must discriminate too.
+    json_key = build_key(accept="application/json")
+    assert build_key(accept="application/x-parquet") != json_key
+    assert build_key(accept="application/json") == json_key
 
 
 # ---------------------------------------------------------------------------
