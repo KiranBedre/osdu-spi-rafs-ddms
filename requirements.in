@@ -26,7 +26,7 @@ pyarrow==14.0.2
 pydantic>=2.9,<3
 pydantic-settings>=2.7,<3
 python-dotenv==1.2.2  # CVE-2026-28684 fix
-pyjwt[crypto]>=2.13.0  # CVE remediation: raise floor above 2.12.1
+pyjwt[crypto]>=2.14.0  # CVE remediation: raise floor above 2.12.1
 requests==2.33.0
 setuptools==82.0.1
 tenacity==8.2.3
