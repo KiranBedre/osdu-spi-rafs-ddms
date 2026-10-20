@@ -96,13 +96,13 @@ def _build_multi_row_parquet(n_rows: int) -> bytes:
 
 
 def _rca_get_path():
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     return f"{TestContentPathsApiV2.RCA}/{rca_mock_objects.TEST_DATASET_RECORD_ID}"
 
 
 def _rca_record_data():
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     return rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
 
@@ -135,7 +135,7 @@ async def test_get_data_v2_no_pagination_preserves_aggregation_index():
     behind pagination_active); this test goes through the real get_data_v2 endpoint,
     not slice_dataframe in isolation, so it fails if that call-site guard is ever removed.
     """
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
     from tests.test_api.test_routes.data.data_mock_objects import build_get_test_data
 
     with patch.object(
