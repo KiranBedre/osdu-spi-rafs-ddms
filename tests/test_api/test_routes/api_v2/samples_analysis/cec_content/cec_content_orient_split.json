@@ -1,0 +1,32 @@
+{
+  "columns":[
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta",
+    "BrineConcentration",
+    "CeC",
+    "Qv"
+  ],
+  "index":[
+    0
+  ],
+  "data":[
+    [
+      "partition:work-product-component--SamplesAnalysis:samples_analysis_test_id:",
+      "partition:master-data--Sample:sample_test_id:",
+      [
+        {
+          "kind":"Unit",
+          "name":"percentage",
+          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:%:",
+          "propertyNames":[
+            "CeC"
+          ]
+        }
+      ],
+      1,
+      0.563,
+      0.975
+    ]
+  ]
+}

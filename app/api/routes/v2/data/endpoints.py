@@ -13,8 +13,11 @@
 #  limitations under the License.
 
 import uuid
+import io
 from typing import Callable, Optional
 
+import pandas as pd
+from pyarrow import parquet as pq
 from fastapi import APIRouter, Depends, Path, Request, Response
 from fastapi_cache.decorator import cache
 from loguru import logger
@@ -240,6 +243,10 @@ class BaseDataViewV2(BaseDataView):
 
         record = await storage_service.get_record(record_id)
         parquet_file = await self._get_validated_payload(request, model, storage_service, record_id)
+
+        if analysis_family == "samplesanalysis":
+            self._validate_sample_id_against_record(record, parquet_file)
+
         blob_metadata = BlobMetadata(
             analysis_family=analysis_family,
             analysis_type=analysis_type,
@@ -342,6 +349,45 @@ class BaseDataViewV2(BaseDataView):
                 status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {"model": UnsupportedMediaTypeResponse},
             },
         )
+
+    def _validate_sample_id_against_record(self, record: dict, parquet_file: bytes) -> None:
+        """Validate that SampleID of each data row matches SampleIDs associated with the record
+
+        :param record: record
+        :type record: dict
+        :param parquet_file: parquet file to store
+        :type parquet_file: bytes
+        :raises exceptions.DataValidationException: if SampleID of any data row
+            does not match SampleIDs associated with the record
+        """
+        parquet_buffer = io.BytesIO(parquet_file)
+        schema = pq.read_schema(parquet_buffer)
+
+        if "SampleID" not in schema.names:
+            return
+
+        parquet_buffer.seek(0)
+        df = pd.read_parquet(parquet_buffer, columns=["SampleID"])
+
+        record_sample_ids = set(record.get("data", {}).get("SampleIDs") or [])
+        invalid_sample_ids = {
+            sample_id for sample_id in df["SampleID"]
+            if pd.notna(sample_id) and sample_id not in record_sample_ids
+        }
+
+        if invalid_sample_ids:
+            message = "SampleID does not match any of the SampleIDs associated with the record"
+            self._handle_errors(
+                {
+                    "invalid_value": [
+                        {
+                            "SampleID": sample_id,
+                            "message": f"{message}: {list(record_sample_ids)}"
+                        }
+                        for sample_id in invalid_sample_ids
+                    ]
+                }
+            )
 
 
 class DynamicContentTypeDataViewV2(BaseDataViewV2):
