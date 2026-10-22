@@ -25,6 +25,7 @@ from starlette import status
 from app.api.dependencies.request import (
     get_content_schema_version,
     get_depth_shift_params,
+    get_response_mime_type,
     validate_json_content_type,
 )
 from app.api.dependencies.services import (
@@ -59,6 +60,7 @@ from app.models.schemas.osdu_storage import (
 from app.providers.dependencies.blob_storage import IBlobStorage
 from app.resources.filters import DataFrameFilterValidator
 from app.resources.load_model_example import load_data_example
+from app.resources.mime_types import SupportedMimeTypes
 from app.services import dataset, storage
 
 SAMPLESANALYSIS_ID_REGEX_STR = r"^[\w\-\.]+:work-product-component--SamplesAnalysis:[\w\-\.\:\%]+$"
@@ -258,7 +260,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         :type depth_shift_params: DepthShiftQueryParams
         :param pagination: (row_limit, row_offset) applied after augmentation
         :type pagination: DataPaginationParameters
-        :return: augmented JSON response
+        :return: augmented JSON or Parquet response
         :rtype: Response
         :raises HTTPException: 404 when the abstract path record has no DefinitiveDepthShiftID
         :raises HTTPException: 400 on domain errors (missing SampleID, etc.)
@@ -310,7 +312,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         inside the base fetch: depth-shift requires every SampleID present
         in the base data before it can resolve wellbore scope and augment.
 
-        :return: augmented JSON response
+        :return: augmented JSON or Parquet response
         :rtype: Response
         """
         row_limit, row_offset = pagination
@@ -387,6 +389,16 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         total_rows = len(augmented_df)
         if pagination_active:
             augmented_df, total_rows = slice_dataframe(augmented_df, row_offset, row_limit)
+
+        if get_response_mime_type(request) == SupportedMimeTypes.PARQUET:
+            response = Response(
+                content=augmented_df.to_parquet(),
+                media_type=SupportedMimeTypes.PARQUET.mime_type,
+            )
+            if pagination_active:
+                response.headers["X-Total-Rows"] = str(total_rows)
+                response.headers["X-Row-Offset"] = str(row_offset)
+            return response
 
         _ds_cols = [
             "SampleTop",
@@ -475,9 +487,9 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             )
 
     def _response_to_dataframe(self, response: Response, response_orient: str = "split") -> pd.DataFrame:
-        """Deserialise a JSON Response body into a DataFrame.
+        """Deserialise a JSON or Parquet Response body into a DataFrame.
 
-        :param response: JSON response from the base get_data_v2
+        :param response: response from the base get_data_v2
         :type response: Response
         :param response_orient: the pandas orient used to produce the response
             body ('split' or 'records'); defaults to 'split'
@@ -486,6 +498,9 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         :rtype: pd.DataFrame
         """
         body = response.body
+        content_type = response.headers.get("content-type", "").split(";", 1)[0].strip()
+        if SupportedMimeTypes.PARQUET.is_match(content_type):
+            return pd.read_parquet(io.BytesIO(body))
         if isinstance(body, (bytes, bytearray)):
             body = body.decode("utf-8")
         return pd.read_json(io.StringIO(body), orient=response_orient)
