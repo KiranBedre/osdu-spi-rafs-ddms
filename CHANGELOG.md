@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.2](https://github.com/KiranBedre/osdu-spi-rafs-ddms/compare/v1.3.1...v1.3.2) (2026-10-23)
+
+
+### 🔧 Miscellaneous
+
+* Sync template updates ([#21](https://github.com/KiranBedre/osdu-spi-rafs-ddms/issues/21)) ([4371a33](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/4371a339e6c1bf47d695c54b2d757750615f0301))
+* **template-sync:** Sync reconciled template ([b5e6bc0](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/b5e6bc0b8ed2f67852e70aac0102133db11fb0b1))
+* **template-sync:** Sync template updates ([5aa7b50](https://github.com/KiranBedre/osdu-spi-rafs-ddms/commit/5aa7b50f63a7ae9a128ebd8e9d688859c0a9d265))
+
 ## [1.3.1](https://github.com/KiranBedre/osdu-spi-rafs-ddms/compare/v1.3.0...v1.3.1) (2026-10-16)
 
 
