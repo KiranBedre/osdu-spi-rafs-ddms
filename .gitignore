@@ -94,3 +94,5 @@ agents/
 docker-compose.override.yml
 s3proxy/
 .cimp_secret
+agents/workspace/
+workspace/

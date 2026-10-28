@@ -50,19 +50,19 @@ The list of values can be found in [The Reference Values Postman Collection](./r
 
 Integration pytest discovers `reference-data--*` prerequisites from its positive JSON payloads and documented supplemental dependencies, checks their availability in Storage, and creates only missing records that have canonical definitions in the shared catalog. Existing records are preserved and never overwritten by the pytest preflight; prerequisite records and their persistent legal tag are not deleted during teardown. CI bootstrap jobs seed the same catalog ahead of CIMPL tests. Any dependencies that remain unavailable after bootstrap are reported together in a single preflight error instead of causing cascading 422 fixture failures.
 
-On trusted/main CIMPL pipelines the job `cimpl-seed-reference-data` runs after `cimpl-deploy` and before `cimpl-test-python`. On `release/*` / tag prod pipelines: upstream `cimpl-prod-reset` → `cimpl-prod-deploy` → `cimpl-prod-seed-reference-data` → `cimpl-prod-test-python` / `cimpl-prod-acceptance-test-python`.
+The local CIMPL job chains are `cimpl-dev-deploy` → `cimpl-dev-seed-reference-data` → `cimpl-dev-test-python` and `cimpl-dev-backup-deploy` → `cimpl-dev-backup-seed-reference-data` → `cimpl-dev-backup-test-python`. On `release/*` / tag prod pipelines: upstream `cimpl-prod-reset` → `cimpl-prod-deploy` → `cimpl-prod-seed-reference-data` → `cimpl-prod-test-python` / `cimpl-prod-acceptance-test-python`.
 
 **Important:** `cimpl-prod-reset` (defined in upstream [`cimpl-global.yml`](https://community.opengroup.org/osdu/platform/ci-cd-pipelines/-/blob/release/0.30/cloud-providers/cimpl-global.yml)) clears the prod partition before deploy. Reference-data is **not** re-loaded from `osdu/qa` or `data-definitions` automatically — only via RAFS bootstrap jobs or Postman ingest steps in the main collection.
 
 The external [`osdu/qa`](https://community.opengroup.org/osdu/qa) repository contains centrally scheduled QA collections whose results feed the PMC reports. The CIMPL jobs defined in this repository currently use the RAFS test assets under `devops/core-plus/qa/`; the RAFS collection should also be aligned with the central QA process.
 
-Both jobs seed from one catalog, [`deployments/reference-data/rafs_integration_reference_data.json`](./reference-data/rafs_integration_reference_data.json). It holds every `reference-data--*` record the integration fixtures resolve, each already carrying `kind`, `acl`, `legal` and `data`, with `{{NAMESPACE}}`, `{{LEGAL_TAG}}`, `{{DATA_OWNERS_GROUP}}`, `{{DATA_VIEWERS_GROUP}}` and `{{ISO_3166_ALPHA_2_CODE}}` left as placeholders.
+All three seed jobs use the `.rafs_cimpl_reference_bootstrap` shell template in [override-stages.yml](../devops/core-plus/override-stages.yml), not a Newman bootstrap collection. They seed from one catalog, [`deployments/reference-data/rafs_integration_reference_data.json`](./reference-data/rafs_integration_reference_data.json). It holds the catalogued `reference-data--*` prerequisites, each already carrying `kind`, `acl`, `legal` and `data`, with `{{NAMESPACE}}`, `{{LEGAL_TAG}}`, `{{DATA_OWNERS_GROUP}}`, `{{DATA_VIEWERS_GROUP}}` and `{{ISO_3166_ALPHA_2_CODE}}` left as placeholders.
 
 The job creates the Legal Tag through the Legal Service (treating `409` as success), renders the placeholders with `jq`, then loads the whole catalog in a single `PUT /api/storage/v2/records`. Storage is used rather than Workflow `Osdu_ingest` because the Workflow Service returns HTTP 500 on prod for these manifests, and because a synchronous Storage write is complete when the job exits — an accepted DAG run is not.
 
 Before uploading, the rendered catalog is rejected unless it is a non-empty array of objects whose IDs are all unique `reference-data--*` values with `osdu:` kinds, and unless every placeholder resolved. A malformed or half-rendered catalog therefore fails the seed job instead of silently under-seeding the partition and surfacing later as unrelated 422 fixture errors.
 
-Both seed jobs are blocking: if seeding fails, the integration jobs do not run.
+After uploading, the template reactivates each record with Storage `PATCH` and verifies it with `GET`. All three seed jobs are blocking: if seeding fails, the dependent integration jobs do not run.
 
 Re-run locally against CIMPL (with credentials in the environment):
 
