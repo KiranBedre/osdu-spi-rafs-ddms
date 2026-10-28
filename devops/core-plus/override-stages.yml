@@ -164,6 +164,7 @@ cimpl-helm-charts-gitlab:
     - pip install allure-pytest
     - !reference [.get_cimpl_access_token, script]
   script:
+    - python -m pytest tests/integration/test_fixture_lifecycle.py --confcutdir=tests/integration
     - |
       echo "DEBUG"
       echo "Verifying required reference data before pytest"
@@ -211,7 +212,7 @@ cimpl-helm-charts-gitlab:
         --reruns 1 \
         --reruns-delay 3 \
         --maxfail=0 \
-        -n 2 \
+        -n 4 \
         --dist=loadscope \
         --durations=50 \
         --junitxml=integration_tests_report.xml \
@@ -479,8 +480,12 @@ cimpl-dev-seed-reference-data:
     - when: never
 
 # Run the RAFS pytest suite against CIMPL-STACK DEV.
+# This is a hard QA Gate therefore, failures in this job will block the pipeline from progressing.
+# Team should fix the findings from this test before proceeding with the pipeline.
+# It would be team responsibility to either relax rules or address the test failures before continuing with the pipeline.
 cimpl-dev-test-python:
-  allow_failure: true
+  allow_failure: false
+  retry: 0
   extends:
     - .cimpl-dev-variables
     - .rafs_cimpl_pytest_integration
@@ -609,6 +614,7 @@ cimpl-prod-test-python:
     - apk add --no-cache curl bash jq
     - npm install -g newman newman-reporter-allure
   script:
+    - node --test "$CI_PROJECT_DIR/devops/core-plus/qa/test-collection-scripts.cjs"
     - sleep 200
     - echo "▶️ Starting Newman acceptance tests"
     - |

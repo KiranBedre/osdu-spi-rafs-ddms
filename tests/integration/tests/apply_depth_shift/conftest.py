@@ -289,6 +289,22 @@ def create_apply_depth_shift_case(
             row[record_id_index] = f"{sample_analysis_record_id}:"
             row[sample_id_index] = sample_value
 
+        if "SourceAnalysisID" in data_payload["columns"]:
+            # The static payload references a SamplesAnalysis record that does not exist in Storage.
+            source_analysis_record = copy.deepcopy(
+                tests_data(DataFiles.SAMPLE_ANALYSIS, SamplesAnalysisTypes.CCE),
+            )
+            source_analysis_record_id = (
+                f"{DataTemplates.ID_SAMPLE_ANALYSIS.format(partition=CONFIG['DATA_PARTITION'])}"
+                f"{invocation_id}_source"
+            )
+            source_analysis_record["id"] = source_analysis_record_id
+            api.sample_analysis.post_record([source_analysis_record])
+            delete_record(source_analysis_record_id)
+            source_analysis_index = data_payload["columns"].index("SourceAnalysisID")
+            for row in data_payload["data"]:
+                row[source_analysis_index] = f"{source_analysis_record_id}:"
+
         post_response = api.sample_analysis.post_data(
             record_id=sample_analysis_record_id,
             body=data_payload,
