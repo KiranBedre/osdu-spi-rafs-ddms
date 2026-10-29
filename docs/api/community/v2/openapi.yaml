@@ -12,6 +12,32 @@ components:
       - reason
       title: BadRequestResponse
       type: object
+    CommonInfoResponse:
+      description: Build information using the field names common to all OSDU services.
+      properties:
+        artifactId:
+          title: Artifactid
+          type: string
+        branch:
+          title: Branch
+          type: string
+        buildTime:
+          title: Buildtime
+          type: string
+        commitId:
+          title: Commitid
+          type: string
+        commitMessage:
+          title: Commitmessage
+          type: string
+        groupId:
+          title: Groupid
+          type: string
+        version:
+          title: Version
+          type: string
+      title: CommonInfoResponse
+      type: object
     HTTPValidationError:
       properties:
         code:
@@ -155,6 +181,25 @@ info:
   version: 0.2.0
 openapi: 3.1.0
 paths:
+  /api/rafs-ddms/dev/info:
+    get:
+      description: 'Get application info using the common OSDU field names.
+
+
+        :return: application info
+
+        :rtype: CommonInfoResponse'
+      operationId: get_common_info_api_rafs_ddms_dev_info_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonInfoResponse'
+          description: Successful Response
+      summary: Get Common Info
+      tags:
+      - info
   /api/rafs-ddms/dev/samplesanalysis/{analysis_type}/search:
     get:
       description: 'Get the (`samples analysis`) ids list that comply with `{query}`
@@ -3169,6 +3214,25 @@ paths:
       summary: Get Record Specific Version
       tags:
       - fluidmodel
+  /api/rafs-ddms/v2/info:
+    get:
+      description: 'Get application info using the common OSDU field names.
+
+
+        :return: application info
+
+        :rtype: CommonInfoResponse'
+      operationId: get_common_info_api_rafs_ddms_v2_info_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommonInfoResponse'
+          description: Successful Response
+      summary: Get Common Info
+      tags:
+      - info
   /api/rafs-ddms/v2/masterdata:
     post:
       description: 'Create or update `(osdu:wks:master-data--GenericFacility:<major>.<minor>.<patch>|osdu:wks:master-data--GenericSite:<major>.<minor>.<patch>|osdu:wks:master-data--Sample:<major>.<minor>.<patch>|osdu:wks:master-data--SampleAcquisitionJob:<major>.<minor>.<patch>|osdu:wks:master-data--SampleChainOfCustodyEvent:<major>.<minor>.<patch>|osdu:wks:master-data--SampleContainer:<major>.<minor>.<patch>)`

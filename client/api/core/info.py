@@ -35,3 +35,13 @@ class AppInfo(APIClient):
         """
         response = self.get(path=self.INFO_PATH, **kwargs)
         return response if raw else response.json()
+
+    def get_common_info(self, api_version: str = "v2", raw: bool = False, **kwargs) -> Union[dict, requests.Response]:
+        """Fetch application info from a versioned path, using the common OSDU field names.
+
+        :param api_version: API version prefix, e.g. "v2" or "dev"
+        :param raw: if True return requests.Response; otherwise return parsed JSON dict
+        :return: info dict or Response
+        """
+        response = self.get(path=f"/{api_version}{self.INFO_PATH}", **kwargs)
+        return response if raw else response.json()
