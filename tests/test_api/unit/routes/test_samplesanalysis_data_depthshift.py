@@ -14,11 +14,15 @@
 
 """Unit tests for SamplesAnalysisDataView depth-shift behavior parity points."""
 
+import io
 import json
+from inspect import signature
 from unittest.mock import AsyncMock, MagicMock
 
+import pandas as pd
 import pytest
 from fastapi import HTTPException, Response
+from starlette.requests import Request
 from starlette import status
 
 from app.api.routes.samplesanalysis.endpoints import SamplesAnalysisDataView
@@ -88,6 +92,71 @@ async def test_run_depth_shift_pipeline_empty_results_return_unmodified_response
     )
 
     assert result is base_response
+
+
+@pytest.mark.asyncio
+async def test_depth_shift_parquet_pagination_preserves_binary_response(data_view, monkeypatch):
+    """AC-849-1: augment and paginate binary Parquet without JSON decoding."""
+    base_df = pd.DataFrame({"SampleID": ["sample-1"] * 3, "TestNumber": ["row-0", "row-1", "row-2"]})
+    get_data_signature = signature(data_view._get_data)
+    data_view._get_data = AsyncMock(
+        return_value=Response(content=base_df.to_parquet(), media_type="application/x-parquet"),
+    )
+    resolver = MagicMock()
+    resolver.fetch_sample_records = AsyncMock(
+        return_value={"sample-1": {"data": {"WellboreID": "osdu:master-data--Wellbore:test:"}}},
+    )
+    resolver.resolve_depth_shift_wpc_id = AsyncMock(return_value="osdu:work-product-component--DepthShift:test:1")
+    resolver.fetch_coretolog_depth_shift_data = AsyncMock(return_value=(MagicMock(), {}, "wellbore"))
+    monkeypatch.setattr("app.api.routes.samplesanalysis.endpoints.DepthShiftResolver", lambda **kwargs: resolver)
+    monkeypatch.setattr(
+        "app.api.routes.samplesanalysis.endpoints.resolve_metadata_warning_state",
+        lambda **kwargs: (False, []),
+    )
+    augmented_df = base_df.assign(
+        SampleTop=10.0,
+        SampleBase=12.0,
+        SampleMean=11.0,
+        ShiftedSampleTop=11.0,
+        ShiftedSampleBase=13.0,
+        ShiftedSampleMean=12.0,
+        DepthShiftWarnings=[[], [], []],
+    )
+    monkeypatch.setattr(
+        "app.api.routes.samplesanalysis.endpoints.augment_dataframe",
+        lambda **kwargs: (augmented_df, []),
+    )
+    request = Request({"type": "http", "headers": [(b"accept", b"application/x-parquet")]})
+
+    response = await data_view._get_data_with_depth_shift(
+        request=request,
+        record_id="rid",
+        analysis_type="saturation",
+        content_id="cid",
+        dataset_service=AsyncMock(),
+        storage_service=AsyncMock(),
+        blob_storage_service=AsyncMock(),
+        df_filter=MagicMock(),
+        content_schema_version="1.0.0",
+        orient="split",
+        depth_shift_params=DepthShiftQueryParams(
+            depth_shift_policy="id_provided",
+            depth_shift_id="osdu:work-product-component--DepthShift:test:1",
+        ),
+        pagination=(2, 1),
+    )
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/x-parquet"
+    result = pd.read_parquet(io.BytesIO(response.body))
+    assert result["TestNumber"].tolist() == ["row-1", "row-2"]
+    assert result["ShiftedSampleTop"].tolist() == [11.0, 11.0]
+    assert response.headers["X-Total-Rows"] == "3"
+    assert response.headers["X-Row-Offset"] == "1"
+    data_view._get_data.assert_awaited_once()
+    base_fetch_args = get_data_signature.bind(*data_view._get_data.call_args.args, **data_view._get_data.call_args.kwargs)
+    base_fetch_args.apply_defaults()
+    assert base_fetch_args.arguments["pagination"] == (None, 0)
 
 
 class TestValidateSingleWellboreScopeGetData:

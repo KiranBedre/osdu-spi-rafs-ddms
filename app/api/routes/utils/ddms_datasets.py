@@ -20,6 +20,7 @@ from loguru import logger
 from starlette import status
 
 from app.api.dependencies.request import get_response_mime_type
+from app.api.dependencies.validation import DataPaginationParameters
 from app.api.routes.utils.records import (
     find_object_name_from_type,
     find_object_name_index,
@@ -28,6 +29,7 @@ from app.api.routes.utils.records import (
     get_id_version,
 )
 from app.core.config import get_app_settings
+from app.dataframe.pagination import reject_aggregation_with_pagination, slice_dataframe
 from app.dataframe.parquet_filter import apply_filters_from_bytes
 from app.exceptions import exceptions
 from app.providers.dependencies.blob_storage import (
@@ -126,7 +128,7 @@ async def upsert_parquet_data(
     )
 
 
-async def get_parquet_data(
+async def get_parquet_data(  # noqa: CCR001, WPS231
     request: Request,
     record_id: str,
     blob_metadata: BlobMetadata,
@@ -134,6 +136,7 @@ async def get_parquet_data(
     storage_service: StorageService,
     df_filter: DataFrameFilterValidator,
     orient: str = "split",
+    pagination: DataPaginationParameters = (None, 0),
 ) -> Response:
     """Get parquet data.
 
@@ -151,6 +154,9 @@ async def get_parquet_data(
     :type df_filter: DataFrameFilterValidator
     :param orient: JSON output format ('split' or 'records')
     :type orient: str
+    :param pagination: (row_limit, row_offset) row-level pagination,
+        defaults to no pagination (backward compatible)
+    :type pagination: DataPaginationParameters
     :return: parquet data in proper format
     :rtype: Response
     """
@@ -181,6 +187,12 @@ async def get_parquet_data(
         df = apply_filters_from_bytes(parquet_bytes, df_filter)
         logger.debug(f"Dataframe info: {df.size} elements; {df.columns}")
 
+        row_limit, row_offset = pagination
+        pagination_active = row_limit is not None or row_offset > 0
+        reject_aggregation_with_pagination(pagination_active, df_filter.valid_columns_aggregation)
+        if pagination_active:
+            df, total_rows = slice_dataframe(df, row_offset, row_limit)
+
         if mime_type == SupportedMimeTypes.PARQUET:
             response = Response(content=df.to_parquet(), media_type=SupportedMimeTypes.PARQUET.mime_type)
         else:
@@ -188,6 +200,9 @@ async def get_parquet_data(
                 content=df.to_json(orient=orient),
                 media_type=SupportedMimeTypes.JSON.mime_type,
             )
+        if pagination_active:
+            response.headers["X-Total-Rows"] = str(total_rows)
+            response.headers["X-Row-Offset"] = str(row_offset)
         del df
     else:
         response = JSONResponse(

@@ -230,7 +230,7 @@ def with_patched_storage_samplesanalysis_existing_parent():
             storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
         ),
         ("get_record", f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID),
-        ("get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
+        ("get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID),
         ("get_record", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
         ("get_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
         ("get_record", f"{API_VERSION_V2}/depthshift", storage_mock_objects.TEST_DEPTH_SHIFT_ID),
@@ -258,7 +258,7 @@ async def test_get_record_not_found(storage_method, path, record_id, with_patche
             storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
         ),
         ("get_record", f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID),
-        ("get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
+        ("get_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID),
         ("get_record", f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
         ("get_record", f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
         ("get_record", f"{API_VERSION_V2}/depthshift", storage_mock_objects.TEST_DEPTH_SHIFT_ID),
@@ -286,7 +286,7 @@ async def test_get_record_version_not_found(storage_method, path, record_id, wit
             storage_mock_objects.TEST_RESERVOIR_SIMULATION_ROCK_PHYSICS_ID,
         ),
         (f"{API_VERSION_V2}/samplesanalysesreport", storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID),
-        (f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
+        (f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID),
         (f"{API_VERSION_V2}/saturationfunctionset", storage_mock_objects.TEST_SATURATION_FUNCTION_SET_ID),
         (f"{API_VERSION_V2}/fluidmodel", storage_mock_objects.TEST_FLUID_MODEL_ID),
         (f"{API_VERSION_V2}/depthshift", storage_mock_objects.TEST_DEPTH_SHIFT_ID),
@@ -314,12 +314,12 @@ async def test_get_record_version_mismatch(path, record_id, with_patched_storage
     [
         (
             f"{API_VERSION_V2}/samplesanalysis",
-            storage_mock_objects.TEST_SAMPLESANALYSIS_ID,
+            storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID,
             12345678901234567890,
         ),
         (
             f"{API_VERSION_V2}/samplesanalysis",
-            storage_mock_objects.TEST_SAMPLESANALYSIS_ID,
+            storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID,
             0,
         ),
         (
@@ -360,7 +360,7 @@ async def test_get_record_version_invalid_version(path, record_id, version):
             f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
-        ("get_record_versions", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
+        ("get_record_versions", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID),
         (
             "get_record_versions",
             f"{API_VERSION_V2}/saturationfunctionset",
@@ -402,7 +402,7 @@ async def test_get_record_versions_not_found(
             f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
-        ("soft_delete_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
+        ("soft_delete_record", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID),
         (
             "soft_delete_record",
             f"{API_VERSION_V2}/saturationfunctionset",
@@ -760,7 +760,7 @@ async def test_post_record_no_id(
             "get_record",
             f"{API_VERSION_V2}/samplesanalysis",
             storage_mock_objects.SAMPLESANALYSESREPORT_RECORD_V2,
-            storage_mock_objects.TEST_SAMPLESANALYSIS_ID,
+            storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID,
         ),
         (
             "get_record",
@@ -848,7 +848,7 @@ async def test_get_record_success(
             "get_record",
             f"{API_VERSION_V2}/samplesanalysis",
             storage_mock_objects.SAMPLESANALYSIS_RECORD_V2,
-            storage_mock_objects.TEST_SAMPLESANALYSIS_ID,
+            storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID,
         ),
         (
             "get_record",
@@ -934,7 +934,7 @@ async def test_get_record_version_success(
             f"{API_VERSION_V2}/samplesanalysesreport",
             storage_mock_objects.TEST_SAMPLESANALYSESREPORT_ID,
         ),
-        ("get_record_versions", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLESANALYSIS_ID),
+        ("get_record_versions", f"{API_VERSION_V2}/samplesanalysis", storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID),
         (
             "get_record_versions",
             f"{API_VERSION_V2}/saturationfunctionset",
@@ -986,7 +986,7 @@ async def test_get_record_versions_success(
         (
             "get_record",
             status.HTTP_401_UNAUTHORIZED,
-            f"{API_VERSION_V2}/samplesanalysis/{storage_mock_objects.TEST_SAMPLESANALYSIS_ID}",
+            f"{API_VERSION_V2}/samplesanalysis/{storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID}",
         ),
         (
             "get_record",
@@ -1006,7 +1006,7 @@ async def test_get_record_versions_success(
         (
             "get_record_versions",
             status.HTTP_401_UNAUTHORIZED,
-            f"{API_VERSION_V2}/samplesanalysis/{storage_mock_objects.TEST_SAMPLESANALYSIS_ID}/versions",
+            f"{API_VERSION_V2}/samplesanalysis/{storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID}/versions",
         ),
         (
             "get_record_versions",
@@ -1026,7 +1026,7 @@ async def test_get_record_versions_success(
         (
             "get_record",
             status.HTTP_401_UNAUTHORIZED,
-            f"{API_VERSION_V2}/samplesanalysis/{storage_mock_objects.TEST_SAMPLESANALYSIS_ID}/versions/1234",
+            f"{API_VERSION_V2}/samplesanalysis/{storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID}/versions/1234",
         ),
         (
             "get_record",
@@ -1118,7 +1118,7 @@ async def test_get_record_auth_errors(
         (
             "soft_delete_record",
             status.HTTP_401_UNAUTHORIZED,
-            f"{API_VERSION_V2}/samplesanalysis/{storage_mock_objects.TEST_SAMPLESANALYSIS_ID}",
+            f"{API_VERSION_V2}/samplesanalysis/{storage_mock_objects.TEST_SAMPLES_ANALYSIS_ID}",
         ),
         (
             "soft_delete_record",

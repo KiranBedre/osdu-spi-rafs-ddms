@@ -60,6 +60,36 @@ class TestDatasetService:
         return create_autospec(IBlobLoader, spec_set=True)
 
     @pytest.mark.asyncio
+    async def test_download_file_uses_post_retrieval_instructions(
+        self,
+        mock_settings,
+        mock_dataset_client,
+        mock_blob_loader,
+    ):
+        mock_dataset_client.get_retrieval_instructions.side_effect = AssertionError(
+            "GET retrievalInstructions is not supported by the Dataset API",
+        )
+        mock_dataset_client.retrieval_instructions.return_value = {
+            "datasets": [{"retrievalProperties": {"signedUrl": TEST_URL}}],
+        }
+        mock_blob_loader.download_blob.return_value = b"test-parquet-bytes"
+        service = DatasetService(
+            TEST_DATA_PARTITION_ID,
+            mock_settings,
+            User(access_token=TEST_TOKEN),
+            extra_headers={CORRELATION_ID: TEST_CORRELATION_ID},
+        )
+        service.dataset_client = mock_dataset_client
+        service.blob_loader = mock_blob_loader
+
+        result = await service.download_file(TEST_DATASET_ID)
+
+        assert result == b"test-parquet-bytes"
+        mock_dataset_client.retrieval_instructions.assert_awaited_once_with([TEST_DATASET_ID])
+        mock_dataset_client.get_retrieval_instructions.assert_not_called()
+        mock_blob_loader.download_blob.assert_awaited_once_with(TEST_URL)
+
+    @pytest.mark.asyncio
     async def test_upload_file(self, mock_settings, mock_dataset_client, mock_blob_loader, monkeypatch):
         mock_get_loader = MagicMock()
         monkeypatch.setattr("app.services.dataset.get_blob_loader", mock_get_loader)
