@@ -29,12 +29,17 @@ variables:
 .cimpl_substitute_service_images_in_helm:
   script:
     - wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
-    - IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$IMAGE_TAG" yq -i '.data.image = env(IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:${CHART_IMAGE_TAG:-$IMAGE_TAG}" yq -i '.data.image = env(IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
     - REDIS_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_REDIS_NAME:$REDIS_VERSION" yq -i '.data.redisImage = env(REDIS_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - >
+      if [[ -n "$CHART_IMAGE_TAG" ]];
+      then
+        yq -i '.data.imagePullPolicy = "Always"' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml;
+      fi
 
 .cimpl_substitute_cronjob_image_in_helm:
   script:
-    - CRONJOB_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$IMAGE_TAG" yq -i '.data.cronJobImage = env(CRONJOB_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - CRONJOB_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:${CHART_IMAGE_TAG:-$IMAGE_TAG}" yq -i '.data.cronJobImage = env(CRONJOB_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
 
 .cimpl_python_test_report:
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
