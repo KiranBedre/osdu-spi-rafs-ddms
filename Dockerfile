@@ -32,8 +32,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Remove packages with no patched version available and not needed at runtime
-# CVE-2025-69720: ncurses | CVE-2026-29111: libsystemd0/libudev1
-RUN dpkg --force-all --purge ncurses-bin ncurses-base libncursesw6 libtinfo6 libsystemd0 libudev1 2>/dev/null || true \
+# CVE-2025-69720: ncurses | CVE-2026-29111: libsystemd0/libudev1 | CVE-2026-78410: mount
+RUN dpkg --force-all --purge ncurses-bin ncurses-base libncursesw6 libtinfo6 libsystemd0 libudev1 mount 2>/dev/null || true \
     && rm -rf /usr/share/terminfo /var/lib/apt/lists/*
 
 ARG user_id=nonroot
