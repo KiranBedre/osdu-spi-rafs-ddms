@@ -26,15 +26,14 @@ ARG python_version=3.11
 
 # Apply OS security patches for packages with fixes available
 # CVE-2026-28390: openssl/libssl3t64/openssl-provider-legacy DoS (NULL ptr in CMS)
-# CVE-2026-119373: libsqlite3-0 | CVE-2026-9538: perl-base | CVE-2026-54369: libacl1
 RUN apt-get update \
-    && apt-get upgrade -y openssl libssl3t64 openssl-provider-legacy libsqlite3-0 perl-base libacl1 \
+    && apt-get upgrade -y openssl libssl3t64 openssl-provider-legacy \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Remove packages with no patched version available and not needed at runtime
-# CVE-2025-69720: ncurses | CVE-2026-29111: libsystemd0/libudev1 | CVE-2026-78410: mount | CVE-2026-78410,CVE-2026-76642: libmount1 | CVE-2026-78408,CVE-2026-78410: libuuid1 | CVE-2026-78408,CVE-2026-78410,CVE-2026-76642: libblkid1 | CVE-2026-78408,CVE-2026-78409,CVE-2026-78410: liblastlog2-2 | CVE-2026-78408,CVE-2026-78409: libsmartcols1 | CVE-2026-78408,CVE-2026-78409: bsdutils | CVE-2026-78408,CVE-2026-78409,CVE-2026-78410,CVE-2026-76642: util-linux | CVE-2026-78408,CVE-2026-78409,CVE-2026-78410,CVE-2026-76642: login
-RUN dpkg --force-all --purge ncurses-bin ncurses-base libncursesw6 libtinfo6 libsystemd0 libudev1 mount libmount1 libuuid1 libblkid1 liblastlog2-2 libsmartcols1 bsdutils util-linux login 2>/dev/null || true \
+# CVE-2025-69720: ncurses | CVE-2026-29111: libsystemd0/libudev1 | CVE-2026-78410: mount | CVE-2026-78410,CVE-2026-76642: libmount1 | CVE-2026-78408,CVE-2026-78410: libuuid1 | CVE-2026-78408,CVE-2026-78410,CVE-2026-76642: libblkid1 | CVE-2026-78408,CVE-2026-78409,CVE-2026-78410: liblastlog2-2 | CVE-2026-78408,CVE-2026-78409: libsmartcols1 | CVE-2026-78408,CVE-2026-78409: bsdutils | CVE-2026-78408,CVE-2026-78409,CVE-2026-78410,CVE-2026-76642: util-linux | CVE-2026-78408,CVE-2026-78409,CVE-2026-78410,CVE-2026-76642: login | CVE-2026-119373: libsqlite3-0
+RUN dpkg --force-all --purge ncurses-bin ncurses-base libncursesw6 libtinfo6 libsystemd0 libudev1 mount libmount1 libuuid1 libblkid1 liblastlog2-2 libsmartcols1 bsdutils util-linux login libsqlite3-0 2>/dev/null || true \
     && rm -rf /usr/share/terminfo /var/lib/apt/lists/*
 
 ARG user_id=nonroot
