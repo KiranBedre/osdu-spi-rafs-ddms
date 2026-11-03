@@ -26,9 +26,9 @@ ARG python_version=3.11
 
 # Apply OS security patches for packages with fixes available
 # CVE-2026-28390: openssl/libssl3t64/openssl-provider-legacy DoS (NULL ptr in CMS)
-# CVE-2026-119373: libsqlite3-0
+# CVE-2026-119373: libsqlite3-0 | CVE-2026-9538: perl-base
 RUN apt-get update \
-    && apt-get upgrade -y openssl libssl3t64 openssl-provider-legacy libsqlite3-0 \
+    && apt-get upgrade -y openssl libssl3t64 openssl-provider-legacy libsqlite3-0 perl-base \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
