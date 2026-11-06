@@ -64,13 +64,13 @@ include:
     ref: release/0.30
     file: "cloud-providers/cimpl-global.yml"
 
-  # CIMPL-STACK DEV environment, pinned for reproducible validation
+  # CIMPL-STACK DEV templates are absent from release/0.30; keep this immutable pin until they are backported.
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: release/0.30
+    ref: b723a27d6787c7f7c295cecd8e755c9e9430f3e6
     file: "cloud-providers/cimpl-dev-rosa.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    ref: release/0.30
+    ref: b723a27d6787c7f7c295cecd8e755c9e9430f3e6
     file: "cloud-providers/cimpl-dev-variables.yml"
 
   # CI provider - OpenAPI spec validation
