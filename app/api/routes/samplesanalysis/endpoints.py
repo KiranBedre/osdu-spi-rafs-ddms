@@ -25,6 +25,7 @@ from starlette import status
 from app.api.dependencies.request import (
     get_content_schema_version,
     get_depth_shift_params,
+    get_response_mime_type,
     validate_json_content_type,
 )
 from app.api.dependencies.services import (
@@ -32,7 +33,12 @@ from app.api.dependencies.services import (
     get_async_storage_service,
     get_blob_storage_service,
 )
-from app.api.dependencies.validation import get_orient, validate_filters
+from app.api.dependencies.validation import (
+    DataPaginationParameters,
+    get_data_pagination_parameters,
+    get_orient,
+    validate_filters,
+)
 from app.api.routes.osdu.storage_records import BaseStorageRecordView
 from app.api.routes.utils.api_description_helper import APIDescriptionHelper
 from app.api.routes.utils.records import get_id
@@ -41,6 +47,7 @@ from app.core.helpers.cache.coder import ResponseCoder
 from app.core.helpers.cache.key_builder import key_builder_using_token
 from app.core.helpers.cache.settings import CACHE_DEFAULT_TTL
 from app.core.http_status import HTTP_422_UNPROCESSABLE
+from app.dataframe.pagination import slice_dataframe
 from app.depth_shift.augmenter import augment_dataframe
 from app.depth_shift.extractor import extract_sample_wellbore_id
 from app.depth_shift.metadata import resolve_metadata_warning_state
@@ -53,6 +60,7 @@ from app.models.schemas.osdu_storage import (
 from app.providers.dependencies.blob_storage import IBlobStorage
 from app.resources.filters import DataFrameFilterValidator
 from app.resources.load_model_example import load_data_example
+from app.resources.mime_types import SupportedMimeTypes
 from app.services import dataset, storage
 
 SAMPLESANALYSIS_ID_REGEX_STR = r"^[\w\-\.]+:work-product-component--SamplesAnalysis:[\w\-\.\:\%]+$"
@@ -149,6 +157,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         content_schema_version: str = Depends(get_content_schema_version),
         orient: str = Depends(get_orient),
         depth_shift_params: Optional[DepthShiftQueryParams] = Depends(get_depth_shift_params),
+        pagination: DataPaginationParameters = Depends(get_data_pagination_parameters),
     ) -> Response:
         """Get record data, optionally augmented with depth-shift columns.
 
@@ -175,6 +184,10 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         :type orient: str
         :param depth_shift_params: optional depth-shift query parameters
         :type depth_shift_params: Optional[DepthShiftQueryParams]
+        :param pagination: (row_limit, row_offset) row-level pagination
+            (Issue-819). When depth-shift is active, applied after
+            augmentation rather than inside the base fetch.
+        :type pagination: DataPaginationParameters
         :return: dataset data (augmented when depth_shift_params is not None)
         :rtype: Response
         """
@@ -188,6 +201,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
                 df_filter,
                 content_schema_version,
                 orient,
+                pagination,
             )
 
         return await self._get_data_with_depth_shift(
@@ -202,6 +216,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             content_schema_version=content_schema_version,
             orient=orient,
             depth_shift_params=depth_shift_params,
+            pagination=pagination,
         )
 
     async def _get_data_with_depth_shift(
@@ -217,6 +232,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         content_schema_version: str,
         orient: str,
         depth_shift_params: DepthShiftQueryParams,
+        pagination: DataPaginationParameters = (None, 0),
     ) -> Response:
         """Execute the depth-shift pipeline and return an augmented response.
 
@@ -242,7 +258,9 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         :type orient: str
         :param depth_shift_params: non-None depth-shift parameters
         :type depth_shift_params: DepthShiftQueryParams
-        :return: augmented JSON response
+        :param pagination: (row_limit, row_offset) applied after augmentation
+        :type pagination: DataPaginationParameters
+        :return: augmented JSON or Parquet response
         :rtype: Response
         :raises HTTPException: 404 when the abstract path record has no DefinitiveDepthShiftID
         :raises HTTPException: 400 on domain errors (missing SampleID, etc.)
@@ -260,6 +278,7 @@ class SamplesAnalysisDataView(BaseDataViewV2):
                 content_schema_version=content_schema_version,
                 orient=orient,
                 depth_shift_params=depth_shift_params,
+                pagination=pagination,
             )
         except NotImplementedError as exc:
             raise HTTPException(
@@ -285,12 +304,20 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         content_schema_version: str,
         orient: str,
         depth_shift_params: DepthShiftQueryParams,
+        pagination: DataPaginationParameters = (None, 0),
     ) -> Response:
         """Core depth-shift pipeline: resolve → fetch → augment → respond.
 
-        :return: augmented JSON response
+        Row-level pagination (Issue-819) is applied after augmentation, not
+        inside the base fetch: depth-shift requires every SampleID present
+        in the base data before it can resolve wellbore scope and augment.
+
+        :return: augmented JSON or Parquet response
         :rtype: Response
         """
+        row_limit, row_offset = pagination
+        pagination_active = row_limit is not None or row_offset > 0
+
         resolver = DepthShiftResolver(
             storage_service=storage_service,
             dataset_service=dataset_service,
@@ -311,6 +338,9 @@ class SamplesAnalysisDataView(BaseDataViewV2):
 
         base_df = self._response_to_dataframe(base_response, "split")
         if base_df.empty:
+            if pagination_active:
+                base_response.headers["X-Total-Rows"] = "0"
+                base_response.headers["X-Row-Offset"] = str(row_offset)
             return base_response
 
         if "SampleID" not in base_df.columns:
@@ -356,6 +386,20 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             f"Depth-shift augmentation applied for WPC {wpc_id}; " f"{len(sample_ids)} unique samples.",
         )
 
+        total_rows = len(augmented_df)
+        if pagination_active:
+            augmented_df, total_rows = slice_dataframe(augmented_df, row_offset, row_limit)
+
+        if get_response_mime_type(request) == SupportedMimeTypes.PARQUET:
+            response = Response(
+                content=augmented_df.to_parquet(),
+                media_type=SupportedMimeTypes.PARQUET.mime_type,
+            )
+            if pagination_active:
+                response.headers["X-Total-Rows"] = str(total_rows)
+                response.headers["X-Row-Offset"] = str(row_offset)
+            return response
+
         _ds_cols = [
             "SampleTop",
             "SampleBase",
@@ -392,10 +436,14 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             usedDefinitive=used_definitive,
             warnings=extra_warnings,
         ).model_dump()
-        return Response(
+        response = Response(
             content=json.dumps(result),
             media_type="application/json",
         )
+        if pagination_active:
+            response.headers["X-Total-Rows"] = str(total_rows)
+            response.headers["X-Row-Offset"] = str(row_offset)
+        return response
 
     @staticmethod
     def _extract_sample_wellbore_id(sample_record: dict) -> Optional[str]:
@@ -439,9 +487,9 @@ class SamplesAnalysisDataView(BaseDataViewV2):
             )
 
     def _response_to_dataframe(self, response: Response, response_orient: str = "split") -> pd.DataFrame:
-        """Deserialise a JSON Response body into a DataFrame.
+        """Deserialise a JSON or Parquet Response body into a DataFrame.
 
-        :param response: JSON response from the base get_data_v2
+        :param response: response from the base get_data_v2
         :type response: Response
         :param response_orient: the pandas orient used to produce the response
             body ('split' or 'records'); defaults to 'split'
@@ -450,6 +498,9 @@ class SamplesAnalysisDataView(BaseDataViewV2):
         :rtype: pd.DataFrame
         """
         body = response.body
+        content_type = response.headers.get("content-type", "").split(";", 1)[0].strip()
+        if SupportedMimeTypes.PARQUET.is_match(content_type):
+            return pd.read_parquet(io.BytesIO(body))
         if isinstance(body, (bytes, bytearray)):
             body = body.decode("utf-8")
         return pd.read_json(io.StringIO(body), orient=response_orient)

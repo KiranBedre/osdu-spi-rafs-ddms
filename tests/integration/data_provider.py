@@ -25,6 +25,7 @@ from tests.integration.config import (
     SamplesAnalysisConfig,
     SamplesAnalysisTypes,
 )
+from tests.integration.fixture_ids import scope_fixture_ids
 from tests.integration.helpers import CommonHelper
 
 
@@ -64,6 +65,11 @@ def create_azure_values(data_partition_id: str) -> RecordValues:
         acl_viewers=f"data.default.viewers@{data_partition_id}.{CONFIG['DOMAIN']}",
         acl_owners=f"data.default.owners@{data_partition_id}.{CONFIG['DOMAIN']}",
     )
+
+
+def scope_fixture_id(value: str) -> str:
+    """Resolve a literal fixture reference in the current run's namespace."""
+    return scope_fixture_ids(value, TEST_DATA_STORE.get("fixture_namespace", ""))
 
 
 def load_test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes] = None) -> dict:
@@ -115,4 +121,6 @@ def load_test_data(file_name: str, analysis_type: Optional[SamplesAnalysisTypes]
             data_str = data_str.replace("{parent_report_id}", context["parent_report_id"]).replace(
                 "{samples_analysis_type}", context["samples_analysis_type"]
             )
-        return json.loads(data_str)
+        if "_schema" in os.path.basename(file_name):
+            return json.loads(data_str)
+        return json.loads(scope_fixture_id(data_str))

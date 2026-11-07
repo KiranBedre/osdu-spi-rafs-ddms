@@ -22,6 +22,7 @@ from tests.integration.config import (
     CONFIG,
     DataFiles,
 )
+from tests.integration.data_provider import scope_fixture_id
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
@@ -449,7 +450,7 @@ def test_rsrp_search_data_records_format_aggregated(api, record_id, dataset_id, 
 
 def test_rsrp_search_record_filtered_in_by_field(api, record_id, dataset_id, search_available):
     """Verify record is filtered in by the FieldID filter in the search results"""
-    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeUniqueFieldID:"}
+    params = {"field_id": scope_fixture_id(f"{DATA_PARTITION_ID}:master-data--Field:SomeUniqueFieldID:")}
     response = api.simulation_rock_physics.search_records(params=params)
 
     # Assert
@@ -467,7 +468,7 @@ def test_rsrp_search_record_filtered_out_by_basin(api, record_id, dataset_id, se
 
 def test_rsrp_search_data_filtered_in_by_basin(api, helper, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data filtered by BasinID appears in search results."""
-    params = {"basin_id": f"{DATA_PARTITION_ID}:master-data--Basin:SomeUniqueBasinID:"}
+    params = {"basin_id": scope_fixture_id(f"{DATA_PARTITION_ID}:master-data--Basin:SomeUniqueBasinID:")}
     response = api.simulation_rock_physics.search_data(params=params)
 
     # Assert
