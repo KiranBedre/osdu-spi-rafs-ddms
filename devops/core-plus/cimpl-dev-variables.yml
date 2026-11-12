@@ -1,0 +1,24 @@
+# Local copy of the upstream CIMPL-STACK DEV variables (upstream master @ 49765606),
+# trimmed to the variables RAFS actually uses. Kept local on purpose: the upstream
+# file does not exist on the release branch of the central pipelines repository.
+.cimpl-dev-variables:
+  variables:
+    # Cluster access
+    CIMPL_CLUSTER_SA_TOKEN: $OSDU_MAIN_DEV_ROSA_SA_TOKEN
+    CIMPL_CLUSTER: $OSDU_MAIN_ROSA_CLUSTER
+
+    # Target instance
+    CIMPL_HELM_NAMESPACE: dev
+    INSTANCE: "dev"
+    CIMPL_DOMAIN: dev.osdu-main.osdu-cimpl.opengroup.org
+    CIMPL_TENANT: osdu
+
+    # Integration tests (pytest token fetch)
+    TEST_OPENID_PROVIDER_URL: https://keycloak-$CIMPL_DOMAIN/realms/osdu
+    TEST_OPENID_PROVIDER_CLIENT_ID: integration-tester
+    TEST_OPENID_PROVIDER_CLIENT_SECRET: $CIMPL_DEV_OPENID_PROVIDER_CLIENT_SECRET
+
+    # Postman/Newman acceptance tests
+    CIMPL_TOKEN_URI: "https://keycloak-$CIMPL_DOMAIN/realms/osdu/protocol/openid-connect/token"
+    CIMPL_CLIENT_ID: integration-tester
+    CIMPL_CLIENT_SECRET: $CIMPL_DEV_OPENID_PROVIDER_CLIENT_SECRET
