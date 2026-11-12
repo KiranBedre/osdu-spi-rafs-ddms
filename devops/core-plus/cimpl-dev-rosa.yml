@@ -1,0 +1,190 @@
+# Local copy of the upstream CIMPL-STACK DEV jobs (upstream master @ 49765606).
+# Kept local on purpose: the upstream file does not exist on the release branch
+# of the central pipelines repository.
+
+# DRAFT/TODO: add proper container image for auth/helm
+cimpl-dev-deploy:
+  environment:
+    name: cimpl
+  extends: .cimpl-dev-variables
+  tags: ["osdu-small"]
+  image: ${CI_REGISTRY}/osdu/platform/deployment-and-operations/base-containers-cimpl/origin-cli/origin-cli:latest
+  stage: deploy
+  needs:
+    - job: "cimpl-containerize-gitlab"
+    - job: "cimpl-helm-charts-gitlab"
+    - job: "cimpl-helm-charts-release-gitlab"
+      optional: true
+    - job: "cimpl-containerize-bootstrap-gitlab"
+      optional: true
+  retry: 1
+  script:
+    - !reference [.cimpl_obtain_credentials, script]
+    - !reference [.cimpl_set_image_name, script]
+    - 'echo "Service: ${CIMPL_SERVICE}"'
+    - 'echo "Environment: ${CIMPL_HELM_NAMESPACE}"'
+    - 'echo "Chart version: ${CIMPL_HELM_PACKAGE_VERSION}-${CIMPL_HELM_TAG}"'
+    - |
+      if [[ "$CI_COMMIT_REF_NAME" != "$CI_DEFAULT_BRANCH" ]]; then
+        kubectl annotate ocirepository osdu-$CIMPL_SERVICE-$INSTANCE \
+          -n flux-system \
+          kustomize.toolkit.fluxcd.io/reconcile=disabled --overwrite
+        kubectl patch ocirepository osdu-$CIMPL_SERVICE-$INSTANCE \
+          -n flux-system --type=merge \
+          -p "{\"spec\":{\"ref\":{\"tag\":\"$CIMPL_HELM_PACKAGE_VERSION-dev\"}}}"
+      else
+        kubectl annotate ocirepository osdu-$CIMPL_SERVICE-$INSTANCE \
+          -n flux-system \
+          kustomize.toolkit.fluxcd.io/reconcile- || true
+        kubectl patch ocirepository osdu-$CIMPL_SERVICE-$INSTANCE \
+          -n flux-system --type=merge \
+          -p "{\"spec\":{\"ref\":{\"tag\":\"$CIMPL_HELM_PACKAGE_VERSION-latest\"}}}" || true
+      fi
+    - flux reconcile helmrelease $CIMPL_SERVICE-$INSTANCE --with-source --timeout 15m
+    - !reference [.cimpl_verify_deploy, script]
+    - !reference [.cimpl_verify_commit, script]
+  after_script:
+    - !reference [.cimpl_collect_failure_logs, script]
+  rules:
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: never
+    - if: "$CI_COMMIT_TAG"
+      when: never
+    - if: '$CIMPL_STACK == "1" && $DEV == "1"'
+      when: on_success
+
+cimpl-dev-test:
+  environment:
+    name: cimpl
+  extends:
+    - .cimpl-dev-variables
+    - .maven
+  stage: integration
+  tags: ["osdu-medium"]
+  needs: ["cimpl-dev-deploy"]
+  retry: 1
+  script:
+    - cd $CIMPL_TESTING_DIR
+    - $MAVEN verify -DdisableXmlReport=true --quiet --projects $CIMPL_TEST_PROJECT --update-snapshots
+  artifacts:
+    when: always
+    paths:
+      - $CIMPL_TESTING_DIR/test-results.log
+    expire_in: 2 days
+  rules:
+    - if: '$DISABLE_INTEGRATION_TEST == "true"'
+      when: never
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: never
+    - if: "$CI_COMMIT_TAG"
+      when: never
+    - if: '$CIMPL_STACK == "1" && $CIMPL_INT_TEST_TYPE != "python" && $DEV == "1"'
+      when: on_success
+
+cimpl-dev-test-python:
+  environment:
+    name: cimpl
+  extends:
+    - .cimpl-dev-variables
+  stage: integration
+  tags: ["osdu-small"]
+  image: python:3.9
+  needs: ["cimpl-dev-deploy"]
+  retry: 1
+  script:
+    - pushd $CIMPL_BAREMETAL_PYTHON_INT_TEST_SUBDIR
+    - pwd
+    - chmod +x ./run-integration-tests.sh
+    - ./run-integration-tests.sh
+  rules:
+    - if: '$DISABLE_INTEGRATION_TEST == "true"'
+      when: never
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: never
+    - if: "$CI_COMMIT_TAG"
+      when: never
+    - if: '$CIMPL_STACK == "1" && $CIMPL_INT_TEST_TYPE == "python" && $DEV == "1"'
+      when: on_success
+  artifacts:
+    when: always
+    paths:
+      - $CIMPL_BAREMETAL_PYTHON_INT_TEST_SUBDIR/**/allure-results/
+    expire_in: 2 days
+
+cimpl-dev-acceptance-test:
+  stage: acceptance
+  extends:
+    - .cimpl-dev-variables
+    - .maven
+  needs: ["cimpl-dev-deploy"]
+  tags: ["osdu-medium"]
+  retry: 1
+  script:
+    - cd $ACCEPTANCE_TEST_DIR
+    - $MAVEN verify -Dallure.results.directory=cimpl/allure-results -DdisableXmlReport=true --quiet --update-snapshots
+  artifacts:
+    when: always
+    paths:
+      - $ACCEPTANCE_TEST_DIR/test-results.log
+      - $ACCEPTANCE_TEST_DIR/cimpl/allure-results/
+    expire_in: 2 days
+  rules:
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: never
+    - if: "$CI_COMMIT_TAG"
+      when: never
+    - if: $ACCEPTANCE_TEST_DIR == null
+      when: never
+    - if: '$CIMPL_STACK == "1" && $CIMPL_INT_TEST_TYPE != "python" && $DEV == "1"'
+      when: on_success
+
+cimpl-dev-reset:
+  stage: acceptance
+  needs: ["cimpl-dev-acceptance-test"]
+  extends:
+    - .cimpl-dev-variables
+  tags: ["osdu-small"]
+  image: ${CI_REGISTRY}/osdu/platform/deployment-and-operations/base-containers-cimpl/origin-cli/origin-cli:latest 
+  before_script:
+    - !reference [.cimpl_obtain_credentials, script]
+  script:
+    - cimpl service reset ${CIMPL_SERVICE} --instance $CIMPL_HELM_NAMESPACE 
+  rules:
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: never
+    - if: "$CI_COMMIT_TAG"
+      when: never
+    - if: $ACCEPTANCE_TEST_DIR == null
+      when: never
+    - if: '$CIMPL_STACK == "1" && $DEV_RESET == "1"'
+      when: on_success
+  allow_failure: true
+
+cimpl-dev-acceptance-test-python:
+  image: python:3.9
+  stage: acceptance
+  extends:
+    - .cimpl-dev-variables
+  needs: ["cimpl-dev-deploy"]
+  tags: ["osdu-medium"]
+  retry: 1
+  script:
+    - pushd $ACCEPTANCE_TEST_DIR
+    - pwd
+    - chmod +x ./run-acceptance-tests.sh
+    - ./run-acceptance-tests.sh
+  artifacts:
+    when: always
+    paths:
+      - test-results.log
+      - $ACCEPTANCE_TEST_DIR/**/allure-results/
+    expire_in: 2 days
+  rules:
+    - if: "$CI_COMMIT_BRANCH =~ /^release/"
+      when: never
+    - if: "$CI_COMMIT_TAG"
+      when: never
+    - if: $ACCEPTANCE_TEST_DIR == null
+      when: never
+    - if: '$CIMPL_STACK == "1" && $CIMPL_INT_TEST_TYPE == "python" && $DEV == "1"'
+      when: on_success

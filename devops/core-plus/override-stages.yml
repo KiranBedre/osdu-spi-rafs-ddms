@@ -464,6 +464,15 @@ cimpl-helm-charts-release-gitlab:
 #   API: https://$CIMPL_DOMAIN (no tenant subdomain)
 #   Keycloak: https://keycloak-$CIMPL_DOMAIN (hyphen), via TEST_OPENID_PROVIDER_URL
 
+# Exclude PROD from pipelines for MRs targeting a release branch.
+# Preserve the existing release-branch and tag rules.
+cimpl-prod-deploy:
+  rules:
+    - if: '$CIMPL == "1" && $CI_COMMIT_BRANCH =~ /^release\/[0-9]{1,2}\.[0-9]{1,2}$/'
+      when: on_success
+    - if: '$CIMPL == "1" && $CI_COMMIT_TAG'
+      when: on_success
+
 cimpl-prod-test-python:
   extends:
     - .rafs_cimpl_pytest_integration
