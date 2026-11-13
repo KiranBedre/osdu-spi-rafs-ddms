@@ -18,6 +18,7 @@ import os
 import secrets
 import string
 import time
+from contextlib import ExitStack
 from io import BytesIO
 
 import pandas
@@ -26,7 +27,8 @@ from jsonpointer import JsonPointerException, resolve_pointer, set_pointer
 from loguru import logger
 
 from app.api.routes.utils.query import find_osdu_ids_from_string
-from tests.integration.config import DataFiles, DataTypes
+from tests.integration.config import TEST_DATA_STORE, DataFiles, DataTypes
+from tests.integration.fixture_ids import scope_fixture_ids
 
 COMPARE_RESPONSES_EXCLUDE_PATHS = (
     "root['id']",
@@ -433,42 +435,68 @@ class CommonHelper:
         record_to_create: list,
         fixed_id_records: list,
     ) -> dict:
-        """Create reference records and SAR record; return IDs to share across workers."""
+        """Create owned prerequisites once; verify them before sharing worker state."""
         osdu_generic_record = tests_data(DataFiles.OSDU_GENERIC_RECORD)
         records_to_store = []
-        for reference_id in storage_dependencies:
+        created_ids = {"storage_dependency_ids": [], "fixed_record_ids": []}
+        for reference_id in sorted(storage_dependencies):
             if "reference-data" in reference_id:
                 continue
-            api.storage.purge_record(reference_id)
+            response = api.storage.get(path=f"/records/{reference_id}", allowed_codes=[200, 404])
+            if response.status_code == 200:
+                continue
             record_to_store = copy.deepcopy(osdu_generic_record)
             record_to_store["id"] = reference_id
             record_type = reference_id.split(":")[1]
             record_to_store["kind"] = f"{partition}:wks:{record_type}:1.0.0"
             records_to_store.append(record_to_store)
-
-        response = api.storage.create_or_update_records(records_to_store)
-        logger.debug(response.json())
-
-        created_ids = {}
-        for data_type, data, id_template in record_to_create:
-            record_data = copy.deepcopy(tests_data(data))
-            record_data["id"] = f"{id_template}{helper.generate_random_record_id()}"
-            getattr(api, data_type).post_record([record_data])
-            created_ids[f"{data_type}_record_id"] = record_data["id"]
-
-        for data in fixed_id_records:
-            record_data = copy.deepcopy(tests_data(data))
-            created_ids[f"{data}_fixed_id"] = record_data["id"]
-            record_response = api.storage.get(
-                path=f"/records/{record_data['id']}",
-                allowed_codes=[200, 404],
+        with ExitStack() as rollback:
+            rollback.callback(
+                self.purge_reference_records,
+                api,
+                created_ids,
+                storage_dependencies,
+                record_to_create,
+                fixed_id_records,
             )
-            fixed_record_was_created = record_response.status_code == 404
-            created_ids[f"{data}_fixed_id_created"] = fixed_record_was_created
+            created_ids["storage_dependency_ids"] = [record["id"] for record in records_to_store]
+            if records_to_store:
+                api.storage.create_or_update_records(records_to_store)
 
-            if fixed_record_was_created:
-                api.storage.create_or_update_records([record_data])
+            for data_type, data, id_template in record_to_create:
+                record_data = copy.deepcopy(tests_data(data))
+                record_data["id"] = scope_fixture_ids(
+                    f"{id_template}{helper.generate_random_record_id()}",
+                    TEST_DATA_STORE.get("fixture_namespace", ""),
+                )
+                created_ids[f"{data_type}_record_id"] = record_data["id"]
+                getattr(api, data_type).post_record([record_data])
 
+            for data in fixed_id_records:
+                record_data = copy.deepcopy(tests_data(data))
+                created_ids[f"{data}_fixed_id"] = record_data["id"]
+                record_response = api.storage.get(
+                    path=f"/records/{record_data['id']}",
+                    allowed_codes=[200, 404],
+                )
+                fixed_record_was_created = record_response.status_code == 404
+                created_ids[f"{data}_fixed_id_created"] = fixed_record_was_created
+                if fixed_record_was_created:
+                    created_ids["fixed_record_ids"].append(record_data["id"])
+                    api.storage.create_or_update_records([record_data])
+
+            required_ids = {
+                record_id for record_id in storage_dependencies if "reference-data" not in record_id
+            }
+            required_ids.update(created_ids[f"{data}_fixed_id"] for data in fixed_id_records)
+            required_ids.update(created_ids[f"{data_type}_record_id"] for data_type, _, _ in record_to_create)
+            unavailable = [
+                record_id
+                for record_id in sorted(required_ids)
+                if api.storage.get(path=f"/records/{record_id}", allowed_codes=[200, 404]).status_code != 200
+            ]
+            assert not unavailable, f"Fixture prerequisites unavailable in Storage: {unavailable}"
+            rollback.pop_all()
         return created_ids
 
     def purge_reference_records(
@@ -479,13 +507,13 @@ class CommonHelper:
         record_to_create: list,
         fixed_id_records: list = None,
     ) -> None:
-        """Purge SAR record and reference records."""
+        """Purge only records created by this run, including after partial setup."""
+        owned_ids = []
         for data_type, _, _ in record_to_create:
-            api.storage.purge_record(state[f"{data_type}_record_id"])
-        for data in fixed_id_records or []:
-            if state.get(f"{data}_fixed_id_created"):
-                api.storage.purge_record(state[f"{data}_fixed_id"])
-        for reference_id in storage_dependencies:
-            if "reference-data" in reference_id:
-                continue
-            api.storage.purge_record(reference_id)
+            if record_id := state.get(f"{data_type}_record_id"):
+                owned_ids.append(record_id)
+        owned_ids.extend(state["fixed_record_ids"])
+        owned_ids.extend(state["storage_dependency_ids"])
+        with ExitStack() as cleanup:
+            for record_id in reversed(owned_ids):
+                cleanup.callback(api.storage.purge_record, record_id)

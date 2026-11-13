@@ -32,7 +32,9 @@ from app.api.dependencies.services import (
     get_blob_storage_service,
 )
 from app.api.dependencies.validation import (
+    RowPaginationParameters,
     get_orient,
+    get_row_pagination_parameters,
     get_search_data_pagination_parameters,
     get_search_pagination_parameters,
     get_search_scope,
@@ -40,6 +42,7 @@ from app.api.dependencies.validation import (
 from app.api.routes.common.base_search import (
     GenericSearchDataView,
     PaginationParametersType,
+    search_data_row_pagination_responses,
 )
 from app.api.routes.utils.api_version import get_domain_from_url
 from app.api.routes.utils.records import get_id
@@ -91,7 +94,20 @@ def get_search_data_description_template(entity_name: str) -> str:
             f"Get `{entity_name}` records bulk data content.<br><br>",
             "Use the `content_schema_version` query parameter to specify content schema version",
             "(e.g. `?content_schema_version=1.0.0`). The `Accept` header versioning is deprecated.<br><br>",
-            "Use the `orient` query parameter to select the JSON output format (`split` or `records`).",
+            "Use the `orient` query parameter to select the JSON output format (`split` or `records`).<br><br>",
+            "Use `row_offset`, `row_limit` query parameters (logical row pagination) to paginate rows",
+            "across the entire ordered set of rows from every dataset matching the search, not a single",
+            "dataset page. Rows are ordered by dataset (sorted by samples analysis id, then dataset id)",
+            "and, within a dataset, in stored order, so consecutive row pages neither overlap nor skip",
+            "rows. `total_rows` (found in response, only present when `row_offset`/`row_limit` are used)",
+            "is the number of rows remaining after `rows_filter`/`columns_filter` across every matching",
+            "dataset: the full logical result set, not the returned window. Computing it reads every",
+            "matching dataset even after the requested window is complete, so request cost grows with",
+            "the number of matching datasets, not with `row_limit`. `offset`/`page_limit` (legacy dataset",
+            "pagination) and `row_offset`/`row_limit` are mutually exclusive: supplying both in the same",
+            "call returns `422`. In row mode the JSON response carries `row_offset`, `row_limit` and",
+            "`total_rows` (and `total_size`) and does not echo `offset`/`page_limit`; Parquet responses",
+            "expose `total_rows` as the `X-Total-Rows` header. Cannot be combined with `columns_aggregation`.",
         ],
     )
 
@@ -121,7 +137,7 @@ class DynamicGenericSearchView(GenericSearchDataView):
 
         if uses_orient:
 
-            async def search_endpoint(  # noqa: WPS430
+            async def search_endpoint(  # noqa: WPS430, WPS211
                 request: Request,
                 df_filter: DataFrameFilterValidator = Depends(filter_dep),
                 content_schema_version: str = Depends(get_content_schema_version),
@@ -131,6 +147,7 @@ class DynamicGenericSearchView(GenericSearchDataView):
                 blob_storage_service: IBlobStorage = Depends(get_blob_storage_service),
                 search_service: search.SearchService = Depends(get_async_search_service),
                 orient: str = Depends(get_orient),
+                row_pagination_parameters: RowPaginationParameters = Depends(get_row_pagination_parameters),
             ):
                 dynamic_param = self._inject_param(request, extractor)
                 return await parent_method(
@@ -144,6 +161,7 @@ class DynamicGenericSearchView(GenericSearchDataView):
                     pagination_parameters=pagination_parameters,
                     search_scope=search_scope,
                     orient=orient,
+                    row_pagination_parameters=row_pagination_parameters,
                 )
 
         else:
@@ -194,6 +212,7 @@ class DynamicGenericSearchView(GenericSearchDataView):
                 status_code=status.HTTP_200_OK,
                 description=config.get("description", ""),
                 include_in_schema=config.get("include_in_schema", True),
+                responses=search_data_row_pagination_responses() if config["handler"] == "get_search_data" else None,
             )
 
 

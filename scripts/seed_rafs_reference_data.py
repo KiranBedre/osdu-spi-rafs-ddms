@@ -259,6 +259,108 @@ def ensure_legal_tag(
     return status
 
 
+def check_record_exists(
+    *,
+    record_id: str,
+    records_url: str,
+    headers: dict[str, str],
+    args: argparse.Namespace,
+) -> bool:
+    """Return True if the record already exists, False if confirmed missing.
+
+    Mirrors the safe check-then-create pattern already used by
+    ``tests/integration/helpers/reference_data.py`` (``_storage_status`` /
+    ``seed_required_reference_data``): only HTTP 200 is treated as "exists"
+    and only HTTP 404 is treated as "missing". Any other outcome - auth
+    failures, unexpected statuses, exhausted retries, or a network error
+    (status 0 from ``request()``) - is a hard failure, never silently
+    treated as "missing". The id is percent-encoded with ``quote(id,
+    safe="")`` for the URL path, matching the convention already used below
+    for the reactivation PATCH/GET calls and documented in
+    ``tests/test_api/unit/services/clients/storage_client_test.py``.
+
+    :raises SeedError: if the existence check does not return 200 or 404.
+    """
+    encoded_id = urllib.parse.quote(record_id, safe="")
+    url = f"{records_url}/{encoded_id}"
+
+    status, body = request(
+        method="GET",
+        url=url,
+        headers=headers,
+        payload=None,
+        retries=args.retries,
+        retry_delay=args.retry_delay,
+        timeout=args.timeout,
+    )
+
+    if status == 200:
+        return True
+    if status == 404:
+        return False
+    raise SeedError(f"Existence check failed for {record_id}: HTTP {status}: {response_message(body)}")
+
+
+def validate_bulk_creation_response(
+    *,
+    submitted_ids: set[str],
+    response_payload: Any,
+) -> tuple[set[str], set[str]]:
+    """Validate a Storage PUT /records response and return (created_ids, skipped_ids).
+
+    Every id in ``submitted_ids`` must be accounted for in exactly one of
+    ``recordIds`` (confirmed created) or ``skippedRecordIds`` (explicitly
+    skipped) - never both, never neither - and the response must not
+    reference ids that were never submitted. A malformed or inconsistent
+    batch response is never safe to interpret as "it worked": any violation
+    raises SeedError naming the exact ids involved.
+
+    :raises SeedError: if the response is malformed, missing either field,
+        or inconsistent with ``submitted_ids`` in any way.
+    """
+    if not isinstance(response_payload, dict):
+        raise SeedError("Reference-data creation response was not a JSON object")
+
+    record_ids_field = response_payload.get("recordIds")
+    skipped_field = response_payload.get("skippedRecordIds")
+
+    if not isinstance(record_ids_field, list) or not all(isinstance(x, str) for x in record_ids_field):
+        raise SeedError("Reference-data creation response is missing a valid 'recordIds' list")
+    if not isinstance(skipped_field, list) or not all(isinstance(x, str) for x in skipped_field):
+        raise SeedError("Reference-data creation response is missing a valid 'skippedRecordIds' list")
+
+    if len(record_ids_field) != len(set(record_ids_field)):
+        raise SeedError("Reference-data creation response contains duplicate entries within 'recordIds'")
+    if len(skipped_field) != len(set(skipped_field)):
+        raise SeedError("Reference-data creation response contains duplicate entries within 'skippedRecordIds'")
+
+    created_ids = set(record_ids_field)
+    skipped_ids = set(skipped_field)
+
+    overlap = created_ids & skipped_ids
+    if overlap:
+        raise SeedError(
+            "Reference-data creation response lists the same id(s) in both "
+            "'recordIds' and 'skippedRecordIds': " + ", ".join(sorted(overlap))
+        )
+
+    unknown_ids = (created_ids | skipped_ids) - submitted_ids
+    if unknown_ids:
+        raise SeedError(
+            "Reference-data creation response references id(s) that were not submitted: "
+            + ", ".join(sorted(unknown_ids))
+        )
+
+    unaccounted_ids = submitted_ids - created_ids - skipped_ids
+    if unaccounted_ids:
+        raise SeedError(
+            "Reference-data creation response does not account for submitted id(s) "
+            "(neither created nor skipped): " + ", ".join(sorted(unaccounted_ids))
+        )
+
+    return created_ids, skipped_ids
+
+
 def seed_records(
     *,
     records: list[dict[str, Any]],
@@ -269,11 +371,48 @@ def seed_records(
 ) -> None:
     records_url = f"{storage_url.rstrip('/')}/records"
 
+    # Check-then-create: never PUT a record that already exists. A failed
+    # existence check raises immediately (see check_record_exists), so a
+    # single bad check aborts here, before any PUT is attempted - it cannot
+    # fall through into an unconditional bulk upload.
+    #
+    # KNOWN LIMITATION (TOCTOU race, documented not solved): between this GET
+    # and the PUT below, another concurrent process (another seeding run, a
+    # Postman/CI run, a manual edit) could create or delete the same record.
+    # This script has no cross-process lock equivalent to the pytest
+    # fixtures' FileLock (tests/integration/helpers/parallel_execution.py),
+    # so that window cannot be fully closed from here.
+    print(f"Checking existence of {len(records)} reference-data records")
+    existing_ids: set[str] = set()
+    for index, record in enumerate(records, start=1):
+        record_id = record["id"]
+        if check_record_exists(
+            record_id=record_id,
+            records_url=records_url,
+            headers=headers,
+            args=args,
+        ):
+            existing_ids.add(record_id)
+        state = "exists - will not be modified" if record_id in existing_ids else "missing - eligible for creation"
+        print(f"[{index}/{len(records)}] {record_id}: {state}")
+
+    report["existing"] = len(existing_ids)
+    missing_records = [record for record in records if record["id"] not in existing_ids]
+    report["missing"] = len(missing_records)
+
+    if not missing_records:
+        print("All reference-data records already exist; nothing to create.")
+        report["created"] = 0
+        report["upload_http_status"] = None
+        report["skipped_in_response"] = []
+        return
+
+    print(f"Creating {len(missing_records)} missing reference-data records")
     status, body = request(
         method="PUT",
         url=records_url,
         headers=headers,
-        payload=records,
+        payload=missing_records,
         retries=args.retries,
         retry_delay=args.retry_delay,
         timeout=args.timeout,
@@ -281,15 +420,49 @@ def seed_records(
     report["upload_http_status"] = status
 
     if not 200 <= status < 300:
-        raise SeedError(f"Reference-data upload failed with HTTP {status}: " f"{response_message(body)}")
+        raise SeedError(f"Reference-data creation failed with HTTP {status}: " f"{response_message(body)}")
+
+    # Validate the batch-ingestion response before trusting it: a record is
+    # only ever counted as created if Storage's own "recordIds" explicitly
+    # confirms it. "skippedRecordIds" is itself a valid, safe outcome (e.g.
+    # the TOCTOU race documented above resolving safely - Storage declined
+    # to touch a record that showed up concurrently), but anything the
+    # response can't account for cleanly - malformed fields, duplicates,
+    # overlap between the two lists, unknown ids, or submitted ids missing
+    # from both lists - raises SeedError rather than being assumed safe.
+    try:
+        response_payload = json.loads(body) if body else {}
+    except json.JSONDecodeError as exc:
+        raise SeedError(f"Reference-data creation response was not valid JSON: {exc}") from exc
+
+    submitted_ids = {record["id"] for record in missing_records}
+    created_ids, skipped_ids = validate_bulk_creation_response(
+        submitted_ids=submitted_ids,
+        response_payload=response_payload,
+    )
+
+    report["skipped_in_response"] = sorted(skipped_ids)
+    if skipped_ids:
+        print(
+            f"WARNING: Storage reported {len(skipped_ids)} record(s) skipped during creation: "
+            f"{sorted(skipped_ids)}"
+        )
+
+    # Never PATCH or verify a record unless its creation was explicitly
+    # confirmed via "recordIds" above.
+    created_records = [record for record in missing_records if record["id"] in created_ids]
+    report["created"] = len(created_records)
 
     if args.reactivate:
-        for index, record in enumerate(records, start=1):
+        # Only the records actually just created may need post-creation
+        # steps. Records already confirmed to exist above, and records
+        # Storage itself reported as skipped, are never touched again.
+        for index, record in enumerate(created_records, start=1):
             record_id = record["id"]
             encoded_id = urllib.parse.quote(record_id, safe="")
             record_url = f"{records_url}/{encoded_id}"
 
-            print(f"[{index}/{len(records)}] Reactivating {record_id}")
+            print(f"[{index}/{len(created_records)}] Reactivating {record_id}")
             patch_status, patch_body = request(
                 method="PATCH",
                 url=record_url,
@@ -347,6 +520,10 @@ def main() -> int:
         "authority": args.authority,
         "result": "failed",
         "total": 0,
+        "existing": 0,
+        "missing": 0,
+        "created": 0,
+        "skipped_in_response": [],
         "reactivated": 0,
         "verified": 0,
     }
@@ -402,7 +579,7 @@ def main() -> int:
                 args=args,
             )
 
-        print(f"Uploading {len(records)} reference-data records " f"to {args.storage_url}")
+        print(f"Seeding {len(records)} reference-data records (create-if-missing) " f"against {args.storage_url}")
         seed_records(
             records=records,
             storage_url=args.storage_url,

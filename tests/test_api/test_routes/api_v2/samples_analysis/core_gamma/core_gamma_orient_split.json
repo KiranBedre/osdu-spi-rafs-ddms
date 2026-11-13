@@ -1,0 +1,45 @@
+{
+  "columns":[
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta",
+    "CoreGammaData"
+  ],
+  "index":[
+    0
+  ],
+  "data":[
+    [
+      "partition:work-product-component--SamplesAnalysis:samples_analysis_test_id:",
+      "partition:master-data--Sample:sample_test_id:",
+      [
+        {
+          "kind":"Unit",
+          "name":"metre",
+          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:m:",
+          "propertyNames":[
+            "Depth"
+          ]
+        },
+        {
+          "kind":"Unit",
+          "name":"mole per mole",
+          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:mol%2Fmol:",
+          "propertyNames":[
+            "Uranium",
+            "Thorium"
+          ]
+        }
+      ],
+      [
+        {
+          "Depth":1.0,
+          "Uranium":2.0,
+          "Thorium":3.0,
+          "Potassium":4.0,
+          "TotalGamma":5.0
+        }
+      ]
+    ]
+  ]
+}
