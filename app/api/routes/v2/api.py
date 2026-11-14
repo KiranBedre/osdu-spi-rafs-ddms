@@ -15,6 +15,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies.request import require_data_partition_id
+from app.api.routes import info
 from app.api.routes.depthshift import api as depthshift_api
 from app.api.routes.fluidmodel import api as fluidmodel_api
 from app.api.routes.reservoirsimulationrockphysicsmodel import api as reservoirsimulationrockphysics_api
@@ -28,6 +29,8 @@ COMMON_DEPENDENCIES = (Depends(require_data_partition_id),)
 
 SAMPLES_ANALYSIS_PREFIX = "/samplesanalysis"
 router = APIRouter()
+
+router.include_router(info.v2_router, tags=["info"])
 
 router.include_router(
     sampleanalysesreport_api.sar_record_router_v2,

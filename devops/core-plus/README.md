@@ -155,15 +155,65 @@ This ensures that deployments are fully parameterized and environment-specific, 
 
 ## Integration test job chain (reference-data bootstrap)
 
-Python integration tests on CIMPL assume reference-data records already exist in the partition. Pytest does not create `reference-data--*` stubs.
+Python acceptance fixtures namespace their master-data and WPC prerequisites per run,
+sharing that namespace across xdist workers. Literal fixture references in search filters
+must use `scope_fixture_id` to match the rendered payloads. Setup verifies prerequisites
+through Storage before publishing shared state, preserves pre-existing records, and rolls
+back owned records after partial setup failures. Teardown deletes only run-created
+prerequisites (including the Sample) and reports cleanup errors as test errors.
+Shared reference-data IDs are not namespaced by this isolation mechanism.
+Serial runs keep coordination state in their own pytest base directory; xdist workers
+share only their run's parent directory. Run the isolated lifecycle regressions with
+`python -m pytest tests/integration/test_fixture_lifecycle.py --confcutdir=tests/integration`.
+The CIMPL Python integration template runs these checks before live acceptance tests.
+Live CIMPL Python integration tests use four xdist workers (`-n 4 --dist=loadscope`).
+The focused fixture repair was validated live with two workers; four-worker live
+execution and its effect on duration remain to be verified by CI.
 
-Trusted/main CIMPL pipeline order:
+The CIMPL seed jobs provision shared reference data before acceptance tests. Pytest also
+checks fixture reference-data prerequisites and creates only missing records with canonical
+definitions from the same catalog; it does not overwrite existing records or create generic
+`reference-data--*` stubs. Shared reference data is retained after the test run.
 
-1. `cimpl-deploy` — install/upgrade the RAFS DDMS Helm release
-2. `cimpl-seed-reference-data` — Newman run of [RAFS DDMS CI Reference Bootstrap](./qa/Postman%20Collection/Collection/RAFS%20DDMS%20CI%20Reference%20Bootstrap.postman_collection.json) directly against Storage Service
-3. `cimpl-test-python` — pytest integration suite (`needs` the seed job)
+CIMPL pipeline order, using the jobs defined in [override-stages.yml](./override-stages.yml):
 
-See [deployments/README.md](../../deployments/README.md) (CIMPL dev1 CI bootstrap) for the list of seeded IDs and a local Newman example. Use `python scripts/list_integration_reference_gaps.py` to detect fixture reference IDs still missing from the MVP manifest.
+| Environment | Deploy | Reference-data seed | Python integration |
+|---|---|---|---|
+| Dev | `cimpl-dev-deploy` | `cimpl-dev-seed-reference-data` | `cimpl-dev-test-python` |
+| Dev backup | `cimpl-dev-backup-deploy` | `cimpl-dev-backup-seed-reference-data` | `cimpl-dev-backup-test-python` |
+| Prod | `cimpl-prod-deploy` | `cimpl-prod-seed-reference-data` | `cimpl-prod-test-python` |
+
+Each seed job uses the `.rafs_cimpl_reference_bootstrap` shell template, not a Newman
+bootstrap collection. It creates or reuses a legal tag, renders the shared
+[reference-data catalog](../../deployments/reference-data/rafs_integration_reference_data.json)
+with `jq`, uploads it through Storage, then reactivates and verifies the records.
+The Python integration jobs depend on the corresponding seed job.
+
+See [deployments/README.md](../../deployments/README.md#cimpl-dev1-ci-bootstrap) for
+bootstrap details and a local Storage upload example. Use
+`python scripts/list_integration_reference_gaps.py` to detect fixture reference IDs
+still missing from the catalog.
+
+### Collection script regression checks
+
+Run `node --test devops/core-plus/qa/test-collection-scripts.cjs` from the repository root.
+These isolated checks verify that Relative Permeability and Wettability Index response scripts
+can capture record IDs, register cleanup, and capture versions even when earlier Newman requests
+have defined a global `data` variable. Keep response parsing scoped to avoid sandbox declaration conflicts.
+Cleanup checks also cover URL-encoded record IDs, idempotent deletion, and visible failures for
+network errors or rejected deletions. Live Storage cleanup asserts HTTP 204 or 404 for every registered record.
+The CIMPL dev, backup, and prod Newman jobs run these checks before live requests.
+Relative Permeability 1.1.0 uploads a version-matched payload before reading it, using a
+separate dataset variable and registering its dataset record for cleanup. Its payload uses
+the 1.1.0 integration fixture's scalar fields and nested effective-permeability values.
+Regression checks verify request ordering, schema versions, required payload columns,
+dataset capture, and cleanup.
+These checks do not replace live acceptance tests against the revision being validated.
+
+For issue #855, cleanup completion is assessed at the OSDU API boundary: run-created data
+must no longer be searchable or retrievable, and run-created legal tags must be absent.
+Physical backing-blob deletion is not an additional acceptance gate. Shared prerequisites
+are distinguished from run-created data; manual cleanup does not demonstrate automatic suite cleanup.
 
 ## OpenTelemetry Integration
 

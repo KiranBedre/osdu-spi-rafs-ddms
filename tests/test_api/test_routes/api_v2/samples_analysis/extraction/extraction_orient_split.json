@@ -1,0 +1,45 @@
+{
+  "columns":[
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta",
+    "Method",
+    "MassOfSampleExtracted",
+    "MassOfExtract",
+    "ExtractYield",
+    "ExtractOfTotalOrganicCarbon",
+    "Remarks"
+  ],
+  "index":[
+    0
+  ],
+  "data":[
+    [
+      "partition:work-product-component--SamplesAnalysis:samples_analysis_test_id:",
+      "partition:master-data--Sample:sample_test_id:",
+      [
+        {
+          "kind":"Unit",
+          "name":"kilogram",
+          "unitOfMeasureID":"opendes:reference-data--UnitOfMeasure:kg:",
+          "propertyNames":[
+            "MassOfSampleExtracted"
+          ]
+        }
+      ],
+      "Example Method",
+      3.005,
+      2.981,
+      7.716,
+      0.144,
+      [
+        {
+          "RemarkSequenceNumber":1,
+          "Remark":"Example Remark",
+          "RemarkSource":"Example Remark Source",
+          "RemarkDate":"2020-02-13"
+        }
+      ]
+    ]
+  ]
+}
