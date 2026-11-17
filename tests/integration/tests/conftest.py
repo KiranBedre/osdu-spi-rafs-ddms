@@ -14,6 +14,7 @@
 import copy
 import json
 import time
+import uuid
 from pathlib import Path
 from typing import Optional
 
@@ -32,6 +33,7 @@ from tests.integration.config import (
 from tests.integration.helpers.parallel_execution import (
     begin_cross_worker_session,
     end_cross_worker_session,
+    shared_session_directory,
 )
 from tests.integration.helpers.reference_data import (
     SUPPLEMENTAL_REFERENCE_IDS,
@@ -47,7 +49,7 @@ REFERENCE_DATA_CATALOG = Path(
 
 
 @pytest.fixture(scope="session", autouse=True)
-def required_reference_data(api, tests_data, tmp_path_factory):
+def required_reference_data(api, tests_data, tmp_path_factory, create_legal_tag, pytestconfig):
     """Provision static reference-data prerequisites once; deliberately never delete them."""
     partition = CONFIG["DATA_PARTITION"]
     base_record = tests_data(DataFiles.OSDU_GENERIC_RECORD)
@@ -63,7 +65,7 @@ def required_reference_data(api, tests_data, tmp_path_factory):
         base_record["acl"]["owners"][0],
         base_record["acl"]["viewers"][0],
     )
-    shared_dir = tmp_path_factory.getbasetemp().parent
+    shared_dir = shared_session_directory(tmp_path_factory.getbasetemp(), hasattr(pytestconfig, "workerinput"))
     state = begin_cross_worker_session(
         shared_dir,
         name="required_reference_data",
@@ -85,16 +87,20 @@ def required_reference_data(api, tests_data, tmp_path_factory):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def create_legal_tag(api, tmp_path_factory):
+def create_legal_tag(api, tmp_path_factory, pytestconfig):
     """Create a legal tag once across all xdist workers."""
-    shared_dir = tmp_path_factory.getbasetemp().parent
+    shared_dir = shared_session_directory(tmp_path_factory.getbasetemp(), hasattr(pytestconfig, "workerinput"))
 
     state = begin_cross_worker_session(
         shared_dir,
         name="create_legal_tag",
-        setup=lambda: {"legal_tag": api.legal.create_tag()},
+        setup=lambda: {
+            "legal_tag": api.legal.create_tag(),
+            "fixture_namespace": uuid.uuid4().hex,
+        },
     )
     TEST_DATA_STORE["legal_tag"] = state["legal_tag"]
+    TEST_DATA_STORE["fixture_namespace"] = state["fixture_namespace"]
 
     yield state["legal_tag"]
 
@@ -108,7 +114,7 @@ def create_legal_tag(api, tmp_path_factory):
 
 @pytest.fixture(scope="session", autouse=True)
 def create_referenced_records(
-    api, helper, tests_data, tmp_path_factory, create_legal_tag, required_reference_data
+    api, helper, tests_data, tmp_path_factory, create_legal_tag, required_reference_data, pytestconfig
 ):
     """Fixture to create referenced records and delete them after a test."""
     partition = CONFIG["DATA_PARTITION"]
@@ -153,7 +159,7 @@ def create_referenced_records(
     }
     storage_dependencies.difference_update(fixed_record_ids)
 
-    shared_dir = tmp_path_factory.getbasetemp().parent
+    shared_dir = shared_session_directory(tmp_path_factory.getbasetemp(), hasattr(pytestconfig, "workerinput"))
 
     state = begin_cross_worker_session(
         shared_dir,
@@ -178,9 +184,10 @@ def create_referenced_records(
         state=state,
         teardown=lambda s: helper.purge_reference_records(
             api,
-            state,
+            s,
             storage_dependencies,
             record_to_create,
+            fixed_id_records,
         ),
     )
 

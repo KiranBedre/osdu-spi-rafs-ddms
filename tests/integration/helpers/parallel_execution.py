@@ -17,7 +17,11 @@ from pathlib import Path
 from typing import Callable
 
 from filelock import FileLock
-from loguru import logger
+
+
+def shared_session_directory(base_temp: Path, is_worker: bool) -> Path:
+    """Keep state run-local, sharing only the parent of xdist worker directories."""
+    return base_temp.parent if is_worker else base_temp
 
 
 def _update_worker_counter(counter_file: Path, delta: int) -> int:
@@ -72,9 +76,6 @@ def end_cross_worker_session(shared_dir: Path, name: str, state: dict, teardown:
     with lock:
         if _update_worker_counter(counter_file, delta=-1) > 0:
             return
-        try:
-            teardown(state)
-        except Exception as exc:
-            logger.warning(f"Teardown failed for '{name}': {exc}")
+        teardown(state)
         state_file.unlink(missing_ok=True)
         counter_file.unlink(missing_ok=True)

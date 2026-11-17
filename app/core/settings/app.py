@@ -29,6 +29,10 @@ class AppSettings(BaseAppSettings):
 
     app_version: str = "0.2.0"
 
+    group_id: str = "org.opengroup.osdu"
+
+    artifact_id: str = "rafs-ddms"
+
     ddms_id: str = "rafs"
 
     openapi_prefix: str = "/api/os-rafs-ddms"

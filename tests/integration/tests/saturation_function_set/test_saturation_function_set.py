@@ -22,6 +22,7 @@ from tests.integration.config import (
     CONFIG,
     DataFiles,
 )
+from tests.integration.data_provider import scope_fixture_id
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
@@ -403,7 +404,7 @@ def test_sfs_search_data_records_format_aggregated(api, record_id, dataset_id, s
 
 def test_sfs_search_record_filtered_in_by_basin(api, record_id, dataset_id, search_available):
     """Verify record is filtered in by the BasinID filter in the search results"""
-    params = {"basin_id": f"{DATA_PARTITION_ID}:master-data--Basin:SomeUniqueBasinID:"}
+    params = {"basin_id": scope_fixture_id(f"{DATA_PARTITION_ID}:master-data--Basin:SomeUniqueBasinID:")}
     response = api.saturation_function_set.search_records(params=params)
 
     # Assert
@@ -421,7 +422,7 @@ def test_sfs_search_record_filtered_out_by_field(api, record_id, dataset_id, sea
 
 def test_sfs_search_data_filtered_in_by_field(api, helper, tests_data, record_id, dataset_id, search_available):
     """Verify bulk data filtered by FieldID appears in search results."""
-    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeUniqueFieldID:"}
+    params = {"field_id": scope_fixture_id(f"{DATA_PARTITION_ID}:master-data--Field:SomeUniqueFieldID:")}
     response = api.saturation_function_set.search_data(params=params)
 
     # Assert

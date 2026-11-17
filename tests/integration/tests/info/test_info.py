@@ -12,6 +12,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import pytest
+from starlette import status
+
+from app.resources.common_headers import AUTHORIZATION
+
 INFO_FIELDS = (
     "name",
     "app_version",
@@ -58,3 +63,36 @@ def test_info_endpoint_commit_id_is_hex(api):
     assert all(
         c in "0123456789abcdefABCDEF" for c in commit_id
     ), f"commit_id {commit_id!r} does not look like a git SHA"
+
+
+COMMON_INFO_FIELDS = (
+    "groupId",
+    "artifactId",
+    "version",
+    "buildTime",
+    "branch",
+    "commitId",
+    "commitMessage",
+)
+
+
+@pytest.mark.parametrize("api_version", ["v2", "dev"])
+def test_versioned_info_endpoint_returns_common_fields(api, api_version):
+    """Verify the versioned /info returns the common OSDU fields as non-empty strings."""
+    info = api.app_info.get_common_info(api_version)
+
+    # Assert
+    for field in COMMON_INFO_FIELDS:
+        assert field in info, f"Missing field {field!r} in /{api_version}/info response"
+        assert isinstance(info[field], str) and info[field], f"Expected non-empty string for {field!r}"
+
+
+@pytest.mark.parametrize("api_version", ["v2", "dev"])
+def test_versioned_info_endpoint_is_json_without_token(api, api_version):
+    """Verify the versioned /info answers 200 with a JSON body when no Authorization header is sent."""
+    response = api.app_info.get_common_info(api_version, raw=True, headers={AUTHORIZATION: None})
+
+    # Assert
+    assert response.status_code == status.HTTP_200_OK
+    assert response.headers["content-type"].startswith("application/json")
+    assert isinstance(response.json(), dict)

@@ -1,5 +1,5 @@
 # Build the application from source
-ARG golang_version=1.25
+ARG golang_version=1.26
 FROM golang:${golang_version}-alpine AS build-env
 
 # CVE-2026-28390: openssl DoS (NULL ptr in CMS) - upgrade libcrypto3/libssl3 (fix: 3.5.6-r0)

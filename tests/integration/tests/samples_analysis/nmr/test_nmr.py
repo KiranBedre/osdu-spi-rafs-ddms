@@ -24,6 +24,7 @@ from tests.integration.config import (
     SamplesAnalysisTypes,
     SchemaVersions,
 )
+from tests.integration.data_provider import scope_fixture_id
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
@@ -531,7 +532,7 @@ def test_nmr_search_data_records_format_aggregated(api, record_id, dataset_id_v1
 
 def test_nmr_search_record_filtered_in_by_field(api, record_id, dataset_id_v1, search_available_v1):
     """Verify record is filtered in by the FieldID filter in the search results"""
-    params = {"field_id": f"{DATA_PARTITION_ID}:master-data--Field:SomeUniqueFieldID:"}
+    params = {"field_id": scope_fixture_id(f"{DATA_PARTITION_ID}:master-data--Field:SomeUniqueFieldID:")}
     response = api.sample_analysis.search_records(
         SamplesAnalysisTypes.NMR,
         SchemaVersions.V1_0_0,
@@ -570,7 +571,7 @@ def test_nmr_search_record_filtered_out_by_wellbore(api, record_id, dataset_id_v
 
 def test_nmr_search_data_filtered_in_by_basin(api, helper, tests_data, record_id, dataset_id_v1, search_available_v1):
     """Verify bulk data filtered by BasinID appears in search results."""
-    params = {"basin_id": f"{DATA_PARTITION_ID}:master-data--Basin:SomeUniqueBasinID:"}
+    params = {"basin_id": scope_fixture_id(f"{DATA_PARTITION_ID}:master-data--Basin:SomeUniqueBasinID:")}
     response = api.sample_analysis.search_data(
         SamplesAnalysisTypes.NMR,
         SchemaVersions.V1_0_0,
@@ -598,7 +599,7 @@ def test_nmr_search_data_filtered_out_by_field(api, record_id, dataset_id_v1, se
 
 def test_nmr_search_data_filtered_in_by_wellbore(api, record_id, dataset_id_v1, search_available_v1):
     """Verify bulk data is filtered in by WellboreID filter in the search results"""
-    params = {"wellbore_id": f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:"}
+    params = {"wellbore_id": scope_fixture_id(f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:")}
     response = api.sample_analysis.search_data(
         SamplesAnalysisTypes.NMR,
         SchemaVersions.V1_0_0,

@@ -15,12 +15,68 @@
 import copy
 import datetime
 
-from app.resources.common_headers import ACCEPT
+import pandas as pd
+from starlette import status
+
+from app.resources.common_headers import ACCEPT, CONTENT_TYPE
+from client.api.core.v2.sample_analysis import SamplesAnalysisPaths
 from tests.integration.config import (
     DataFiles,
     SamplesAnalysisTypes,
     SchemaVersions,
 )
+
+
+def _prepare_v2_payload(payload, record_id):
+    row = payload["data"][0]
+    row[payload["columns"].index("SamplesAnalysisID")] = f"{record_id}:"
+    return payload
+
+
+def _row_by_column(payload):
+    return dict(zip(payload["columns"], payload["data"][0]))
+
+
+def _assert_v2_breaking_structures(actual, expected):
+    actual_row = _row_by_column(actual)
+    expected_row = _row_by_column(expected)
+
+    assert isinstance(actual_row["ReferencePermeability"], dict)
+    assert actual_row["ReferencePermeability"] == expected_row["ReferencePermeability"]
+    assert isinstance(actual_row["InterfacialTension"], list)
+    assert actual_row["InterfacialTension"] == expected_row["InterfacialTension"]
+
+    actual_step = actual_row["PermeabilityTestSteps"][0]
+    expected_step = expected_row["PermeabilityTestSteps"][0]
+    assert isinstance(actual_step["RelativePermeability"], dict)
+    for field in (
+        "RelativePermeability",
+        "CumulativeProduction",
+        "InSituSaturationProfiles",
+        "ProductionProfiles",
+        "FractionalFlow",
+    ):
+        assert actual_step[field] == expected_step[field]
+
+
+def _schema_without_null(field_schema):
+    return next(
+        (option for option in field_schema.get("anyOf", []) if option.get("type") != "null"),
+        field_schema,
+    )
+
+
+def _resolve_schema(schema, field_schema):
+    field_schema = _schema_without_null(field_schema)
+    if "$ref" in field_schema:
+        return schema["$defs"][field_schema["$ref"].rsplit("/", 1)[-1]]
+    return field_schema
+
+
+def _array_item_schema(schema, field_schema):
+    array_schema = _resolve_schema(schema, field_schema)
+    assert array_schema["type"] == "array"
+    return _resolve_schema(schema, array_schema["items"])
 
 
 def test_relative_permeability_create_record(api, samples_analysis_create_record, helper):
@@ -647,3 +703,177 @@ def test_relative_permeability_search_data_v1_1_filtered_in_by_start_date(
 
     assert set(response["result"]["columns"]).issubset(baseline["columns"])
     assert any(row[0] == f"{record_id}:" for row in response["result"]["data"])
+
+
+def test_relative_permeability_get_schema_v2(api):
+    """Serve the Relative Permeability 2.0.0 schema with its breaking structures."""
+    response = api.sample_analysis.get_schema(
+        SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        SchemaVersions.V2_0_0,
+        raw=True,
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    schema = response.json()
+    properties = schema["properties"]
+
+    reference_permeability = _resolve_schema(schema, properties["ReferencePermeability"])
+    assert reference_permeability["type"] == "object"
+    assert {
+        "PermeabilityMeasurementMethodID",
+        "Permeability",
+        "Saturation",
+    }.issubset(reference_permeability["properties"])
+    permeability = _resolve_schema(schema, reference_permeability["properties"]["Permeability"])
+    assert "PermeabilityMeasurementMethodID" in permeability["properties"]
+    saturation = _resolve_schema(schema, reference_permeability["properties"]["Saturation"])
+    assert saturation["type"] == "object"
+
+    assert _resolve_schema(schema, properties["InterfacialTension"])["type"] == "array"
+
+    test_step = _array_item_schema(schema, properties["PermeabilityTestSteps"])
+    assert _resolve_schema(schema, test_step["properties"]["CumulativeProduction"])["type"] == "array"
+    assert _resolve_schema(schema, test_step["properties"]["FractionalFlow"])["type"] == "array"
+
+    relative_permeability = _resolve_schema(schema, test_step["properties"]["RelativePermeability"])
+    assert relative_permeability["type"] == "object"
+    saturation_values = _resolve_schema(schema, relative_permeability["properties"]["SaturationValues"])
+    relative_permeability_values = _resolve_schema(
+        schema,
+        relative_permeability["properties"]["RelativePermeabilityValues"],
+    )
+    assert saturation_values["type"] == "array"
+    assert relative_permeability_values["type"] == "array"
+
+    in_situ_profile = _array_item_schema(schema, test_step["properties"]["InSituSaturationProfiles"])
+    in_situ_phase_profile = _resolve_schema(
+        schema,
+        in_situ_profile["properties"]["InSituPhaseSaturationProfile"],
+    )
+    assert in_situ_phase_profile["type"] == "array"
+
+    production_profile = _array_item_schema(schema, test_step["properties"]["ProductionProfiles"])
+    phase_production_profile = _resolve_schema(
+        schema,
+        production_profile["properties"]["PhaseProductionProfile"],
+    )
+    assert phase_production_profile["type"] == "array"
+
+
+def test_relative_permeability_add_data_v2(api, helper, tests_data, record_id):
+    """Round-trip the Relative Permeability 2.0.0 breaking structures through JSON and Parquet GET."""
+    data_payload = _prepare_v2_payload(
+        copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V2)),
+        record_id,
+    )
+    post_response = api.sample_analysis.post_data(
+        record_id,
+        data_payload,
+        SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        SchemaVersions.V2_0_0,
+    )
+    dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
+
+    gotten_data = api.sample_analysis.get_data(
+        record_id,
+        dataset_id,
+        SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        SchemaVersions.V2_0_0,
+    )
+    helper.compare_responses(gotten_data, data_payload, response_type="json")
+    _assert_v2_breaking_structures(gotten_data, data_payload)
+
+    parquet_response = api.sample_analysis.get_data(
+        record_id,
+        dataset_id,
+        SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        SchemaVersions.V2_0_0,
+        raw=True,
+        headers={ACCEPT: "application/x-parquet"},
+    ).content
+    helper.compare_responses(gotten_data, parquet_response)
+    parquet_data = helper.load_parquet_data(parquet_response, content_type="parquet")
+    _assert_v2_breaking_structures(parquet_data, data_payload)
+
+
+def test_relative_permeability_parquet_v2_round_trip(api, helper, tests_data, fresh_record_id):
+    """Store valid Relative Permeability 2.0.0 Parquet and retrieve its nested data."""
+    data_payload = _prepare_v2_payload(
+        copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V2)),
+        fresh_record_id,
+    )
+    dataframe = pd.DataFrame(
+        data_payload["data"],
+        columns=data_payload["columns"],
+        index=data_payload["index"],
+    )
+    response = api.sample_analysis.post(
+        path=SamplesAnalysisPaths.POST_DATA.format(
+            record_id=fresh_record_id,
+            analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        ),
+        data=dataframe.to_parquet(),
+        params={"content_schema_version": SchemaVersions.V2_0_0},
+        headers={CONTENT_TYPE: "application/x-parquet"},
+    )
+    post_response = response.json()
+    assert post_response.get("ddms_urn")
+
+    dataset_id = helper.get_content_id_from_ddms_urn(post_response["ddms_urn"])
+    gotten_data = api.sample_analysis.get_data(
+        fresh_record_id,
+        dataset_id,
+        SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+        SchemaVersions.V2_0_0,
+    )
+    helper.compare_responses(gotten_data, data_payload, response_type="json")
+    _assert_v2_breaking_structures(gotten_data, data_payload)
+
+
+def test_relative_permeability_search_record_filtered_in_by_row_v2(
+    api,
+    helper,
+    record_id,
+    dataset_id_v2,
+):
+    """Find the Relative Permeability 2.0.0 record after indexing completes."""
+    params = {"rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
+
+    response = helper.wait_for_search_record(
+        lambda: api.sample_analysis.search_records(
+            analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+            schema_version=SchemaVersions.V2_0_0,
+            params=params,
+        ),
+        record_id,
+    )
+
+    assert record_id in response["result"]
+
+
+def test_relative_permeability_search_data_filtered_in_by_row_v2(
+    api,
+    helper,
+    tests_data,
+    record_id,
+    dataset_id_v2,
+):
+    """Find the Relative Permeability 2.0.0 bulk data after indexing completes."""
+    params = {"rows_filter": f"SamplesAnalysisID,eq,{record_id}:"}
+    baseline = _prepare_v2_payload(
+        copy.deepcopy(tests_data(DataFiles.RELATIVE_PERMEABILITY_DATA_V2)),
+        record_id,
+    )
+
+    search_response = helper.wait_for_search_data(
+        lambda: api.sample_analysis.search_data(
+            analysis_type=SamplesAnalysisTypes.RELATIVE_PERMEABILITY,
+            schema_version=SchemaVersions.V2_0_0,
+            params=params,
+        ),
+        record_id,
+    )
+
+    result_data = search_response.get("result", {})
+    helper.compare_responses(result_data, baseline, response_type="json")
+    _assert_v2_breaking_structures(result_data, baseline)

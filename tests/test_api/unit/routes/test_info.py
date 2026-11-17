@@ -38,3 +38,33 @@ async def test_get_info_returns_app_settings():
     assert body["commit_id"] == settings.commit_id
     assert body["commit_message"] == settings.commit_message
     assert body["release_version"] == settings.release_version
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("api_version", ["v2", "dev"])
+async def test_get_versioned_info_returns_common_fields(api_version):
+    settings = get_app_settings()
+
+    async with AsyncClient(base_url="http://testserver", app=app) as client:
+        response = await client.get(f"{settings.openapi_prefix}/{api_version}/info")
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.headers["content-type"].startswith("application/json")
+    body = response.json()
+    assert body["groupId"] == settings.group_id
+    assert body["artifactId"] == settings.artifact_id
+    assert body["version"] == (settings.release_version or settings.app_version)
+    assert body["buildTime"] == settings.build_date
+    assert body["branch"] == settings.commit_branch
+    assert body["commitId"] == settings.commit_id
+    assert body["commitMessage"] == settings.commit_message
+
+
+@pytest.mark.parametrize("api_version", ["v2", "dev"])
+def test_versioned_info_is_documented_without_auth_or_partition(api_version):
+    settings = get_app_settings()
+
+    operation = app.openapi()["paths"][f"{settings.openapi_prefix}/{api_version}/info"]["get"]
+
+    assert not operation.get("security")
+    assert "data-partition-id" not in {param["name"] for param in operation.get("parameters", [])}

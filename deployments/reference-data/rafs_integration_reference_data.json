@@ -6712,6 +6712,33 @@
     }
   },
   {
+    "id": "{{NAMESPACE}}:reference-data--WettabilityIndexType:AmottHarvey",
+    "kind": "osdu:wks:reference-data--WettabilityIndexType:1.0.0",
+    "acl": {
+      "owners": [
+        "{{DATA_OWNERS_GROUP}}"
+      ],
+      "viewers": [
+        "{{DATA_VIEWERS_GROUP}}"
+      ]
+    },
+    "legal": {
+      "legaltags": [
+        "{{LEGAL_TAG}}"
+      ],
+      "otherRelevantDataCountries": [
+        "{{ISO_3166_ALPHA_2_CODE}}"
+      ]
+    },
+    "data": {
+      "Name": "AmottHarvey",
+      "ID": null,
+      "Description": "AmottHarvey",
+      "Code": "AmottHarvey",
+      "AttributionAuthority": "RAFSDDMS"
+    }
+  },
+  {
     "id": "{{NAMESPACE}}:reference-data--WOGnCycleNotation:CDI1",
     "kind": "osdu:wks:reference-data--WOGnCycleNotation:1.0.0",
     "acl": {

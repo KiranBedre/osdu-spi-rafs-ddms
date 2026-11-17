@@ -15,9 +15,11 @@
 from fastapi import APIRouter
 
 from app.core.config import get_app_settings
-from app.models.schemas.info import InfoResponse
+from app.models.schemas.info import CommonInfoResponse, InfoResponse
 
 router = APIRouter()
+v2_router = APIRouter()
+dev_router = APIRouter()
 settings = get_app_settings()
 
 
@@ -36,4 +38,23 @@ def get_info() -> InfoResponse:
         commit_id=settings.commit_id,
         commit_message=settings.commit_message,
         release_version=settings.release_version,
+    )
+
+
+@dev_router.get("/info", response_model=CommonInfoResponse, include_in_schema=True)
+@v2_router.get("/info", response_model=CommonInfoResponse, include_in_schema=True)
+def get_common_info() -> CommonInfoResponse:
+    """Get application info using the common OSDU field names.
+
+    :return: application info
+    :rtype: CommonInfoResponse
+    """
+    return CommonInfoResponse.model_construct(
+        groupId=settings.group_id,
+        artifactId=settings.artifact_id,
+        version=settings.release_version or settings.app_version,
+        buildTime=settings.build_date,
+        branch=settings.commit_branch,
+        commitId=settings.commit_id,
+        commitMessage=settings.commit_message,
     )

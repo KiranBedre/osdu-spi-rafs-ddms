@@ -31,7 +31,9 @@ from app.api.dependencies.services import (
     get_blob_storage_service,
 )
 from app.api.dependencies.validation import (
+    RowPaginationParameters,
     get_orient,
+    get_row_pagination_parameters,
     get_search_data_pagination_parameters,
     get_search_scope,
 )
@@ -87,6 +89,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
             storage_service: storage.StorageService = Depends(get_async_storage_service),
             orient: str = Depends(get_orient),
             depth_shift_params: Optional[DepthShiftQueryParams] = Depends(get_depth_shift_params),
+            row_pagination_parameters: RowPaginationParameters = Depends(get_row_pagination_parameters),
         ):
             dynamic_param = self._inject_param(request, extractor)
 
@@ -102,6 +105,7 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
                 pagination_parameters=pagination_parameters,
                 search_scope=search_scope,
                 orient=orient,
+                row_pagination_parameters=row_pagination_parameters,
             )
 
             # If no depth shift requested, return as-is
@@ -271,6 +275,20 @@ class SamplesAnalysisDynamicSearchView(DynamicGenericSearchView):
                     warnings=metadata_warnings,
                 ).model_dump(),
             }
+            # Preserve row-level pagination metadata (Issue-820) when present —
+            # depth-shift augments columns but does not change row count/selection.
+            # A sentinel (not `.get(field) is not None`) is required because a present
+            # `row_limit` can legitimately be `None` (offset-only pagination).
+            missing_sentinel = object()
+            if "total_rows" in search_result:
+                # Row-mode responses carry no `offset`/`page_limit` (they did not select the
+                # rows); do not reintroduce them, or the envelope would look dataset-paginated.
+                augmented_search_result.pop("offset")
+                augmented_search_result.pop("page_limit")
+            for row_pagination_field in ("row_offset", "row_limit", "total_rows"):
+                row_pagination_value = search_result.get(row_pagination_field, missing_sentinel)
+                if row_pagination_value is not missing_sentinel:
+                    augmented_search_result[row_pagination_field] = row_pagination_value
 
             return Response(
                 content=json.dumps(augmented_search_result),

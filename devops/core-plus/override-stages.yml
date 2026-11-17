@@ -29,12 +29,17 @@ variables:
 .cimpl_substitute_service_images_in_helm:
   script:
     - wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
-    - IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$IMAGE_TAG" yq -i '.data.image = env(IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:${CHART_IMAGE_TAG:-$IMAGE_TAG}" yq -i '.data.image = env(IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
     - REDIS_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_REDIS_NAME:$REDIS_VERSION" yq -i '.data.redisImage = env(REDIS_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - >
+      if [[ -n "$CHART_IMAGE_TAG" ]];
+      then
+        yq -i '.data.imagePullPolicy = "Always"' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml;
+      fi
 
 .cimpl_substitute_cronjob_image_in_helm:
   script:
-    - CRONJOB_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$IMAGE_TAG" yq -i '.data.cronJobImage = env(CRONJOB_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - CRONJOB_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:${CHART_IMAGE_TAG:-$IMAGE_TAG}" yq -i '.data.cronJobImage = env(CRONJOB_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
 
 .cimpl_python_test_report:
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
@@ -106,7 +111,7 @@ cimpl-containerize-gitlab:
       -t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME
       -f $CIMPL_BUILD_PATH
       --build-arg build_date="$CI_JOB_STARTED_AT"
-      --build-arg commit_id="$CI_COMMIT_SHORT_SHA"
+      --build-arg commit_id="$CI_COMMIT_SHA"
       --build-arg commit_branch="$CI_COMMIT_BRANCH"
       --build-arg commit_message="$CI_COMMIT_MESSAGE"
       --build-arg release_version="$CIMPL_VERSION"
@@ -164,6 +169,7 @@ cimpl-helm-charts-gitlab:
     - pip install allure-pytest
     - !reference [.get_cimpl_access_token, script]
   script:
+    - python -m pytest tests/integration/test_fixture_lifecycle.py --confcutdir=tests/integration
     - |
       echo "DEBUG"
       echo "Verifying required reference data before pytest"
@@ -211,7 +217,7 @@ cimpl-helm-charts-gitlab:
         --reruns 1 \
         --reruns-delay 3 \
         --maxfail=0 \
-        -n 2 \
+        -n 4 \
         --dist=loadscope \
         --durations=50 \
         --junitxml=integration_tests_report.xml \
@@ -479,8 +485,12 @@ cimpl-dev-seed-reference-data:
     - when: never
 
 # Run the RAFS pytest suite against CIMPL-STACK DEV.
+# This is a hard QA Gate therefore, failures in this job will block the pipeline from progressing.
+# Team should fix the findings from this test before proceeding with the pipeline.
+# It would be team responsibility to either relax rules or address the test failures before continuing with the pipeline.
 cimpl-dev-test-python:
-  allow_failure: true
+  allow_failure: false
+  retry: 0
   extends:
     - .cimpl-dev-variables
     - .rafs_cimpl_pytest_integration
@@ -609,6 +619,7 @@ cimpl-prod-test-python:
     - apk add --no-cache curl bash jq
     - npm install -g newman newman-reporter-allure
   script:
+    - node --test "$CI_PROJECT_DIR/devops/core-plus/qa/test-collection-scripts.cjs"
     - sleep 200
     - echo "▶️ Starting Newman acceptance tests"
     - |

@@ -662,6 +662,82 @@ def validate_and_parse_date(date_str: Optional[str], field_name: str) -> Optiona
         )
 
 
+DataPaginationParameters = Tuple[Optional[int], int]
+MAX_ROW_LIMIT_GET_DATA = 10000
+
+
+def get_data_pagination_parameters(
+    row_limit: Optional[int] = Query(
+        default=None,
+        description=(
+            "Maximum number of rows to return. Omit for all rows (backward compatible). "
+            "Applied after rows_filter and columns_filter."
+        ),
+        gt=0,
+        le=MAX_ROW_LIMIT_GET_DATA,
+    ),
+    row_offset: int = Query(
+        default=0,
+        ge=0,
+        description="Number of rows to skip before returning data.",
+    ),
+) -> DataPaginationParameters:
+    """Row-level pagination parameters for get_data_v2 (Issue-819).
+
+    Distinct from the dataset-level `offset`/`page_limit` used by search
+    endpoints: this pair paginates the *rows* of a single dataset's bulk
+    data, not the number of datasets/parquet files read.
+
+    :return: (row_limit, row_offset) tuple
+    :rtype: DataPaginationParameters
+    """
+    return row_limit, row_offset  # noqa: ASYNC910
+
+
+RowPaginationParameters = Tuple[Optional[int], int]
+MAX_ROW_LIMIT_SEARCH_DATA = 50000
+
+
+def get_row_pagination_parameters(
+    row_limit: Optional[int] = Query(
+        default=None,
+        description=(
+            "Maximum number of rows to return, counted across the entire ordered logical row "
+            "stream formed by every dataset matching the search (not a single dataset page). "
+            "Unlike `page_limit` (which counts datasets), this counts individual data rows. "
+            "Omit for no row-level limit. Applied after rows_filter and columns_filter. "
+            "Mutually exclusive with `offset`/`page_limit` (422 if both are supplied). "
+            "Cannot be combined with columns_aggregation."
+        ),
+        gt=0,
+        le=MAX_ROW_LIMIT_SEARCH_DATA,
+    ),
+    row_offset: int = Query(
+        default=0,
+        ge=0,
+        description=(
+            "Number of rows to skip across the entire ordered logical row stream formed by "
+            "every dataset matching the search. Mutually exclusive with `offset`/`page_limit` "
+            "(422 if both are supplied)."
+        ),
+    ),
+) -> RowPaginationParameters:
+    """Row-level pagination parameters for search/data (Issue-820).
+
+    `row_limit`/`row_offset` paginate a global logical row stream across every
+    dataset matching the search, in stable order — distinct from `page_limit`/
+    `offset`, which paginate datasets. The two are mutually exclusive modes:
+    explicitly supplying both in the same call is rejected with 422 (see
+    `GenericSearchDataView._dataset_pagination_explicitly_requested`).
+    Backward compatibility is preserved since both default to "no row-level
+    pagination".
+
+    :return: (row_limit, row_offset) tuple
+    :rtype: RowPaginationParameters
+    """
+    return row_limit, row_offset  # noqa: ASYNC910
+
+
 def get_search_data_pagination_parameters(
     page_limit: int = Query(
         default=100,

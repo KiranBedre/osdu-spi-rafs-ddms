@@ -58,7 +58,7 @@ class DatasetService(IDatasetService):
         :return: file content
         :rtype: Optional[bytes]
         """
-        retrieval_instruction = await self.dataset_client.get_retrieval_instructions(dataset_id)
+        retrieval_instruction = await self.dataset_client.retrieval_instructions([dataset_id])
         if not retrieval_instruction.get("datasets"):
             logger.debug(
                 f"{self.name}: blob hasn't been downloaded due to improper retrieval instructions for: {dataset_id}.",

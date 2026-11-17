@@ -23,3 +23,15 @@ class InfoResponse(BaseModel):
     commit_id: str = None
     commit_message: str = None
     release_version: str = None
+
+
+class CommonInfoResponse(BaseModel):
+    """Build information using the field names common to all OSDU services."""
+
+    groupId: str = None
+    artifactId: str = None
+    version: str = None
+    buildTime: str = None
+    branch: str = None
+    commitId: str = None
+    commitMessage: str = None

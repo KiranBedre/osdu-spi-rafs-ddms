@@ -1,6 +1,5 @@
 # Required for data model generation
-datamodel-code-generator==0.26.3
+datamodel-code-generator==0.81.0
 
 # From root requirements.in
 pandas==2.2.0
-pydantic==1.10.13

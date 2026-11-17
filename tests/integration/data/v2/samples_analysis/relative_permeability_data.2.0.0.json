@@ -1,0 +1,159 @@
+{
+    "columns": [
+        "SamplesAnalysisID",
+        "SampleID",
+        "Meta",
+        "ReferencePermeability",
+        "InterfacialTension",
+        "PermeabilityTestSteps"
+    ],
+    "index": [
+        0
+    ],
+    "data": [
+        [
+            "{data_partition_id}:work-product-component--SamplesAnalysis:{record_id}:",
+            "{data_partition_id}:master-data--Sample:Master_Sample:",
+            [],
+            {
+                "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:",
+                "Permeability": {
+                    "Value": 50.0,
+                    "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:",
+                    "PermeabilityMeasurementMethodID": "{data_partition_id}:reference-data--PermeabilityMeasurementMethod:SteadyState:"
+                },
+                "Saturation": {
+                    "Value": 0.2,
+                    "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Water:",
+                    "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:EndFace:"
+                }
+            },
+            [
+                {
+                    "Value": 30.5,
+                    "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:"
+                },
+                {
+                    "Value": 21.25,
+                    "FluidSystemAnalysisTypeID": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasOil:"
+                }
+            ],
+            [
+                {
+                    "CumulativeProduction": [
+                        {
+                            "Value": 2.5,
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:"
+                        },
+                        {
+                            "Value": 1.25,
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:"
+                        }
+                    ],
+                    "RelativePermeability": {
+                        "SaturationValues": [
+                            {
+                                "Value": 0.35,
+                                "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Water:",
+                                "SaturationMeasurementLocationID": "{data_partition_id}:reference-data--SaturationMeasurementLocation:Average:"
+                            },
+                            {
+                                "Value": 0.65,
+                                "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:",
+                                "SaturationMeasurementLocationID": null
+                            }
+                        ],
+                        "RelativePermeabilityValues": [
+                            {
+                                "Value": 0.15,
+                                "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Water:"
+                            },
+                            {
+                                "Value": 0.85,
+                                "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:"
+                            }
+                        ]
+                    },
+                    "InSituSaturationProfiles": [
+                        {
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Water:",
+                            "InSituPhaseSaturationProfile": [
+                                {
+                                    "Time": 60.0,
+                                    "Position": 0.05,
+                                    "RelativePosition": 0.25,
+                                    "Saturation": 0.3
+                                },
+                                {
+                                    "Time": 120.0,
+                                    "Position": 0.1,
+                                    "RelativePosition": null,
+                                    "Saturation": 0.4
+                                }
+                            ]
+                        },
+                        {
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:",
+                            "InSituPhaseSaturationProfile": [
+                                {
+                                    "Time": 60.0,
+                                    "Position": 0.05,
+                                    "RelativePosition": 0.25,
+                                    "Saturation": 0.7
+                                },
+                                {
+                                    "Time": 120.0,
+                                    "Position": 0.1,
+                                    "RelativePosition": 0.5,
+                                    "Saturation": 0.6
+                                }
+                            ]
+                        }
+                    ],
+                    "ProductionProfiles": [
+                        {
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:",
+                            "PhaseProductionProfile": [
+                                {
+                                    "Time": 60.0,
+                                    "ProductionRate": 2.5,
+                                    "ProductionVolume": 2.5
+                                },
+                                {
+                                    "Time": 120.0,
+                                    "ProductionRate": 2.0,
+                                    "ProductionVolume": 4.5
+                                }
+                            ]
+                        },
+                        {
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Gas:",
+                            "PhaseProductionProfile": [
+                                {
+                                    "Time": 60.0,
+                                    "ProductionRate": 1.5,
+                                    "ProductionVolume": 1.5
+                                },
+                                {
+                                    "Time": 120.0,
+                                    "ProductionRate": 1.0,
+                                    "ProductionVolume": null
+                                }
+                            ]
+                        }
+                    ],
+                    "FractionalFlow": [
+                        {
+                            "Value": 0.4,
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Water:"
+                        },
+                        {
+                            "Value": 0.6,
+                            "FluidTypeID": "{data_partition_id}:reference-data--CoreAnalysisFluidType:Oil:"
+                        }
+                    ]
+                }
+            ]
+        ]
+    ]
+}

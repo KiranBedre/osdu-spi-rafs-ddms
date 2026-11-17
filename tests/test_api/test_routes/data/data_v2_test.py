@@ -17,7 +17,7 @@ import io
 import json
 from contextlib import contextmanager
 from datetime import date
-from unittest.mock import AsyncMock, create_autospec, patch
+from unittest.mock import AsyncMock, MagicMock, create_autospec, patch
 
 import pandas as pd
 import pyarrow as pa
@@ -31,140 +31,159 @@ from app.api.dependencies.services import (
     get_async_entitlements_service,
     get_async_storage_service,
 )
+from app.api.routes.samplesanalysis.endpoints import SamplesAnalysisDataView
 from app.api.routes.utils.query import find_osdu_ids_from_string
 from app.api.routes.utils.records import get_id, get_id_version
 from app.main import app
+from app.resources.paths import (
+    CommonRelativePathsV2,
+)
 from app.services import dataset, entitlements, storage
 from tests.test_api.test_routes import dependencies
-from tests.test_api.test_routes.api_v2.atm_flash_compositional_analysis import (
-    atmospheric_flash_mock_objects,
-    compositional_analysis_mock_objects,
-)
 from tests.test_api.test_routes.api_v2.black_oil_fluid_model import (
     black_oil_fluid_model_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.bulk_pyrolysis import (
-    bulk_pyrolysis_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.capillary_suction_time import (
-    capillary_suction_time_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.cappressure import (
-    cappressure_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.cce import cce_mock_objects
-from tests.test_api.test_routes.api_v2.cec_content import (
-    cec_content_mock_objects,
 )
 from tests.test_api.test_routes.api_v2.compositional_fluid_model import (
     compositional_fluid_model_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.constantvolumedepletion import (
-    cvd_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.core_gamma import (
-    core_gamma_mock_objects,
-)
 from tests.test_api.test_routes.api_v2.coretologdepthshift import (
     coretologdepthshift_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.crushed_rock_analysis import (
+from tests.test_api.test_routes.api_v2.samples_analysis.atm_flash_compositional_analysis import (
+    atmospheric_flash_mock_objects,
+    compositional_analysis_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.bulk_pyrolysis import (
+    bulk_pyrolysis_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.capillary_suction_time import (
+    capillary_suction_time_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.cappressure import (
+    cappressure_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.cce import cce_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.cec_content import (
+    cec_content_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.constantvolumedepletion import (
+    cvd_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.core_gamma import (
+    core_gamma_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.crushed_rock_analysis import (
     crushed_rock_analysis_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.differentialliberation import (
+from tests.test_api.test_routes.api_v2.samples_analysis.differentialliberation import (
     diff_lib_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.eds_mapping_data import (
+from tests.test_api.test_routes.api_v2.samples_analysis.eds_mapping_data import (
     eds_mapping_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.electricalproperties import (
+from tests.test_api.test_routes.api_v2.samples_analysis.electricalproperties import (
     electricalproperties_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.extraction import (
+from tests.test_api.test_routes.api_v2.samples_analysis.extraction import (
     extraction_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.fractionation import (
+from tests.test_api.test_routes.api_v2.samples_analysis.fractionation import (
     fractionation_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.gas_chromatography import (
+from tests.test_api.test_routes.api_v2.samples_analysis.gas_chromatography import (
     gas_chromatography_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.gas_composition import (
+from tests.test_api.test_routes.api_v2.samples_analysis.gas_composition import (
     gas_composition_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.gcms_alkanes import (
+from tests.test_api.test_routes.api_v2.samples_analysis.gcms_alkanes import (
     gcms_alkanes_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.gcms_aromatics import (
+from tests.test_api.test_routes.api_v2.samples_analysis.gcms_aromatics import (
     gcms_aromatics_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.gcms_ratios import (
+from tests.test_api.test_routes.api_v2.samples_analysis.gcms_ratios import (
     gcms_ratios_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.gcmsms_analysis import (
+from tests.test_api.test_routes.api_v2.samples_analysis.gcmsms_analysis import (
     gcmsms_analysis_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.interfacialtension import (
+from tests.test_api.test_routes.api_v2.samples_analysis.interfacialtension import (
     interfacial_tension_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.isotopes import isotopes_mock_objects
-from tests.test_api.test_routes.api_v2.mininggeotechlogging import (
+from tests.test_api.test_routes.api_v2.samples_analysis.isotopes import isotopes_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.mininggeotechlogging import (
     mining_geotech_logging_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.multiple_salinity import (
+from tests.test_api.test_routes.api_v2.samples_analysis.multiple_salinity import (
     multiple_salinity_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.multiplecontactmiscibility import (
+from tests.test_api.test_routes.api_v2.samples_analysis.multiplecontactmiscibility import (
     mcm_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.multistageseparator import (
+from tests.test_api.test_routes.api_v2.samples_analysis.multistageseparator import (
     mss_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.nmr import nmr_mock_objects
-from tests.test_api.test_routes.api_v2.pdp import pdp_mock_objects
-from tests.test_api.test_routes.api_v2.proppant_embedment import (
+from tests.test_api.test_routes.api_v2.samples_analysis.nmr import nmr_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.pdp import pdp_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.proppant_embedment import (
     proppant_embedment_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.relative_permeability import (
+from tests.test_api.test_routes.api_v2.samples_analysis.relative_permeability import (
     relative_permeability_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.rock_compressibility import (
+from tests.test_api.test_routes.api_v2.samples_analysis.rock_compressibility import (
     rock_compressibility_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.roller_oven_test import roller_oven_test_mock_objects
-from tests.test_api.test_routes.api_v2.routinecoreanalysis import (
+from tests.test_api.test_routes.api_v2.samples_analysis.roller_oven_test import roller_oven_test_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import (
     rca_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.saturation_test import saturation_test_mock_objects
-from tests.test_api.test_routes.api_v2.slimtube import slimtube_mock_objects
-from tests.test_api.test_routes.api_v2.sto import sto_mock_objects
-from tests.test_api.test_routes.api_v2.swelling import swelling_mock_objects
-from tests.test_api.test_routes.api_v2.tec import tec_data_mock_objects
-from tests.test_api.test_routes.api_v2.tensile_strength import (
+from tests.test_api.test_routes.api_v2.samples_analysis.samples_analysis_mock_objects import (
+    SAMPLE_ID_CONSISTENCY_TESTS_EXCLUDED_MODELS,
+    TEST_MISMATCHED_SAMPLE_ID,
+    TEST_SAMPLES_ANALYSIS_MULTI_ROW_DATA_PAYLOAD,
+    TEST_SAMPLES_ANALYSIS_MULTI_ROW_DATA_PAYLOAD_WITH_MISMATCHED_SAMPLE_ID,
+    TEST_SAMPLES_ANALYSIS_DATA_PAYLOAD,
+    TEST_SAMPLES_ANALYSIS_DATA_PAYLOAD_WITH_MISMATCHED_SAMPLE_ID,
+    TEST_SAMPLES_ANALYSIS_DATA_PAYLOAD_WITH_NULL_SAMPLE_ID,
+    TEST_SAMPLES_ANALYSIS_RECORD_DATA_WITHOUT_SAMPLE_IDS_FIELD, 
+    TEST_SAMPLES_ANALYSIS_RECORD_DATA_WITHOUT_SAMPLE_IDS, 
+    SamplesAnalysisContentPathsV2,
+    SamplesAnalysisDatasetIDsV2,
+    SamplesAnalysisRecordsV2,
+    SamplesAnalysisRecordsWithMultipleSampleIDsV2,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.saturation_test import saturation_test_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.slimtube import slimtube_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.sto import sto_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.swelling import swelling_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.tec import tec_data_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.tensile_strength import (
     tensile_strength_mock_objects,
 )
+from tests.test_api.test_routes.api_v2.samples_analysis.transport import (
+    transport_test_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.triaxial import triaxial_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.uniaxial import uniaxial_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.vaporliquidequilibrium import (
+    vle_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.vitrinitereflectance import (
+    vitrinite_reflectance_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.water_analysis import (
+    water_analysis_data_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.wettability_index import (
+    wettability_index_mock_objects,
+)
+from tests.test_api.test_routes.api_v2.samples_analysis.xrd import xrd_mock_objects
+from tests.test_api.test_routes.api_v2.samples_analysis.xrf import xrf_mock_objects
 from tests.test_api.test_routes.api_v2.thermal_compositional_fluid_model import (
     thermal_compositional_fluid_model_mock_objects,
 )
-from tests.test_api.test_routes.api_v2.transport import (
-    transport_test_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.triaxial import triaxial_mock_objects
-from tests.test_api.test_routes.api_v2.uniaxial import uniaxial_mock_objects
-from tests.test_api.test_routes.api_v2.vaporliquidequilibrium import (
-    vle_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.vitrinitereflectance import (
-    vitrinite_reflectance_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.water_analysis import (
-    water_analysis_data_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.wettability_index import (
-    wettability_index_mock_objects,
-)
-from tests.test_api.test_routes.api_v2.xrd import xrd_mock_objects
-from tests.test_api.test_routes.api_v2.xrf import xrf_mock_objects
 from tests.test_api.test_routes.data import data_mock_objects
 from tests.test_api.test_routes.data.data_mock_objects import (
     INVALID_DATA_WITH_NAN,
@@ -183,6 +202,7 @@ from tests.test_api.test_routes.osdu.storage_mock_objects import (
     PARTITION,
     TEST_DEPTH_SHIFT_ID,
     TEST_DEPTH_SHIFT_KIND,
+    TEST_SAMPLE_ID,
     BulkDatasetIdV2,
     TestContentPathsApiV2,
 )
@@ -520,6 +540,8 @@ async def test_post_data_wrong_content_header(data_endpoint_path):
     [
         (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.RELATIVE_PERMEABILITY, relative_permeability_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.WETTABILITY_INDEX, wettability_index_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.RES_SIM_ROCK_PHYSICS_MODEL, res_sim_rock_physics_mock_objects.TEST_DATASET_RECORD_ID),
         (
             TestContentPathsApiV2.SATURATION_FUNCTION_SET_MODEL,
@@ -572,6 +594,8 @@ async def test_get_data_no_content_type_does_not_return_400(data_endpoint_path, 
     [
         (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.RELATIVE_PERMEABILITY, relative_permeability_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.WETTABILITY_INDEX, wettability_index_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID),
         (
             TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
@@ -807,6 +831,16 @@ async def test_get_data_accept_parquet_does_not_return_content_type_error(data_e
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
             "get_record",
             [
+                relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
                 relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             ],
             "download_file",
@@ -1033,6 +1067,16 @@ async def test_get_data_accept_parquet_does_not_return_content_type_error(data_e
             [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA)],
         ),
         (
+            TestContentPathsApiV2.WETTABILITY_INDEX,
+            wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [
+                wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            ],
+            "download_file",
+            [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA_V2)],
+        ),
+        (
             TestContentPathsApiV2.TEC,
             tec_data_mock_objects.TEST_DATASET_RECORD_ID,
             "get_record",
@@ -1257,6 +1301,46 @@ async def test_get_content_parquet_data(
             [build_get_test_data("x-parquet", cce_mock_objects.TEST_DATA)],
         ),
         (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V2)],
+        ),
+        (
+            TestContentPathsApiV2.WETTABILITY_INDEX,
+            wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
+            "download_file",
+            [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA)],
+        ),
+        (
+            TestContentPathsApiV2.WETTABILITY_INDEX,
+            wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
+            "get_record",
+            [wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA_V2)],
+        ),
+        (
             TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL,
             black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID,
             "get_record",
@@ -1317,6 +1401,8 @@ async def test_get_data_accept_negotiation_returns_parquet(
     [
         (TestContentPathsApiV2.RCA, rca_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.VLE, vle_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.RELATIVE_PERMEABILITY, relative_permeability_mock_objects.TEST_DATASET_RECORD_ID),
+        (TestContentPathsApiV2.WETTABILITY_INDEX, wettability_index_mock_objects.TEST_DATASET_RECORD_ID),
         (TestContentPathsApiV2.BLACK_OIL_FLUID_MODEL, black_oil_fluid_model_mock_objects.TEST_DATASET_RECORD_ID),
         (
             TestContentPathsApiV2.COMPOSITIONAL_FLUID_MODEL,
@@ -1517,6 +1603,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             "download_file",
             [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA)],
             relative_permeability_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
         ),
         (
             f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -1724,6 +1819,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             "download_file",
             [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA)],
             wettability_index_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.WETTABILITY_INDEX}/{wettability_index_mock_objects.TEST_DATASET_RECORD_ID}",
+            None,
+            "get_record",
+            [wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA_V2)],
+            wettability_index_mock_objects.TEST_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.TEC}/{tec_data_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -1943,7 +2047,16 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
         ),
         (
             f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
-            relative_permeability_mock_objects.TEST_PARAMS_AGGREGATION,
+            relative_permeability_mock_objects.TEST_PARAMS_AGGREGATION_V1_1,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+            relative_permeability_mock_objects.TEST_AGGREGATED_DATA_V1_1,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            relative_permeability_mock_objects.TEST_PARAMS_AGGREGATION_V2,
             "get_record",
             [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
             "download_file",
@@ -2138,6 +2251,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             "download_file",
             [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA)],
             wettability_index_mock_objects.TEST_AGGREGATED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.WETTABILITY_INDEX}/{wettability_index_mock_objects.TEST_DATASET_RECORD_ID}",
+            wettability_index_mock_objects.TEST_PARAMS_AGGREGATION_V2,
+            "get_record",
+            [wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA_V2)],
+            wettability_index_mock_objects.TEST_AGGREGATED_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.TEC}/{tec_data_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -2348,6 +2470,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
         ),
         (
             f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            relative_permeability_mock_objects.TEST_PARAMS_FILTERS_V1_1,
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+            relative_permeability_mock_objects.TEST_FILTERED_DATA_V1_1,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
             relative_permeability_mock_objects.TEST_PARAMS_FILTERS_V2,
             "get_record",
             [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
@@ -2543,6 +2674,15 @@ async def test_get_data_unsupported_accept_returns_406(data_endpoint_path, datas
             "download_file",
             [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA)],
             wettability_index_mock_objects.TEST_FILTERED_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.WETTABILITY_INDEX}/{wettability_index_mock_objects.TEST_DATASET_RECORD_ID}",
+            wettability_index_mock_objects.TEST_PARAMS_FILTERS_V2,
+            "get_record",
+            [wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA_V2)],
+            wettability_index_mock_objects.TEST_FILTERED_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.TEC}/{tec_data_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -3162,6 +3302,22 @@ async def test_get_data_json_data(
             relative_permeability_mock_objects.TEST_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V2)],
+            relative_permeability_mock_objects.TEST_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.ROCK_COMPRESSIBILITY}/{rock_compressibility_mock_objects.TEST_DATASET_RECORD_ID}",
             "get_record",
             [rock_compressibility_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
@@ -3320,6 +3476,14 @@ async def test_get_data_json_data(
             "download_file",
             [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA)],
             wettability_index_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.WETTABILITY_INDEX}/{wettability_index_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA_V2)],
+            wettability_index_mock_objects.TEST_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.TEC}/{tec_data_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -3621,6 +3785,22 @@ async def test_get_data_json_data_no_content_schema_version(
             relative_permeability_mock_objects.TEST_DATA,
         ),
         (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V1_1)],
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+        ),
+        (
+            f"{TestContentPathsApiV2.RELATIVE_PERMEABILITY}/{relative_permeability_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", relative_permeability_mock_objects.TEST_DATA_V2)],
+            relative_permeability_mock_objects.TEST_DATA_V2,
+        ),
+        (
             f"{TestContentPathsApiV2.ROCK_COMPRESSIBILITY}/{rock_compressibility_mock_objects.TEST_DATASET_RECORD_ID}",
             "get_record",
             [rock_compressibility_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION],
@@ -3779,6 +3959,14 @@ async def test_get_data_json_data_no_content_schema_version(
             "download_file",
             [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA)],
             wettability_index_mock_objects.TEST_DATA,
+        ),
+        (
+            f"{TestContentPathsApiV2.WETTABILITY_INDEX}/{wettability_index_mock_objects.TEST_DATASET_RECORD_ID}",
+            "get_record",
+            [wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2],
+            "download_file",
+            [build_get_test_data("x-parquet", wettability_index_mock_objects.TEST_DATA_V2)],
+            wettability_index_mock_objects.TEST_DATA_V2,
         ),
         (
             f"{TestContentPathsApiV2.TEC}/{tec_data_mock_objects.TEST_DATASET_RECORD_ID}",
@@ -4535,6 +4723,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
         ),
         (
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V1_1,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
             relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             relative_permeability_mock_objects.TEST_DATA_V2,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
@@ -4693,6 +4888,13 @@ async def test_get_data_json_data_no_schema_version_for_dataset(
             wettability_index_mock_objects.TEST_DATA,
             wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
             wettability_index_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.WETTABILITY_INDEX,
+            wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            wettability_index_mock_objects.TEST_DATA_V2,
+            wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
+            wettability_index_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.TEC,
@@ -4991,6 +5193,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
         ),
         (
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V1_1,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
             relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             relative_permeability_mock_objects.TEST_DATA_V2,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
@@ -5149,6 +5358,13 @@ async def test_post_data_json(data_endpoint_path, record_data, test_data, test_d
             wettability_index_mock_objects.TEST_DATA,
             wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
             wettability_index_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.WETTABILITY_INDEX,
+            wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            wettability_index_mock_objects.TEST_DATA_V2,
+            wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
+            wettability_index_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.TEC,
@@ -5411,6 +5627,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
         ),
         (
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
             relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
         ),
@@ -5517,6 +5738,11 @@ async def test_post_data_json_no_ddmsdatasets_field(
         (
             TestContentPathsApiV2.WETTABILITY_INDEX,
             wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION,
+            wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
+        ),
+        (
+            TestContentPathsApiV2.WETTABILITY_INDEX,
+            wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
         ),
         (
@@ -5773,6 +5999,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
         ),
         (
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V1_1,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
             relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             relative_permeability_mock_objects.TEST_DATA_V2,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
@@ -5931,6 +6164,13 @@ async def test_post_data_parquet_empty(data_endpoint_path, record_data, test_dat
             wettability_index_mock_objects.TEST_DATA,
             wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
             wettability_index_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.WETTABILITY_INDEX,
+            wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            wettability_index_mock_objects.TEST_DATA_V2,
+            wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
+            wettability_index_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.TEC,
@@ -6231,6 +6471,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
         ),
         (
             TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V1_1,
+            relative_permeability_mock_objects.TEST_DATA_V1_1,
+            relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
+            relative_permeability_mock_objects.TEST_DDMS_URN_WITH_VERSION_V1_1,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
             relative_permeability_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
             relative_permeability_mock_objects.TEST_DATA_V2,
             relative_permeability_mock_objects.TEST_DATASET_RECORD_ID,
@@ -6389,6 +6636,13 @@ async def test_post_data_parquet(data_endpoint_path, record_data, test_data, tes
             wettability_index_mock_objects.TEST_DATA,
             wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
             wettability_index_mock_objects.TEST_DDMS_URN_WITH_VERSION,
+        ),
+        (
+            TestContentPathsApiV2.WETTABILITY_INDEX,
+            wettability_index_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION_V2,
+            wettability_index_mock_objects.TEST_DATA_V2,
+            wettability_index_mock_objects.TEST_DATASET_RECORD_ID,
+            wettability_index_mock_objects.TEST_DDMS_URN_WITH_VERSION_V2,
         ),
         (
             TestContentPathsApiV2.TEC,
@@ -6732,6 +6986,16 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             relative_permeability_mock_objects.EXPECTED_ERROR_REASON,
         ),
         (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.INCORRECT_DATAFRAME_TEST_DATA_V1_1,
+            relative_permeability_mock_objects.EXPECTED_ERROR_REASON_V1_1,
+        ),
+        (
+            TestContentPathsApiV2.RELATIVE_PERMEABILITY,
+            relative_permeability_mock_objects.INCORRECT_DATAFRAME_TEST_DATA_V2,
+            relative_permeability_mock_objects.EXPECTED_ERROR_REASON_V2,
+        ),
+        (
             TestContentPathsApiV2.ROCK_COMPRESSIBILITY,
             rock_compressibility_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             rock_compressibility_mock_objects.EXPECTED_ERROR_REASON,
@@ -6835,6 +7099,11 @@ async def test_post_data_validation_error(data_endpoint_path, incorrect_schema_t
             TestContentPathsApiV2.WETTABILITY_INDEX,
             wettability_index_mock_objects.INCORRECT_DATAFRAME_TEST_DATA,
             wettability_index_mock_objects.EXPECTED_ERROR_REASON,
+        ),
+        (
+            TestContentPathsApiV2.WETTABILITY_INDEX,
+            wettability_index_mock_objects.INCORRECT_DATAFRAME_TEST_DATA_V2,
+            wettability_index_mock_objects.EXPECTED_ERROR_REASON_V2,
         ),
         (
             TestContentPathsApiV2.TEC,
@@ -7623,7 +7892,7 @@ async def test_post_ds_data_rejects_null_depth_shift_values():
 @pytest.mark.asyncio
 async def test_get_data_with_null_depth_shift_values_returns_422():
     """GET with depth_shift_id returns 422 when the CoreToLog parquet has null depth boundaries."""
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     null_shift_set = [
         {
@@ -7684,7 +7953,7 @@ async def test_get_data_with_null_depth_shift_values_returns_422():
 # Issue #751 — Depth-shift augmentation on SA GET data
 # ---------------------------------------------------------------------------
 
-_RCA_SAMPLE_ID = "opendes:master-data--Sample:Example_Sample:"
+_RCA_SAMPLE_ID = TEST_SAMPLE_ID
 
 _DEPTH_SHIFT_SAMPLE_RECORD = {
     "id": _RCA_SAMPLE_ID,
@@ -7740,7 +8009,7 @@ def _build_coretolog_parquet():
 
 def _build_rca_parquet():
     """Build RCA parquet bytes from the existing mock fixture."""
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     rca_df = pd.DataFrame(
         rca_mock_objects.TEST_DATA["data"],
@@ -7751,8 +8020,8 @@ def _build_rca_parquet():
 
 @pytest.mark.asyncio
 async def test_get_data_with_depth_shift_id_returns_augmented_columns():
-    """Issue #751: GET data with ?depth_shift_id returns augmented columns."""
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    """Issue 751: GET data with ?depth_shift_id returns augmented columns."""
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     depth_shift_wpc_id = TEST_DEPTH_SHIFT_ID
     coretolog_dataset_id = coretologdepthshift_mock_objects.TEST_DATASET_RECORD_ID
@@ -7816,7 +8085,7 @@ async def test_get_data_with_depth_shift_id_returns_augmented_columns():
 @pytest.mark.asyncio
 async def test_get_data_with_depth_shift_id_rejects_multiple_wellbores():
     """Issue #751: mixed wellbore sample records must fail fast with 422."""
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     depth_shift_wpc_id = TEST_DEPTH_SHIFT_ID
     rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
@@ -7860,7 +8129,7 @@ async def test_get_data_with_depth_shift_id_rejects_multiple_wellbores():
 @pytest.mark.asyncio
 async def test_get_data_with_depth_shift_id_without_policy_returns_400():
     """Issue #751: depth_shift_id without depth_shift_policy returns 400."""
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
 
@@ -7880,7 +8149,7 @@ async def test_get_data_with_depth_shift_id_without_policy_returns_400():
 @pytest.mark.asyncio
 async def test_get_data_without_depth_shift_params_unchanged():
     """Issue #751: regression guard — no depth shift params → original response."""
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
     rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
@@ -7908,7 +8177,7 @@ async def test_get_data_without_depth_shift_params_unchanged():
 @pytest.mark.asyncio
 async def test_get_data_definitive_policy_no_definitive_id_returns_422():
     """definitive policy with no sample DefinitiveDepthShiftID must fail with 422."""
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
     rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
@@ -7947,7 +8216,7 @@ async def test_get_data_definitive_policy_no_definitive_id_returns_422():
 @pytest.mark.asyncio
 async def test_get_data_id_provided_with_different_definitive_id_emits_warning():
     """Issue #751: id_provided + different definitive ID in sample → warning in DepthShiftWarnings."""
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     provided_wpc_id = TEST_DEPTH_SHIFT_ID
     definitive_wpc_id = "opendes:work-product-component--DepthShift:definitive-001:"
@@ -8023,7 +8292,7 @@ async def test_get_data_id_provided_with_different_definitive_id_emits_warning()
 @pytest.mark.asyncio
 async def test_get_data_with_depth_shift_orient_records_returns_200():
     """orient=records + depth-shift must return 200 with a 'data' key (not crash with 500)."""
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
     rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
@@ -8130,7 +8399,7 @@ async def test_search_data_with_empty_results_and_depth_shift_without_wellbore_i
 @pytest.mark.asyncio
 async def test_get_data_definitive_flat_path_recognized():
     """DefinitiveDepthShiftID stored flat at data.DefinitiveDepthShiftID (not nested) must be found."""
-    from tests.test_api.test_routes.api_v2.routinecoreanalysis import rca_mock_objects
+    from tests.test_api.test_routes.api_v2.samples_analysis.routinecoreanalysis import rca_mock_objects
 
     rca_content_id = rca_mock_objects.TEST_DATASET_RECORD_ID
     rca_record_data = rca_mock_objects.RECORD_DATA_WITH_SCHEMA_VERSION
@@ -8504,9 +8773,21 @@ async def test_get_tcfm_data_invalid_filter_params_return_422(params, expected_m
     assert expected_message in response.json()["reason"]
 
 
-def _tcfm_cache_request(token="Bearer token", partition="opendes", query="content_schema_version=1.0.0"):
+def _tcfm_cache_request(
+    token="Bearer token",
+    partition="opendes",
+    query="content_schema_version=1.0.0",
+    accept=None,
+):
     """Build a minimal GET request for the thermal data route, for cache key inspection."""
     from starlette.requests import Request
+
+    headers = [
+        (b"authorization", token.encode()),
+        (b"data-partition-id", partition.encode()),
+    ]
+    if accept is not None:
+        headers.append((b"accept", accept.encode()))
 
     return Request(
         {
@@ -8518,10 +8799,7 @@ def _tcfm_cache_request(token="Bearer token", partition="opendes", query="conten
             "path": _TCFM_DATA_PATH,
             "raw_path": _TCFM_DATA_PATH.encode(),
             "query_string": query.encode(),
-            "headers": [
-                (b"authorization", token.encode()),
-                (b"data-partition-id", partition.encode()),
-            ],
+            "headers": headers,
         },
     )
 
@@ -8560,6 +8838,10 @@ def test_get_tcfm_data_cache_key_is_stable_for_identical_requests():
     assert build_key(token="Bearer other-token") != baseline
     assert build_key(partition="other-partition") != baseline
     assert build_key(query="content_schema_version=1.0.0&columns_filter=FluidModelID") != baseline
+    # Issue-850: the Accept header selects JSON vs Parquet, so it must discriminate too.
+    json_key = build_key(accept="application/json")
+    assert build_key(accept="application/x-parquet") != json_key
+    assert build_key(accept="application/json") == json_key
 
 
 # ---------------------------------------------------------------------------
@@ -8588,7 +8870,7 @@ async def test_post_data_json_rejects_complex_value_for_str_field():
                 content=json.dumps(payload),
             )
 
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY, response.text
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT, response.text
 
 
 @pytest.mark.asyncio
@@ -8705,3 +8987,276 @@ async def test_post_data_parquet_accepts_null_scalar_and_nested_date_fields():
             )
 
     assert response.status_code == status.HTTP_200_OK
+
+
+# ==============================================================================
+# Tests for verifying SampleID consistency between content data and the
+# associated OSDU record's SampleIDs.
+# ==============================================================================
+
+
+@pytest.mark.parametrize(
+    "data_endpoint_path,version,record_data,test_dataset_record_id,data_payload",
+    [
+        (
+            getattr(SamplesAnalysisContentPathsV2, field_name),
+            version,
+            getattr(SamplesAnalysisRecordsV2, field_name)[version],
+            getattr(SamplesAnalysisDatasetIDsV2, field_name),
+            (
+                gas_chromatography_mock_objects.TEST_DATA_PAYLOAD_WITH_MISMATCHED_SAMPLE_ID
+                if field_name == "GAS_CHROMATOGRAPHY"
+                else TEST_SAMPLES_ANALYSIS_DATA_PAYLOAD_WITH_MISMATCHED_SAMPLE_ID
+            ),
+        )
+        for field_name in CommonRelativePathsV2._fields
+        if field_name not in SAMPLE_ID_CONSISTENCY_TESTS_EXCLUDED_MODELS
+        for version in getattr(SamplesAnalysisRecordsV2, field_name)
+    ],
+)
+@pytest.mark.asyncio
+async def test_post_samples_analysis_data_with_mismatched_sample_id(
+    data_endpoint_path, version, record_data, test_dataset_record_id, data_payload
+):
+    """
+    POST data with mismatched SampleID must return 422 Unprocessable
+    Entity.
+
+    Verifies that incoming requests are rejected when SampleID
+    consistency between the content data and the associated OSDU
+    record is violated.
+    """
+    record_sample_ids = record_data["data"]["SampleIDs"]
+    with post_overrides(record_data, test_dataset_record_id, data_payload):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                data_endpoint_path,
+                headers=_headers_json(version),
+                content=json.dumps(data_payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    body = response.json()
+    expected_errors = {
+        "Invalid value": [
+            {
+                "SampleID": TEST_MISMATCHED_SAMPLE_ID,
+                "message": (
+                    f"SampleID does not match any of the SampleIDs associated with the record: {record_sample_ids}"
+                ),
+            }
+        ]
+    }
+    assert body["errors"] == expected_errors
+
+
+@pytest.mark.parametrize(
+    "data_endpoint_path,version,record_data,test_dataset_record_id,data_payload",
+    [
+        (
+            getattr(SamplesAnalysisContentPathsV2, field_name),
+            version,
+            getattr(SamplesAnalysisRecordsV2, field_name)[version],
+            getattr(SamplesAnalysisDatasetIDsV2, field_name),
+            (
+                gas_chromatography_mock_objects.TEST_MULTI_ROW_DATA_PAYLOAD_WITH_MISMATCHED_SAMPLE_ID
+                if field_name == "GAS_CHROMATOGRAPHY"
+                else TEST_SAMPLES_ANALYSIS_MULTI_ROW_DATA_PAYLOAD_WITH_MISMATCHED_SAMPLE_ID
+            ),
+        )
+        for field_name in CommonRelativePathsV2._fields
+        if field_name not in SAMPLE_ID_CONSISTENCY_TESTS_EXCLUDED_MODELS
+        for version in getattr(SamplesAnalysisRecordsV2, field_name)
+    ],
+)
+@pytest.mark.asyncio
+async def test_post_samples_analysis_multi_row_data_with_mismatched_sample_id(
+    data_endpoint_path, version, record_data, test_dataset_record_id, data_payload
+):
+    """
+    POST multi-row data with partially mismatched SampleIDs must
+    return 422 Unprocessable Entity.
+
+    Verifies that absolute SampleID consistency between the content
+    data and the associated OSDU record is enforced across all rows;
+    the presence of any single mismatched SampleID in a multi-row
+    request results in the rejection of the entire payload.
+    """
+    record_sample_ids = record_data["data"]["SampleIDs"]
+    with post_overrides(record_data, test_dataset_record_id, data_payload):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                data_endpoint_path,
+                headers=_headers_json(version),
+                content=json.dumps(data_payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    body = response.json()
+    expected_errors = {
+        "Invalid value": [
+            {
+                "SampleID": TEST_MISMATCHED_SAMPLE_ID,
+                "message": (
+                    f"SampleID does not match any of the SampleIDs associated with the record: {record_sample_ids}"
+                ),
+            }
+        ]
+    }
+    assert body["errors"] == expected_errors
+
+
+@pytest.mark.parametrize(
+    "data_endpoint_path,version,record_data,test_dataset_record_id,data_payload",
+    [
+        (
+            getattr(SamplesAnalysisContentPathsV2, field_name),
+            version,
+            getattr(SamplesAnalysisRecordsWithMultipleSampleIDsV2, field_name)[version],
+            getattr(SamplesAnalysisDatasetIDsV2, field_name),
+            (
+                gas_chromatography_mock_objects.TEST_MULTI_ROW_DATA_PAYLOAD
+                if field_name == "GAS_CHROMATOGRAPHY"
+                else TEST_SAMPLES_ANALYSIS_MULTI_ROW_DATA_PAYLOAD
+            ),
+        )
+        for field_name in CommonRelativePathsV2._fields
+        if field_name not in SAMPLE_ID_CONSISTENCY_TESTS_EXCLUDED_MODELS
+        for version in getattr(SamplesAnalysisRecordsWithMultipleSampleIDsV2, field_name)
+    ],
+)
+@pytest.mark.asyncio
+async def test_post_samples_analysis_data_with_any_matching_sample_id(
+    data_endpoint_path, version, record_data, test_dataset_record_id, data_payload
+):
+    """
+    POST data matching any associated SampleID must return a 200 OK.
+
+    Verifies that requests are accepted when SampleID consistency
+    between the content data and the OSDU record is satisfied by any
+    of the record's assigned SampleIDs, rather than restricting all
+    rows to a single ID.
+    """
+    with post_overrides(record_data, test_dataset_record_id, data_payload):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                data_endpoint_path,
+                headers=_headers_json(version),
+                content=json.dumps(data_payload),
+            )
+
+    assert response.status_code == status.HTTP_200_OK
+
+
+@pytest.mark.parametrize(
+    "data_endpoint_path,version,record_data,test_dataset_record_id,data_payload",
+    [
+        (
+            getattr(SamplesAnalysisContentPathsV2, field_name),
+            version,
+            record_data,
+            getattr(SamplesAnalysisDatasetIDsV2, field_name),
+            (
+                gas_chromatography_mock_objects.TEST_DATA_PAYLOAD
+                if field_name == "GAS_CHROMATOGRAPHY"
+                else TEST_SAMPLES_ANALYSIS_DATA_PAYLOAD
+            ),
+        )
+        for field_name in CommonRelativePathsV2._fields
+        if field_name not in SAMPLE_ID_CONSISTENCY_TESTS_EXCLUDED_MODELS
+        for version in getattr(SamplesAnalysisRecordsV2, field_name)
+        for record_data in (
+            TEST_SAMPLES_ANALYSIS_RECORD_DATA_WITHOUT_SAMPLE_IDS_FIELD,
+            TEST_SAMPLES_ANALYSIS_RECORD_DATA_WITHOUT_SAMPLE_IDS,
+        )
+    ],
+)
+@pytest.mark.asyncio
+async def test_post_samples_analysis_data_for_record_without_sample_id(
+    data_endpoint_path, version, record_data, test_dataset_record_id, data_payload
+):
+    """
+    POST data for a record without associated SampleIDs must
+    return 422 Unprocessable Entity.
+
+    Verifies that incoming requests are rejected when validating
+    content data for an OSDU record that lacks any associated
+    SampleIDs — whether the SampleIDs field is missing entirely,
+    or present but with an empty array.
+    """
+    with post_overrides(record_data, test_dataset_record_id, data_payload):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                data_endpoint_path,
+                headers=_headers_json(version),
+                content=json.dumps(data_payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    body = response.json()
+    expected_errors = {
+        "Invalid value": [
+            {
+                "SampleID": TEST_SAMPLE_ID,
+                "message": (
+                    "SampleID does not match any of the SampleIDs associated with the record: []"
+                ),
+            }
+        ]
+    }
+    assert body["errors"] == expected_errors
+
+
+@pytest.mark.parametrize(
+    "data_endpoint_path,version,record_data,test_dataset_record_id,data_payload",
+    [
+        (
+            getattr(SamplesAnalysisContentPathsV2, field_name),
+            version,
+            getattr(SamplesAnalysisRecordsV2, field_name)[version],
+            getattr(SamplesAnalysisDatasetIDsV2, field_name),
+            (
+                gas_chromatography_mock_objects.TEST_DATA_PAYLOAD_WITH_NULL_SAMPLE_ID
+                if field_name == "GAS_CHROMATOGRAPHY"
+                else TEST_SAMPLES_ANALYSIS_DATA_PAYLOAD_WITH_NULL_SAMPLE_ID
+            ),
+        )
+        for field_name in CommonRelativePathsV2._fields
+        if field_name not in SAMPLE_ID_CONSISTENCY_TESTS_EXCLUDED_MODELS 
+        if field_name != "EXTRACTION"
+        for version in getattr(SamplesAnalysisRecordsV2, field_name)
+    ],
+)
+@pytest.mark.asyncio
+async def test_post_samples_analysis_data_with_null_sample_id(
+    data_endpoint_path, version, record_data, test_dataset_record_id, data_payload
+):
+    """
+    POST data with a null SampleID must return 422 Unprocessable
+    Entity with Invalid type error.
+
+    Verifies that a null SampleID is rejected via schema validation
+    for models where SampleID is a required field, before reaching the
+    SampleID consistency check — which only validates non-null values
+    and does not need to handle null SampleIDs itself.
+    """
+    with post_overrides(record_data, test_dataset_record_id, data_payload):
+        async with AsyncClient(base_url=TEST_SERVER, app=app) as client:
+            response = await client.post(
+                data_endpoint_path,
+                headers=_headers_json(version),
+                content=json.dumps(data_payload),
+            )
+
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
+    body = response.json()
+    expected_errors = {
+        "Invalid type": [
+            {
+                "expected": "required field",
+                "field": "SampleID",
+                "received": "missing"
+            }
+        ]
+    }
+    assert body["errors"] == expected_errors

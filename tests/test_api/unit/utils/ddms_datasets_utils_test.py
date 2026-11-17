@@ -12,8 +12,10 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import io
 from unittest.mock import AsyncMock, MagicMock
 
+import pandas as pd
 import pytest
 from fastapi.responses import JSONResponse
 from starlette.datastructures import Headers
@@ -160,10 +162,12 @@ async def test_get_parquet_data_success(
     mock_storage_service.get_record.return_value = mock_record
     mock_blob_storage_service.get_blob.return_value = mock_blob
 
-    # Mock Parquet filtering
+    # Mock Parquet filtering — a real (small) DataFrame, not a bare MagicMock,
+    # since the response path now also runs it through slice_dataframe (Issue-819).
+    filtered_df = pd.DataFrame({"col": [1]})
     monkeypatch.setattr(
         "app.api.routes.utils.ddms_datasets.apply_filters_from_bytes",
-        lambda x, y: MagicMock(to_parquet=lambda: b"filtered_parquet_data"),
+        lambda x, y: filtered_df,
     )
 
     response = await get_parquet_data(
@@ -177,8 +181,11 @@ async def test_get_parquet_data_success(
 
     # Validate the response
     assert isinstance(response, Response)
-    assert response.body == b"filtered_parquet_data"
     assert response.media_type == SupportedMimeTypes.PARQUET.mime_type
+    roundtrip_df = pd.read_parquet(io.BytesIO(response.body))
+    assert roundtrip_df["col"].tolist() == [1]
+    # No pagination params supplied (default (None, 0)) -> no pagination headers.
+    assert "x-total-rows" not in response.headers
 
     # Ensure correct calls
     mock_storage_service.get_record.assert_called_once_with("mock_record_id", None)

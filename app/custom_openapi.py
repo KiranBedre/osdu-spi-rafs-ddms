@@ -239,6 +239,8 @@ def _mark_content_schema_version_required(openapi_schema: dict) -> None:
 
 def _is_protected_path(path_key: str) -> bool:
     """Return whether a path requires auth and partition header in Swagger UI."""
+    if path_key.endswith("/info"):
+        return False
     return "/v2/" in path_key or "/dev/" in path_key
 
 

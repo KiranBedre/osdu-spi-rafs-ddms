@@ -1,0 +1,1546 @@
+{
+  "x-osdu-license": "Copyright 2026, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+  "x-osdu-review-status": "Accepted",
+  "$id": "relative_permeability.2.0.0.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Relative Permeability Data Schema",
+  "description": "Relative permeability is the ratio of a secondary phase (gas, oil, or water) to a reference permeability (usually absolute permeability). This experiment can be conducted at varying saturations of the secondary fluid phase or at a single irreducible saturation of the second phase.",
+  "type": "object",
+  "properties": {
+    "SamplesAnalysisID": {
+      "type": "string",
+      "title": "Samples Analysis ID",
+      "description": "OSDU Identifier for this SamplesAnalysis.",
+      "pattern": "^[\\w\\-\\.]+:work-product-component\\-\\-SamplesAnalysis:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "work-product-component",
+          "EntityType": "SamplesAnalysis"
+        }
+      ]
+    },
+    "SampleID": {
+      "type": "string",
+      "title": "Sample ID",
+      "description": "OSDU Identifier for this SamplesAnalysis.",
+      "pattern": "^[\\w\\-\\.]+:master-data\\-\\-Sample:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "master-data",
+          "EntityType": "Sample"
+        }
+      ]
+    },
+    "Meta": {
+      "type": "array",
+      "title": "Meta",
+      "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+      "example": "",
+      "items": {
+        "x-osdu-license": "Copyright 2022, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+        "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractMetaItem.1.0.0.json",
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "x-osdu-schema-source": "osdu:wks:AbstractMetaItem:1.0.0",
+        "title": "Frame of Reference Meta Data Item",
+        "description": "A meta data item, which allows the association of named properties or property values to a Unit/Measurement/CRS/Azimuth/Time context.",
+        "oneOf": [
+          {
+            "title": "FrameOfReferenceUOM",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "UOM Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, 'Unit' for FrameOfReferenceUOM.",
+                "const": "Unit"
+              },
+              "name": {
+                "title": "UOM Unit Symbol",
+                "description": "The unit symbol or name of the unit.",
+                "type": "string",
+                "example": "ft[US]"
+              },
+              "persistableReference": {
+                "title": "UOM Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the Unit.",
+                "type": "string",
+                "example": "{\"abcd\":{\"a\":0.0,\"b\":1200.0,\"c\":3937.0,\"d\":0.0},\"symbol\":\"ft[US]\",\"baseMeasurement\":{\"ancestry\":\"L\",\"type\":\"UM\"},\"type\":\"UAD\"}"
+              },
+              "unitOfMeasureID": {
+                "description": "SRN to unit of measure reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-UnitOfMeasure:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--UnitOfMeasure:ftUS:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "UnitOfMeasure"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "UOM Property Names",
+                "description": "The list of property names, to which this meta data item provides Unit context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "HorizontalDeflection.EastWest",
+                  "HorizontalDeflection.NorthSouth"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceCRS",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "CRS Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'CRS' for FrameOfReferenceCRS.",
+                "const": "CRS"
+              },
+              "name": {
+                "title": "CRS Name",
+                "description": "The name of the CRS.",
+                "type": "string",
+                "example": "WGS 84 / UTM zone 15N"
+              },
+              "persistableReference": {
+                "title": "CRS Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying the CRS.",
+                "type": "string",
+                "example": "{\"authCode\":{\"auth\":\"EPSG\",\"code\":\"32615\"},\"name\":\"WGS_1984_UTM_Zone_15N\",\"type\":\"LBC\",\"ver\":\"PE_10_9_1\",\"wkt\":\"PROJCS[\\\"WGS_1984_UTM_Zone_15N\\\",GEOGCS[\\\"GCS_WGS_1984\\\",DATUM[\\\"D_WGS_1984\\\",SPHEROID[\\\"WGS_1984\\\",6378137.0,298.257223563]],PRIMEM[\\\"Greenwich\\\",0.0],UNIT[\\\"Degree\\\",0.0174532925199433]],PROJECTION[\\\"Transverse_Mercator\\\"],PARAMETER[\\\"False_Easting\\\",500000.0],PARAMETER[\\\"False_Northing\\\",0.0],PARAMETER[\\\"Central_Meridian\\\",-93.0],PARAMETER[\\\"Scale_Factor\\\",0.9996],PARAMETER[\\\"Latitude_Of_Origin\\\",0.0],UNIT[\\\"Meter\\\",1.0],AUTHORITY[\\\"EPSG\\\",32615]]\"}"
+              },
+              "coordinateReferenceSystemID": {
+                "description": "SRN to CRS reference.",
+                "type": "string",
+                "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoordinateReferenceSystem:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                "example": "namespace:reference-data--CoordinateReferenceSystem:Projected:EPSG::32615:",
+                "x-osdu-relationship": [
+                  {
+                    "GroupType": "reference-data",
+                    "EntityType": "CoordinateReferenceSystem"
+                  }
+                ]
+              },
+              "propertyNames": {
+                "title": "CRS Property Names",
+                "description": "The list of property names, to which this meta data item provides CRS context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "KickOffPosition.X",
+                  "KickOffPosition.Y"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceDateTime",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "DateTime Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'DateTime', for FrameOfReferenceDateTime.",
+                "const": "DateTime"
+              },
+              "name": {
+                "title": "DateTime Name",
+                "description": "The name of the DateTime format and reference.",
+                "type": "string",
+                "example": "UTC"
+              },
+              "persistableReference": {
+                "title": "DateTime Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying DateTime reference.",
+                "type": "string",
+                "example": "{\"format\":\"yyyy-MM-ddTHH:mm:ssZ\",\"timeZone\":\"UTC\",\"type\":\"DTM\"}"
+              },
+              "propertyNames": {
+                "title": "DateTime Property Names",
+                "description": "The list of property names, to which this meta data item provides DateTime context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Acquisition.StartTime",
+                  "Acquisition.EndTime"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          },
+          {
+            "title": "FrameOfReferenceAzimuthReference",
+            "type": "object",
+            "properties": {
+              "kind": {
+                "title": "AzimuthReference Reference Kind",
+                "type": "string",
+                "description": "The kind of reference, constant 'AzimuthReference', for FrameOfReferenceAzimuthReference.",
+                "const": "AzimuthReference"
+              },
+              "name": {
+                "title": "AzimuthReference Name",
+                "description": "The name of the CRS or the symbol/name of the unit.",
+                "type": "string",
+                "example": "TrueNorth"
+              },
+              "persistableReference": {
+                "title": "AzimuthReference Persistable Reference",
+                "description": "The self-contained, persistable reference string uniquely identifying AzimuthReference.",
+                "type": "string",
+                "example": "{\"code\":\"TrueNorth\",\"type\":\"AZR\"}"
+              },
+              "propertyNames": {
+                "title": "AzimuthReference Property Names",
+                "description": "The list of property names, to which this meta data item provides AzimuthReference context to. A full path like \"StructureA.PropertyB\" is required to define a unique context; \"data\" is omitted since frame-of reference normalization only applies to the data block.",
+                "type": "array",
+                "example": [
+                  "Bearing"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "kind",
+              "persistableReference"
+            ]
+          }
+        ],
+        "x-osdu-inheriting-from-kind": []
+      }
+    },
+    "DesaturationMethodID": {
+      "type": "string",
+      "title": "Desaturation Method ID",
+      "description": "The identifier for the method by which the sample was desaturated.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-DesaturationMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "DesaturationMethod"
+        }
+      ]
+    },
+    "InitialConditions": {
+      "type": "object",
+      "title": "Initial Conditions",
+      "description": "The initial conditions of permeability, saturation, and flow rate within the sample.",
+      "properties": {
+        "EffectivePermeability": {
+          "type": "object",
+          "title": "Effective Permeability",
+          "description": "The phase permeability at the given saturation when two or more phases are present.",
+          "properties": {
+            "PermeabilityMeasurementMethodID": {
+              "type": "string",
+              "title": "Permeability Measurement Method ID",
+              "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+              "x-osdu-relationship": [
+                {
+                  "GroupType": "reference-data",
+                  "EntityType": "PermeabilityMeasurementMethod"
+                }
+              ]
+            },
+            "Permeability": {
+              "type": "object",
+              "title": "Permeability",
+              "description": "The phase permeability at the given saturation.",
+              "properties": {
+                "Value": {
+                  "type": "number",
+                  "title": "Value",
+                  "description": "The permeability value.",
+                  "x-osdu-frame-of-reference": "UOM:permeability rock"
+                },
+                "FluidTypeID": {
+                  "type": "string",
+                  "title": "Fluid Type ID",
+                  "description": "The fluid type for which the  permeability is reported. Asudhaisdhaidhu",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "CoreAnalysisFluidType"
+                    }
+                  ]
+                },
+                "PermeabilityMeasurementMethodID": {
+                  "type": "string",
+                  "title": "Permeability Measurement Method ID",
+                  "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "PermeabilityMeasurementMethod"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            "Saturation": {
+              "type": "object",
+              "title": "Saturation",
+              "description": "The saturation of the phase at which the effective permeability is measured.",
+              "properties": {
+                "Value": {
+                  "type": "number",
+                  "title": "Value",
+                  "description": "The saturation value.",
+                  "x-osdu-frame-of-reference": "UOM:volume per volume"
+                },
+                "FluidTypeID": {
+                  "type": "string",
+                  "title": "Fluid Type ID",
+                  "description": "The fluid type used for this saturation.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "CoreAnalysisFluidType"
+                    }
+                  ]
+                },
+                "SaturationMeasurementLocationID": {
+                  "type": "string",
+                  "title": "Saturation Measurement Location ID",
+                  "description": "Identifies the area of focus for this saturation measurement, e.g. 'End Face' or 'Average'",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationMeasurementLocation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "SaturationMeasurementLocation"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "RelativePermeability": {
+          "type": "object",
+          "title": "Relative Permeability",
+          "description": "Captures the measured saturation and relative-permeability state at the beginning of the reported measurement path.",
+          "properties": {
+            "SaturationValues": {
+              "type": "array",
+              "title": "Saturation Values",
+              "description": "Saturation values, usually one for 2-phase fluid systems or two or more for 3-phase fluid systems, for the reported relative permeability.",
+              "x-osdu-indexing": {
+                "type": "nested"
+              },
+              "items": {
+                "type": "object",
+                "title": "Saturation",
+                "description": "The extent to which pore space within the sample is filled with fluids.",
+                "properties": {
+                  "Value": {
+                    "type": "number",
+                    "title": "Value",
+                    "description": "The saturation value.",
+                    "x-osdu-frame-of-reference": "UOM:volume per volume"
+                  },
+                  "FluidTypeID": {
+                    "type": "string",
+                    "title": "Fluid Type ID",
+                    "description": "The fluid type used for this saturation.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "CoreAnalysisFluidType"
+                      }
+                    ]
+                  },
+                  "SaturationMeasurementLocationID": {
+                    "type": "string",
+                    "title": "Saturation Measurement Location ID",
+                    "description": "Identifies the area of focus for this saturation measurement, e.g. 'End Face' or 'Average'",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationMeasurementLocation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "SaturationMeasurementLocation"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "RelativePermeabilityValues": {
+              "type": "array",
+              "title": "Relative Permeability Values",
+              "description": "Relative permeability values computed at the reported saturation values.",
+              "items": {
+                "type": "object",
+                "title": "Relative Permeability",
+                "description": "Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
+                "properties": {
+                  "Value": {
+                    "type": "number",
+                    "title": "Value",
+                    "description": "The relative permeability value.",
+                    "x-osdu-frame-of-reference": "UOM:dimensionless"
+                  },
+                  "FluidTypeID": {
+                    "type": "string",
+                    "title": "Fluid Type ID",
+                    "description": "The fluid type for which the relative permeability is reported.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "CoreAnalysisFluidType"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "TestTemperature": {
+          "type": "number",
+          "title": "Test Temperature",
+          "description": "The recorded temperature within the test environment.",
+          "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+        },
+        "NetConfiningStress": {
+          "type": "number",
+          "title": "Net Confining Stress",
+          "description": "The pressure exerted on a sample from its environment, minus the pore pressure within the sample.",
+          "x-osdu-frame-of-reference": "UOM:pressure"
+        },
+        "OverburdenPressure": {
+          "type": "number",
+          "title": "Overburden Pressure",
+          "description": "The pressure exerted by the weight of the overlying rock and soil layers on the rock sample being tested.",
+          "x-osdu-frame-of-reference": "UOM:pressure"
+        },
+        "PorePressure": {
+          "type": "number",
+          "title": "Pore Pressure",
+          "description": "The pressure exerted by fluids (such as water or oil) within the pores and fractures of a rock sample.",
+          "x-osdu-frame-of-reference": "UOM:pressure"
+        },
+        "FlowDirection": {
+          "type": "string",
+          "title": "Flow Direction",
+          "description": "Direction of flow for the experiment, e.g. \"Vertical from bottom\"."
+        }
+      },
+      "additionalProperties": false
+    },
+    "TerminalConditions": {
+      "type": "object",
+      "title": "Terminal Conditions",
+      "description": "The permeability and saturation conditions of the sample at the end of the experiment.",
+      "properties": {
+        "EffectivePermeability": {
+          "type": "object",
+          "title": "Effective Permeability",
+          "description": "The phase permeability at the given saturation when two or more phases are present.",
+          "properties": {
+            "PermeabilityMeasurementMethodID": {
+              "type": "string",
+              "title": "Permeability Measurement Method ID",
+              "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+              "x-osdu-relationship": [
+                {
+                  "GroupType": "reference-data",
+                  "EntityType": "PermeabilityMeasurementMethod"
+                }
+              ]
+            },
+            "Permeability": {
+              "type": "object",
+              "title": "Permeability",
+              "description": "The phase permeability at the given saturation.",
+              "properties": {
+                "Value": {
+                  "type": "number",
+                  "title": "Value",
+                  "description": "The permeability value.",
+                  "x-osdu-frame-of-reference": "UOM:permeability rock"
+                },
+                "FluidTypeID": {
+                  "type": "string",
+                  "title": "Fluid Type ID",
+                  "description": "The fluid type for which the  permeability is reported. Asudhaisdhaidhu",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "CoreAnalysisFluidType"
+                    }
+                  ]
+                },
+                "PermeabilityMeasurementMethodID": {
+                  "type": "string",
+                  "title": "Permeability Measurement Method ID",
+                  "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "PermeabilityMeasurementMethod"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            "Saturation": {
+              "type": "object",
+              "title": "Saturation",
+              "description": "The saturation of the phase at which the effective permeability is measured.",
+              "properties": {
+                "Value": {
+                  "type": "number",
+                  "title": "Value",
+                  "description": "The saturation value.",
+                  "x-osdu-frame-of-reference": "UOM:volume per volume"
+                },
+                "FluidTypeID": {
+                  "type": "string",
+                  "title": "Fluid Type ID",
+                  "description": "The fluid type used for this saturation.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "CoreAnalysisFluidType"
+                    }
+                  ]
+                },
+                "SaturationMeasurementLocationID": {
+                  "type": "string",
+                  "title": "Saturation Measurement Location ID",
+                  "description": "Identifies the area of focus for this saturation measurement, e.g. 'End Face' or 'Average'",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationMeasurementLocation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "SaturationMeasurementLocation"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "RelativePermeability": {
+          "type": "object",
+          "title": "Relative Permeability",
+          "description": "Captures the measured saturation and relative-permeability state at the end of the reported measurement path.",
+          "properties": {
+            "SaturationValues": {
+              "type": "array",
+              "title": "Saturation Values",
+              "description": "Saturation values, usually one for 2-phase fluid systems or two or more for 3-phase fluid systems, for the reported relative permeability.",
+              "x-osdu-indexing": {
+                "type": "nested"
+              },
+              "items": {
+                "type": "object",
+                "title": "Saturation",
+                "description": "The extent to which pore space within the sample is filled with fluids.",
+                "properties": {
+                  "Value": {
+                    "type": "number",
+                    "title": "Value",
+                    "description": "The saturation value.",
+                    "x-osdu-frame-of-reference": "UOM:volume per volume"
+                  },
+                  "FluidTypeID": {
+                    "type": "string",
+                    "title": "Fluid Type ID",
+                    "description": "The fluid type used for this saturation.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "CoreAnalysisFluidType"
+                      }
+                    ]
+                  },
+                  "SaturationMeasurementLocationID": {
+                    "type": "string",
+                    "title": "Saturation Measurement Location ID",
+                    "description": "Identifies the area of focus for this saturation measurement, e.g. 'End Face' or 'Average'",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationMeasurementLocation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "SaturationMeasurementLocation"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "RelativePermeabilityValues": {
+              "type": "array",
+              "title": "Relative Permeability Values",
+              "description": "Relative permeability values computed at the reported saturation values.",
+              "items": {
+                "type": "object",
+                "title": "Relative Permeability",
+                "description": "Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
+                "properties": {
+                  "Value": {
+                    "type": "number",
+                    "title": "Value",
+                    "description": "The relative permeability value.",
+                    "x-osdu-frame-of-reference": "UOM:dimensionless"
+                  },
+                  "FluidTypeID": {
+                    "type": "string",
+                    "title": "Fluid Type ID",
+                    "description": "The fluid type for which the relative permeability is reported.",
+                    "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                    "x-osdu-relationship": [
+                      {
+                        "GroupType": "reference-data",
+                        "EntityType": "CoreAnalysisFluidType"
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "RelativePermeabilityCrossover": {
+      "type": "number",
+      "title": "Relative Permeability Crossover",
+      "description": "The relative permeability value of a crossover point in a relative permeability vs saturation analysis graph in 2-phase fluid systems.",
+      "x-osdu-frame-of-reference": "UOM:dimensionless"
+    },
+    "EndFaceSaturationCrossover": {
+      "type": "number",
+      "title": "End Face Saturation Crossover",
+      "description": "The saturation value of a crossover point in a relative permeability vs saturation analysis graph in 2-phase fluid systems.",
+      "x-osdu-frame-of-reference": "UOM:volume per volume"
+    },
+    "ReferencePermeability": {
+      "type": "object",
+      "title": "Reference Permeability",
+      "description": "The permeability of the phase used as the base (reference) permeability to compute the relative permeability values. It is usually the oil permeability at irreducible water saturation for oil–water and oil–gas systems and gas permeability at irreducible water (or liquid) saturation for gas–water systems.",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "properties": {
+        "PermeabilityMeasurementMethodID": {
+          "type": "string",
+          "title": "Permeability Measurement Method ID",
+          "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+          "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+          "x-osdu-relationship": [
+            {
+              "GroupType": "reference-data",
+              "EntityType": "PermeabilityMeasurementMethod"
+            }
+          ]
+        },
+        "Permeability": {
+          "type": "object",
+          "title": "Permeability",
+          "description": "The phase permeability at the given saturation.",
+          "properties": {
+            "Value": {
+              "type": "number",
+              "title": "Value",
+              "description": "The permeability value.",
+              "x-osdu-frame-of-reference": "UOM:permeability rock"
+            },
+            "FluidTypeID": {
+              "type": "string",
+              "title": "Fluid Type ID",
+              "description": "The fluid type for which the  permeability is reported. Asudhaisdhaidhu",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+              "x-osdu-relationship": [
+                {
+                  "GroupType": "reference-data",
+                  "EntityType": "CoreAnalysisFluidType"
+                }
+              ]
+            },
+            "PermeabilityMeasurementMethodID": {
+              "type": "string",
+              "title": "Permeability Measurement Method ID",
+              "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+              "x-osdu-relationship": [
+                {
+                  "GroupType": "reference-data",
+                  "EntityType": "PermeabilityMeasurementMethod"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "Saturation": {
+          "type": "object",
+          "title": "Saturation",
+          "description": "The saturation of the phase at which the effective permeability is measured.",
+          "properties": {
+            "Value": {
+              "type": "number",
+              "title": "Value",
+              "description": "The saturation value.",
+              "x-osdu-frame-of-reference": "UOM:volume per volume"
+            },
+            "FluidTypeID": {
+              "type": "string",
+              "title": "Fluid Type ID",
+              "description": "The fluid type used for this saturation.",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+              "x-osdu-relationship": [
+                {
+                  "GroupType": "reference-data",
+                  "EntityType": "CoreAnalysisFluidType"
+                }
+              ]
+            },
+            "SaturationMeasurementLocationID": {
+              "type": "string",
+              "title": "Saturation Measurement Location ID",
+              "description": "Identifies the area of focus for this saturation measurement, e.g. 'End Face' or 'Average'",
+              "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationMeasurementLocation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+              "x-osdu-relationship": [
+                {
+                  "GroupType": "reference-data",
+                  "EntityType": "SaturationMeasurementLocation"
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "SaturationProcessMethodID": {
+      "type": "string",
+      "title": "Saturation Process Method ID",
+      "description": "The method used to saturate the rock sample with a particular fluid in the experiment.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationProcessMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "SaturationProcessMethod"
+        }
+      ]
+    },
+    "InterfacialTension": {
+      "type": "array",
+      "title": "Interfacial Tension",
+      "description": "List of the interfacial tension between two wetting and non-wetting phases.",
+      "items": {
+        "type": "object",
+        "title": "Interfacial Tension",
+        "description": "The interfacial tension between two wetting and non-wetting phases.",
+        "properties": {
+          "Value": {
+            "type": "number",
+            "title": "Value",
+            "description": "The interfacial tension between two fluid phases.",
+            "x-osdu-frame-of-reference": "UOM:force per length"
+          },
+          "FluidSystemAnalysisTypeID": {
+            "type": "string",
+            "title": "Fluid System Analysis Type ID",
+            "description": "The fluid system such as oil/water, gas/oil and gas/brine, defining the two fluid phases for which interfacial tension is reported.",
+            "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSystemAnalysisType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+            "x-osdu-relationship": [
+              {
+                "GroupType": "reference-data",
+                "EntityType": "FluidSystemAnalysisType"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "BrineSalinity": {
+      "type": "number",
+      "title": "Brine Salinity",
+      "description": "The salinity of the brine used in the experiment.",
+      "x-osdu-frame-of-reference": "UOM:mass per volume"
+    },
+    "OilViscosity": {
+      "type": "number",
+      "title": "Oil Viscosity",
+      "description": "A measure of a fluid’s internal resistance to flow.",
+      "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+    },
+    "GasViscosity": {
+      "type": "number",
+      "title": "Gas Viscosity",
+      "description": "A measure of a fluid’s internal resistance to flow.",
+      "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+    },
+    "WaterViscosity": {
+      "type": "number",
+      "title": "Water Viscosity",
+      "description": "A measure of a fluid’s internal resistance to flow.",
+      "x-osdu-frame-of-reference": "UOM:dynamic viscosity"
+    },
+    "OilDensity": {
+      "type": "number",
+      "title": "Oil Density",
+      "description": "The mass per volume of oil in the sample.",
+      "x-osdu-frame-of-reference": "UOM:mass per volume"
+    },
+    "GasDensity": {
+      "type": "number",
+      "title": "Gas Density",
+      "description": "The mass per volume of gas in the sample.",
+      "x-osdu-frame-of-reference": "UOM:mass per volume"
+    },
+    "WaterDensity": {
+      "type": "number",
+      "title": "Water Density",
+      "description": "The mass per volume of water in the sample.",
+      "x-osdu-frame-of-reference": "UOM:mass per volume"
+    },
+    "FluidSystemAnalysisTypeID": {
+      "type": "string",
+      "title": "Fluid System Analysis Type ID",
+      "description": "The type of fluid system in this analysis, e.g. gas brine or gas oil.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-FluidSystemAnalysisType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "FluidSystemAnalysisType"
+        }
+      ]
+    },
+    "PermeabilityTestSteps": {
+      "type": "array",
+      "title": "Permeability Test Steps",
+      "description": "Permeability Test Steps",
+      "x-osdu-indexing": {
+        "type": "nested"
+      },
+      "items": {
+        "type": "object",
+        "title": "Permeability Test Steps",
+        "description": "The incremental test steps for this relative permeability experiment.",
+        "properties": {
+          "StartTime": {
+            "type": "number",
+            "title": "Start Time",
+            "description": "The start time of this test step, typically in minutes.",
+            "x-osdu-frame-of-reference": "UOM:time"
+          },
+          "DifferentialPressure": {
+            "type": "number",
+            "title": "Differential Pressure",
+            "description": "The pressure difference or pressure gradient through the sample at equilibrium, also known as Delta P.",
+            "x-osdu-frame-of-reference": "UOM:pressure"
+          },
+          "InjectionRate": {
+            "type": "array",
+            "title": "Injection Rate",
+            "description": "The rate at which the fluid is injected into the sample.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Injection Rate",
+              "description": "The rate at which the fluid is injected into the sample.",
+              "properties": {
+                "Value": {
+                  "type": "number",
+                  "title": "Value",
+                  "description": "The flow rate value.",
+                  "x-osdu-frame-of-reference": "UOM:volume per time"
+                },
+                "FluidTypeID": {
+                  "type": "string",
+                  "title": "Fluid Type ID",
+                  "description": "Fluid Type injected into the sample.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "CoreAnalysisFluidType"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "CumulativeProduction": {
+            "type": "array",
+            "title": "Cumulative Production",
+            "description": "The cumulative amount of displaced fluids.",
+            "items": {
+              "type": "object",
+              "title": "Cumulative Production",
+              "description": "The cumulative amount of fluid displaced from the sample",
+              "properties": {
+                "Value": {
+                  "type": "number",
+                  "title": "Value",
+                  "description": "The cumulative production value at this step.",
+                  "x-osdu-frame-of-reference": "UOM:volume"
+                },
+                "FluidTypeID": {
+                  "type": "string",
+                  "title": "Fluid Type ID",
+                  "description": "Fluid Type displaced from the sample due to injection",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "CoreAnalysisFluidType"
+                    }
+                  ]
+                },
+                "SampleProductionMeasurementMethodID": {
+                  "type": "string",
+                  "title": "Sample Production Measurement Method ID",
+                  "description": "The method used to measure or determine the volume of the fluid phase.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleProductionMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "SampleProductionMeasurementMethod"
+                    }
+                  ]
+                },
+                "ProductionMeasurementCondition": {
+                  "x-osdu-license": "Copyright 2024, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+                  "x-osdu-review-status": "Accepted",
+                  "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractPTCondition.1.1.0.json",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "x-osdu-schema-source": "osdu:wks:AbstractPTCondition:1.1.0",
+                  "title": "Production Measurement Condition",
+                  "description": "The temperature and pressure at which the volume of the fluid was measured.",
+                  "type": "object",
+                  "properties": {
+                    "Pressure": {
+                      "type": "number",
+                      "title": "Pressure",
+                      "description": "The recorded absolute pressure condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit Pa (Pascal).",
+                      "example": "1 bar",
+                      "x-osdu-frame-of-reference": "UOM:pressure"
+                    },
+                    "Temperature": {
+                      "type": "number",
+                      "title": "Temperature",
+                      "description": "The recorded temperature condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit K (Kelvin).",
+                      "example": "15 degC",
+                      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+                    },
+                    "IsStandardConditions": {
+                      "type": "boolean",
+                      "title": "Is Standard Conditions",
+                      "description": "To capture when Measurement have been made at Standard Conditions (25°C / 100 kPa)\nMutually Exclusive with Pressure/Temperature.\nCapture"
+                    },
+                    "NonStandardConditionsReference": {
+                      "type": "string",
+                      "title": "Non Standard Conditions Reference",
+                      "description": "Open Text Box to capture the P & T Reference when measurements are made at non standard conditions (such as \"Reservoir\", \"Tank\",…)"
+                    }
+                  },
+                  "required": [
+                    "Pressure",
+                    "Temperature"
+                  ],
+                  "x-osdu-inheriting-from-kind": [],
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "EffectivePermeability": {
+            "type": "array",
+            "title": "Effective Permeability",
+            "description": "The phase permeability at the given saturation when two or more phases are present.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Effective Permeability",
+              "description": "The phase permeability at the given saturation when two or more phases are present.",
+              "properties": {
+                "PermeabilityMeasurementMethodID": {
+                  "type": "string",
+                  "title": "Permeability Measurement Method ID",
+                  "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "PermeabilityMeasurementMethod"
+                    }
+                  ]
+                },
+                "Permeability": {
+                  "type": "object",
+                  "title": "Permeability",
+                  "description": "The phase permeability at the given saturation.",
+                  "properties": {
+                    "Value": {
+                      "type": "number",
+                      "title": "Value",
+                      "description": "The permeability value.",
+                      "x-osdu-frame-of-reference": "UOM:permeability rock"
+                    },
+                    "FluidTypeID": {
+                      "type": "string",
+                      "title": "Fluid Type ID",
+                      "description": "The fluid type for which the  permeability is reported. Asudhaisdhaidhu",
+                      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                      "x-osdu-relationship": [
+                        {
+                          "GroupType": "reference-data",
+                          "EntityType": "CoreAnalysisFluidType"
+                        }
+                      ]
+                    },
+                    "PermeabilityMeasurementMethodID": {
+                      "type": "string",
+                      "title": "Permeability Measurement Method ID",
+                      "description": "The type of permeability being measured, e.g. Gas, PulseDecay, Klinkenberg.",
+                      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-PermeabilityMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                      "x-osdu-relationship": [
+                        {
+                          "GroupType": "reference-data",
+                          "EntityType": "PermeabilityMeasurementMethod"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "Saturation": {
+                  "type": "object",
+                  "title": "Saturation",
+                  "description": "The saturation of the phase at which the effective permeability is measured.",
+                  "properties": {
+                    "Value": {
+                      "type": "number",
+                      "title": "Value",
+                      "description": "The saturation value.",
+                      "x-osdu-frame-of-reference": "UOM:volume per volume"
+                    },
+                    "FluidTypeID": {
+                      "type": "string",
+                      "title": "Fluid Type ID",
+                      "description": "The fluid type used for this saturation.",
+                      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                      "x-osdu-relationship": [
+                        {
+                          "GroupType": "reference-data",
+                          "EntityType": "CoreAnalysisFluidType"
+                        }
+                      ]
+                    },
+                    "SaturationMeasurementLocationID": {
+                      "type": "string",
+                      "title": "Saturation Measurement Location ID",
+                      "description": "Identifies the area of focus for this saturation measurement, e.g. 'End Face' or 'Average'",
+                      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationMeasurementLocation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                      "x-osdu-relationship": [
+                        {
+                          "GroupType": "reference-data",
+                          "EntityType": "SaturationMeasurementLocation"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "RelativePermeability": {
+            "type": "object",
+            "title": "Relative Permeability",
+            "description": "Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "properties": {
+              "SaturationValues": {
+                "type": "array",
+                "title": "Saturation Values",
+                "description": "Saturation values, usually one for 2-phase fluid systems or two or more for 3-phase fluid systems, for the reported relative permeability.",
+                "x-osdu-indexing": {
+                  "type": "nested"
+                },
+                "items": {
+                  "type": "object",
+                  "title": "Saturation",
+                  "description": "The extent to which pore space within the sample is filled with fluids.",
+                  "properties": {
+                    "Value": {
+                      "type": "number",
+                      "title": "Value",
+                      "description": "The saturation value.",
+                      "x-osdu-frame-of-reference": "UOM:volume per volume"
+                    },
+                    "FluidTypeID": {
+                      "type": "string",
+                      "title": "Fluid Type ID",
+                      "description": "The fluid type used for this saturation.",
+                      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                      "x-osdu-relationship": [
+                        {
+                          "GroupType": "reference-data",
+                          "EntityType": "CoreAnalysisFluidType"
+                        }
+                      ]
+                    },
+                    "SaturationMeasurementLocationID": {
+                      "type": "string",
+                      "title": "Saturation Measurement Location ID",
+                      "description": "Identifies the area of focus for this saturation measurement, e.g. 'End Face' or 'Average'",
+                      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SaturationMeasurementLocation:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                      "x-osdu-relationship": [
+                        {
+                          "GroupType": "reference-data",
+                          "EntityType": "SaturationMeasurementLocation"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "RelativePermeabilityValues": {
+                "type": "array",
+                "title": "Relative Permeability Values",
+                "description": "Relative permeability values computed at the reported saturation values.",
+                "items": {
+                  "type": "object",
+                  "title": "Relative Permeability",
+                  "description": "Relative permeability is a measure of how easily a particular fluid can flow through a porous medium when other fluids are also present.",
+                  "properties": {
+                    "Value": {
+                      "type": "number",
+                      "title": "Value",
+                      "description": "The relative permeability value.",
+                      "x-osdu-frame-of-reference": "UOM:dimensionless"
+                    },
+                    "FluidTypeID": {
+                      "type": "string",
+                      "title": "Fluid Type ID",
+                      "description": "The fluid type for which the relative permeability is reported.",
+                      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                      "x-osdu-relationship": [
+                        {
+                          "GroupType": "reference-data",
+                          "EntityType": "CoreAnalysisFluidType"
+                        }
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "InSituSaturationProfiles": {
+            "type": "array",
+            "title": "In Situ Saturation Profiles",
+            "description": "Saturation profiles of the fluids along the core length, at time intervals.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "In Situ Saturation Profiles",
+              "description": "Captures saturation values along the length of the core sample at time intervals.",
+              "properties": {
+                "FluidTypeID": {
+                  "type": "string",
+                  "title": "Fluid Type ID",
+                  "description": "The type of fluid for which the saturation is measured.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "CoreAnalysisFluidType"
+                    }
+                  ]
+                },
+                "InSituPhaseSaturationProfile": {
+                  "type": "array",
+                  "title": "In Situ Phase Saturation Profile",
+                  "description": "Insitu saturation profile of a phase over time along the core length.",
+                  "items": {
+                    "type": "object",
+                    "title": "In Situ Saturation Profiles",
+                    "description": "Captures saturation values along the length of the core sample at time intervals.",
+                    "properties": {
+                      "Time": {
+                        "type": "number",
+                        "title": "Time",
+                        "description": "The time at which the in-situ saturation was measured.",
+                        "x-osdu-frame-of-reference": "UOM:time"
+                      },
+                      "Position": {
+                        "type": "number",
+                        "title": "Position",
+                        "description": "The position along the sample.",
+                        "x-osdu-frame-of-reference": "UOM:length"
+                      },
+                      "RelativePosition": {
+                        "type": "number",
+                        "title": "Relative Position",
+                        "description": "Dimensionless position along the core plug, expressed as the measurement position divided by the total core length.",
+                        "x-osdu-frame-of-reference": "UOM:dimensionless"
+                      },
+                      "Saturation": {
+                        "type": "number",
+                        "title": "Saturation",
+                        "description": "The saturation value as measured at this timestamp.",
+                        "x-osdu-frame-of-reference": "UOM:volume per volume"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "ISSMMeasurementMethodID": {
+                  "type": "string",
+                  "title": "ISSM Measurement Method ID",
+                  "description": "The insitu saturation measurement method used to measure the profile.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-ISSMMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "ISSMMeasurementMethod"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "DifferentialPressureProfiles": {
+            "type": "array",
+            "title": "Differential Pressure Profiles",
+            "description": "Captures the differential pressure measured over time during the experiment.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Differential Pressure Profiles",
+              "description": "Captures the differential pressure measured over time during the experiment.",
+              "properties": {
+                "Time": {
+                  "type": "number",
+                  "title": "Time",
+                  "description": "The time at which the pressure was measured.",
+                  "x-osdu-frame-of-reference": "UOM:time"
+                },
+                "DifferentialPressure": {
+                  "type": "number",
+                  "title": "Differential Pressure",
+                  "description": "The differential pressure value.",
+                  "x-osdu-frame-of-reference": "UOM:pressure"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "ProductionProfiles": {
+            "type": "array",
+            "title": "Production Profiles",
+            "description": "The amount and rate of the produced fluid phase over time. Stores data on fluid production over time.",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "type": "object",
+              "title": "Production Profiles",
+              "description": "The production profile of the produced fluid phase.",
+              "properties": {
+                "FluidTypeID": {
+                  "type": "string",
+                  "title": "Fluid Type ID",
+                  "description": "The type of fluid phase for which the production profile over time is defined.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "CoreAnalysisFluidType"
+                    }
+                  ]
+                },
+                "PhaseProductionProfile": {
+                  "type": "array",
+                  "title": "PhaseProductionProfile",
+                  "description": "The production profile of the produced fluid phase production over time.",
+                  "x-osdu-indexing": {
+                    "type": "nested"
+                  },
+                  "items": {
+                    "type": "object",
+                    "title": "Phase Production Profile",
+                    "description": "The production profile of the produced fluid phase over time.",
+                    "properties": {
+                      "Time": {
+                        "type": "number",
+                        "title": "Time",
+                        "description": "The time at which the pressure was measured.",
+                        "x-osdu-frame-of-reference": "UOM:time"
+                      },
+                      "ProductionRate": {
+                        "type": "number",
+                        "title": "Production Rate",
+                        "description": "The rate of fluid production",
+                        "x-osdu-frame-of-reference": "UOM:volume per time"
+                      },
+                      "ProductionVolume": {
+                        "type": "number",
+                        "title": "Production Volume",
+                        "description": "The fluid volume measured or calculated at the given time.",
+                        "x-osdu-frame-of-reference": "UOM:volume"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "SampleProductionMeasurementMethodID": {
+                  "type": "string",
+                  "title": "Production Measurement Method ID",
+                  "description": "The method used to measure or determine the volume of the fluid phase.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-SampleProductionMeasurementMethod:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "SampleProductionMeasurementMethod"
+                    }
+                  ]
+                },
+                "ProductionMeasurementCondition": {
+                  "x-osdu-license": "Copyright 2024, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+                  "x-osdu-review-status": "Accepted",
+                  "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractPTCondition.1.1.0.json",
+                  "$schema": "http://json-schema.org/draft-07/schema#",
+                  "x-osdu-schema-source": "osdu:wks:AbstractPTCondition:1.1.0",
+                  "title": "Production Measurement Condition",
+                  "description": "The temperature and pressure at which the volume of the fluid was measured.",
+                  "type": "object",
+                  "properties": {
+                    "Pressure": {
+                      "type": "number",
+                      "title": "Pressure",
+                      "description": "The recorded absolute pressure condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit Pa (Pascal).",
+                      "example": "1 bar",
+                      "x-osdu-frame-of-reference": "UOM:pressure"
+                    },
+                    "Temperature": {
+                      "type": "number",
+                      "title": "Temperature",
+                      "description": "The recorded temperature condition. The unit of measure context is defined via meta[] in the Storage record while the Search responses return the value in base SI unit K (Kelvin).",
+                      "example": "15 degC",
+                      "x-osdu-frame-of-reference": "UOM:thermodynamic temperature"
+                    },
+                    "IsStandardConditions": {
+                      "type": "boolean",
+                      "title": "Is Standard Conditions",
+                      "description": "To capture when Measurement have been made at Standard Conditions (25°C / 100 kPa)\nMutually Exclusive with Pressure/Temperature.\nCapture"
+                    },
+                    "NonStandardConditionsReference": {
+                      "type": "string",
+                      "title": "Non Standard Conditions Reference",
+                      "description": "Open Text Box to capture the P & T Reference when measurements are made at non standard conditions (such as \"Reservoir\", \"Tank\",…)"
+                    }
+                  },
+                  "required": [
+                    "Pressure",
+                    "Temperature"
+                  ],
+                  "x-osdu-inheriting-from-kind": [],
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "FractionalFlow": {
+            "type": "array",
+            "title": "Fractional Flow",
+            "description": "The fractional value of the injected fluids.",
+            "items": {
+              "type": "object",
+              "title": "Fractional Flow",
+              "description": "Fraction of the total flow rate represented by a given fluid phase at a specified measurement step",
+              "properties": {
+                "Value": {
+                  "type": "number",
+                  "title": "Value",
+                  "description": "The fraction of the total flowing fluid rate contributed by the fluid phase.",
+                  "x-osdu-frame-of-reference": "UOM:dimensionless"
+                },
+                "FluidTypeID": {
+                  "type": "string",
+                  "title": "Fluid Type ID",
+                  "description": "Fluid Type for which the fractional flow rate is reported.",
+                  "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+                  "x-osdu-relationship": [
+                    {
+                      "GroupType": "reference-data",
+                      "EntityType": "CoreAnalysisFluidType"
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "Remarks": {
+            "type": "array",
+            "title": "Remarks",
+            "description": "Array object capturing remarks or additional information for this test step.  Remarks for the analysis as a whole should be captured in the associated SamplesAnalysis work product component.",
+            "example": "",
+            "x-osdu-indexing": {
+              "type": "nested"
+            },
+            "items": {
+              "x-osdu-license": "Copyright 2023, The Open Group \\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 . Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.",
+              "x-osdu-review-status": "Accepted",
+              "$id": "https://schema.osdu.opengroup.org/json/abstract/AbstractRemark.1.0.0.json",
+              "$schema": "http://json-schema.org/draft-07/schema#",
+              "x-osdu-schema-source": "osdu:wks:AbstractRemark:1.0.0",
+              "title": "AbstractRemark",
+              "description": "A remark object, pairing a remark text with a source, e.g. an author, and a date, which is typically included in an array. The RemarkSequenceNumber acts as unique key in this case.",
+              "type": "object",
+              "properties": {
+                "RemarkSequenceNumber": {
+                  "type": "integer",
+                  "title": "Remark Sequence Number",
+                  "description": "A unique identifier for each remark record. This identifier is used to uniquely identify a member in an array of remarks.",
+                  "example": 1
+                },
+                "Remark": {
+                  "type": "string",
+                  "title": "Remark",
+                  "description": "A descriptive comment for this remark."
+                },
+                "RemarkSource": {
+                  "type": "string",
+                  "title": "Remark Source",
+                  "description": "The person, vendor, interpreter or other provider of information."
+                },
+                "RemarkDate": {
+                  "type": "string",
+                  "title": "Remark Date",
+                  "description": "The date the remark was issued.",
+                  "format": "date",
+                  "x-osdu-frame-of-reference": "DateTime"
+                }
+              },
+              "x-osdu-inheriting-from-kind": [],
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "OilTypeID": {
+      "type": "string",
+      "title": "Oil Type ID",
+      "description": "Identifies the type of oil used in the experiment.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "CoreAnalysisFluidType"
+        }
+      ]
+    },
+    "GasTypeID": {
+      "type": "string",
+      "title": "Gas Type ID",
+      "description": "Identifies the type of gas used in the experiment.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "CoreAnalysisFluidType"
+        }
+      ]
+    },
+    "WaterTypeID": {
+      "type": "string",
+      "title": "Water Type ID",
+      "description": "Identifies the type of water used in the experiment.",
+      "pattern": "^[\\w\\-\\.]+:reference-data\\-\\-CoreAnalysisFluidType:[\\w\\-\\.\\:\\%]+:[0-9]*$",
+      "x-osdu-relationship": [
+        {
+          "GroupType": "reference-data",
+          "EntityType": "CoreAnalysisFluidType"
+        }
+      ]
+    },
+    "EndTime": {
+      "type": "number",
+      "title": "End Time",
+      "description": "Overall duration of the test.",
+      "x-osdu-frame-of-reference": "UOM:time"
+    }
+  },
+  "required": [
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,49 @@
+{
+  "columns": [
+    "SamplesAnalysisID",
+    "SampleID",
+    "Meta",
+    "WettabilityIndexData"
+  ],
+  "index": [
+    0
+  ],
+  "data": [
+    [
+      "{data_partition_id}:work-product-component--SamplesAnalysis:WettabilityIndex_V100:",
+      "{data_partition_id}:master-data--Sample:Master_Sample:",
+      [
+        {
+          "kind": "Unit",
+          "name": "degF",
+          "unitOfMeasureID": "{data_partition_id}:reference-data--UnitOfMeasure:degF:",
+          "propertyNames": [
+            "WettabilityIndexData.Temperature"
+          ]
+        }
+      ],
+      {
+        "CapillaryPressureAnalysisID": "{data_partition_id}:work-product-component--SamplesAnalysis:WettabilityIndex_V100:",
+        "Temperature": 185.0,
+        "WettabilityIndex": [
+          {
+            "Value": 0.45,
+            "WettabilityIndexTypeID": "{data_partition_id}:reference-data--WettabilityIndexType:AmottHarvey:"
+          }
+        ],
+        "ConfiningPressure": 3000.0,
+        "DesaturationMethod": "{data_partition_id}:reference-data--DesaturationMethod:Centrifuge:",
+        "FluidSystem": "{data_partition_id}:reference-data--FluidSystemAnalysisType:GasBrine:",
+        "InitialWaterSaturation": 0.22,
+        "Remarks": [
+          {
+            "RemarkSequenceNumber": 1,
+            "Remark": "Legacy Wettability Index result.",
+            "RemarkSource": "Lab Analyst",
+            "RemarkDate": "2026-06-15"
+          }
+        ]
+      }
+    ]
+  ]
+}

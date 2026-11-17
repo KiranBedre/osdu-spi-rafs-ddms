@@ -21,6 +21,7 @@ from tests.integration.config import (
     DataFiles,
     SamplesAnalysisEndpoints,
 )
+from tests.integration.data_provider import scope_fixture_id
 
 DATA_PARTITION_ID = CONFIG["DATA_PARTITION"]
 
@@ -833,7 +834,8 @@ def test_apply_depth_shift_with_different_wellbore_ids(
     """Verify depth shift when the Sample and Depth Shift WPC use different wellbores."""
 
     sample_definition = copy.deepcopy(tests_data(DataFiles.SAMPLE))
-    sample_wellbore_id = f"{DATA_PARTITION_ID}:master-data--Wellbore:TectonicDrift:"
+    sample_wellbore_id = scope_fixture_id(f"{DATA_PARTITION_ID}:master-data--Wellbore:TectonicDrift:")
+    depth_shift_wellbore_id = scope_fixture_id(f"{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:")
     sample_definition["data"]["SampleAcquisition"]["SampleAcquisitionDetail"][
         "WellboreID"
     ] = sample_wellbore_id
@@ -867,7 +869,7 @@ def test_apply_depth_shift_with_different_wellbore_ids(
             (
                 f"Wellbore mismatch: sample wellbore "
                 f"'{sample_wellbore_id}' differs from depth-shift wellbore "
-                f"'{DATA_PARTITION_ID}:master-data--Wellbore:MagmaPulse:'."
+                f"'{depth_shift_wellbore_id}'."
             )
         ],
     }

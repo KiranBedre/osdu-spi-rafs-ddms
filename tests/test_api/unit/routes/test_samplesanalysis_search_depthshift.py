@@ -21,11 +21,24 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pandas as pd
 import pytest
 from fastapi import HTTPException, Response
+from pydantic import BaseModel
 from starlette import status
 from starlette.requests import Request
 
 from app.api.routes.samplesanalysis.dynamic_search import SamplesAnalysisDynamicSearchView
+from app.dataframe.parquet_loader import DFPayload, ParquetLoader
 from app.models.schemas.depth_shift_query import DepthShiftQueryParams
+from app.resources.filters import DataFrameFilterValidator
+
+
+class _DummySampleRowModel(BaseModel):
+    """Minimal model so DataFrameFilterValidator can build a schema for SampleID rows."""
+
+    SampleID: str
+
+
+def _df_filter() -> DataFrameFilterValidator:
+    return DataFrameFilterValidator(model=_DummySampleRowModel)
 
 
 class TestSamplesAnalysisDynamicSearchView:
@@ -578,6 +591,95 @@ class TestSamplesAnalysisDynamicSearchView:
         assert not any("outside all shift intervals" in warning for warning in metadata["warnings"])
 
     @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "row_fields",
+        [
+            {"row_offset": 5, "row_limit": 10, "total_rows": 42},
+            # offset-only row pagination legitimately carries row_limit=None; it must survive too.
+            {"row_offset": 5, "row_limit": None, "total_rows": 42},
+            {},
+        ],
+    )
+    async def test_apply_depth_shift_preserves_row_pagination_fields(self, search_view, row_fields):
+        """Issue-820: depth-shift augments columns but must pass row pagination metadata through."""
+        from app.models.schemas.search_scope import SearchScope
+
+        requested_wpc = "osdu:work-product-component--DepthShift:requested:1"
+        search_response = Response(
+            content=json.dumps(
+                {
+                    "result": {
+                        "index": [0],
+                        "columns": ["SampleID", "Value"],
+                        "data": [["osdu:master-data--Sample:s-1:", 1.0]],
+                    },
+                    # Row-mode search responses (Issue-820) carry no offset/page_limit.
+                    **({} if row_fields else {"offset": 0, "page_limit": 100}),
+                    "total_size": 1,
+                    **row_fields,
+                }
+            ),
+            media_type="application/json",
+        )
+        mock_resolver = MagicMock()
+        mock_resolver.fetch_sample_records = AsyncMock(
+            return_value={
+                "osdu:master-data--Sample:s-1": {
+                    "data": {
+                        "DefinitiveDepthShiftID": requested_wpc,
+                        "SampleAcquisition": {
+                            "SampleAcquisitionDetail": {
+                                "WellboreID": "osdu:master-data--Wellbore:wb-1:",
+                                "TopDepth": 100.0,
+                                "BaseDepth": 110.0,
+                            }
+                        },
+                    }
+                },
+            },
+        )
+        mock_resolver.resolve_depth_shift_wpc_id = AsyncMock(return_value=requested_wpc)
+        mock_resolver.fetch_coretolog_depth_shift_data = AsyncMock(
+            return_value=(
+                [
+                    {
+                        "OriginalTopDepth": 50.0,
+                        "OriginalBaseDepth": 200.0,
+                        "ShiftedTopDepth": 60.0,
+                        "ShiftedBaseDepth": 210.0,
+                    }
+                ],
+                [],
+                "osdu:master-data--Wellbore:wb-1:",
+            ),
+        )
+
+        with patch("app.api.routes.samplesanalysis.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
+            response = await search_view._apply_depth_shift_to_search_results(
+                search_response=search_response,
+                orient="split",
+                depth_shift_params=DepthShiftQueryParams(
+                    depth_shift_policy="id_provided", depth_shift_id=requested_wpc
+                ),
+                storage_service=AsyncMock(),
+                dataset_service=AsyncMock(),
+                search_scope=SearchScope(wellbore_id="osdu:master-data--Wellbore:wb-1:"),
+                search_service=MagicMock(),
+            )
+
+        payload = json.loads(response.body.decode("utf-8"))
+        assert "DepthShiftData" in payload
+        for field in ("row_offset", "row_limit", "total_rows"):
+            if field in row_fields:
+                assert payload[field] == row_fields[field]
+            else:
+                assert field not in payload
+        # Dataset-pagination fields belong to legacy mode only; the wrapper must not
+        # reintroduce them in a row-mode response (and must keep them in legacy mode).
+        for field in ("offset", "page_limit"):
+            assert (field not in payload) == bool(row_fields)
+
+    @pytest.mark.asyncio
     async def test_apply_depth_shift_bilinear_validation_error_propagates(self, search_view):
         """Bilinear interpolation validation failures must surface as 422."""
         from app.models.schemas.search_scope import SearchScope
@@ -788,3 +890,115 @@ class TestSamplesAnalysisDynamicSearchView:
         depth_row = payload["DepthShiftData"][0]
         assert depth_row["ShiftedSampleTop"] == pytest.approx(175.0)
         assert depth_row["ShiftedSampleBase"] == pytest.approx(201.0)
+
+
+class TestDepthShiftWithRowPaginationEndToEnd:
+    """Issue-820 audit gap: `test_apply_depth_shift_preserves_row_pagination_fields` above
+    proves the wrapper's pop/preserve logic in isolation, against a hand-built `search_response`
+    dict. It never proves that the *real* `get_search_data` response — already row-paginated —
+    is what actually reaches `_apply_depth_shift_to_search_results` in production.
+
+    This test drives the real `search_endpoint` closure built by
+    `_build_search_data_endpoint_with_depth_shift` (app/api/routes/samplesanalysis/dynamic_search.py:76-124),
+    which calls the real `get_search_data` and then, since `depth_shift_params` is not None, feeds
+    its real (row-paginated) Response into the real `_apply_depth_shift_to_search_results`. Only
+    the DDMS dataset-ids fetcher, the parquet loader and `DepthShiftResolver` are mocked (the same
+    external collaborators every other test in this suite mocks).
+    """
+
+    @staticmethod
+    def _fetcher_class_returning(ids):
+        class _FakeFetcher(object):
+            def __init__(self, search_service):
+                self._search_service = search_service
+
+            async def get_ids(self, *args, **kwargs):
+                return list(ids)
+
+        return _FakeFetcher
+
+    @pytest.mark.asyncio
+    async def test_row_pagination_window_is_what_depth_shift_actually_augments(self):
+        """3 rows in one dataset, row_limit=2 -> depth shift must only ever see the 2 rows that
+        survived pagination (SampleID "s-1"), never the 3rd, trimmed-away row (SampleID "s-2").
+
+        `total_rows` in the envelope must still report the pre-trim count (3), proving the
+        row-pagination fields survive the depth-shift wrapper on a genuinely produced response,
+        not a hand-built stand-in.
+        """
+        from app.models.schemas.search_scope import SearchScope
+
+        requested_wpc = "osdu:work-product-component--DepthShift:requested:1"
+        wellbore_id = "osdu:master-data--Wellbore:wb-1:"
+
+        search_view = SamplesAnalysisDynamicSearchView(
+            router=MagicMock(),
+            ddms_dataset_ids_fetcher_class=self._fetcher_class_returning([("ds-0", "sa-0")]),
+            endpoints_config=[],
+        )
+
+        endpoint = search_view._build_dynamic_endpoint(
+            method_name="get_search_data",
+            extractor=lambda req: "routinecoreanalysis",
+            filter_dep=MagicMock(),
+        )
+        handler = endpoint.__wrapped__ if hasattr(endpoint, "__wrapped__") else endpoint
+
+        request = Request(
+            {
+                "type": "http",
+                "method": "GET",
+                "path": "/routinecoreanalysis/search/data",
+                "headers": [(b"data-partition-id", b"opendes")],
+                "query_string": b"row_limit=2&row_offset=0",
+                "path_params": {"analysis_type": "routinecoreanalysis"},
+            }
+        )
+
+        # Row 2 (SampleID "s-2") must be trimmed away by row_limit=2 before depth-shift ever
+        # resolves sample records, so no record is registered for it here.
+        df = pd.DataFrame({"SampleID": ["s-1", "s-1", "s-2"]})
+        payload = DFPayload("ds-0", df, None)
+
+        mock_resolver = MagicMock()
+        mock_resolver.fetch_sample_records = AsyncMock(
+            return_value={
+                "s-1": {
+                    "data": {
+                        "DefinitiveDepthShiftID": requested_wpc,
+                        "SampleAcquisition": {"SampleAcquisitionDetail": {"WellboreID": wellbore_id}},
+                    },
+                },
+            },
+        )
+        mock_resolver.resolve_depth_shift_wpc_id = AsyncMock(return_value=requested_wpc)
+        mock_resolver.fetch_coretolog_depth_shift_data = AsyncMock(return_value=([], [], wellbore_id))
+
+        with patch("app.api.routes.samplesanalysis.dynamic_search.DepthShiftResolver", return_value=mock_resolver):
+            with patch.object(ParquetLoader, "read_parquet_files", new=AsyncMock(return_value=[payload])):
+                response = await handler(
+                    request=request,
+                    df_filter=_df_filter(),
+                    content_schema_version="1.0.0",
+                    pagination_parameters=(0, 100, None, None),
+                    search_scope=SearchScope(wellbore_id=wellbore_id),
+                    dataset_service=AsyncMock(),
+                    blob_storage_service=AsyncMock(),
+                    search_service=MagicMock(),
+                    storage_service=AsyncMock(),
+                    orient="split",
+                    depth_shift_params=DepthShiftQueryParams(
+                        depth_shift_policy="id_provided", depth_shift_id=requested_wpc
+                    ),
+                    row_pagination_parameters=(2, 0),
+                )
+
+        body = json.loads(response.body.decode("utf-8"))
+        assert body["total_rows"] == 3
+        assert body["row_limit"] == 2
+        assert body["row_offset"] == 0
+        assert "offset" not in body
+        assert "page_limit" not in body
+        assert len(body["DepthShiftData"]) == 2
+
+        mock_resolver.fetch_sample_records.assert_awaited_once_with(["s-1"])
